@@ -17,7 +17,7 @@ button {
 
   &.buttonPrimary {
     background-color: $primaryColor;
-    color: white;
+    color: $textWhite;
 
     &:hover {
       background-color: $secondaryColor;
