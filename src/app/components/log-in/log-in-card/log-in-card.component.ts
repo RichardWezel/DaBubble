@@ -8,5 +8,6 @@ import { Component } from '@angular/core';
   styleUrl: './log-in-card.component.scss'
 })
 export class LogInCardComponent {
-
+  focusOnMail = false;
+  focusOnPassword = false;
 }

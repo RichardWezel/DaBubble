@@ -15,6 +15,8 @@ button {
     padding: unset;
     color: $secondaryColor;
     font-weight: 400;
+    border: 1px solid transparent;
+    transition: border 125ms ease-in-out;
 
     &:hover {
         border: 1px solid $textGrey;
