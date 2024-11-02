@@ -1,0 +1,58 @@
+@import 'variables';
+@import 'fonts';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  border-radius: 24px;
+  padding: 12px 24px;
+
+  &.buttonPrimary {
+    background-color: $primaryColor;
+    color: white;
+
+    &:hover {
+      background-color: $secondaryColor;
+    }
+
+    &:active {
+      background-color: $primaryColor;
+    }
+
+    &:disabled {
+      background-color: $textGrey;
+    }
+  }
+
+  &.buttonSecondary {
+    background-color: $textWhite;
+    color: $primaryColor;
+
+    border: 1px solid $secondaryColor;
+
+
+    &:hover {
+      background-color: $thirdColor;
+      color: $textWhite;
+    }
+
+    &:active {
+      background-color: $primaryColor;
+      color: $textWhite;
+    }
+
+    &:disabled {
+      background-color: $textWhite;
+      color: $textGrey;
+      border-color: $textGrey;
+    }
+  }
+}
