@@ -1,0 +1,167 @@
+{
+    "member-collection": {
+        "n043n048n3840849n4n": {
+            "id": "n043n048n3840849n4n",
+            "name": "Frederik Beck",
+            "mail": "frederik.beck@gmail.com",
+            "password": "Hase83!",
+            "avatar-status": true,
+            "avatar-icon": "avatar-1",
+            "imgRefStorage": "",
+            "workspaces-collection": [
+                {
+                    "name": "Devspace",
+                    "id": "j43kj5k4j3k5j3k4jkj34kj5k3j4"
+                } 
+            ],
+            "directMessages": [
+                {
+                    "memberId": "EQ43n0HKFDIO0849n4n"
+                }
+            ]
+        },
+        "EQ43n0HKFDIO0849n4n": {
+            "id": "EQ43n0HKFDIO0849n4n",
+            "name": "Sofia Müller",
+            "mail": "sofia.mueller@gmail.com",
+            "password": "123456jkd",
+            "avatar-status": false,
+            "avatar-icon": "avatar-1",
+            "imgRefStorage": "img_73939",
+            "workspaces-collection": [
+                {
+                    "name": "Devspace",
+                    "id": "j43kj5k4j3k5j3k4jkj34kj5k3j4"
+                },
+                {
+                    "name": "Kochwelt",
+                    "id": "KHG86499hkggh&5665JHJJ"
+                }
+            ],
+            "directMessages": []
+        },
+        "kjkJ66JKJhd775Kl874": {
+            "id": "kjkJ66JKJhd775Kl874",
+            "name": "Noah Braun",
+            "mail": "noah.braun@gmail.com",
+            "password": "DingDong91",
+            "avatar-status": true,
+            "avatar-icon": "avatar-5",
+            "imgRefStorage": "img_739555",
+            "workspaces-collection": [
+                {
+                    "name": "Devspace",
+                    "id": "j43kj5k4j3k5j3k4jkj34kj5k3j4"
+                }
+            ],
+            "directMessages": []
+        }
+    },
+    "workspaces-collection": {
+        "99DSJK68hjkjew68738GHjh": {
+            "name": "Devspace",
+            "id": "j43kj5k4j3k5j3k4jkj34kj5k3j4",
+            "member-collection": [
+                "EQ43n0HKFDIO0849n4n",
+                "n043n048n3840849n4n"
+            ],
+            "channel-collection": [
+                {
+                    "name": "Entwicklerteam",
+                    "messages-collection": [
+                        {
+                            "date": "895869890869548",
+                            "messages": [
+                                {
+                                    "time": "787389747565",
+                                    "author": "Noah Braun",
+                                    "message": "Welche Version ist aktuell von Angular?",
+                                    "emoji-reactions": [
+                                        {
+                                            "type": "U+1F600",
+                                            "members": [
+                                                {
+                                                    "memberId": "EQ43n0HKFDIO0849n4n"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "thread": {
+                                        "status": true,
+                                        "id": 8734757934
+                                    }
+                                },
+                                {
+                                    "time": "10110192834775",
+                                    "author": "Federik Beck",
+                                    "message": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque blandit odio efficitur lectus vestibulum, quis accumsan ante vulputate. Quisque tristique iaculis erat, eu faucibus lacus iaculis ac.",
+                                    "emoji-reactions": [
+                                        {
+                                            "type": "U+1F600",
+                                            "members": [
+                                                {
+                                                    "memberId": "EQ43n0HKFDIO0849n4n"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "thread": {
+                                        "status": false,
+                                        "id": ""
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "date": "7895798579843798",
+                            "messages": [
+                                {
+                                    "time": "10110192834775",
+                                    "author": "Federik Beck",
+                                    "message": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque blandit odio efficitur lectus vestibulum, quis accumsan ante vulputate. Quisque tristique iaculis erat, eu faucibus lacus iaculis ac.",
+                                    "emoji-reactions": [
+                                        {
+                                            "type": "U+1F600",
+                                            "members": [
+                                                {
+                                                    "memberId": "EQ43n0HKFDIO0849n4n"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "thread": {
+                                        "status": false,
+                                        "id": ""
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "threads-collection": [
+                {
+                    "id": 8734757934,
+                    "label": "Entwicklerteam",
+                    "messages": [
+                        {
+                            "time": "787389747565",
+                            "authorId": "kjkJ66JKJhd775Kl874",
+                            "message": "Welche Version ist aktuell von Angular?",
+                            "emoji-reactions": [
+                                {
+                                    "type": "U+1F600",
+                                    "members": [
+                                        {
+                                            "memberId": "EQ43n0HKFDIO0849n4n"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
