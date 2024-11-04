@@ -1,0 +1,12 @@
+@import 'variables';
+
+.thread {
+  position: relative;
+  width: 480px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 40px;
+  border-radius: 32px;
+  background-color: $textWhite;
+}
