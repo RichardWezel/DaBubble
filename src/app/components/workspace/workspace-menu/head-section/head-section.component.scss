@@ -1,4 +1,4 @@
-@import "variables.scss";
+@import 'variables';
 
 main {
     display: flex;
@@ -43,7 +43,7 @@ main {
             text-align: left;
             margin: 13.5px 20px 13.5px 15px;
 
-            &:hover {
+            &:hover{
                 color: $thirdColor;
             }
       }
