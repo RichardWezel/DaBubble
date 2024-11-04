@@ -1,4 +1,39 @@
 @import 'variables';
 @import 'mixins';
 
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: 100%;
+
+    .header-channels {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        align-items: center;
+        @include icon-style;
+        div {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            button {
+                background-color: unset;
+                border: unset;
+                width: 30px;
+                height: 30px;
+               @include dja();
+            }
+        }
+
+        button {
+            @include icon-style;
+            background-color: unset;
+                border: unset;
+        }
+    }
+}
+
 
