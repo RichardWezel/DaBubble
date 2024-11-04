@@ -1,0 +1,23 @@
+@import 'variables';
+
+input[type="search"] {
+  width: 50dvw;
+  height: 70px;
+  padding: 16px 32px;
+  border-radius: 35px;
+  font-size: 24px;
+  border: none;
+  outline: none;
+  background-image: url(./../../../../../assets/icons/search.svg);
+  background-repeat: no-repeat;
+  background-position: right 32px center;
+
+  &::placeholder {
+    color: $textGrey;
+    font-size: 24px;
+  }
+
+  &:focus {
+    background-image: url(./../../../../../assets/icons/search-input.svg);
+  }
+}

@@ -8,6 +8,11 @@
   font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+body {
+  height: 100dvh;
+  width: 100dvw;
+}
+
 .mainButton {
   cursor: pointer;
   border: none;
