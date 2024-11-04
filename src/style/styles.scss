@@ -8,55 +8,55 @@
   font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-// button {
-//   cursor: pointer;
-//   border: none;
-//   outline: none;
-//   border-radius: 24px;
-//   padding: 12px 24px;
-//   border: 1px solid transparent;
-//   font-size: 16px;
-//   font-weight: bold;
+.mainButton {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  border-radius: 24px;
+  padding: 12px 24px;
+  border: 1px solid transparent;
+  font-size: 16px;
+  font-weight: bold;
 
-//   &.buttonPrimary {
-//     background-color: $primaryColor;
-//     color: $textWhite;
+  &.buttonPrimary {
+    background-color: $primaryColor;
+    color: $textWhite;
 
-//     &:hover {
-//       background-color: $secondaryColor;
-//     }
+    &:hover {
+      background-color: $secondaryColor;
+    }
 
-//     &:active {
-//       background-color: $primaryColor;
-//     }
+    &:active {
+      background-color: $primaryColor;
+    }
 
-//     &:disabled {
-//       background-color: $textGrey;
-//     }
-//   }
+    &:disabled {
+      background-color: $textGrey;
+    }
+  }
 
-//   &.buttonSecondary {
-//     background-color: $textWhite;
-//     color: $primaryColor;
-//     border: 1px solid $secondaryColor;
+  &.buttonSecondary {
+    background-color: $textWhite;
+    color: $primaryColor;
+    border: 1px solid $secondaryColor;
 
-//     &:hover {
-//       background-color: $thirdColor;
-//       color: $textWhite;
-//     }
+    &:hover {
+      background-color: $thirdColor;
+      color: $textWhite;
+    }
 
-//     &:active {
-//       background-color: $primaryColor;
-//       color: $textWhite;
-//     }
+    &:active {
+      background-color: $primaryColor;
+      color: $textWhite;
+    }
 
-//     &:disabled {
-//       background-color: $textWhite;
-//       color: $textGrey;
-//       border-color: $textGrey;
-//     }
-//   }
-// }
+    &:disabled {
+      background-color: $textWhite;
+      color: $textGrey;
+      border-color: $textGrey;
+    }
+  }
+}
 
 .input-login {
   width: 100%;

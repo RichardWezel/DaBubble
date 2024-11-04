@@ -1,4 +1,4 @@
-@import './../../../../style/styles.scss';
+@import 'variables';
 
 .log-in-card {
     width: 606px;
@@ -61,11 +61,13 @@ form {
     display: flex;
     justify-content: center;
     align-items: center;
+
     .line {
         height: 1px;
         background-color: $dividerColor;
         width: 100%;
     }
+
     .or {
         padding: 5px 15px;
         box-sizing: border-box;
