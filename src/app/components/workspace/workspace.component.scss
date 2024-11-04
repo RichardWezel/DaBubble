@@ -1,0 +1,12 @@
+@import './../../../style/styles.scss';
+@import './../../../style/variables.scss';
+@import './../../../style/fonts.scss';
+
+main {
+    display: flex;
+    flex-direction: column;
+    background-color: $backgroundColor;
+    .container {
+       display: flex;
+    }
+}
