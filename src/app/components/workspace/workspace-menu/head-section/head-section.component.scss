@@ -1,13 +1,11 @@
-@import './../../../../../style/styles.scss';
-@import './../../../../../style/variables.scss';
-@import './../../../../../style/fonts.scss';
+
 
 main {
     display: flex;
     justify-content: space-between;
     width: 100%;
     gap: 16px;
- 
+    align-items: center;
 
     div {
         display: flex;
@@ -53,14 +51,8 @@ main {
         div {
             display: flex;
             position: relative;
-            width: 20.5px;
-            height: 20.52px;
-        
-            svg {
-                position: absolute;
-                top: 11.17px;
-                left: 11px;
-            }
+            width: 24px;
+            height: 24px;
         }
     } 
 }
