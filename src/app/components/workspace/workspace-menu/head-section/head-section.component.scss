@@ -1,4 +1,5 @@
 @import 'variables';
+@import 'mixins';
 
 main {
     display: flex;
@@ -58,23 +59,12 @@ main {
         border-style: none;
         background-color: unset;
 
+        @include icon-style;
         div {
-            display: flex;
-            width: 24px;
-            height: 24px;
-            justify-content: center;
-            align-items: center;
-
             &:hover{
-                cursor: pointer;
-
                 svg{
                     width: 21.52px;
                     height: 21.55px;
-
-                    path{
-                        fill: $primaryColor;
-                    }
                 }
             }
         }

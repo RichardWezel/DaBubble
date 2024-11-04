@@ -1,0 +1,18 @@
+@mixin icon-style {
+	div {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &:hover{
+            cursor: pointer;
+            svg{
+                path{
+                    fill: $primaryColor;
+                }
+            }
+        }
+    }
+}
