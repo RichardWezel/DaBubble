@@ -1,3 +1,45 @@
 @import './../../../../../style/styles.scss';
 @import './../../../../../style/variables.scss';
 @import './../../../../../style/fonts.scss';
+
+main {
+  display: flex;
+    .ws-icon {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 30px;
+    }
+
+    .ws-name {
+        font-family: "Nunito";
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 32.74px;
+        text-align: left;
+    }
+
+    .new-message-btn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        div {
+            display: flex;
+            position: relative;
+            width: 20.5px;
+            height: 20.52px;
+           
+            svg {
+                position: absolute;
+                top: 11.17px;
+                left: 11px;
+            }
+        }
+    }
+}
