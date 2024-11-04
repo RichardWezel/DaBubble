@@ -1,1 +1,16 @@
-<p>navbar works!</p>
+<section class="navbar">
+  <div class="logo">
+    <img src="assets/img/dabubble-logo.png" alt="">
+  </div>
+  <app-search></app-search>
+  <div class="current-user" (mouseout)="caretSrc = 'assets/icons/user-caret.svg'"
+    (mouseover)="caretSrc = 'assets/icons/user-caret-hover.svg'" (click)="dropDownOpen = !dropDownOpen">
+    <h3>John Doe</h3>
+    <img class="user-avatar" src="assets/img/user-avatar.png" alt="">
+    <img class="dropdown-arrow" [class.rotate]="dropDownOpen" [src]="caretSrc" alt="">
+    <div [class.open]="dropDownOpen" class="user-dropdown-menu">
+      <p>Profil</p>
+      <p>Logout</p>
+    </div>
+  </div>
+</section>
