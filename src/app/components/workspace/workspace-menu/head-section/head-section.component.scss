@@ -1,4 +1,4 @@
-
+@import "variables.scss";
 
 main {
     display: flex;
@@ -6,6 +6,12 @@ main {
     width: 100%;
     gap: 16px;
     align-items: center;
+
+    &:hover{
+        background-color: $backgroundColor;
+        border-radius: 30px;
+        cursor: pointer;
+    }
 
     div {
         display: flex;
@@ -36,6 +42,10 @@ main {
             line-height: 32.74px;
             text-align: left;
             margin: 13.5px 20px 13.5px 15px;
+
+            &:hover {
+                color: $thirdColor;
+            }
       }
     }
 
@@ -50,9 +60,23 @@ main {
 
         div {
             display: flex;
-            position: relative;
             width: 24px;
             height: 24px;
+            justify-content: center;
+            align-items: center;
+
+            &:hover{
+                cursor: pointer;
+
+                svg{
+                    width: 21.52px;
+                    height: 21.55px;
+
+                    path{
+                        fill: $primaryColor;
+                    }
+                }
+            }
         }
     } 
 }
