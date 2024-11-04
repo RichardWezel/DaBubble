@@ -3,23 +3,42 @@
 @import './../../../../../style/fonts.scss';
 
 main {
-  display: flex;
-    .ws-icon {
-        position: relative;
-        width: 60px;
-        height: 60px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 30px;
-    }
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 16px;
+ 
 
-    .ws-name {
-        font-family: "Nunito";
-        font-size: 24px;
-        font-weight: 700;
-        line-height: 32.74px;
-        text-align: left;
+    div {
+        display: flex;
+        align-items: center;
+        .ws-icon {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 30px;
+
+            .icon-background {
+                position: absolute;
+                border-radius: 30px;
+            }
+
+            .icon {
+                position: absolute;
+            }
+        }
+
+        .ws-name {
+            font-family: "Nunito";
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 32.74px;
+            text-align: left;
+            margin: 13.5px 20px 13.5px 15px;
+      }
     }
 
     .new-message-btn {
@@ -28,18 +47,20 @@ main {
         display: flex;
         justify-content: center;
         align-items: center;
+        border-style: none;
+        background-color: unset;
 
         div {
             display: flex;
             position: relative;
             width: 20.5px;
             height: 20.52px;
-           
+        
             svg {
                 position: absolute;
                 top: 11.17px;
                 left: 11px;
             }
         }
-    }
+    } 
 }
