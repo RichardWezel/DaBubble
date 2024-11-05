@@ -14,24 +14,77 @@ main {
         padding-top: 3px;
         padding-bottom: 3px;
         align-items: center;
-        @include icon-style;
         div {
             display: flex;
             align-items: center;
-            gap: 5px;
-            button {
+            gap: 15px;
+            justify-content: start;
+            &:hover{
+                cursor: pointer;
+                user-select: none; 
+            }
+
+            .dropdown-btn {
+                @include dja;
                 background-color: unset;
                 border: unset;
                 width: 30px;
                 height: 30px;
-               @include dja();
+                transition: transform 0.3s ease;
+
             }
+
+            .dropdown-btn.rotated{
+                transform: rotate(-90deg);
+              }
+
+            .channel-label {
+                display: flex;
+                justify-content: start;
+                align-items: center;
+                gap: 5px;
+                font-family: "Nunito";
+                font-size: 20px;
+                font-weight: 700;
+                line-height: 27.28px;
+                text-align: left;
+
+                .channel-icon {
+                    width: 24px;
+                    height: 24px;
+                    @include dja;
+                }
+            }
+
         }
 
         button {
             @include icon-style;
             background-color: unset;
                 border: unset;
+        }
+    }
+
+    .open-channels {
+        width: 100%;
+        transition: transform 1s ease;
+        .open-channel {
+            display: flex;
+            gap: 10px;
+            padding: 4px 25px 4px;
+            .tag-icon {
+                width: 24px;
+                height: 24px;
+                @include dja;
+            }
+    
+            .channel-name {
+                font-family: "Nunito";
+                font-size: 18px;
+                font-weight: 400;
+                line-height: 24.55px;
+                text-align: left;
+            }
         }
     }
 }
