@@ -1,8 +1,8 @@
 @import 'variables';
 
 .navbar {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 366px 1fr 480px;
   align-items: center;
   padding: 0 24px 24px;
   width: 100%;
@@ -16,7 +16,7 @@
   position: relative;
   height: 70px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   gap: 20px;
   cursor: pointer;

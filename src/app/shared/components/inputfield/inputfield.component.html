@@ -1,1 +1,14 @@
-<p>inputfield works!</p>
+<section class="inputfield">
+  <textarea class="inputfield-textarea" placeholder="Schreibe eine Nachricht..."></textarea>
+  <div class="inputfield-buttons">
+    <div class="tags">
+      <div class="icon appendix"></div>
+      <div class="divider"></div>
+      <div class="icon smileys"></div>
+      <div class="icon at"></div>
+    </div>
+    <button>
+      <img (mouseover)="src = 'assets/icons/send-hover.svg'" (mouseout)="src = 'assets/icons/send.svg'" [src]="src">
+    </button>
+  </div>
+</section>

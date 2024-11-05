@@ -9,4 +9,6 @@ import { Component } from '@angular/core';
 })
 export class InputfieldComponent {
 
+  src = 'assets/icons/send.svg';
+
 }

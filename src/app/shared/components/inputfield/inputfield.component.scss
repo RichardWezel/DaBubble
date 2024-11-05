@@ -1,0 +1,107 @@
+@import 'variables';
+
+.inputfield {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 144px;
+  padding: 16px;
+  border: 1px solid $dividerColor;
+  border-radius: 20px;
+
+  &:hover {
+    border-color: $secondaryColor;
+  }
+
+  &:focus-within {
+    border-color: $thirdColor;
+  }
+
+  .inputfield-textarea {
+    width: 100%;
+    height: 100%;
+    border: none;
+    resize: none;
+    outline: none;
+
+    .inputfield-textarea::placeholder {
+      color: $textGrey;
+    }
+
+    &:focus {
+      ~.inputfield-buttons .tags .icon.appendix {
+        background-image: url('./../../../../assets/icons/add-focus.svg');
+      }
+
+      ~.inputfield-buttons .tags .icon.smileys {
+        background-image: url('./../../../../assets/icons/smiley-focus.svg');
+      }
+
+      ~.inputfield-buttons .tags .icon.at {
+        background-image: url('./../../../../assets/icons/at-focus.svg');
+      }
+    }
+  }
+
+
+  .inputfield-buttons {
+    width: 100%;
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .tags {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .divider {
+        width: 1px;
+        height: 24px;
+        background-color: $dividerColor;
+      }
+
+      .icon {
+        width: 24px;
+        height: 24px;
+        background-repeat: no-repeat;
+        background-size: contain;
+
+        &.appendix {
+          background-image: url('./../../../../assets/icons/add.svg');
+
+          &:hover {
+            background-image: url('./../../../../assets/icons/add-hover.svg');
+          }
+        }
+
+        &.smileys {
+          background-image: url('./../../../../assets/icons/smiley.svg');
+
+          &:hover {
+            background-image: url('./../../../../assets/icons/smiley-hover.svg');
+          }
+        }
+
+        &.at {
+          background-image: url('./../../../../assets/icons/at.svg');
+
+          &:hover {
+            background-image: url('./../../../../assets/icons/at-hover.svg');
+          }
+        }
+      }
+    }
+  }
+
+  button {
+    width: 48px;
+    height: 48px;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+  }
+}
