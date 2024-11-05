@@ -19,6 +19,10 @@ main {
             align-items: center;
             gap: 15px;
             justify-content: start;
+            &:hover{
+                cursor: pointer;
+                user-select: none; 
+            }
 
             .dropdown-btn {
                 @include dja;
@@ -26,7 +30,13 @@ main {
                 border: unset;
                 width: 30px;
                 height: 30px;
+                transition: transform 0.3s ease;
+
             }
+
+            .dropdown-btn.rotated{
+                transform: rotate(-90deg);
+              }
 
             .channel-label {
                 display: flex;
@@ -57,7 +67,7 @@ main {
 
     .open-channels {
         width: 100%;
-
+        transition: transform 1s ease;
         .open-channel {
             display: flex;
             gap: 10px;
