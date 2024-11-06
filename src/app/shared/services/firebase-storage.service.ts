@@ -95,14 +95,14 @@ export class FirebaseStorageService {
 
   async writeDm(userId: string, contact: string) {
     let user = this.user[this.user.findIndex(user => user.id === userId)];
-    let dm = user.dm[user.dm.findIndex(dm => dm.contact === contact)];
-    if (dm) {
+    let newDm = user.dm[user.dm.findIndex(dm => dm.contact === contact)];
+    if (newDm) {
       await updateDoc(doc(this.firestore, "user", userId), {
         dm: [
           ...user.dm,
           {
             contact: contact,
-            posts: dm.posts,
+            posts: newDm.posts,
           }
         ]
       });
