@@ -10,6 +10,12 @@
     font-weight: 400;
 }
 
+.create-new-profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
 button {
     background-color: unset;
     padding: unset;
@@ -66,7 +72,6 @@ footer {
         height: 42px;
     }
 }
-
 
 .input-login {
     width: 100%;
