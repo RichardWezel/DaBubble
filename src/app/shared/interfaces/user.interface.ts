@@ -5,6 +5,6 @@ export interface UserInterface {
   email: string,
   avatar: string,
   status: string,
-  dm: { contact: string, post: PostInterface[] }[];
+  dm: { contact: string, posts: PostInterface[] }[];
   id?: string
 }

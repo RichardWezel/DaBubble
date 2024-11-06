@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
-import { collection, doc, getDoc, getDocs, getFirestore, onSnapshot, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, getFirestore, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { UserInterface } from '../interfaces/user.interface';
 import { ChannelInterface } from '../interfaces/channel.interface';
+import { findIndex } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -53,7 +54,7 @@ export class FirebaseStorageService {
       status: '',
       dm: [{
         contact: userData.name,
-        post: [],
+        posts: [],
       },],
     } as UserInterface);
   }
@@ -69,5 +70,43 @@ export class FirebaseStorageService {
     } as ChannelInterface);
   }
 
+
+  async updateUser(userId: string, userData: UserInterface) {
+    await updateDoc(doc(this.firestore, "user", userId), {
+      name: userData.name,
+      email: userData.email,
+      avatar: userData.avatar,
+      status: userData.status,
+      dm: userData.dm
+    })
+  }
+
+
+  async updateChannel(channelId: string, channelData: ChannelInterface) {
+    await updateDoc(doc(this.firestore, "channel", channelId), {
+      name: channelData.name,
+      description: channelData.description,
+      owner: channelData.owner,
+      users: channelData.users,
+      posts: channelData.posts,
+    })
+  }
+
+
+  async writeDm(userId: string, contact: string) {
+    let user = this.user[this.user.findIndex(user => user.id === userId)];
+    let dm = user.dm[user.dm.findIndex(dm => dm.contact === contact)];
+    if (dm) {
+      await updateDoc(doc(this.firestore, "user", userId), {
+        dm: [
+          ...user.dm,
+          {
+            contact: contact,
+            posts: dm.posts,
+          }
+        ]
+      });
+    };
+  }
 
 }
