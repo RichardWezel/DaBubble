@@ -4,10 +4,11 @@ import { NgForm, FormsModule } from '@angular/forms';
 import { Auth } from '@angular/fire/auth';
 import { signInWithEmailAndPassword } from '@firebase/auth';
 
+
 @Component({
   selector: 'app-log-in-card',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [ RouterLink, FormsModule ],
   templateUrl: './log-in-card.component.html',
   styleUrl: './log-in-card.component.scss'
 })
