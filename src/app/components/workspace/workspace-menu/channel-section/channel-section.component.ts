@@ -10,7 +10,7 @@ import { Component  } from '@angular/core';
 })
 export class ChannelSectionComponent {
 
-  channels: string[] = ['Entwicklerteam', 'Alle'];
+  channels: string[] = ['Entwicklerteam', 'Marketing', 'Vertrieb', 'Support'];
 
   // Statusvariable zur Steuerung der Sichtbarkeit
   isListVisible: boolean = true;
