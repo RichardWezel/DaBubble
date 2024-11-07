@@ -1,4 +1,4 @@
-<div class="log-in-card">
+<app-card>
     <h2>Anmeldung</h2>
     <p class="instruction">Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</p>
     <form (ngSubmit)="checkLogin(loginForm)" #loginForm="ngForm">
@@ -7,12 +7,12 @@
                 (focus)="focusOnMail = true" (blur)="focusOnMail = false" placeholder="beispielname@email.com"
                 pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}" required>
             <img class="input-icon"
-                [src]="focusOnMail ? 'assets/img/icons/mail-black.png' : 'assets/img/icons/mail.png'">
+                [src]="focusOnMail ? 'assets/icons/mail-black.png' : 'assets/icons/mail.png'">
         </label>
         <label class="login-label" for="password">
             <input id="password" #email="ngModel" [(ngModel)]="loginData.password" name="password" class="input-login"
                 (focus)="focusOnPassword = true" (blur)="focusOnPassword = false" placeholder="Passwort" required>
-            <img [src]="focusOnPassword ? 'assets/img/icons/lock-black.png' : 'assets/img/icons/lock.png'">
+            <img [src]="focusOnPassword ? 'assets/icons/lock-black.png' : 'assets/icons/lock.png'">
         </label>
     </form>
     <div class="btn-container">
@@ -30,5 +30,4 @@
         <button type="submit" [disabled]="loginForm.invalid" class="mainButton buttonPrimary">Anmelden</button>
         <button class="mainButton buttonSecondary">Gäste-Login</button>
     </div>
-</div>
-
+</app-card>

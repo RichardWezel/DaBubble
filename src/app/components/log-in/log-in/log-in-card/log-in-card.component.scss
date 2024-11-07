@@ -1,18 +1,6 @@
 @import 'variables';
+@import './../../../../shared/components/log-in/card/card.component.scss';
 @import './../log-in.component.scss';
-
-.log-in-card {
-    width: 606px;
-    height: 100%;
-    border-radius: 30px;
-    background-color: #FFFFFF;
-    box-shadow: 0px 2px 10px 0px #00000014;
-    padding: 50px 60px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-}
 
 h2 {
     font-size: 46px;
