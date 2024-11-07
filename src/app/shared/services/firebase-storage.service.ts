@@ -3,7 +3,7 @@ import { Firestore } from '@angular/fire/firestore';
 import { collection, doc, getDoc, getDocs, getFirestore, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { UserInterface } from '../interfaces/user.interface';
 import { ChannelInterface } from '../interfaces/channel.interface';
-import { findIndex } from 'rxjs';
+import { PostInterface } from '../interfaces/post.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -13,13 +13,32 @@ export class FirebaseStorageService {
 
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
+  currentUser: UserInterface = { name: '', email: '', avatar: '', status: '', dm: [], id: '' };
 
   unsubUsers;
   unsubChannels;
 
   constructor() {
-    this.unsubUsers = this.getUserCollection();
     this.unsubChannels = this.getChannelCollection();
+    this.unsubUsers = this.getUserCollection();
+    this.getCurrentUser();
+  }
+
+
+  async getCurrentUser() {
+    const authUid = localStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l';
+    if (authUid) {
+      const docRef = await getDoc(doc(this.firestore, "user", authUid));
+      if (docRef.exists()) {
+        let userData = docRef.data() as UserInterface;
+        userData.id = docRef.id;
+        this.currentUser = userData;
+      } else {
+        return;
+      }
+    } else {
+      return;
+    }
   }
 
 
@@ -29,6 +48,9 @@ export class FirebaseStorageService {
       snapshot.forEach((doc) => {
         const userData = doc.data() as UserInterface;
         userData.id = doc.id;
+        this.user.push(userData);
+        console.log(this.user);
+        console.log(this.currentUser);
       });
     });
   }
@@ -41,6 +63,7 @@ export class FirebaseStorageService {
         const channelData = doc.data() as ChannelInterface;
         channelData.id = doc.id;
         this.channel.push(channelData);
+        console.log(this.channel);
       });
     });
   }
@@ -94,12 +117,12 @@ export class FirebaseStorageService {
 
 
   async writeDm(userId: string, contact: string) {
-    let user = this.user[this.user.findIndex(user => user.id === userId)];
-    let newDm = user.dm[user.dm.findIndex(dm => dm.contact === contact)];
+    let currentUser = this.user[this.user.findIndex(user => user.id === userId)];
+    let newDm = currentUser.dm[currentUser.dm.findIndex(dm => dm.contact === contact)];
     if (newDm) {
       await updateDoc(doc(this.firestore, "user", userId), {
         dm: [
-          ...user.dm,
+          ...currentUser.dm,
           {
             contact: contact,
             posts: newDm.posts,
@@ -108,5 +131,19 @@ export class FirebaseStorageService {
       });
     };
   }
+
+
+  async writePosts(channelId: string, newPost: PostInterface) {
+    let currentChannel = this.channel[this.channel.findIndex(channel => channel.id === channelId)];
+    if (currentChannel) {
+      await updateDoc(doc(this.firestore, "channel", channelId), {
+        posts: [
+          ...currentChannel.posts ?? [],
+          newPost
+        ]
+      });
+    };
+  }
+
 
 }

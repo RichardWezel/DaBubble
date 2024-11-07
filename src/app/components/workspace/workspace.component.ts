@@ -20,4 +20,8 @@ import { FirebaseStorageService } from '../../shared/services/firebase-storage.s
 export class WorkspaceComponent {
   storage = inject(FirebaseStorageService);
 
+
+  constructor() {
+  }
 }
+

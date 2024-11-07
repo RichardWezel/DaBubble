@@ -1,5 +1,6 @@
 import { Component, HostListener, ElementRef, inject } from '@angular/core';
 import { SearchComponent } from "./search/search.component";
+import { FirebaseStorageService } from '../../../shared/services/firebase-storage.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,6 +11,7 @@ import { SearchComponent } from "./search/search.component";
 })
 export class NavbarComponent {
   elementRef: ElementRef = inject(ElementRef);
+  storage = inject(FirebaseStorageService);
 
   caretSrc: string = 'assets/icons/user-caret.svg';
   dropDownOpen: boolean = false;
