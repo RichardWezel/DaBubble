@@ -1,7 +1,7 @@
 export interface ChannelInterface {
   name: string,
   description: string,
-  user: string[],
+  users: string[],
   owner: string,
   status?: string,
   posts?: {}[],
