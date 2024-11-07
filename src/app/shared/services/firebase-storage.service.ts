@@ -1,7 +1,7 @@
 // services/firebase-storage.service.ts
 
-import { Injectable } from '@angular/core';
-import { Firestore, collection, onSnapshot, doc, setDoc, updateDoc } from "firebase/firestore";
+import { inject, Injectable } from '@angular/core';
+import { Firestore, collection, doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { UserInterface } from '../interfaces/user.interface';
 import { ChannelInterface } from '../interfaces/channel.interface';
 import { BehaviorSubject } from 'rxjs';
@@ -10,7 +10,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class FirebaseStorageService {
-  private firestore: Firestore;
+  private firestore: Firestore = inject(Firestore);
 
   private usersSubject = new BehaviorSubject<UserInterface[]>([]);
   users$ = this.usersSubject.asObservable();
@@ -18,8 +18,7 @@ export class FirebaseStorageService {
   private channelsSubject = new BehaviorSubject<ChannelInterface[]>([]);
   channels$ = this.channelsSubject.asObservable();
 
-  constructor(firestore: Firestore) {
-    this.firestore = firestore;
+  constructor() {
     this.getUserCollection();
     this.getChannelCollection();
   }
@@ -50,21 +49,22 @@ export class FirebaseStorageService {
     });
   }
 
-  async addUser(authUid: string, userData: { name: string, email: string, avatar: string }) {
+    async addUser(authUid: string, userData: { name: string, email: string, avatar: string }) {
     await setDoc(doc(this.firestore, "user", authUid), {
       name: userData.name,
       email: userData.email,
       avatar: userData.avatar,
-      status: 'offline', // Standardstatus
+      status: '',
       dm: [{
         contact: userData.name,
         posts: [],
-      }],
+      },],
     } as UserInterface);
   }
 
+
   async addChannel(channelData: { name: string, description: string, owner: string }) {
-    await setDoc(doc(this.firestore, "channel", channelData.owner), { // Beispiel: Verwende owner als ID
+    await setDoc(doc(this.firestore, "channel"), {
       name: channelData.name,
       description: channelData.description,
       owner: channelData.owner,
@@ -73,6 +73,7 @@ export class FirebaseStorageService {
     } as ChannelInterface);
   }
 
+
   async updateUser(userId: string, userData: UserInterface) {
     await updateDoc(doc(this.firestore, "user", userId), {
       name: userData.name,
@@ -80,21 +81,38 @@ export class FirebaseStorageService {
       avatar: userData.avatar,
       status: userData.status,
       dm: userData.dm
-    });
+    })
   }
+
 
   async updateChannel(channelId: string, channelData: ChannelInterface) {
     await updateDoc(doc(this.firestore, "channel", channelId), {
       name: channelData.name,
       description: channelData.description,
       owner: channelData.owner,
-      member: channelData.user,
+      users: channelData.user,
       posts: channelData.posts,
-    });
+    })
   }
 
-  // Weitere Methoden können hier hinzugefügt werden
+
+  // async writeDm(userId: string, contact: string) {
+  //   let user = this.user[this.user.findIndex(user => user.id === userId)];
+  //   let newDm = user.dm[user.dm.findIndex(dm => dm.contact === contact)];
+  //   if (newDm) {
+  //     await updateDoc(doc(this.firestore, "user", userId), {
+  //       dm: [
+  //         ...user.dm,
+  //         {
+  //           contact: contact,
+  //           posts: newDm.posts,
+  //         }
+  //       ]
+  //     });
+  //   };
+  // }
 }
+
 
 
 // import { inject, Injectable } from '@angular/core';
