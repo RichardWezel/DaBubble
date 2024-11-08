@@ -38,6 +38,17 @@ header {
         width: 242.11px;
         height: 70px;
     }
+
+    div {
+        display: flex;
+        flex-direction: column;
+        font-size: 18px;
+    }
+
+    button {
+        width: 153px;
+        height: 42px;
+    }
 }
 
 .main-content {

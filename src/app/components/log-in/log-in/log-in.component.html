@@ -1,22 +1,3 @@
-<div class="background-container">
-    <header>
-        <img src="assets/img/dabubble-logo.png">
-        <div class="create-new-profile-container">
-            <span>Neu bei DABubble?</span>
-            <button class="mainButton">Konto erstellen</button>
-        </div>
-    </header>
-    <div class="main-content">
-        @if (true) {
-            <app-log-in-card></app-log-in-card>
-        }
-        @if (false) {
-
-        }
-    </div>
-    <footer>
-        <button class="mainButton">Impressum</button>
-        <button class="mainButton">Datenschutz</button>
-    </footer>
-</div>
-
+<app-background-with-sign-in>
+    <app-log-in-card></app-log-in-card>
+</app-background-with-sign-in>
