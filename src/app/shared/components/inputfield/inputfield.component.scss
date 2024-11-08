@@ -73,7 +73,7 @@
           background-image: url('./../../../../assets/icons/add.svg');
 
           &:hover {
-            background-image: url('./../../../../assets/icons/add-hover.svg');
+            background-image: url('./../../../../assets/icons/add-hover.svg') !important;
           }
         }
 
@@ -81,7 +81,7 @@
           background-image: url('./../../../../assets/icons/smiley.svg');
 
           &:hover {
-            background-image: url('./../../../../assets/icons/smiley-hover.svg');
+            background-image: url('./../../../../assets/icons/smiley-hover.svg') !important;
           }
         }
 
@@ -89,7 +89,7 @@
           background-image: url('./../../../../assets/icons/at.svg');
 
           &:hover {
-            background-image: url('./../../../../assets/icons/at-hover.svg');
+            background-image: url('./../../../../assets/icons/at-hover.svg') !important;
           }
         }
       }
