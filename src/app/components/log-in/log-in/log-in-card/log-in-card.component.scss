@@ -1,22 +1,5 @@
 @import 'variables';
 @import './../../../../shared/components/log-in/card/card.component.scss';
-@import './../log-in.component.scss';
-
-h2 {
-    font-size: 46px;
-    font-weight: 700;
-    line-height: 55.2px;
-    color: $primaryColor;
-    margin-top: 0;
-    text-align: center;
-}
-
-.instruction {
-    font-size: 20px;
-    font-weight: 400;
-    line-height: 24px;
-    text-align: center;
-}
 
 form {
     display: flex;
