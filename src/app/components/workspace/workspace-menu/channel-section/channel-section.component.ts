@@ -1,5 +1,6 @@
 import { NgClass, NgFor, NgIf } from '@angular/common';
-import { Component  } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 
 @Component({
   selector: 'app-channel-section',
@@ -9,8 +10,9 @@ import { Component  } from '@angular/core';
   styleUrl: './channel-section.component.scss'
 })
 export class ChannelSectionComponent {
+  storage = inject(FirebaseStorageService);
 
-  channels: string[] = ['Entwicklerteam', 'Marketing', 'Vertrieb', 'Support'];
+  // channels: string[] = ['Entwicklerteam', 'Marketing', 'Vertrieb', 'Support'];
 
   // Statusvariable zur Steuerung der Sichtbarkeit
   isListVisible: boolean = true;

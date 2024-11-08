@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
-import { collection, doc, getDoc, getDocs, getFirestore, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { UserInterface } from '../interfaces/user.interface';
 import { ChannelInterface } from '../interfaces/channel.interface';
 import { PostInterface } from '../interfaces/post.interface';
@@ -14,61 +14,57 @@ export class FirebaseStorageService {
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
   currentUser: UserInterface = { name: '', email: '', avatar: '', status: '', dm: [], id: '' };
+  authUid = localStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l'
 
   unsubUsers;
   unsubChannels;
+  unsubCurrentUser;
 
   constructor() {
     this.unsubChannels = this.getChannelCollection();
     this.unsubUsers = this.getUserCollection();
-    this.getCurrentUser();
+    this.unsubCurrentUser = this.getCurrentUser();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubUsers();
+    this.unsubChannels();
+    this.unsubCurrentUser();
+  }
+
+  getCurrentUser() {
+    return onSnapshot(doc(this.firestore, "user", this.authUid), (snapshot) => {
+      let userData = snapshot.data() as UserInterface;
+      userData.id = snapshot.id;
+      this.currentUser = userData;
+    })
   }
 
 
-  async getCurrentUser() {
-    const authUid = localStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l';
-    if (authUid) {
-      const docRef = await getDoc(doc(this.firestore, "user", authUid));
-      if (docRef.exists()) {
-        let userData = docRef.data() as UserInterface;
-        userData.id = docRef.id;
-        this.currentUser = userData;
-      } else {
-        return;
-      }
-    } else {
-      return;
-    }
-  }
-
-
-  async getUserCollection() {
+  getUserCollection() {
     return onSnapshot(collection(this.firestore, "user"), (snapshot) => {
       this.user = [];
       snapshot.forEach((doc) => {
         const userData = doc.data() as UserInterface;
         userData.id = doc.id;
         this.user.push(userData);
-        console.log(this.user);
-        console.log(this.currentUser);
       });
     });
   }
 
 
-  async getChannelCollection() {
+  getChannelCollection() {
     return onSnapshot(collection(this.firestore, "channel"), (snapshot) => {
       this.channel = [];
       snapshot.forEach((doc) => {
         const channelData = doc.data() as ChannelInterface;
         channelData.id = doc.id;
         this.channel.push(channelData);
-        console.log(this.channel);
       });
     });
   }
 
-
+  // after Firebase Auth registration
   async addUser(authUid: string, userData: { name: string, email: string, avatar: string }) {
     await setDoc(doc(this.firestore, "user", authUid), {
       name: userData.name,
@@ -82,18 +78,19 @@ export class FirebaseStorageService {
     } as UserInterface);
   }
 
-
+  // after sending new channel form
   async addChannel(channelData: { name: string, description: string, owner: string }) {
     await setDoc(doc(this.firestore, "channel"), {
       name: channelData.name,
       description: channelData.description,
       owner: channelData.owner,
-      users: [channelData.owner],
+      user: [channelData.owner],
       posts: [],
     } as ChannelInterface);
   }
 
 
+  // after sending edit user profile form
   async updateUser(userId: string, userData: UserInterface) {
     await updateDoc(doc(this.firestore, "user", userId), {
       name: userData.name,
@@ -105,12 +102,13 @@ export class FirebaseStorageService {
   }
 
 
+  // after sending edit channel form
   async updateChannel(channelId: string, channelData: ChannelInterface) {
     await updateDoc(doc(this.firestore, "channel", channelId), {
       name: channelData.name,
       description: channelData.description,
       owner: channelData.owner,
-      users: channelData.users,
+      user: channelData.user,
       posts: channelData.posts,
     })
   }
