@@ -54,7 +54,9 @@ export class DmSectionComponent {
   }
 
   dmIndex(dm: { contact: string, id: string, posts: any[] }) {
-    return this.storage.user[this.storage.user.findIndex(user => user.id === dm.contact)]?.name;
+    let name = this.storage.user[this.storage.user.findIndex(user => user.id === dm.contact)]?.name;
+    if (dm.contact === this.storage.currentUser.id) return name + ' (Du)';
+    else return name;
   }
 
   // Methode zum Umschalten des Status

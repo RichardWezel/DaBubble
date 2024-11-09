@@ -11,15 +11,46 @@ import { FirebaseStorageService } from '../../../../shared/services/firebase-sto
 export class ChannelHeadComponent {
   storage = inject(FirebaseStorageService);
 
+
   constructor() { }
+
 
   findChannel() {
     let foundChannel = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
-    let foundDM = this.storage.user.find(dm => dm.id === this.storage.currentUser.currentChannel);
+    let foundDM = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
+
     if (foundChannel) return 'channel';
     else if (foundDM) return 'dm';
     else return '';
   }
+
+
+  channelName() {
+    return this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.name;
+  }
+
+  channelUser() {
+    return this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.user;
+  }
+
+  findAvatar(user: string) {
+    return this.storage.user.find(u => u.id === user)?.avatar;
+  }
+
+
+
+  userAvatar() {
+    let foundUser = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.contact;
+    return this.storage.user.find(user => user.id === foundUser)?.avatar;
+  }
+
+
+  userName() {
+    let foundUser = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.contact;
+    return this.storage.user.find(user => user.id === foundUser)?.name;
+  }
+
+
 }
 
 

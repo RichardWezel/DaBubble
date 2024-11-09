@@ -1,3 +1,22 @@
 <section class="channel-head">
-
+  @if (findChannel() === 'channel') {
+    <div class="channel-name">
+      <img src="assets/icons/tag.svg" alt="tag">
+      <p>{{ channelName() }}</p>
+      <img src="assets/icons/user-caret.svg" alt="">
+    </div>
+    <div class="channel-member">
+      @for (user of channelUser(); track $index) {
+        <img class="user-avatar" [src]="'assets/img/profile-pictures/' + findAvatar(user)" alt="assets/icons/user.svg"
+          alt="user">
+      }
+    </div>
+  }
+  @if (findChannel() === 'dm') {
+    <div class="channel-name">
+      <img class="user-avatar" [src]="'assets/img/profile-pictures/' + userAvatar()" alt="assets/icons/user.svg"
+        alt="user">
+      <p>{{ userName() }}</p>
+    </div>
+  }
 </section>

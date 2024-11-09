@@ -6,7 +6,6 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 24px 40px;
   border-radius: 32px;
   background-color: $textWhite;
   flex: 1;
@@ -16,5 +15,9 @@
     flex-direction: column;
     overflow-y: auto;
     flex: 1;
+  }
+
+  app-inputfield {
+    margin: 0 40px 24px;
   }
 }

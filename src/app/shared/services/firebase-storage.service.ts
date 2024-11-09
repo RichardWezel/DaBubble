@@ -39,7 +39,10 @@ export class FirebaseStorageService {
     return onSnapshot(doc(this.firestore, "user", this.authUid), (snapshot) => {
       let userData = snapshot.data() as CurrentUserInterface;
       userData.id = snapshot.id;
-      userData.currentChannel = this.channel[this.channel.findIndex(channel => channel.user.includes(snapshot.id))]?.id || '';
+      userData.currentChannel =
+        this.channel.find(channel => channel.user.includes(snapshot.id))?.id
+        ||
+        userData.dm.find(dm => dm.contact.includes(snapshot.id))?.id;
       this.currentUser = userData;
     })
   }
