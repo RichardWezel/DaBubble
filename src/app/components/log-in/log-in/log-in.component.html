@@ -1,4 +1,7 @@
 <app-background-with-sign-in>
-    <!-- <app-log-in-card></app-log-in-card> -->
-    <app-send-email-card></app-send-email-card>
+    @if (login) {
+        <app-log-in-card (login)="login = $event"></app-log-in-card>
+    } @else {
+        <app-send-email-card (login)="login = $event"></app-send-email-card>
+    }
 </app-background-with-sign-in>

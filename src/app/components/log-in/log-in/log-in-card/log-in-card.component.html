@@ -30,7 +30,7 @@
             </label>
         </form>
         <div class="btn-container">
-            <button [routerLink]="['/resetpassword']" class="mainButton btn-new-password">Passwort vergessen</button>
+            <button (click)="goToForgetPassword()" class="mainButton btn-new-password">Passwort vergessen</button>
         </div>
         <div class="separation">
             <span class="line"></span>
