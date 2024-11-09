@@ -17,7 +17,7 @@ export class ChannelHeadComponent {
 
   findChannel() {
     let foundChannel = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
-    let foundDM = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
+    let foundDM = this.storage.currentUser.dm.find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel);
 
     if (foundChannel) return 'channel';
     else if (foundDM) return 'dm';
@@ -39,14 +39,13 @@ export class ChannelHeadComponent {
 
 
 
-  userAvatar() {
-    let foundUser = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.contact;
+   userAvatar() {
+    let foundUser = this.storage.currentUser.dm.find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel)?.contact;
     return this.storage.user.find(user => user.id === foundUser)?.avatar;
   }
 
-
   userName() {
-    let foundUser = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.contact;
+    let foundUser = this.storage.currentUser.dm.find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel)?.contact;
     return this.storage.user.find(user => user.id === foundUser)?.name;
   }
 
