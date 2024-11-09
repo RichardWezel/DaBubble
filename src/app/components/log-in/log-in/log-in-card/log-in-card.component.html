@@ -3,7 +3,7 @@
     <p class="instruction">Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</p>
     <form (ngSubmit)="checkLogin(loginForm)" #loginForm="ngForm">
         <label class="login-label" for="email">
-            <input #email="ngModel" [(ngModel)]="loginData.email" name="email" class="input-login"
+            <input id="email" #email="ngModel" [(ngModel)]="loginData.email" name="email" class="input-login"
                 placeholder="beispielname@email.com" pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
                 type="email" required>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -16,7 +16,7 @@
             }
         </label>
         <label class="login-label" for="password">
-            <input #password="ngModel" [(ngModel)]="loginData.password" name="password" class="input-login"
+            <input id="password" #password="ngModel" [(ngModel)]="loginData.password" name="password" class="input-login"
                 placeholder="Passwort" type="password" required>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
