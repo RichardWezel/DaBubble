@@ -74,4 +74,13 @@ h2 {
       top: calc(50% - 12px);
       left: 32px;
     }
+
+    .error-text-input {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 19.1px;
+      color: #ED1E79;
+      position: absolute;
+      bottom: -22px;
+  }
   }

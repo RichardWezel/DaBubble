@@ -5,14 +5,16 @@
         <label class="login-label" for="email">
             <input id="email" #name="ngModel" [(ngModel)]="loginData.email" name="email" class="input-login"
                 (focus)="focusOnMail = true" (blur)="focusOnMail = false" placeholder="beispielname@email.com"
-                pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}" required>
+                pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}" type="email" required>
             <img class="input-icon"
                 [src]="focusOnMail ? 'assets/icons/mail-black.png' : 'assets/icons/mail.png'">
+            <span class="error-text-input">*Diese E-Mail-Adresse ist leider ungültig</span>
         </label>
         <label class="login-label" for="password">
             <input id="password" #email="ngModel" [(ngModel)]="loginData.password" name="password" class="input-login"
-                (focus)="focusOnPassword = true" (blur)="focusOnPassword = false" placeholder="Passwort" required>
+                (focus)="focusOnPassword = true" (blur)="focusOnPassword = false" placeholder="Passwort" type="password" required>
             <img [src]="focusOnPassword ? 'assets/icons/lock-black.png' : 'assets/icons/lock.png'">
+            <span class="error-text-input">Falsches Paswort oder E-Mail. Bitte noch einmal versuchen.</span>
         </label>
     </form>
     <div class="btn-container">
@@ -23,8 +25,12 @@
         <span class="or">ODER</span>
         <span class="line"></span>
     </div>
-    <label>
+    <label class="google-label" (mouseenter)="hoveringGoogleInput = true" (mouseleave)="hoveringGoogleInput = false">
         <input class="input-login">
+        <div class="google-register">
+            <img src="assets/icons/google.png">
+            <span [ngClass]="{'hovering-google-input': hoveringGoogleInput == true}">Anmelden mit Google</span>
+        </div>
     </label>
     <div class="btns-container">
         <button type="submit" [disabled]="loginForm.invalid" class="mainButton buttonPrimary">Anmelden</button>
