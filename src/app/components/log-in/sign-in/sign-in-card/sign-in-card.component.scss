@@ -1,6 +1,10 @@
 @import 'variables';
 @import './../../../../shared/components/log-in/card/card.component.scss';
 
+.width-container {
+    width: 606px;
+}
+
 form {
     display: flex;
     flex-direction: column;
