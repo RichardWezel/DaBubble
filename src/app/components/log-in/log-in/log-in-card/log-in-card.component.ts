@@ -4,12 +4,12 @@ import { Auth } from '@angular/fire/auth';
 import { signInWithEmailAndPassword } from '@firebase/auth';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
 import { CommonModule } from '@angular/common';
-
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-log-in-card',
   standalone: true,
-  imports: [FormsModule, CardComponent, CommonModule],
+  imports: [FormsModule, CardComponent, CommonModule, RouterLink],
   templateUrl: './log-in-card.component.html',
   styleUrl: './log-in-card.component.scss'
 })
