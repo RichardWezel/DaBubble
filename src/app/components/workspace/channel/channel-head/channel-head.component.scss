@@ -1,7 +1,9 @@
 @import 'variables';
 
 .channel-head {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -21,6 +23,11 @@
     font-size: 24px;
     font-weight: bold;
   }
+}
+
+.channel-member {
+  display: flex;
+  align-items: center;
 }
 
 .user-avatar {

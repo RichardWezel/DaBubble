@@ -31,7 +31,8 @@
     </div>
     <div class="container" *ngIf="isListVisible">
         <div class="open-channels">
-            <div class="open-channel" *ngFor="let channel of storage.channel">
+            <div class="open-channel" *ngFor="let channel of storage.channel"
+                (click)="storage.currentUser.currentChannel = channel.id">
                 <div class="open-channel-content"
                     *ngIf="channel.user && channel.user.includes(storage.currentUser.id || '')">
                     <div class="tag-icon">

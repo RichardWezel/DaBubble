@@ -4,6 +4,7 @@
   position: relative;
   width: 100%;
   height: 100%;
+  padding: 96px 40px 24px;
   display: flex;
   flex-direction: column;
   border-radius: 32px;
@@ -15,9 +16,5 @@
     flex-direction: column;
     overflow-y: auto;
     flex: 1;
-  }
-
-  app-inputfield {
-    margin: 0 40px 24px;
   }
 }
