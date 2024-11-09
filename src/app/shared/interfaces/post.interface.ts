@@ -5,6 +5,7 @@ export interface PostInterface {
   author: string,
   timestamp: number,
   thread: boolean,
+  id: string,
   emoticons?: EmoticonsInterface[],
   threadMsg?: PostInterface[],
 }

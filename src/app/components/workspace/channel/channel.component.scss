@@ -11,7 +11,10 @@
   background-color: $textWhite;
   flex: 1;
 
-  app-channel-messages {
+  .top-channel {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
     flex: 1;
   }
 }

@@ -4,16 +4,19 @@ import { collection, doc, onSnapshot, setDoc, updateDoc } from "firebase/firesto
 import { UserInterface } from '../interfaces/user.interface';
 import { ChannelInterface } from '../interfaces/channel.interface';
 import { PostInterface } from '../interfaces/post.interface';
+import { CurrentUserInterface } from '../interfaces/current-user-interface';
+import { UidService } from './uid.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseStorageService {
   firestore: Firestore = inject(Firestore);
+  uid = inject(UidService);
 
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
-  currentUser: UserInterface = { name: '', email: '', avatar: '', status: '', dm: [], id: '' };
+  currentUser: CurrentUserInterface = { name: '', email: '', avatar: '', status: '', dm: [], id: '' };
   authUid = localStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l'
 
   unsubUsers;
@@ -34,8 +37,9 @@ export class FirebaseStorageService {
 
   getCurrentUser() {
     return onSnapshot(doc(this.firestore, "user", this.authUid), (snapshot) => {
-      let userData = snapshot.data() as UserInterface;
+      let userData = snapshot.data() as CurrentUserInterface;
       userData.id = snapshot.id;
+      userData.currentChannel = this.channel[this.channel.findIndex(channel => channel.user.includes(snapshot.id))]?.id || '';
       this.currentUser = userData;
     })
   }
@@ -72,7 +76,8 @@ export class FirebaseStorageService {
       avatar: userData.avatar,
       status: '',
       dm: [{
-        contact: userData.name,
+        contact: authUid,
+        id: this.uid.generateUid(),
         posts: [],
       },],
     } as UserInterface);
@@ -115,14 +120,15 @@ export class FirebaseStorageService {
 
 
   async writeDm(userId: string, contact: string) {
-    let currentUser = this.user[this.user.findIndex(user => user.id === userId)];
-    let newDm = currentUser.dm[currentUser.dm.findIndex(dm => dm.contact === contact)];
+    let sendUser = this.user[this.user.findIndex(user => user.id === userId)];
+    let newDm = sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)];
     if (newDm) {
       await updateDoc(doc(this.firestore, "user", userId), {
         dm: [
-          ...currentUser.dm,
+          ...sendUser.dm,
           {
             contact: contact,
+            id: this.uid.generateUid(),
             posts: newDm.posts,
           }
         ]
