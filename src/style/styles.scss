@@ -37,6 +37,7 @@ body {
 
     &:disabled {
       background-color: $textGrey;
+      cursor: unset;
     }
   }
 
@@ -59,6 +60,7 @@ body {
       background-color: $textWhite;
       color: $textGrey;
       border-color: $textGrey;
+      cursor: unset;
     }
   }
 }

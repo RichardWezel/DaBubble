@@ -15,9 +15,6 @@ import { CommonModule } from '@angular/common';
 })
 export class LogInCardComponent {
   private auth = inject(Auth);
-  focusOnMail = false;
-  focusOnPassword = false;
-  hoveringGoogleInput: boolean = false;
   loginData = {
     email: "",
     password: ""

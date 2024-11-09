@@ -61,13 +61,18 @@ h2 {
     &:focus {
       outline: none;
       border: 1px solid $thirdColor;
+
+        + svg path {
+          fill: black;
+        }
+  
     }
   }
   
   .login-label {
     position: relative;
   
-    img {
+    svg {
       width: 24px;
       height: 24px;
       position: absolute;
@@ -79,7 +84,7 @@ h2 {
       font-size: 14px;
       font-weight: 400;
       line-height: 19.1px;
-      color: #ED1E79;
+      color: $errorColor;
       position: absolute;
       bottom: -22px;
   }

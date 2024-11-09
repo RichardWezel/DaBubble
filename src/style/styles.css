@@ -212,6 +212,7 @@ body {
 
 .mainButton.buttonPrimary:disabled {
   background-color: #686868;
+  cursor: unset;
 }
 
 .mainButton.buttonSecondary {
@@ -234,4 +235,5 @@ body {
   background-color: #FFFFFF;
   color: #686868;
   border-color: #686868;
+  cursor: unset;
 }
