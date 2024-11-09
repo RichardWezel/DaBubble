@@ -6,3 +6,116 @@ form {
     flex-direction: column;
     gap: 30px;
 }
+
+.main-checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Customize the label (the container) */
+
+.checkbox-container {
+    display: block;
+    position: relative;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.checkbox-button {
+    position: absolute;
+    opacity: 0;
+    height: 0;
+    width: 0;
+}
+
+/* Create a custom checkbox */
+.customized-checkbox-button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    border: 2px solid $secondaryColor;
+    border-radius: 2px;
+    z-index: 100;
+}
+
+/* Hover effect checkbox button */
+.hover-effect-checkbox {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    height: 26px;
+    width: 26px;
+    border-radius: 100%;
+    z-index: 90;
+}
+
+/* On mouse-over, add a grey background color */
+.checkbox-container:hover input{
+
+    ~ .customized-checkbox-button-container .customized-checkbox-button {
+        background-color: none;
+        border: 2px solid $primaryColor;
+    }
+
+    ~.customized-checkbox-button-container .hover-effect-checkbox {
+        background-color: $backgroundColor;
+    }
+
+    ~.customized-checkbox-button-container .customized-checkbox-button:after {
+        border-color: $primaryColor;
+    }
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.customized-checkbox-button:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the checkmark when checked */
+.checkbox-container input:checked~.customized-checkbox-button-container .customized-checkbox-button:after {
+    display: block;
+}
+
+/* Style the checkmark/indicator */
+.checkbox-container .customized-checkbox-button:after {
+    left: 5px;
+    top: 0;
+    left: 4px;
+    width: 4px;
+    height: 10px;
+    border: solid $secondaryColor;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.text-privacy-policy {
+    display: flex;
+    align-items: center;
+}
+
+.privacy-policy-btn {
+    color: $secondaryColor;
+    cursor: pointer;
+    padding: 2px 4px;
+    @include dja;
+    border-radius: 20px;
+
+    &:hover {
+        color: $primaryColor;
+        font-weight: 700;
+        background-color: $backgroundColor;
+    }
+}

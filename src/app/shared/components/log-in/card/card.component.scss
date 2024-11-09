@@ -68,24 +68,45 @@ h2 {
     }
   }
   
-  .login-label {
-    position: relative;
-    height: 60px;
+.login-label {
+  position: relative;
+  height: 60px;
   
-    svg {
-      width: 24px;
-      height: 24px;
-      position: absolute;
-      top: calc(50% - 12px);
-      left: 32px;
-    }
+  svg {
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    top: calc(50% - 12px);
+    left: 32px;
+  }
 
-    .error-text-input {
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 19.1px;
-      color: $errorColor;
-      position: absolute;
-      bottom: -22px;
+  .error-text-input {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 19.1px;
+    color: $errorColor;
+    position: absolute;
+    bottom: -22px;
   }
+}
+
+.title-container {
+  position: relative;;
+}
+
+.arrow-back {
+  position: absolute;
+  top: calc(50% - 20px);
+  left: -24px;
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  @include dja;
+  &:hover {
+    background-color: $backgroundColor;
+    cursor: pointer;
+    svg path{
+      fill: $primaryColor;
+    }
   }
+}

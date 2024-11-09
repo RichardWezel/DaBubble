@@ -13,6 +13,7 @@ export class SignInCardComponent {
   signInData = {
     name: "",
     email: "",
-    password: ""
+    password: "",
   };
+  checkboxChecked: boolean = false;
 }
