@@ -10,14 +10,16 @@ import { FirebaseStorageService } from '../../../../shared/services/firebase-sto
   styleUrl: './channel-section.component.scss'
 })
 export class ChannelSectionComponent {
+  // Injecting the Firebase storage service
   storage = inject(FirebaseStorageService);
 
-  // channels: string[] = ['Entwicklerteam', 'Marketing', 'Vertrieb', 'Support'];
+  // An array for storing channel names
+  channels: string[] = ['Entwicklerteam', 'Marketing', 'Vertrieb', 'Support'];
 
-  // Statusvariable zur Steuerung der Sichtbarkeit
+  // Status variable to control visibility of the channel list
   isListVisible: boolean = true;
 
-  // Methode zum Umschalten des Status
+  // Method to toggle the visibility of the list
   toggleList() {
     this.isListVisible = !this.isListVisible;
   }

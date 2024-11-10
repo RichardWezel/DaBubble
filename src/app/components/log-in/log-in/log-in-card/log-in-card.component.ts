@@ -3,6 +3,7 @@ import { NgForm, FormsModule } from '@angular/forms';
 import { Auth } from '@angular/fire/auth';
 import { signInWithEmailAndPassword } from '@firebase/auth';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
+import { Router } from '@angular/router'; // Import Router
 
 @Component({
   selector: 'app-log-in-card',
@@ -13,6 +14,7 @@ import { CardComponent } from '../../../../shared/components/log-in/card/card.co
 })
 export class LogInCardComponent {
   private auth = inject(Auth);
+  private router = inject(Router); // Inject Router
   loginData = {
     email: "",
     password: ""
@@ -31,10 +33,16 @@ export class LogInCardComponent {
         console.log('Logged in', user);
         const uid = user.uid;
         console.log('UID', uid);
+        this.router.navigate(['/workspace']); // Navigate to the chat page
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-      })
+      });
+  }
+
+  // Guest login function
+  guestLogin() {
+    this.router.navigate(['/workspace']); // Navigate to chat page for guest login
   }
 }

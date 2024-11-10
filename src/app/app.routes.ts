@@ -8,12 +8,13 @@ import { ImprintComponent } from './components/imprint/imprint.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 
 export const routes: Routes = [
-    { path: '', component: WorkspaceComponent },
-    { path: 'login', component: LogInComponent, },
+    { path: '', redirectTo: 'login', pathMatch: 'full' }, // Umleitung zur Login-Seite
+    { path: 'login', component: LogInComponent },
     { path: 'signin', component: SignInComponent },
-    { path: 'resetpassword', component: ResetPasswordComponent},
+    { path: 'resetpassword', component: ResetPasswordComponent },
     { path: 'workspace', component: WorkspaceComponent },
     { path: 'choose-avatar', component: ChooseAvatarCardComponent },
     { path: 'imprint', component: ImprintComponent },
     { path: 'privacy-policy', component: PrivacyPolicyComponent },
 ];
+

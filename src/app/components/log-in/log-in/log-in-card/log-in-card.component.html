@@ -56,7 +56,7 @@
         </button>
         <div class="btns-container">
             <button type="submit" [disabled]="loginForm.invalid" class="mainButton buttonPrimary">Anmelden</button>
-            <button class="mainButton buttonSecondary">Gäste-Login</button>
+            <button class="mainButton buttonSecondary" (click)="guestLogin()">Gäste-Login</button>
         </div>
     </app-card>
 </div>
