@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { NgFor, NgIf } from '@angular/common';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
+import { NavigationService } from '../../../../shared/services/navigation.service';
 
 @Component({
   selector: 'app-dm-section',
@@ -11,6 +12,8 @@ import { FirebaseStorageService } from '../../../../shared/services/firebase-sto
 })
 export class DmSectionComponent {
   storage = inject(FirebaseStorageService);
+
+  constructor(private navigationService: NavigationService) {}
 
   // wsMembers = [
   //   {
@@ -62,5 +65,9 @@ export class DmSectionComponent {
   // Methode zum Umschalten des Status
   toggleList() {
     this.isListVisible = !this.isListVisible;
+  }
+
+  goToSignIn() {
+    this.navigationService.navigateTo('/signin');
   }
 }
