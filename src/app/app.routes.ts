@@ -3,11 +3,13 @@ import { WorkspaceComponent } from './components/workspace/workspace.component';
 import { LogInComponent } from './components/log-in/log-in/log-in.component';
 import { SignInComponent } from './components/log-in/sign-in/sign-in.component';
 import { ResetPasswordComponent } from './components/log-in/reset-password/reset-password.component';
+import { ChooseAvatarCardComponent } from './components/log-in/sign-in/choose-avatar-card/choose-avatar-card.component';
 
 export const routes: Routes = [
     { path: '', component: WorkspaceComponent },
     { path: 'login', component: LogInComponent, },
     { path: 'signin', component: SignInComponent },
     { path: 'resetpassword', component: ResetPasswordComponent},
-    { path: 'workspace', component: WorkspaceComponent }
+    { path: 'workspace', component: WorkspaceComponent },
+    { path: 'choose-avatar', component: ChooseAvatarCardComponent },
 ];
