@@ -1,4 +1,5 @@
 import { Component, HostListener, ElementRef, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { SearchComponent } from "./search/search.component";
 import { FirebaseStorageService } from '../../../shared/services/firebase-storage.service';
 
@@ -12,6 +13,8 @@ import { FirebaseStorageService } from '../../../shared/services/firebase-storag
 export class NavbarComponent {
   elementRef: ElementRef = inject(ElementRef);
   storage = inject(FirebaseStorageService);
+  router = inject(Router);
+  
 
   caretSrc: string = 'assets/icons/user-caret.svg';
   dropDownOpen: boolean = false;
@@ -21,5 +24,9 @@ export class NavbarComponent {
     if (!this.elementRef.nativeElement.querySelector('.current-user').contains(event.target)) {
       this.dropDownOpen = false;
     }
+  }
+
+  logout() {
+    this.router.navigate(['/login']); 
   }
 }

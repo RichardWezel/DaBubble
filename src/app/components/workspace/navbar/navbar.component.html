@@ -10,7 +10,7 @@
     <img class="dropdown-arrow" [class.rotate]="dropDownOpen" [src]="caretSrc" alt="">
     <div [class.open]="dropDownOpen" class="user-dropdown-menu">
       <p>Profil</p>
-      <p>Logout</p>
+      <p (click)="logout()">Logout</p>
     </div>
   </div>
 </section>
