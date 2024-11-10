@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-imprint',
@@ -9,4 +10,10 @@ import { Component } from '@angular/core';
 })
 export class ImprintComponent {
 
+  constructor(
+    private location: Location) {}
+
+  goBack() {
+    this.location.back();
+  }
 }
