@@ -9,5 +9,11 @@ import { CardComponent } from '../../../../shared/components/log-in/card/card.co
   styleUrl: './choose-avatar-card.component.scss'
 })
 export class ChooseAvatarCardComponent {
-  numbersOfProfilePictures = [1, 2, 3, 4, 5, 6];
+  pictures = ['profile-pictures/profile-1.png', 'profile-pictures/profile-2.png', 'profile-pictures/profile-3.png', 'profile-pictures/profile-4.png', 'profile-pictures/profile-5.png', 'profile-pictures/profile-6.png'];
+  currentProfilePicture = 'profile-basic.png';
+  avatarSelected = false;
+
+  chosePicture(path: string) {
+    this.currentProfilePicture = path;
+  }
 }
