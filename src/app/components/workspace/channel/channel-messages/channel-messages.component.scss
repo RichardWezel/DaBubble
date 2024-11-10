@@ -29,3 +29,9 @@ main {
         }
     }
 }
+
+.channel-message {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
