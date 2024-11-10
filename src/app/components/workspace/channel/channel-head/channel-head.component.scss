@@ -18,19 +18,90 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  padding: 4px 16px;
 
   p {
     font-size: 24px;
     font-weight: bold;
   }
+
+  &:hover {
+    cursor: pointer;
+    background-color: $backgroundColor;
+    border-radius: 30px;
+
+    p {
+      color: $thirdColor;
+    }
+  }
 }
 
-.channel-member {
+.channel-member-container {
+  position: relative;
   display: flex;
   align-items: center;
-}
+  justify-content: flex-end;
+  gap: 16px;
 
-.user-avatar {
-  height: 40px;
-  border-radius: 50%;
+
+  .channel-member {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    padding: 4px 16px;
+
+
+    &:hover {
+      cursor: pointer;
+      background-color: $backgroundColor;
+      border-radius: 30px;
+
+      .more-user {
+        background-color: $secondaryColor;
+      }
+    }
+  }
+
+  .user-avatar {
+    position: relative;
+    height: 40px;
+    border-radius: 50%;
+  }
+
+  .more-user {
+    min-width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: $backgroundColor;
+    font-size: 20px;
+    font-weight: semibold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  p {
+    font-size: 20px;
+    font-weight: semibold;
+  }
+
+  .add-user {
+    min-width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: $backgroundColor;
+    background-image: url('./../../../../../assets/icons/add-user.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      cursor: pointer;
+      background-image: url('./../../../../../assets/icons/add-user-hover.svg');
+    }
+  }
 }

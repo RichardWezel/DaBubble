@@ -1,24 +1,33 @@
 <section class="channel-head">
   @if (findChannel() === 'channel') {
-    <div class="channel-name">
-      <img src="assets/icons/tag.svg" alt="tag">
+    <div class="channel-name"
+      (mouseover)="imgCaret = 'assets/icons/user-caret-hover.svg'; imgTag = 'assets/icons/tag-hover.svg'"
+      (mouseout)="imgCaret = 'assets/icons/user-caret.svg'; imgTag = 'assets/icons/tag.svg'">
+      <img [src]=" imgTag" alt="tag">
       <p>{{ channelName() }}</p>
-      <img src="assets/icons/user-caret.svg" alt="">
+      <img [src]="imgCaret" alt="">
     </div>
-    <div class="channel-member">
-      @for (user of channelUser(); track $index) {
-        <img class="user-avatar" [src]="'assets/img/profile-pictures/' + findAvatar(user)" alt="assets/icons/user.svg"
-          alt="user">
-      }
-      <div class="add-user">
-        <img src="assets/icons/add-user.svg" alt="plus">
+    <div class=" channel-member-container">
+      <div class="channel-member">
+        @for (user of channelUser(); track $index) {
+          @if ($index <= 5) {
+            <img class="user-avatar" [src]="'assets/img/profile-pictures/' + findAvatar(user)" alt="user-avatar"
+              [ngStyle]="{'margin-right': channelUser().length === $index + 1 ? '0px' : '-24px' }">
+          }
+        }
+        @if (channelUser().length > 6) {
+          <span class="more-user user-avatar">
+            ...
+          </span>
+        }
+        <p>{{ channelUser().length }}</p>
       </div>
+      <div class="add-user"></div>
     </div>
   }
   @if (findChannel() === 'dm') {
     <div class="channel-name">
-      <img class="user-avatar" [src]="'assets/img/profile-pictures/' + userAvatar()" alt="assets/icons/user.svg"
-        alt="user">
+      <img class="user-avatar" [src]="'assets/img/profile-pictures/' + userAvatar()" alt="user">
       <p>{{ userName() }}</p>
     </div>
   }

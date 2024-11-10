@@ -1,16 +1,18 @@
 import { Component, inject } from '@angular/core';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
+import { NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-channel-head',
   standalone: true,
-  imports: [],
+  imports: [NgStyle],
   templateUrl: './channel-head.component.html',
   styleUrl: './channel-head.component.scss'
 })
 export class ChannelHeadComponent {
   storage = inject(FirebaseStorageService);
-
+  imgTag: string = 'assets/icons/tag.svg';
+  imgCaret: string = 'assets/icons/user-caret.svg';
 
   constructor() { }
 
@@ -30,7 +32,9 @@ export class ChannelHeadComponent {
   }
 
   channelUser() {
-    return this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.user;
+    let users = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.user;
+    if (users) return users;
+    else return [];
   }
 
   findAvatar(user: string) {
@@ -39,7 +43,7 @@ export class ChannelHeadComponent {
 
 
 
-   userAvatar() {
+  userAvatar() {
     let foundUser = this.storage.currentUser.dm.find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel)?.contact;
     return this.storage.user.find(user => user.id === foundUser)?.avatar;
   }
