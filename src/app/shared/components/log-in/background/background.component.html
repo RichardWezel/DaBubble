@@ -6,7 +6,7 @@
         <ng-content></ng-content>
     </div>
     <footer>
-        <button class="mainButton">Impressum</button>
-        <button class="mainButton">Datenschutz</button>
+        <button class="mainButton" (click)="goToImprint()">Impressum</button>
+        <button class="mainButton" (click)="goToPrivacy()">Datenschutz</button>
     </footer>
 </div>

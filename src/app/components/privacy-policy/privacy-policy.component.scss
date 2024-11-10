@@ -1,0 +1,34 @@
+@import './../../shared/components/log-in/card/card.component.scss';
+
+.top-section {
+    position: relative;
+}
+
+h2{
+    text-align: left;
+}
+
+.instruction{
+    text-align: left;
+}
+
+h3{
+    font-family: "Nunito";
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 38.4px;
+    text-align: left;
+    color: $primaryColor;
+}
+
+.responsivePersons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.contact {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
