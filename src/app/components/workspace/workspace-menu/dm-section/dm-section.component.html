@@ -24,7 +24,7 @@
 
     <div class="ws-member-container" *ngIf="isListVisible && storage.currentUser">
         <div class="ws-member" *ngFor="let dm of storage.user[currentUserIndex()]?.dm">
-            <div class="ws-member-content" (click)="storage.currentUser.currentChannel = dm.id">
+            <div class="ws-member-content" (click)="storage.currentUser.currentChannel = dm.id" (click)="goToSignIn()">
                 <div class="member-profile-icon">
                     <img src="assets/img/profile-pictures/profile-1.png" alt="">
                     <div class="status-dott"></div>
