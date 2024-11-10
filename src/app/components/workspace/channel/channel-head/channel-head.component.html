@@ -1,5 +1,6 @@
 <section class="channel-head">
   @if (findChannel() === 'channel') {
+
     <div class="channel-name"
       (mouseover)="imgCaret = 'assets/icons/user-caret-hover.svg'; imgTag = 'assets/icons/tag-hover.svg'"
       (mouseout)="imgCaret = 'assets/icons/user-caret.svg'; imgTag = 'assets/icons/tag.svg'">
@@ -7,6 +8,7 @@
       <p>{{ channelName() }}</p>
       <img [src]="imgCaret" alt="">
     </div>
+
     <div class=" channel-member-container">
       <div class="channel-member">
         @for (user of channelUser(); track $index) {
@@ -24,6 +26,7 @@
       </div>
       <div class="add-user"></div>
     </div>
+    
   }
   @if (findChannel() === 'dm') {
     <div class="channel-name">
