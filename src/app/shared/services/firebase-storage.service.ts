@@ -17,7 +17,8 @@ export class FirebaseStorageService {
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
   currentUser: CurrentUserInterface = { name: '', email: '', avatar: '', status: '', dm: [], id: '' };
-  authUid = localStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l'
+  authUid = localStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l';
+
 
   unsubUsers;
   unsubChannels;
