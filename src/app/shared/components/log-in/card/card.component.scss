@@ -95,9 +95,6 @@ h2 {
 }
 
 .arrow-back {
-  position: absolute;
-  top: calc(50% - 20px);
-  left: -24px;
   height: 40px;
   width: 40px;
   border-radius: 50%;
@@ -109,4 +106,10 @@ h2 {
       fill: $primaryColor;
     }
   }
+}
+
+.arrow-position-title {
+  position: absolute;
+  top: calc(50% - 20px);
+  left: -24px;
 }
