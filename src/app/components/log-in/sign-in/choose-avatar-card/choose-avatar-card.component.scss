@@ -1,0 +1,64 @@
+@import 'variables';
+@import './../../../../shared/components/log-in/card/card.component.scss';
+
+.width-container {
+    width: 606px;
+}
+
+.chosen-picture-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    svg {
+        cursor: pointer;
+        border: 8px solid transparent;
+        border-radius: 100%;
+        box-sizing: content-box;
+        &:hover {
+            border: 8px solid $lightGrey;
+        }
+    }
+}
+
+h3 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 43.65px;
+    color: $textBlack;
+    text-align: center;
+}
+
+.left {
+    text-align: start;
+}
+
+.profile-picture-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    img {
+        cursor: pointer;
+        width: calc(64px + 8px);
+        height: calc(64px + 8px);
+        border-radius: 100%;
+        border: 4px solid transparent;
+
+        &:hover {
+            border: 4px solid $lightGrey;
+            border: 100%;
+        }
+    }
+}
+
+.own-picture-container {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: end;
+}
