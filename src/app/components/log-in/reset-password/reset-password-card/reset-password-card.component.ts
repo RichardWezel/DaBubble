@@ -11,5 +11,11 @@ import { FormsModule } from '@angular/forms';
 })
 export class ResetPasswordCardComponent {
   passwordData: string = '';
+  confirmPasswordData: string = '';
+  samePasswords = false;
+
+  comparePasswords() {
+    this.samePasswords = this.passwordData === this.confirmPasswordData;
+  }
 
 }
