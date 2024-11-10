@@ -1,15 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { Auth } from '@angular/fire/auth';
 import { signInWithEmailAndPassword } from '@firebase/auth';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
-import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-log-in-card',
   standalone: true,
-  imports: [FormsModule, CardComponent, CommonModule, RouterLink],
+  imports: [FormsModule, CardComponent],
   templateUrl: './log-in-card.component.html',
   styleUrl: './log-in-card.component.scss'
 })
@@ -19,6 +17,11 @@ export class LogInCardComponent {
     email: "",
     password: ""
   };
+  @Output() login = new EventEmitter<boolean>();
+
+  goToForgetPassword() {
+    this.login.emit(false);
+  }
 
   checkLogin(ngForm: NgForm) {
     console.log("LoginData: ", this.loginData);

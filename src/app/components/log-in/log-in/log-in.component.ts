@@ -11,5 +11,5 @@ import { SendEmailCardComponent } from "./send-email-card/send-email-card.compon
   styleUrl: './log-in.component.scss'
 })
 export class LogInComponent {
-
+  login: boolean = true;
 }
