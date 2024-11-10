@@ -21,11 +21,8 @@ main {
                 line-height: 24.55px;
                 text-align: left;
             }
-        
-        
         }
        
-
         .message {
             padding: 15px;
             border-radius: 0px 30px 30px 30px;
@@ -35,6 +32,7 @@ main {
             font-weight: 400;
             line-height: 24.55px;
             text-align: left;
+            width: fit-content;
         }
 
         .answer-section {
