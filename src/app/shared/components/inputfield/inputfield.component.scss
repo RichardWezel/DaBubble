@@ -30,16 +30,43 @@
     }
 
     &:focus {
-      ~.inputfield-buttons .tags .icon.appendix {
-        background-image: url('./../../../../assets/icons/add-focus.svg');
+      ~.inputfield-buttons {
+        button {
+          &:hover {
+            background-image: url('./../../../../assets/icons/send-hover.svg');
+          }
+        }
       }
 
-      ~.inputfield-buttons .tags .icon.smileys {
-        background-image: url('./../../../../assets/icons/smiley-focus.svg');
-      }
+      ~.inputfield-buttons .tags .icon {
+        &:hover {
+          background-color: $backgroundColor;
+          border-radius: 50%;
+        }
 
-      ~.inputfield-buttons .tags .icon.at {
-        background-image: url('./../../../../assets/icons/at-focus.svg');
+        &.appendix {
+          background-image: url('./../../../../assets/icons/add-focus.svg');
+
+          &:hover {
+            background-image: url('./../../../../assets/icons/add-hover.svg');
+          }
+        }
+
+        &.smileys {
+          background-image: url('./../../../../assets/icons/smiley-focus.svg');
+
+          &:hover {
+            background-image: url('./../../../../assets/icons/smiley-hover.svg');
+          }
+        }
+
+        &.at {
+          background-image: url('./../../../../assets/icons/at-focus.svg');
+
+          &:hover {
+            background-image: url('./../../../../assets/icons/at-hover.svg');
+          }
+        }
       }
     }
   }
@@ -64,33 +91,23 @@
       }
 
       .icon {
-        width: 24px;
-        height: 24px;
+        width: 40px;
+        height: 40px;
         background-repeat: no-repeat;
-        background-size: contain;
+        background-position: center;
+        cursor: pointer;
+
 
         &.appendix {
           background-image: url('./../../../../assets/icons/add.svg');
-
-          &:hover {
-            background-image: url('./../../../../assets/icons/add-hover.svg') !important;
-          }
         }
 
         &.smileys {
           background-image: url('./../../../../assets/icons/smiley.svg');
-
-          &:hover {
-            background-image: url('./../../../../assets/icons/smiley-hover.svg') !important;
-          }
         }
 
         &.at {
           background-image: url('./../../../../assets/icons/at.svg');
-
-          &:hover {
-            background-image: url('./../../../../assets/icons/at-hover.svg') !important;
-          }
         }
       }
     }
@@ -100,6 +117,9 @@
     width: 48px;
     height: 48px;
     background-color: transparent;
+    background-image: url('./../../../../assets/icons/send.svg');
+    background-repeat: no-repeat;
+    background-position: center;
     border: none;
     outline: none;
     cursor: pointer;
