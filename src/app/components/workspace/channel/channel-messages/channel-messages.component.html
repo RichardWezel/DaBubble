@@ -1,14 +1,7 @@
 <section class="channel-message">
   @if(findChannel() === 'channel') {
     @for (post of getPosts(); track $index) {
-
-      <div>
-        <p>{{ post.author }}</p>
-        <p>{{ post.text }}</p>
-        <p>{{ post.timestamp }}</p>
-        <p>{{ post.emoticons }}</p>
-
-      </div>
+      <app-message [post]="post"></app-message>
     }
   }
   @if(findChannel() === 'dm') {
