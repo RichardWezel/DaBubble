@@ -24,6 +24,11 @@ export class FirebaseStorageService {
   unsubChannels;
   unsubCurrentUser;
 
+
+  /**
+   * Im Constructor wird zuerst die Channel-Collection und User-Collection gespeichert.
+   * Dann wird der aktuelle User registriert. 
+   */
   constructor() {
     this.unsubChannels = this.getChannelCollection();
     this.unsubUsers = this.getUserCollection();
@@ -70,13 +75,15 @@ export class FirebaseStorageService {
    * Diese Methode wird im Constructor aufgerufen und speichert den aktuellen User in die Variable "currentUser".
    */
   getCurrentUser() {
+    // Das onSnapshot Abonnement hört auf Änderungen am spezifischen Benutzer-Dokument ("user" Collection, Dokument mit ID this.authUid).
     return onSnapshot(doc(this.firestore, "user", this.authUid), (snapshot) => {
       let userData = snapshot.data() as CurrentUserInterface;
-      userData.id = snapshot.id;
-      userData.currentChannel = sessionStorage.getItem("currentChannel") ||
-        this.channel.find(channel => channel.user.includes(snapshot.id))?.id
-        ||
-        userData.dm.find(dm => dm.contact.includes(snapshot.id))?.id;
+      userData.id = snapshot.id; // wird das hier überhaupt gebraucht?
+
+      userData.currentChannel = sessionStorage.getItem("currentChannel") 
+        || this.channel.find(channel => channel.user.includes(snapshot.id))?.id
+        || userData.dm.find(dm => dm.contact.includes(snapshot.id))?.id;
+
       this.currentUser = userData;
       console.log("Der aktuelle User:", this.currentUser)
     })
@@ -90,6 +97,7 @@ export class FirebaseStorageService {
   setChannel(channelId: string) {
     this.currentUser.currentChannel = channelId;
     sessionStorage.setItem("currentChannel", channelId);
+    console.log("currentChannel", channelId);
   }
 
   // after Firebase Auth registration
