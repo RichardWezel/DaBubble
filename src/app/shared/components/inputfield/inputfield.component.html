@@ -1,5 +1,7 @@
 <section class="inputfield">
-  <textarea class="inputfield-textarea" placeholder="Schreibe eine Nachricht..." [(ngModel)]="message"></textarea>
+  <textarea class="inputfield-textarea"
+    [placeholder]="thread ? 'Antworten...' : 'Schreibe an ' + storage.currentUser.currentChannelName"
+    [(ngModel)]="message"></textarea>
   <div class="inputfield-buttons">
     <div class="tags">
       <div class="icon appendix"></div>

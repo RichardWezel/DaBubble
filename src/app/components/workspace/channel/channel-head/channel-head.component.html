@@ -26,10 +26,10 @@
       </div>
       <div class="add-user"></div>
     </div>
-    
+
   }
   @if (findChannel() === 'dm') {
-    <div class="channel-name">
+    <div class="dm-name">
       <img class="user-avatar" [src]="'assets/img/profile-pictures/' + userAvatar()" alt="user">
       <p>{{ userName() }}</p>
     </div>

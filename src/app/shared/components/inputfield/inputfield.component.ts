@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { PostInterface } from '../../interfaces/post.interface';
@@ -15,13 +15,15 @@ export class InputfieldComponent {
   storage = inject(FirebaseStorageService);
   uid = inject(UidService);
 
+  @Input() thread: boolean = false;
+
   src = 'assets/icons/send.svg';
   message: string = '';
 
   constructor() { }
 
   sendMessage() {
-    if (!this.message) return;
+    if (!this.message || !this.storage.currentUser.id || !this.storage.currentUser.currentChannel) return;
     let newPost: PostInterface = {
       text: this.message,
       timestamp: new Date().getTime(),
@@ -31,9 +33,10 @@ export class InputfieldComponent {
       emoticons: [],
       threadMsg: [],
     };
-
-    if (this.isChannel() && this.storage.currentUser.currentChannel) {
+    if (this.isChannel()) {
       this.storage.writePosts(this.storage.currentUser.currentChannel, newPost);
+    } else if (this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)) {
+      this.storage.writeDm(this.storage.currentUser.id, this.storage.currentUser.currentChannel, newPost);
     }
     this.message = '';
   }

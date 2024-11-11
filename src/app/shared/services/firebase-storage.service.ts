@@ -123,7 +123,7 @@ export class FirebaseStorageService {
   }
 
 
-  async writeDm(userId: string, contact: string) {
+  async writeDm(userId: string, contact: string, newPost: PostInterface) {
     let sendUser = this.user[this.user.findIndex(user => user.id === userId)];
     let newDm = sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)];
     if (newDm) {
@@ -133,7 +133,7 @@ export class FirebaseStorageService {
           {
             contact: contact,
             id: this.uid.generateUid(),
-            posts: newDm.posts,
+            posts: [newPost],
           }
         ]
       });

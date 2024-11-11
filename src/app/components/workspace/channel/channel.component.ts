@@ -12,4 +12,7 @@ import { ChannelMessagesComponent } from "./channel-messages/channel-messages.co
 })
 export class ChannelComponent {
 
+
+  constructor() { }
+
 }

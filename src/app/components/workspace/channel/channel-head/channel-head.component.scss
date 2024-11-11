@@ -14,7 +14,8 @@
   border-radius: 32px 32px 0px 0px;
 }
 
-.channel-name {
+.channel-name,
+.dm-name {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -63,7 +64,11 @@
     }
   }
 
-
+  .user-avatar {
+    position: relative;
+    height: 40px;
+    border-radius: 50%;
+  }
 
   .more-user {
     min-width: 40px;
@@ -102,8 +107,15 @@
   }
 }
 
-.user-avatar {
-  position: relative;
-  height: 40px;
-  border-radius: 50%;
+.dm-name {
+  p {
+    font-size: 24px;
+    font-weight: semibold;
+  }
+
+  .user-avatar {
+    position: relative;
+    height: 50px;
+    border-radius: 50%;
+  }
 }
