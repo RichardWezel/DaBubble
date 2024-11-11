@@ -36,6 +36,9 @@ export class FirebaseStorageService {
     this.unsubCurrentUser();
   }
 
+  /**
+   * Diese Methode wird im Constructor aufgerufen und speichert alle Channels im Firebase im Array "channel".
+   */
   getChannelCollection() {
     return onSnapshot(collection(this.firestore, "channel"), (snapshot) => {
       this.channel = [];
@@ -48,6 +51,9 @@ export class FirebaseStorageService {
     });
   }
 
+  /**
+   * Diese Methode wird im Constructor aufgerufen und speichert alle User im Firebase im Array "user".
+   */
   getUserCollection() {
     return onSnapshot(collection(this.firestore, "user"), (snapshot) => {
       this.user = [];
@@ -56,9 +62,13 @@ export class FirebaseStorageService {
         userData.id = doc.id;
         this.user.push(userData);
       });
+      console.log("User-Sammlung über die getUserCollection() Methode:",this.user);
     });
   }
 
+  /**
+   * Diese Methode wird im Constructor aufgerufen und speichert den aktuellen User in die Variable "currentUser".
+   */
   getCurrentUser() {
     return onSnapshot(doc(this.firestore, "user", this.authUid), (snapshot) => {
       let userData = snapshot.data() as CurrentUserInterface;
@@ -68,6 +78,7 @@ export class FirebaseStorageService {
         ||
         userData.dm.find(dm => dm.contact.includes(snapshot.id))?.id;
       this.currentUser = userData;
+      console.log("Der aktuelle User:", this.currentUser)
     })
   }
 
