@@ -1,13 +1,13 @@
 <main>
-  <div class="date-container">
-    <div class="line"></div>
-    <div class="date">Dienstag, 14. Januar</div>
-  </div>
   <section class="channel-message">
     @if(findChannel() === 'channel') {
       @for (post of getPosts(); track $index) {
+        @if (currentDate(post.timestamp) > compareTimestamp) {
+          <app-date-seperator [date]="trackByDate(post)"></app-date-seperator>
+        }
         <app-message [post]="post"></app-message>
       }
+      {{ resetCompareTimestamp() }}
     }
     @if(findChannel() === 'dm') {
       @for (post of getPosts(); track $index) {
