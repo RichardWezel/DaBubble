@@ -4,30 +4,6 @@ main {
     margin-top: 246px;
     padding-left: 35px;
     padding-right: 35px;
-    .date-container {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 35px;
-        position: relative;
-        margin-bottom: 25px;
-
-        .line {
-            z-index: 1;
-            border: 1px solid $dividerColor;
-            width: 100%;
-        }
-
-        .date {
-            z-index: 2;
-            position: absolute;
-            padding: 5px 15px 5px;
-            border-radius: 30px;
-            border: 1px solid $dividerColor;
-            background-color: white;
-        }
-    }
 }
 
 .channel-message {
