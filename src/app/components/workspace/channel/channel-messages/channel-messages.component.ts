@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-channel-messages',
   standalone: true,
-  imports: [ChannelHeadComponent, MessageComponent, DateSeparatorComponent, CommonModule],
+  imports: [MessageComponent, DateSeparatorComponent, CommonModule],
   templateUrl: './channel-messages.component.html',
   styleUrl: './channel-messages.component.scss'
 })
@@ -34,7 +34,6 @@ export class ChannelMessagesComponent extends ChannelHeadComponent {
 
   getPostsofDm() {
     let getPosts = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.posts;
-    console.log("Posts für DM:", getPosts);
     return getPosts ? getPosts : [];
   }
 

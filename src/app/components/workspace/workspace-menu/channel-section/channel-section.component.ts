@@ -5,7 +5,7 @@ import { FirebaseStorageService } from '../../../../shared/services/firebase-sto
 @Component({
   selector: 'app-channel-section',
   standalone: true,
-  imports: [NgFor, NgIf, NgClass],
+  imports: [NgIf, NgFor],
   templateUrl: './channel-section.component.html',
   styleUrl: './channel-section.component.scss'
 })

@@ -52,7 +52,6 @@ export class FirebaseStorageService {
         channelData.id = doc.id;
         this.channel.push(channelData);
       });
-      console.log("Channel-Sammlung über die getChannelCollection() Methode:",this.channel);
     });
   }
 
@@ -67,7 +66,6 @@ export class FirebaseStorageService {
         userData.id = doc.id;
         this.user.push(userData);
       });
-      console.log("User-Sammlung über die getUserCollection() Methode:",this.user);
     });
   }
 
@@ -85,7 +83,6 @@ export class FirebaseStorageService {
         || userData.dm.find(dm => dm.contact === snapshot.id)?.id;
 
       this.currentUser = userData;
-      console.log("Der aktuelle User:", this.currentUser)
     })
   }
 
@@ -97,7 +94,6 @@ export class FirebaseStorageService {
   setChannel(channelId: string) {
     this.currentUser.currentChannel = channelId;
     sessionStorage.setItem("currentChannel", channelId);
-    console.log("currentChannel", channelId);
   }
 
   // after Firebase Auth registration
