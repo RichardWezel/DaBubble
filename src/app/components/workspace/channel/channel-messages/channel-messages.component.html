@@ -11,17 +11,17 @@
         }
         <app-message [post]="post"></app-message>
       }
-
       {{ resetCompareTimestamp() }}
-
     }
+
     @if(findChannel() === 'dm') {
-        <ng-container *ngFor="let post of getPostsofDm(); trackBy: trackByPostId">
-          <ng-container *ngIf="currentDate(post.timestamp) > compareTimestamp">
+      
+        @for (post of getPostsofDm(); track $index) {
+          @if (currentDate(post.timestamp) > compareTimestamp) {
             <app-date-separator [date]="trackByDate(post)"></app-date-separator>
-          </ng-container>
+          }
           <app-message [post]="post"></app-message>
-        </ng-container>
+        }
         {{ resetCompareTimestamp() }}
     }
     
