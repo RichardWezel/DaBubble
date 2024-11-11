@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-channel-section',
   standalone: true,
-  imports: [NgFor, NgIf, NgClass],
+  imports: [NgFor, NgIf, FormsModule], 
   templateUrl: './channel-section.component.html',
   styleUrl: './channel-section.component.scss'
 })
