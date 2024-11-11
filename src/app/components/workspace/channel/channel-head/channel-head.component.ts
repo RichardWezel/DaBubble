@@ -17,8 +17,20 @@ export class ChannelHeadComponent {
 
   constructor() { }
 
-
-  findChannel() {
+  /**
+   * Bestimmt den Typ des aktuell ausgewählten Kanals (öffentlicher Kanal oder Direktnachricht) 
+   * und setzt den Namen des Kanals entsprechend.
+   *
+   * Diese Methode durchsucht die verfügbaren Kanäle und Direktnachrichten des aktuellen Benutzers, 
+   * um festzustellen, ob die `currentChannel` ID einem öffentlichen Kanal oder einer Direktnachricht entspricht.
+   * Abhängig vom gefundenen Typ wird der `currentChannelName` gesetzt und der Typ als Rückgabewert zurückgegeben.
+   *
+   * @returns {string} 
+   * - Gibt `'channel'` zurück, wenn ein öffentlicher Kanal gefunden wurde.
+   * - Gibt `'dm'` zurück, wenn eine Direktnachricht gefunden wurde.
+   * - Gibt einen leeren String `''` zurück, wenn weder ein Kanal noch eine Direktnachricht gefunden wurde.
+   */
+  findChannel(): "channel" | "dm" | "" {
     let foundChannel = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
     let foundDM = this.storage.currentUser.dm.find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel);
 
