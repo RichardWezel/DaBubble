@@ -18,7 +18,7 @@ export class ChannelHeadComponent {
   constructor() { }
 
   /**
-   * Gleicht ab, ob ein Channel als ID oder eine DM als ID in currentChannel des currentUsers enthalten ist 
+   * Gleicht ab, ob ein Channel oder eine DM als ID in currentChannel des currentUsers enthalten ist 
    * und gibt je nach Ergebnis 'channel' || 'dm' || '' zurück.
    *
    * @returns {string} 

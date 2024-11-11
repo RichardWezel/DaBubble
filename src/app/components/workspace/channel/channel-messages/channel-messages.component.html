@@ -1,16 +1,28 @@
 <main>
   <section class="channel-message">
+
+    <!-- findChannel() in channel-head.component.ts -->
+    <!-- Wenn die Methode findChannel() die ID eines Channels in currentUser.currentChannel findet, dann true -->
     @if(findChannel() === 'channel') {
-      @for (post of getPosts(); track $index) {
+
+      @for (post of getPostsofChannel(); track $index) {
         @if (currentDate(post.timestamp) > compareTimestamp) {
           <app-date-separator [date]="trackByDate(post)"></app-date-separator>
         }
         <app-message [post]="post"></app-message>
       }
+
       {{ resetCompareTimestamp() }}
+
     }
+
+    <!-- Wenn die Methode findChannel() die ID eines DMs des currentUsers in currentUser.currentChannel findet, dann true -->
     @if(findChannel() === 'dm') {
-      @for (post of getPosts(); track $index) {
+      @for (post of getPostsofDm(); track post.id) {
+        @if (currentDate(post.timestamp) > compareTimestamp) {
+          <app-date-separator [date]="trackByDate(post)"></app-date-separator>
+        }
+        <app-message [post]="post"></app-message>
       }
     }
   </section>

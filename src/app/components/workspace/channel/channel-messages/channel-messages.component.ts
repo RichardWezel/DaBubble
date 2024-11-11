@@ -19,8 +19,20 @@ export class ChannelMessagesComponent extends ChannelHeadComponent {
     super();
   }
 
-  getPosts() {
+  /**
+   * Vergleicht die Channel-IDs im Storage mit der ID in currentUser.currentChannel und 
+   * speichert das posts-Array des zuerst gefundenen Channels in die Variable getPosts.
+   * 
+   * @returns {array}
+   */
+  getPostsofChannel() {
     let getPosts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
+    if (getPosts) return getPosts;
+    else return [];
+  }
+
+  getPostsofDm() {
+    let getPosts = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.posts;
     if (getPosts) return getPosts;
     else return [];
   }
