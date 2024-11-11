@@ -36,7 +36,7 @@ export class InputfieldComponent {
     if (this.isChannel()) {
       this.storage.writePosts(this.storage.currentUser.currentChannel, newPost);
     } else if (this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)) {
-      this.storage.writeDm(this.storage.currentUser.id, this.storage.currentUser.currentChannel, newPost);
+      this.storage.writeDm(this.storage.currentUser.id, this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.contact || '', newPost);
     }
     this.message = '';
   }

@@ -17,7 +17,7 @@ export class FirebaseStorageService {
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
   currentUser: CurrentUserInterface = { name: '', email: '', avatar: '', status: '', dm: [], id: '' };
-  authUid = localStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l';
+  authUid = sessionStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l';
 
 
   unsubUsers;
@@ -36,11 +36,17 @@ export class FirebaseStorageService {
     this.unsubCurrentUser();
   }
 
+
+  setChannel(channelId: string) {
+    this.currentUser.currentChannel = channelId;
+    sessionStorage.setItem("currentChannel", channelId);
+  }
+
   getCurrentUser() {
     return onSnapshot(doc(this.firestore, "user", this.authUid), (snapshot) => {
       let userData = snapshot.data() as CurrentUserInterface;
       userData.id = snapshot.id;
-      userData.currentChannel =
+      userData.currentChannel = sessionStorage.getItem("currentChannel") ||
         this.channel.find(channel => channel.user.includes(snapshot.id))?.id
         ||
         userData.dm.find(dm => dm.contact.includes(snapshot.id))?.id;
@@ -126,19 +132,20 @@ export class FirebaseStorageService {
   async writeDm(userId: string, contact: string, newPost: PostInterface) {
     let sendUser = this.user[this.user.findIndex(user => user.id === userId)];
     let newDm = sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)];
+
     if (newDm) {
-      await updateDoc(doc(this.firestore, "user", userId), {
-        dm: [
-          ...sendUser.dm,
-          {
-            contact: contact,
-            id: this.uid.generateUid(),
-            posts: [newPost],
-          }
-        ]
+      newDm.posts.push(newPost);
+    } else {
+      sendUser.dm.push({
+        contact: contact,
+        id: this.uid.generateUid(),
+        posts: [newPost],
       });
-    };
-  }
+    }
+    await updateDoc(doc(this.firestore, "user", userId), {
+      dm: sendUser.dm
+    });
+  };
 
 
   async writePosts(channelId: string, newPost: PostInterface) {
@@ -152,6 +159,4 @@ export class FirebaseStorageService {
       });
     };
   }
-
-
 }
