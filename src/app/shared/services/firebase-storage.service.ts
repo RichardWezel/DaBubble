@@ -82,6 +82,11 @@ export class FirebaseStorageService {
     })
   }
 
+  /**
+   * Diese Methode speichert die übergebene channel-Id in currentUser.currentChannel. Diese channel-Id wird auch in eine  Web Storage API im Browser gespeichert. 
+   * Dies ermöglicht es deiner Anwendung, den aktuell ausgewählten Kanal über verschiedene Komponenten und Seiten hinweg zu verfolgen, solange die Browsersitzung aktiv ist.
+   * Wird in workspace/workspace-menu/channel-section angewendet beim click auf einen channel.
+   */
   setChannel(channelId: string) {
     this.currentUser.currentChannel = channelId;
     sessionStorage.setItem("currentChannel", channelId);
