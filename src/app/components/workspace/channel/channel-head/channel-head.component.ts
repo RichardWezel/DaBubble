@@ -15,7 +15,9 @@ export class ChannelHeadComponent {
   imgCaret: string = 'assets/icons/user-caret.svg';
 
 
-  constructor() { }
+  constructor() { 
+
+  }
 
   /**
    * Gleicht ab, ob ein Channel oder eine DM als ID in currentChannel des currentUsers enthalten ist 
@@ -34,7 +36,8 @@ export class ChannelHeadComponent {
       this.storage.currentUser.currentChannelName = this.storage.user.find(user => user.id === foundDM?.contact)?.name;
       return 'dm';
     }
-    else return '';
+    else 
+    return '';
   }
 
 
