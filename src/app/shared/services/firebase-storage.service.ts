@@ -36,17 +36,6 @@ export class FirebaseStorageService {
     this.unsubCurrentUser();
   }
 
-  getUserCollection() {
-    return onSnapshot(collection(this.firestore, "user"), (snapshot) => {
-      this.user = [];
-      snapshot.forEach((doc) => {
-        const userData = doc.data() as UserInterface;
-        userData.id = doc.id;
-        this.user.push(userData);
-      });
-    });
-  }
-
   getChannelCollection() {
     return onSnapshot(collection(this.firestore, "channel"), (snapshot) => {
       this.channel = [];
@@ -56,6 +45,17 @@ export class FirebaseStorageService {
         this.channel.push(channelData);
       });
       console.log("Channel-Sammlung über die getChannelCollection() Methode:",this.channel);
+    });
+  }
+
+  getUserCollection() {
+    return onSnapshot(collection(this.firestore, "user"), (snapshot) => {
+      this.user = [];
+      snapshot.forEach((doc) => {
+        const userData = doc.data() as UserInterface;
+        userData.id = doc.id;
+        this.user.push(userData);
+      });
     });
   }
 
