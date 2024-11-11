@@ -16,6 +16,16 @@
 
     }
 
+       <!-- Anzeigen der Direktnachrichten (DM) -->
+       <ng-container *ngIf="findChannel() === 'dm'">
+        <ng-container *ngFor="let post of getPostsofDm(); trackBy: trackByPostId">
+          <ng-container *ngIf="currentDate(post.timestamp) > compareTimestamp">
+            <app-date-separator [date]="trackByDate(post)"></app-date-separator>
+          </ng-container>
+          <app-message [post]="post"></app-message>
+        </ng-container>
+      </ng-container>
+
     <!-- Wenn die Methode findChannel() die ID eines DMs des currentUsers in currentUser.currentChannel findet, dann true -->
     @if(findChannel() === 'dm') {
       @for (post of getPostsofDm(); track post.id) {

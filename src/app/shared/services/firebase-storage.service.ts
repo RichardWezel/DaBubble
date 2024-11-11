@@ -82,7 +82,7 @@ export class FirebaseStorageService {
 
       userData.currentChannel = sessionStorage.getItem("currentChannel") 
         || this.channel.find(channel => channel.user.includes(snapshot.id))?.id
-        || userData.dm.find(dm => dm.contact.includes(snapshot.id))?.id;
+        || userData.dm.find(dm => dm.contact === snapshot.id)?.id;
 
       this.currentUser = userData;
       console.log("Der aktuelle User:", this.currentUser)

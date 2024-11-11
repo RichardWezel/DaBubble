@@ -3,11 +3,12 @@ import { ChannelHeadComponent } from '../channel-head/channel-head.component';
 import { MessageComponent } from '../../../../shared/components/message/message.component';
 import { PostInterface } from '../../../../shared/interfaces/post.interface';
 import { DateSeparatorComponent } from '../../../../shared/components/date-separator/date-separator.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-channel-messages',
   standalone: true,
-  imports: [ChannelHeadComponent, MessageComponent, DateSeparatorComponent],
+  imports: [ChannelHeadComponent, MessageComponent, DateSeparatorComponent, CommonModule],
   templateUrl: './channel-messages.component.html',
   styleUrl: './channel-messages.component.scss'
 })
@@ -33,10 +34,17 @@ export class ChannelMessagesComponent extends ChannelHeadComponent {
 
   getPostsofDm() {
     let getPosts = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.posts;
-    if (getPosts) return getPosts;
-    else return [];
+    console.log("Posts für DM:", getPosts);
+    return getPosts ? getPosts : [];
   }
 
+  /**
+ * Formatiert den Zeitstempel eines Beitrags in einen lesbaren Datumsstring und aktualisiert das compareTimestamp.
+ *
+ * @param {PostInterface} post - Das Beitragsobjekt, das den Zeitstempel (`timestamp`) enthält.
+ * @returns {string} Ein formatierter Datumsstring entsprechend der deutschen Lokalisierung (`de-DE`).
+ *
+ */
   trackByDate(post: PostInterface) {
     const date = new Date(post.timestamp);
     this.compareTimestamp = new Date(post.timestamp).setHours(0, 0, 0, 0);
@@ -51,5 +59,9 @@ export class ChannelMessagesComponent extends ChannelHeadComponent {
 
   resetCompareTimestamp() {
     this.compareTimestamp = 0;
+  }
+
+  trackByPostId(index: number, post: PostInterface): string {
+    return post.id;
   }
 }
