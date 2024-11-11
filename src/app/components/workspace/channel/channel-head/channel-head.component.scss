@@ -63,11 +63,7 @@
     }
   }
 
-  .user-avatar {
-    position: relative;
-    height: 40px;
-    border-radius: 50%;
-  }
+
 
   .more-user {
     min-width: 40px;
@@ -104,4 +100,10 @@
       background-image: url('./../../../../../assets/icons/add-user-hover.svg');
     }
   }
+}
+
+.user-avatar {
+  position: relative;
+  height: 40px;
+  border-radius: 50%;
 }
