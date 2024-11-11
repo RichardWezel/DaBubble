@@ -2,12 +2,12 @@ import { Component, Input } from '@angular/core';
 import { ChannelHeadComponent } from '../channel-head/channel-head.component';
 import { MessageComponent } from '../../../../shared/components/message/message.component';
 import { PostInterface } from '../../../../shared/interfaces/post.interface';
-import { DateSeperatorComponent } from '../../../../shared/components/date-seperator/date-seperator.component';
+import { DateSeparatorComponent } from '../../../../shared/components/date-separator/date-separator.component';
 
 @Component({
   selector: 'app-channel-messages',
   standalone: true,
-  imports: [ChannelHeadComponent, MessageComponent, DateSeperatorComponent],
+  imports: [ChannelHeadComponent, MessageComponent, DateSeparatorComponent],
   templateUrl: './channel-messages.component.html',
   styleUrl: './channel-messages.component.scss'
 })

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DateSeperatorComponent } from './date-seperator.component';
+import { DateSeparatorComponent } from './date-separator.component';
 
 describe('DateSeperatorComponent', () => {
-  let component: DateSeperatorComponent;
-  let fixture: ComponentFixture<DateSeperatorComponent>;
+  let component: DateSeparatorComponent;
+  let fixture: ComponentFixture<DateSeparatorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DateSeperatorComponent]
+      imports: [DateSeparatorComponent]
     })
-    .compileComponents();
-    
-    fixture = TestBed.createComponent(DateSeperatorComponent);
+      .compileComponents();
+
+    fixture = TestBed.createComponent(DateSeparatorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

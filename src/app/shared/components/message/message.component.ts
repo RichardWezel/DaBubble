@@ -32,7 +32,7 @@ export class MessageComponent implements OnInit {
   }
 
   postTime(timestamp: number) {
-    const date = new Date(timestamp * 1000);
+    const date = new Date(timestamp);
     return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   }
 

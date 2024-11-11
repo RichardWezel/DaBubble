@@ -3,7 +3,7 @@
     @if(findChannel() === 'channel') {
       @for (post of getPosts(); track $index) {
         @if (currentDate(post.timestamp) > compareTimestamp) {
-          <app-date-seperator [date]="trackByDate(post)"></app-date-seperator>
+          <app-date-separator [date]="trackByDate(post)"></app-date-separator>
         }
         <app-message [post]="post"></app-message>
       }
