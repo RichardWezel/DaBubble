@@ -17,13 +17,18 @@ export class FirebaseStorageService {
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
   currentUser: CurrentUserInterface = { name: '', email: '', avatar: '', status: '', dm: [], id: '' };
-  authUid = localStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l';
+  authUid = sessionStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l';
 
 
   unsubUsers;
   unsubChannels;
   unsubCurrentUser;
 
+
+  /**
+   * Im Constructor wird zuerst die Channel-Collection und User-Collection gespeichert.
+   * Dann wird der aktuelle User registriert. 
+   */
   constructor() {
     this.unsubChannels = this.getChannelCollection();
     this.unsubUsers = this.getUserCollection();
@@ -36,19 +41,23 @@ export class FirebaseStorageService {
     this.unsubCurrentUser();
   }
 
-  getCurrentUser() {
-    return onSnapshot(doc(this.firestore, "user", this.authUid), (snapshot) => {
-      let userData = snapshot.data() as CurrentUserInterface;
-      userData.id = snapshot.id;
-      userData.currentChannel =
-        this.channel.find(channel => channel.user.includes(snapshot.id))?.id
-        ||
-        userData.dm.find(dm => dm.contact.includes(snapshot.id))?.id;
-      this.currentUser = userData;
-    })
+  /**
+   * Diese Methode wird im Constructor aufgerufen und speichert alle Channels im Firebase im Array "channel".
+   */
+  getChannelCollection() {
+    return onSnapshot(collection(this.firestore, "channel"), (snapshot) => {
+      this.channel = [];
+      snapshot.forEach((doc) => {
+        const channelData = doc.data() as ChannelInterface;
+        channelData.id = doc.id;
+        this.channel.push(channelData);
+      });
+    });
   }
 
-
+  /**
+   * Diese Methode wird im Constructor aufgerufen und speichert alle User im Firebase im Array "user".
+   */
   getUserCollection() {
     return onSnapshot(collection(this.firestore, "user"), (snapshot) => {
       this.user = [];
@@ -60,16 +69,31 @@ export class FirebaseStorageService {
     });
   }
 
+  /**
+   * Diese Methode wird im Constructor aufgerufen und speichert den aktuellen User in die Variable "currentUser".
+   */
+  getCurrentUser() {
+    // Das onSnapshot Abonnement hört auf Änderungen am spezifischen Benutzer-Dokument ("user" Collection, Dokument mit ID this.authUid).
+    return onSnapshot(doc(this.firestore, "user", this.authUid), (snapshot) => {
+      let userData = snapshot.data() as CurrentUserInterface;
+      userData.id = snapshot.id; // wird das hier überhaupt gebraucht?
 
-  getChannelCollection() {
-    return onSnapshot(collection(this.firestore, "channel"), (snapshot) => {
-      this.channel = [];
-      snapshot.forEach((doc) => {
-        const channelData = doc.data() as ChannelInterface;
-        channelData.id = doc.id;
-        this.channel.push(channelData);
-      });
-    });
+      userData.currentChannel = sessionStorage.getItem("currentChannel") 
+        || this.channel.find(channel => channel.user.includes(snapshot.id))?.id
+        || userData.dm.find(dm => dm.contact === snapshot.id)?.id;
+
+      this.currentUser = userData;
+    })
+  }
+
+  /**
+   * Diese Methode speichert die übergebene channel-Id in currentUser.currentChannel. Diese channel-Id wird auch in eine  Web Storage API im Browser gespeichert. 
+   * Dies ermöglicht es deiner Anwendung, den aktuell ausgewählten Kanal über verschiedene Komponenten und Seiten hinweg zu verfolgen, solange die Browsersitzung aktiv ist.
+   * Wird in workspace/workspace-menu/channel-section angewendet beim click auf einen channel.
+   */
+  setChannel(channelId: string) {
+    this.currentUser.currentChannel = channelId;
+    sessionStorage.setItem("currentChannel", channelId);
   }
 
   // after Firebase Auth registration
@@ -123,22 +147,23 @@ export class FirebaseStorageService {
   }
 
 
-  async writeDm(userId: string, contact: string) {
+  async writeDm(userId: string, contact: string, newPost: PostInterface) {
     let sendUser = this.user[this.user.findIndex(user => user.id === userId)];
     let newDm = sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)];
+
     if (newDm) {
-      await updateDoc(doc(this.firestore, "user", userId), {
-        dm: [
-          ...sendUser.dm,
-          {
-            contact: contact,
-            id: this.uid.generateUid(),
-            posts: newDm.posts,
-          }
-        ]
+      newDm.posts.push(newPost);
+    } else {
+      sendUser.dm.push({
+        contact: contact,
+        id: this.uid.generateUid(),
+        posts: [newPost],
       });
-    };
-  }
+    }
+    await updateDoc(doc(this.firestore, "user", userId), {
+      dm: sendUser.dm
+    });
+  };
 
 
   async writePosts(channelId: string, newPost: PostInterface) {
@@ -152,6 +177,4 @@ export class FirebaseStorageService {
       });
     };
   }
-
-
 }

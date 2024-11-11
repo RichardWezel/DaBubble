@@ -2,7 +2,8 @@
 
 .thread {
   position: relative;
-  width: 480px;
+
+  max-width: 485px;
   height: 100%;
   display: flex;
   flex-direction: column;

@@ -1,10 +1,10 @@
 <section class="channel">
 
-  <div class="top-channel">
-    <app-channel-head></app-channel-head>
-    <app-channel-messages></app-channel-messages>
-  </div>
-  
-  <app-inputfield></app-inputfield>
+  <app-channel-head class="channel-head"></app-channel-head>
+
+  <app-channel-messages class="main-channel"></app-channel-messages>
+
+
+  <app-inputfield [thread]="false" class="channel-input"></app-inputfield>
 
 </section>

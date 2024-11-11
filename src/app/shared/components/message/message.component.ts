@@ -9,7 +9,7 @@ import { AuthorService } from '../../services/author.service.ts.service';
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'
 })
-export class MessageComponent implements OnInit{
+export class MessageComponent implements OnInit {
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
   authorName: string = '';
 
@@ -29,6 +29,17 @@ export class MessageComponent implements OnInit{
     this.authorService.getAuthorNameById(this.post.author).subscribe((name: string) => {
       this.authorName = name;
     });
+  }
+
+  postTime(timestamp: number) {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  lastThreadMsgTime() {
+    if (!this.post.threadMsg?.length) return '';
+    const date = new Date(this.post.threadMsg[this.post.threadMsg.length - 1].timestamp);
+    return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   }
 
 }

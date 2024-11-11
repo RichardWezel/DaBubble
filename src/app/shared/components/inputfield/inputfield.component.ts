@@ -1,14 +1,49 @@
-import { Component } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { FirebaseStorageService } from '../../services/firebase-storage.service';
+import { PostInterface } from '../../interfaces/post.interface';
+import { UidService } from '../../services/uid.service';
 
 @Component({
   selector: 'app-inputfield',
   standalone: true,
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './inputfield.component.html',
   styleUrl: './inputfield.component.scss'
 })
 export class InputfieldComponent {
+  storage = inject(FirebaseStorageService);
+  uid = inject(UidService);
+
+  @Input() thread: boolean = false;
 
   src = 'assets/icons/send.svg';
+  message: string = '';
 
+  constructor() { }
+
+  sendMessage() {
+    if (!this.message || !this.storage.currentUser.id || !this.storage.currentUser.currentChannel) return;
+    let newPost: PostInterface = {
+      text: this.message,
+      timestamp: new Date().getTime(),
+      author: this.storage.currentUser.id || '',
+      id: this.uid.generateUid(),
+      thread: false,
+      emoticons: [],
+      threadMsg: [],
+    };
+    if (this.isChannel()) {
+      this.storage.writePosts(this.storage.currentUser.currentChannel, newPost);
+    } else if (this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)) {
+      this.storage.writeDm(this.storage.currentUser.id, this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.contact || '', newPost);
+    }
+    this.message = '';
+  }
+
+  isChannel() {
+    return this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
+  }
 }
+
+

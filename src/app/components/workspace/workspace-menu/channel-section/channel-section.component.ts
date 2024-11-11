@@ -6,21 +6,16 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-channel-section',
   standalone: true,
-  imports: [NgFor, NgIf, FormsModule, CommonModule],
+  imports: [NgFor, NgIf, NgClass],
   templateUrl: './channel-section.component.html',
   styleUrl: './channel-section.component.scss'
 })
 export class ChannelSectionComponent {
-  // Injecting the Firebase storage service
+
   storage = inject(FirebaseStorageService);
 
-  // An array for storing channel names
-  channels: string[] = ['Entwicklerteam', 'Marketing', 'Vertrieb', 'Support'];
-
-  // Status variable to control visibility of the channel list
   isListVisible: boolean = true;
 
-  // Method to toggle the visibility of the list
   toggleList() {
     this.isListVisible = !this.isListVisible;
   }

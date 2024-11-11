@@ -1,5 +1,7 @@
 <section class="inputfield">
-  <textarea class="inputfield-textarea" placeholder="Schreibe eine Nachricht..."></textarea>
+  <textarea class="inputfield-textarea"
+    [placeholder]="thread ? 'Antworten...' : 'Schreibe an ' + storage.currentUser.currentChannelName"
+    [(ngModel)]="message"></textarea>
   <div class="inputfield-buttons">
     <div class="tags">
       <div class="icon appendix"></div>
@@ -7,7 +9,6 @@
       <div class="icon smileys"></div>
       <div class="icon at"></div>
     </div>
-    <button>
-    </button>
+    <button class="inputfield-send" (click)="sendMessage()"></button>
   </div>
 </section>

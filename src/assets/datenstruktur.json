@@ -1,167 +1,71 @@
-{
-    "member-collection": {
-        "n043n048n3840849n4n": {
-            "id": "n043n048n3840849n4n",
-            "name": "Frederik Beck",
-            "mail": "frederik.beck@gmail.com",
-            "password": "Hase83!",
-            "avatar-status": true,
-            "avatar-icon": "avatar-1",
-            "imgRefStorage": "",
-            "workspaces-collection": [
-                {
-                    "name": "Devspace",
-                    "id": "j43kj5k4j3k5j3k4jkj34kj5k3j4"
-                } 
-            ],
-            "directMessages": [
-                {
-                    "memberId": "EQ43n0HKFDIO0849n4n"
-                }
-            ]
-        },
-        "EQ43n0HKFDIO0849n4n": {
-            "id": "EQ43n0HKFDIO0849n4n",
-            "name": "Sofia Müller",
-            "mail": "sofia.mueller@gmail.com",
-            "password": "123456jkd",
-            "avatar-status": false,
-            "avatar-icon": "avatar-1",
-            "imgRefStorage": "img_73939",
-            "workspaces-collection": [
-                {
-                    "name": "Devspace",
-                    "id": "j43kj5k4j3k5j3k4jkj34kj5k3j4"
-                },
-                {
-                    "name": "Kochwelt",
-                    "id": "KHG86499hkggh&5665JHJJ"
-                }
-            ],
-            "directMessages": []
-        },
-        "kjkJ66JKJhd775Kl874": {
-            "id": "kjkJ66JKJhd775Kl874",
-            "name": "Noah Braun",
-            "mail": "noah.braun@gmail.com",
-            "password": "DingDong91",
-            "avatar-status": true,
-            "avatar-icon": "avatar-5",
-            "imgRefStorage": "img_739555",
-            "workspaces-collection": [
-                {
-                    "name": "Devspace",
-                    "id": "j43kj5k4j3k5j3k4jkj34kj5k3j4"
-                }
-            ],
-            "directMessages": []
-        }
-    },
-    "workspaces-collection": {
-        "99DSJK68hjkjew68738GHjh": {
-            "name": "Devspace",
-            "id": "j43kj5k4j3k5j3k4jkj34kj5k3j4",
-            "member-collection": [
-                "EQ43n0HKFDIO0849n4n",
-                "n043n048n3840849n4n"
-            ],
-            "channel-collection": [
-                {
-                    "name": "Entwicklerteam",
-                    "messages-collection": [
-                        {
-                            "date": "895869890869548",
-                            "messages": [
-                                {
-                                    "time": "787389747565",
-                                    "author": "Noah Braun",
-                                    "message": "Welche Version ist aktuell von Angular?",
-                                    "emoji-reactions": [
-                                        {
-                                            "type": "U+1F600",
-                                            "members": [
-                                                {
-                                                    "memberId": "EQ43n0HKFDIO0849n4n"
-                                                }
-                                            ]
-                                        }
-                                    ],
-                                    "thread": {
-                                        "status": true,
-                                        "id": 8734757934
-                                    }
-                                },
-                                {
-                                    "time": "10110192834775",
-                                    "author": "Federik Beck",
-                                    "message": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque blandit odio efficitur lectus vestibulum, quis accumsan ante vulputate. Quisque tristique iaculis erat, eu faucibus lacus iaculis ac.",
-                                    "emoji-reactions": [
-                                        {
-                                            "type": "U+1F600",
-                                            "members": [
-                                                {
-                                                    "memberId": "EQ43n0HKFDIO0849n4n"
-                                                }
-                                            ]
-                                        }
-                                    ],
-                                    "thread": {
-                                        "status": false,
-                                        "id": ""
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            "date": "7895798579843798",
-                            "messages": [
-                                {
-                                    "time": "10110192834775",
-                                    "author": "Federik Beck",
-                                    "message": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque blandit odio efficitur lectus vestibulum, quis accumsan ante vulputate. Quisque tristique iaculis erat, eu faucibus lacus iaculis ac.",
-                                    "emoji-reactions": [
-                                        {
-                                            "type": "U+1F600",
-                                            "members": [
-                                                {
-                                                    "memberId": "EQ43n0HKFDIO0849n4n"
-                                                }
-                                            ]
-                                        }
-                                    ],
-                                    "thread": {
-                                        "status": false,
-                                        "id": ""
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ],
-            "threads-collection": [
-                {
-                    "id": 8734757934,
-                    "label": "Entwicklerteam",
-                    "messages": [
-                        {
-                            "time": "787389747565",
-                            "authorId": "kjkJ66JKJhd775Kl874",
-                            "message": "Welche Version ist aktuell von Angular?",
-                            "emoji-reactions": [
-                                {
-                                    "type": "U+1F600",
-                                    "members": [
-                                        {
-                                            "memberId": "EQ43n0HKFDIO0849n4n"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }
+"user": {
+    "oYhCXFUTy11sm1uKLK4l": {
+        "avatar": "profile-6.png",
+        "email": "user1@example.com",
+        "name": "User1",
+        "status": "online",
+        "dm": [
+            {
+                "contact": "BnmpU2U2CzA671AY4tms",
+                "id": "5df3c0de-a242-472b-8de7-dbc44b072743",
+                "posts": [
+                    {
+                        "author": "BnmpU2U2CzA671AY4tms",
+                        "emoticons": [],
+                        "id": "6ed83a2f-96fe-44dd-9367-09cdcda5394d",
+                        "text": "Hey User 1! Wie läuft es bei dir? Bis wann bist du mit deiner Aufgabe fertig?",
+                        "thread": true,
+                        "threadMsg": [],
+                        "timestamp": 1731297024434
+                    },
+                    {
+                        "author": "oYhCXFUTy11sm1uKLK4l",
+                        "emoticons": [],
+                        "id": "833d642e-19c8-482d-94d0-2133f81f407d",
+                        "text": "Hey Elias, ich muss nur noch ein paar Kleinigkeiten erledigen, dann müsste ich Ende der Woche soweit sein. Wie läuft es bei dir?",
+                        "thread": false,
+                        "threadMsg": [],
+                        "timestamp": 1731297024434
+                    },
+                    {
+                        "author": "BnmpU2U2CzA671AY4tms",
+                        "emoticons": [],
+                        "id": "d16b38c3-c6ed-48e9-a9f0-38e66d2b7967",
+                        "text": "Ich komme gerade mit der Datenstruktur nicht klar. Kannst du mir da noch behilflich sein?",
+                        "thread": false,
+                        "threadMsg": [],
+                        "timestamp": 1731297152050
+                    },
+                    {
+                        "author": "BnmpU2U2CzA671AY4tms",
+                        "emoticons": [],
+                        "id": "c70cff87-346b-4862-bcc0-70de505acf64",
+                        "text": "Also zum Beispiel wüsste ich gerne, wie die posts im dm Array des Users organisiert sind.",
+                        "thread": false,
+                        "threadMsg": [],
+                        "timestamp": 1731297790319
+                    },
+                    {
+                        "author": "oYhCXFUTy11sm1uKLK4l",
+                        "emoticons": [],
+                        "id": "70398c3c-1b52-4b09-9374-711b5cf252df",
+                        "text": "Ja, kein Ding! Sollen wir uns heute Nachmittag kurz treffen im Konferenzraum 3?",
+                        "thread": false,
+                        "threadMsg": [],
+                        "timestamp": 1731298199115
+                    },
+                ]
+            },
+            {
+                ...
+            },
+            {
+                ...
+            },
+            {
+                ...
+            }
+        ]
     }
+       
 }
