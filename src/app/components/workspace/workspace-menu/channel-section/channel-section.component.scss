@@ -106,7 +106,8 @@ main {
             .open-channel {
                 padding-left: 25px;
                 
-                &:hover{
+                &:hover,
+                &.active{
                     cursor: pointer;
                     border-radius: 20px;
                     background-color: $backgroundColor;
@@ -121,6 +122,9 @@ main {
                         }
                     }
                 }
+
+
+
                 .open-channel-content {
                     padding: 4px 80px 4px 20px;
                     display: flex;
