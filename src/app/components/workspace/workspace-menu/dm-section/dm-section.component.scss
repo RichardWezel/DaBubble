@@ -97,21 +97,25 @@ main {
         display: flex;
         flex-direction: column;
         gap: 13px;
+
         .ws-member {
             .ws-member-content {
                 display: flex;
                 gap: 15px;
                 padding: 4px 20px 4px;
                 align-items: center;
-                &:hover{
+                transition: background-color 0.3s ease, color 0.3s ease;
+
+                &:hover,
+                &.active{
                     cursor: pointer;
                     background-color: $backgroundColor;
                     border-radius: 30px;
+                    
                     .member-name{
                         color: $thirdColor;
                         font-weight: 700;
                     }
-                   
                 }
                 .member-profile-icon {
                     width: 50px;

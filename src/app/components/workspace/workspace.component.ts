@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ChannelComponent } from './channel/channel.component';
 import { WorkspaceMenuComponent } from './workspace-menu/workspace-menu.component';
@@ -12,7 +13,8 @@ import { FirebaseStorageService } from '../../shared/services/firebase-storage.s
     NavbarComponent,
     WorkspaceMenuComponent,
     ChannelComponent,
-    ThreadComponent
+    ThreadComponent,
+    CommonModule
   ],
   templateUrl: './workspace.component.html',
   styleUrl: './workspace.component.scss'

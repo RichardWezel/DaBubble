@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor, NgIf, NgClass } from '@angular/common';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 
 @Component({
   selector: 'app-dm-section',
   standalone: true,
-  imports: [NgFor, NgIf],
+  imports: [NgFor, NgIf, NgClass],
   templateUrl: './dm-section.component.html',
   styleUrl: './dm-section.component.scss'
 })

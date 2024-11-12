@@ -19,30 +19,32 @@ export class FirebaseStorageService {
   currentUser: CurrentUserInterface = { name: '', email: '', avatar: '', status: '', dm: [], id: '' };
   authUid = sessionStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l';
 
-
-  unsubUsers;
-  unsubChannels;
-  unsubCurrentUser;
-
+  unsubUsers: () => void = () => {};
+  unsubChannels: () => void = () => {};
+  unsubscribeSnapshot: () => void = () => {};
 
   /**
-   * Im Constructor wird zuerst die Channel-Collection und User-Collection gespeichert.
-   * Dann wird der aktuelle User registriert. 
+   * Initializes the service by subscribing to channel and user collections
+   * and fetching the current user.
    */
   constructor() {
     this.unsubChannels = this.getChannelCollection();
     this.unsubUsers = this.getUserCollection();
-    this.unsubCurrentUser = this.getCurrentUser();
-  }
-
-  ngOnDestroy(): void {
-    this.unsubUsers();
-    this.unsubChannels();
-    this.unsubCurrentUser();
+    this.getCurrentUser();
   }
 
   /**
-   * Diese Methode wird im Constructor aufgerufen und speichert alle Channels im Firebase im Array "channel".
+   * Cleans up all active subscriptions when the service is destroyed.
+   */
+  ngOnDestroy(): void {
+    this.unsubUsers();
+    this.unsubChannels();
+    this.unsubscribeSnapshot();
+  }
+
+  /**
+   * Subscribes to the "channel" collection in Firestore and updates the local channel array.
+   * @returns A function to unsubscribe from the snapshot listener.
    */
   getChannelCollection() {
     return onSnapshot(collection(this.firestore, "channel"), (snapshot) => {
@@ -52,12 +54,14 @@ export class FirebaseStorageService {
         channelData.id = doc.id;
         this.channel.push(channelData);
       });
+      console.log("Channel Collection: ", this.channel)
     });
   }
 
   /**
-   * Diese Methode wird im Constructor aufgerufen und speichert alle User im Firebase im Array "user".
-   */
+  * Subscribes to the "user" collection in Firestore and updates the local user array.
+  * @returns A function to unsubscribe from the snapshot listener.
+  */
   getUserCollection() {
     return onSnapshot(collection(this.firestore, "user"), (snapshot) => {
       this.user = [];
@@ -66,37 +70,96 @@ export class FirebaseStorageService {
         userData.id = doc.id;
         this.user.push(userData);
       });
+      console.log("User Collection: ", this.user); // Korrigiert
     });
   }
 
   /**
-   * Diese Methode wird im Constructor aufgerufen und speichert den aktuellen User in die Variable "currentUser".
+   * Subscribes to the current user's document in Firestore and updates the currentUser object.
    */
   getCurrentUser() {
-    // Das onSnapshot Abonnement hört auf Änderungen am spezifischen Benutzer-Dokument ("user" Collection, Dokument mit ID this.authUid).
-    return onSnapshot(doc(this.firestore, "user", this.authUid), (snapshot) => {
-      let userData = snapshot.data() as CurrentUserInterface;
-      userData.id = snapshot.id; // wird das hier überhaupt gebraucht?
-
-      userData.currentChannel = sessionStorage.getItem("currentChannel") 
-        || this.channel.find(channel => channel.user.includes(snapshot.id))?.id
-        || userData.dm.find(dm => dm.contact === snapshot.id)?.id;
-
+    const userDocRef = doc(this.firestore, "user", this.authUid);
+    this.unsubscribeSnapshot = onSnapshot(userDocRef, (snapshot) => {
+      let userData = this.extractUserData(snapshot); 
+      userData.currentChannel = this.determineCurrentChannel(userData);
       this.currentUser = userData;
-    })
+      console.log("Current User: ",this.currentUser)
+    }, (error) => {
+      console.error("Fehler beim Abrufen des Benutzer-Snapshots:", error);
+      // Optional: Zusätzliche Fehlerbehandlung
+    });
   }
 
   /**
-   * Diese Methode speichert die übergebene channel-Id in currentUser.currentChannel. Diese channel-Id wird auch in eine  Web Storage API im Browser gespeichert. 
-   * Dies ermöglicht es deiner Anwendung, den aktuell ausgewählten Kanal über verschiedene Komponenten und Seiten hinweg zu verfolgen, solange die Browsersitzung aktiv ist.
-   * Wird in workspace/workspace-menu/channel-section angewendet beim click auf einen channel.
+   * Extracts user data from a Firestore snapshot and assigns the document ID.
+   * @param snapshot - The Firestore document snapshot.
+   * @returns The extracted user data as a CurrentUserInterface object.
+   */
+  private extractUserData(snapshot: any): CurrentUserInterface {
+    let userData = snapshot.data() as CurrentUserInterface;
+    userData.id = snapshot.id;
+    return userData;
+  }
+
+   /**
+   * Determines the current channel for the user based on session storage, channels, or DMs.
+   * @param userData - The current user's data.
+   * @returns The ID of the current channel or undefined if none found.
+   */
+  private determineCurrentChannel(userData: CurrentUserInterface): string | undefined {
+    const sessionChannel = sessionStorage.getItem("currentChannel");
+    
+    if (sessionChannel) {
+      return sessionChannel;
+    }
+  
+    if (userData.id) {
+      const channelId = this.findUserChannel(userData.id);
+      if (channelId) {
+        return channelId;
+      }
+  
+      return this.findUserDm(userData);
+    }
+  
+    return undefined;
+  }
+  
+  /**
+   * Finds a channel that includes the specified user ID.
+   * @param userId - The ID of the user to search for in channels.
+   * @returns The ID of the found channel or undefined if not found.
+   */
+  private findUserChannel(userId: string): string | undefined {
+    const channel = this.channel.find(channel => channel.user.includes(userId));
+    return channel?.id;
+  }
+  
+   /**
+   * Finds a direct message (DM) that includes the specified user ID as a contact.
+   * @param userData - The current user's data.
+   * @returns The ID of the found DM or undefined if not found.
+   */
+  private findUserDm(userData: CurrentUserInterface): string | undefined {
+    const dm = userData.dm.find(dm => dm.contact === userData.id);
+    return dm?.id;
+  }
+
+  /**
+   * Sets the current channel for the user and stores it in session storage.
+   * @param channelId - The ID of the channel to set as current.
    */
   setChannel(channelId: string) {
     this.currentUser.currentChannel = channelId;
     sessionStorage.setItem("currentChannel", channelId);
+    console.log("Current Channel of User: ", this.currentUser.currentChannel)
   }
 
-  // after Firebase Auth registration
+  /**
+   * Adds a new user to the Firestore "user" collection after Firebase Auth registration.
+   * @param authUid - The authenticated user's UID.
+   * @param userData - An object containing the user's name, email, and avatar.
+   */
   async addUser(authUid: string, userData: { name: string, email: string, avatar: string }) {
     await setDoc(doc(this.firestore, "user", authUid), {
       name: userData.name,
@@ -111,7 +174,10 @@ export class FirebaseStorageService {
     } as UserInterface);
   }
 
-  // after sending new channel form
+   /**
+   * Adds a new channel to the Firestore "channel" collection after sending the new channel form.
+   * @param channelData - An object containing the channel's name, description, and owner.
+   */
   async addChannel(channelData: { name: string, description: string, owner: string }) {
     await setDoc(doc(this.firestore, "channel"), {
       name: channelData.name,
@@ -123,7 +189,11 @@ export class FirebaseStorageService {
   }
 
 
-  // after sending edit user profile form
+  /**
+   * Updates an existing user's profile in the Firestore "user" collection after sending the edit user profile form.
+   * @param userId - The ID of the user to update.
+   * @param userData - An object containing the updated user data.
+   */
   async updateUser(userId: string, userData: UserInterface) {
     await updateDoc(doc(this.firestore, "user", userId), {
       name: userData.name,
@@ -135,7 +205,11 @@ export class FirebaseStorageService {
   }
 
 
-  // after sending edit channel form
+  /**
+   * Updates an existing channel in the Firestore "channel" collection after sending the edit channel form.
+   * @param channelId - The ID of the channel to update.
+   * @param channelData - An object containing the updated channel data.
+   */
   async updateChannel(channelId: string, channelData: ChannelInterface) {
     await updateDoc(doc(this.firestore, "channel", channelId), {
       name: channelData.name,
@@ -146,7 +220,12 @@ export class FirebaseStorageService {
     })
   }
 
-
+  /**
+   * Writes a direct message (DM) post for a user and updates the Firestore "user" collection.
+   * @param userId - The ID of the user sending the DM.
+   * @param contact - The ID of the contact receiving the DM.
+   * @param newPost - The new post to add to the DM.
+   */
   async writeDm(userId: string, contact: string, newPost: PostInterface) {
     let sendUser = this.user[this.user.findIndex(user => user.id === userId)];
     let newDm = sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)];
@@ -165,7 +244,11 @@ export class FirebaseStorageService {
     });
   };
 
-
+  /**
+   * Writes a new post to a channel and updates the Firestore "channel" collection.
+   * @param channelId - The ID of the channel to add the post to.
+   * @param newPost - The new post to add.
+   */
   async writePosts(channelId: string, newPost: PostInterface) {
     let currentChannel = this.channel[this.channel.findIndex(channel => channel.id === channelId)];
     if (currentChannel) {
