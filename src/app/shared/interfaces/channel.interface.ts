@@ -5,7 +5,6 @@ export interface ChannelInterface {
   description: string,
   user: string[],
   owner: string,
-  status?: string,
   posts?: PostInterface[],
   id?: string
 }
