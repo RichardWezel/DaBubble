@@ -130,13 +130,19 @@ main {
                         width: 14px;
                         height: 14px;
                         border-radius: 100%;
-                        background-color: $successColor;
+                        background-color: $textGrey;
                         border: 2px solid #fff;
                         position: absolute;
                         right: 0;
                         bottom: 0;
                     }
+
+                    .online{
+                        background-color: $successColor;
+                    }
                 }
+
+
 
                 .member-name {
                     font-family: "Nunito";

@@ -236,6 +236,16 @@ export class FirebaseStorageService {
   }
 
   /**
+ * Überprüft, ob ein bestimmter Benutzer online ist, basierend auf den lokal gespeicherten Benutzerdaten.
+ * @param userId - Die ID des Benutzers, der überprüft werden soll.
+ * @returns `true` wenn der Benutzer online ist, `false` ansonsten.
+ */
+isUserOnline(userId: string): boolean {
+  const user = this.user.find(u => u.id === userId);
+  return user ? user.online : false;
+}
+
+  /**
    * Writes a direct message (DM) post for a user and updates the Firestore "user" collection.
    * @param userId - The ID of the user sending the DM.
    * @param contact - The ID of the contact receiving the DM.
