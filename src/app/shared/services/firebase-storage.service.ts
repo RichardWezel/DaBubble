@@ -6,6 +6,7 @@ import { ChannelInterface } from '../interfaces/channel.interface';
 import { PostInterface } from '../interfaces/post.interface';
 import { CurrentUserInterface } from '../interfaces/current-user-interface';
 import { UidService } from './uid.service';
+import { OnlineStatusService } from '../services/online-status.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,10 +14,11 @@ import { UidService } from './uid.service';
 export class FirebaseStorageService {
   firestore: Firestore = inject(Firestore);
   uid = inject(UidService);
+  onlineStatusService = inject(OnlineStatusService); 
 
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
-  currentUser: CurrentUserInterface = { name: '', email: '', avatar: '', status: '', dm: [], id: '' };
+  currentUser: CurrentUserInterface = { name: '', email: '', avatar: '', online: false, dm: [], id: '' };
   authUid = sessionStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l';
 
   unsubUsers: () => void = () => {};
@@ -40,6 +42,11 @@ export class FirebaseStorageService {
     this.unsubUsers();
     this.unsubChannels();
     this.unsubscribeSnapshot();
+    if (this.currentUser.id) {
+      this.onlineStatusService.setUserOnlineStatus(this.currentUser.id, false)
+        .then(() => console.log(`User ${this.currentUser.id} set to offline.`))
+        .catch(error => console.error(`Error setting user ${this.currentUser.id} offline:`, error));
+    }
   }
 
   /**
@@ -79,14 +86,22 @@ export class FirebaseStorageService {
    */
   getCurrentUser() {
     const userDocRef = doc(this.firestore, "user", this.authUid);
-    this.unsubscribeSnapshot = onSnapshot(userDocRef, (snapshot) => {
+    this.unsubscribeSnapshot = onSnapshot(userDocRef, async (snapshot) => { 
       let userData = this.extractUserData(snapshot); 
       userData.currentChannel = this.determineCurrentChannel(userData);
       this.currentUser = userData;
-      console.log("Current User: ",this.currentUser)
+
+      // set online-status of current user
+      if (this.currentUser.id) {
+        try {
+          await this.onlineStatusService.setUserOnlineStatus(this.currentUser.id, true);
+          console.log(`User ${this.currentUser.id} set to online.`);
+        } catch (error) {
+          console.error(`Error setting user ${this.currentUser.id} online:`, error);
+        }
+      }
     }, (error) => {
       console.error("Fehler beim Abrufen des Benutzer-Snapshots:", error);
-      // Optional: Zusätzliche Fehlerbehandlung
     });
   }
 
@@ -165,7 +180,7 @@ export class FirebaseStorageService {
       name: userData.name,
       email: userData.email,
       avatar: userData.avatar,
-      status: '',
+      online: false,
       dm: [{
         contact: authUid,
         id: this.uid.generateUid(),
@@ -199,7 +214,7 @@ export class FirebaseStorageService {
       name: userData.name,
       email: userData.email,
       avatar: userData.avatar,
-      status: userData.status,
+      online: userData.online,
       dm: userData.dm
     })
   }

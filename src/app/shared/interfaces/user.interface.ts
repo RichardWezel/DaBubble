@@ -4,7 +4,7 @@ export interface UserInterface {
   name: string,
   email: string,
   avatar: string,
-  status: string,
+  online: boolean,
   dm: { contact: string, id: string, posts: PostInterface[] }[];
   id?: string
 }
