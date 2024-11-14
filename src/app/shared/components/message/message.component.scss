@@ -1,19 +1,50 @@
 @import "variables";
 
 main {
+    position: relative;
     display: flex;
-    padding-left: 45px;
+    padding: 0 144px;
     gap: 30px;
+
+    .avatar {
+        position: absolute;
+        height: 70px;
+        width: 70px;
+        top: 0;
+        left: 45px;
+        border-radius: 50%;
+
+        &.self {
+            left: unset;
+            right: 45px;
+        }
+
+        img {
+            height: 100%;
+            width: 100%;
+            border-radius: 50%;
+        }
+    }
+
     .message-section {
         display: flex;
         width: 100%;
         flex-direction: column;
         gap: 8px;
 
+        &.self {
+            align-items: flex-end;
+        }
+
         .author-section {
             display: flex;
             align-items: center;
             gap: 20px;
+
+            &.self {
+                flex-direction: row-reverse;
+            }
+
             .author {
                 font-family: "Nunito";
                 font-size: 18px;
@@ -22,7 +53,7 @@ main {
                 text-align: left;
             }
         }
-       
+
         .message {
             padding: 15px;
             border-radius: 0px 30px 30px 30px;
@@ -33,12 +64,23 @@ main {
             line-height: 24.55px;
             text-align: left;
             width: fit-content;
+
+            &.self {
+                border-radius: 30px 0px 30px 30px;
+                background-color: $secondaryColor;
+                color: $textWhite;
+            }
         }
 
         .answer-section {
             display: flex;
             gap: 20px;
             align-items: center;
+
+            &.self {
+                justify-content: flex-end;
+            }
+
             .answers {
                 font-family: "Nunito";
                 font-size: 18px;
@@ -58,5 +100,5 @@ main {
         text-align: left;
         color: #686868;
     }
-   
+
 }

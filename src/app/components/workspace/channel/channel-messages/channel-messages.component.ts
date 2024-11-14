@@ -48,7 +48,7 @@ export class ChannelMessagesComponent extends ChannelHeadComponent {
   trackByDate(post: PostInterface) {
     const date = new Date(post.timestamp);
     this.compareTimestamp = new Date(post.timestamp).setHours(0, 0, 0, 0);
-    const formattedDate = date.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const formattedDate = date.getDate() === new Date().getDate() ? 'Heute' : date.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     return formattedDate;
   }
 

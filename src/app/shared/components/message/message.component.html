@@ -1,15 +1,19 @@
 <main>
-  <section class="profile-section"></section>
-  <section class="message-section">
 
-    <div class="author-section">
+  <div class="avatar" [class.self]="post.author === storage.currentUser.id">
+    <img [src]="'assets/img/profile-pictures/' + authorAvatar" alt="avatar">
+  </div>
+
+  <section class="message-section" [class.self]="post.author === storage.currentUser.id">
+
+    <div class="author-section" [class.self]="post.author === storage.currentUser.id">
       <div class="author">{{authorName}}</div>
       <div class="post-time">{{ postTime(post.timestamp) + ' Uhr' }}</div>
     </div>
 
-    <div class="message">{{post.text}}</div>
-    @if (post.thread === true) {
-      <div class="answer-section">
+    <div class="message" [class.self]="post.author === storage.currentUser.id">{{post.text}}</div>
+    @if (post.thread) {
+      <div class="answer-section" [class.self]="post.author === storage.currentUser.id">
         <div class="answers">{{post.threadMsg?.length + (post.threadMsg?.length === 1 ? ' Antwort' : ' Antworten')}}
         </div>
         <div class="post-time">Letzte Antwort {{ lastThreadMsgTime() + ' Uhr' }}

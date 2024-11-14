@@ -1,6 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { PostInterface } from '../../interfaces/post.interface';
 import { AuthorService } from '../../services/author.service.ts.service';
+import { User } from '@angular/fire/auth';
+import { UserInterface } from '../../interfaces/user.interface';
+import { FirebaseStorageService } from '../../services/firebase-storage.service';
 
 @Component({
   selector: 'app-message',
@@ -10,8 +13,10 @@ import { AuthorService } from '../../services/author.service.ts.service';
   styleUrl: './message.component.scss'
 })
 export class MessageComponent implements OnInit {
+  storage = inject(FirebaseStorageService);
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
   authorName: string = '';
+  authorAvatar: string = '';
 
   constructor(private authorService: AuthorService) { }
 
@@ -26,8 +31,9 @@ export class MessageComponent implements OnInit {
    * Diese Methode verwendet den authorService, um den Namen basierend auf der ID abzurufen. Wenn der Name geladen ist, wird er der Variable
    */
   private resolveAuthorName() {
-    this.authorService.getAuthorNameById(this.post.author).subscribe((name: string) => {
-      this.authorName = name;
+    this.authorService.getAuthorNameById(this.post.author).subscribe((user: UserInterface) => {
+      this.authorName = user.name;
+      this.authorAvatar = user.avatar;
     });
   }
 
