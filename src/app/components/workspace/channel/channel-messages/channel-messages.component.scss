@@ -11,3 +11,10 @@ main {
     flex-direction: column;
     gap: 20px;
 }
+
+app-message {
+    &:hover {
+        cursor: pointer;
+        background-color: $backgroundColor;
+    }
+}

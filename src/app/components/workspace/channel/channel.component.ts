@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ChannelHeadComponent } from "./channel-head/channel-head.component";
 import { InputfieldComponent } from "../../../shared/components/inputfield/inputfield.component";
 import { ChannelMessagesComponent } from "./channel-messages/channel-messages.component";
+import { FirebaseStorageService } from '../../../shared/services/firebase-storage.service';
 
 @Component({
   selector: 'app-channel',
@@ -11,6 +12,7 @@ import { ChannelMessagesComponent } from "./channel-messages/channel-messages.co
   styleUrl: './channel.component.scss'
 })
 export class ChannelComponent {
+  storage = inject(FirebaseStorageService);
 
 
   constructor() { }

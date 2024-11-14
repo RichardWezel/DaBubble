@@ -9,21 +9,21 @@
         @if (currentDate(post.timestamp) > compareTimestamp) {
           <app-date-separator [date]="trackByDate(post)"></app-date-separator>
         }
-        <app-message [post]="post"></app-message>
+        <app-message [post]="post" (click)="openThread(post.id)"></app-message>
       }
       {{ resetCompareTimestamp() }}
     }
 
     @if(findChannel() === 'dm') {
-      
-        @for (post of getPostsofDm(); track $index) {
-          @if (currentDate(post.timestamp) > compareTimestamp) {
-            <app-date-separator [date]="trackByDate(post)"></app-date-separator>
-          }
-          <app-message [post]="post"></app-message>
+
+      @for (post of getPostsofDm(); track $index) {
+        @if (currentDate(post.timestamp) > compareTimestamp) {
+          <app-date-separator [date]="trackByDate(post)"></app-date-separator>
         }
-        {{ resetCompareTimestamp() }}
+        <app-message [post]="post" (click)="openThread(post.id)"></app-message>
+      }
+      {{ resetCompareTimestamp() }}
     }
-    
+
   </section>
 </main>

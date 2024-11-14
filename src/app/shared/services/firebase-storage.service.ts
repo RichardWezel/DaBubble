@@ -14,16 +14,16 @@ import { OnlineStatusService } from '../services/online-status.service';
 export class FirebaseStorageService {
   firestore: Firestore = inject(Firestore);
   uid = inject(UidService);
-  onlineStatusService = inject(OnlineStatusService); 
+  onlineStatusService = inject(OnlineStatusService);
 
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
   currentUser: CurrentUserInterface = { name: '', email: '', avatar: '', online: false, dm: [], id: '' };
   authUid = sessionStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l';
 
-  unsubUsers: () => void = () => {};
-  unsubChannels: () => void = () => {};
-  unsubscribeSnapshot: () => void = () => {};
+  unsubUsers: () => void = () => { };
+  unsubChannels: () => void = () => { };
+  unsubscribeSnapshot: () => void = () => { };
 
   /**
    * Initializes the service by subscribing to channel and user collections
@@ -86,9 +86,11 @@ export class FirebaseStorageService {
    */
   getCurrentUser() {
     const userDocRef = doc(this.firestore, "user", this.authUid);
-    this.unsubscribeSnapshot = onSnapshot(userDocRef, async (snapshot) => { 
-      let userData = this.extractUserData(snapshot); 
+    this.unsubscribeSnapshot = onSnapshot(userDocRef, async (snapshot) => {
+      let userData = this.extractUserData(snapshot);
       userData.currentChannel = this.determineCurrentChannel(userData);
+      userData.threadOpen = false;
+      userData.postId = '';
       this.currentUser = userData;
 
       // set online-status of current user
@@ -116,30 +118,30 @@ export class FirebaseStorageService {
     return userData;
   }
 
-   /**
-   * Determines the current channel for the user based on session storage, channels, or DMs.
-   * @param userData - The current user's data.
-   * @returns The ID of the current channel or undefined if none found.
-   */
+  /**
+  * Determines the current channel for the user based on session storage, channels, or DMs.
+  * @param userData - The current user's data.
+  * @returns The ID of the current channel or undefined if none found.
+  */
   private determineCurrentChannel(userData: CurrentUserInterface): string | undefined {
     const sessionChannel = sessionStorage.getItem("currentChannel");
-    
+
     if (sessionChannel) {
       return sessionChannel;
     }
-  
+
     if (userData.id) {
       const channelId = this.findUserChannel(userData.id);
       if (channelId) {
         return channelId;
       }
-  
+
       return this.findUserDm(userData);
     }
-  
+
     return undefined;
   }
-  
+
   /**
    * Finds a channel that includes the specified user ID.
    * @param userId - The ID of the user to search for in channels.
@@ -149,12 +151,12 @@ export class FirebaseStorageService {
     const channel = this.channel.find(channel => channel.user.includes(userId));
     return channel?.id;
   }
-  
-   /**
-   * Finds a direct message (DM) that includes the specified user ID as a contact.
-   * @param userData - The current user's data.
-   * @returns The ID of the found DM or undefined if not found.
-   */
+
+  /**
+  * Finds a direct message (DM) that includes the specified user ID as a contact.
+  * @param userData - The current user's data.
+  * @returns The ID of the found DM or undefined if not found.
+  */
   private findUserDm(userData: CurrentUserInterface): string | undefined {
     const dm = userData.dm.find(dm => dm.contact === userData.id);
     return dm?.id;
@@ -189,10 +191,10 @@ export class FirebaseStorageService {
     } as UserInterface);
   }
 
-   /**
-   * Adds a new channel to the Firestore "channel" collection after sending the new channel form.
-   * @param channelData - An object containing the channel's name, description, and owner.
-   */
+  /**
+  * Adds a new channel to the Firestore "channel" collection after sending the new channel form.
+  * @param channelData - An object containing the channel's name, description, and owner.
+  */
   async addChannel(channelData: { name: string, description: string, owner: string }) {
     await setDoc(doc(this.firestore, "channel"), {
       name: channelData.name,
@@ -240,10 +242,10 @@ export class FirebaseStorageService {
  * @param userId - Die ID des Benutzers, der überprüft werden soll.
  * @returns `true` wenn der Benutzer online ist, `false` ansonsten.
  */
-isUserOnline(userId: string): boolean {
-  const user = this.user.find(u => u.id === userId);
-  return user ? user.online : false;
-}
+  isUserOnline(userId: string): boolean {
+    const user = this.user.find(u => u.id === userId);
+    return user ? user.online : false;
+  }
 
   /**
    * Writes a direct message (DM) post for a user and updates the Firestore "user" collection.

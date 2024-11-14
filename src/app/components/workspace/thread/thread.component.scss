@@ -2,16 +2,34 @@
 
 .thread {
   position: relative;
-
-  max-width: 485px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 24px;
+  padding: 96px 24px 168px;
   border-radius: 32px;
   background-color: $textWhite;
 
-  app-thread-messages {
+
+  .main-thread {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
     flex: 1;
+    margin-bottom: 25px;
+  }
+
+  .thread-head {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  .thread-input {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 0 24px 24px;
   }
 }

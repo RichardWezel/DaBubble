@@ -63,4 +63,10 @@ export class ChannelMessagesComponent extends ChannelHeadComponent {
   trackByPostId(index: number, post: PostInterface): string {
     return post.id;
   }
+
+  openThread(postId: string) {
+    this.storage.currentUser.postId = postId;
+    this.storage.currentUser.threadOpen = true;
+  }
+
 }

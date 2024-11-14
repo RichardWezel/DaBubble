@@ -1,1 +1,9 @@
-<p>thread-head works!</p>
+<section class="thread-head">
+  <div class="thread-name">
+    <h3>Thread</h3>
+    <p class="threadSource">{{ channelName() }}</p>
+  </div>
+  <div (click)="storage.currentUser.threadOpen = false" class="closeThread">
+    <img src="assets/icons/closeThread.svg" alt="close">
+  </div>
+</section>

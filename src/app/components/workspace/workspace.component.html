@@ -3,7 +3,6 @@
     <div class="container">
         <app-workspace-menu></app-workspace-menu>
         <app-channel></app-channel>
-        <app-thread></app-thread>
+        <app-thread [class.openThread]="storage.currentUser.threadOpen"></app-thread>
     </div>
 </main>
-
