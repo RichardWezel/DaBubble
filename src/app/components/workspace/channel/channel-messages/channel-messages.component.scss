@@ -1,9 +1,12 @@
 @import 'variables';
 
 main {
-    margin-top: 246px;
-    padding-left: 35px;
-    padding-right: 35px;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    margin: 24px 0;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column-reverse;
 }
 
 .channel-message {
@@ -13,6 +16,8 @@ main {
 }
 
 app-message {
+    scroll-snap-align: end;
+
     &:hover {
         cursor: pointer;
         background-color: $backgroundColor;

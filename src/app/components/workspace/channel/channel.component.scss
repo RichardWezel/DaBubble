@@ -4,7 +4,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  padding: 96px 40px 168px;
+  padding: 96px 0 168px;
   display: flex;
   flex-direction: column;
   border-radius: 32px;
@@ -13,9 +13,8 @@
   .main-channel {
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
     flex: 1;
-    margin-bottom: 25px;
+    height: 100%;
   }
 
   .channel-head {

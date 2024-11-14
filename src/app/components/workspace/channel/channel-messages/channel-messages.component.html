@@ -9,7 +9,7 @@
         @if (currentDate(post.timestamp) > compareTimestamp) {
           <app-date-separator [date]="trackByDate(post)"></app-date-separator>
         }
-        <app-message [post]="post" (click)="openThread(post.id)"></app-message>
+        <app-message [post]="post" (click)="openThread(post.id)" #message></app-message>
       }
       {{ resetCompareTimestamp() }}
     }
@@ -20,7 +20,7 @@
         @if (currentDate(post.timestamp) > compareTimestamp) {
           <app-date-separator [date]="trackByDate(post)"></app-date-separator>
         }
-        <app-message [post]="post" (click)="openThread(post.id)"></app-message>
+        <app-message [post]="post" (click)="openThread(post.id)" #message></app-message>
       }
       {{ resetCompareTimestamp() }}
     }
