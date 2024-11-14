@@ -1,1 +1,29 @@
-<p>thread-messages works!</p>
+<main>
+  <section class="channel-message">
+
+    <!-- findChannel() in channel-head.component.ts -->
+    <!-- Wenn die Methode findChannel() die ID eines Channels in currentUser.currentChannel findet, dann true -->
+    @if(findChannel() === 'channel') {
+
+      @for (post of getThreadOfPost(); track $index) {
+        @if (currentDate(post.timestamp) > compareTimestamp) {
+          <app-date-separator [date]="trackByDate(post)"></app-date-separator>
+        }
+        <app-message [post]="post" (click)="openThread(post.id)" #message></app-message>
+      }
+      {{ resetCompareTimestamp() }}
+    }
+
+    @if(findChannel() === 'dm') {
+
+      @for (post of getThreadOfDm(); track $index) {
+        @if (currentDate(post.timestamp) > compareTimestamp) {
+          <app-date-separator [date]="trackByDate(post)"></app-date-separator>
+        }
+        <app-message [post]="post" (click)="openThread(post.id)" #message></app-message>
+      }
+      {{ resetCompareTimestamp() }}
+    }
+
+  </section>
+</main>
