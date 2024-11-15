@@ -288,4 +288,22 @@ export class FirebaseStorageService {
       });
     };
   }
+
+  async updateChannelPost(channelId: string, postId: string, newPost: PostInterface) {
+    let currentChannel = this.channel[this.channel.findIndex(channel => channel.id === channelId)];
+    if (currentChannel) {
+      let post = currentChannel.posts?.find(post => post.id === postId);
+      if (post) {
+        post.text = newPost.text;
+        post.emoticons = newPost.emoticons;
+        post.threadMsg = newPost.threadMsg;
+        post.thread = newPost.thread;
+        await updateDoc(doc(this.firestore, "channel", channelId,), {
+          posts: currentChannel.posts
+        })
+      }
+    };
+  }
+
+
 }

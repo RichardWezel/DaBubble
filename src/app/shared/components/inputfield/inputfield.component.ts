@@ -33,7 +33,18 @@ export class InputfieldComponent {
       emoticons: [],
       threadMsg: [],
     };
-    if (this.isChannel()) {
+    if (this.thread && this.isChannel()) {
+      let posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
+      let post = posts?.find(post => post.id === this.storage.currentUser.postId);
+      if (post && this.storage.currentUser.postId) {
+        post.thread = true;
+        post.threadMsg?.push(newPost);
+        this.storage.updateChannelPost(this.storage.currentUser.currentChannel, this.storage.currentUser.postId, post);
+      }
+    } else if (this.thread && this.isDM()) {
+
+    }
+    if (!this.thread && this.isChannel()) {
       this.storage.writePosts(this.storage.currentUser.currentChannel, newPost);
     } else if (this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)) {
       this.storage.writeDm(this.storage.currentUser.id, this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.contact || '', newPost);
@@ -43,6 +54,10 @@ export class InputfieldComponent {
 
   isChannel() {
     return this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
+  }
+
+  isDM() {
+    return this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
   }
 }
 
