@@ -89,8 +89,8 @@ export class FirebaseStorageService {
     this.unsubscribeSnapshot = onSnapshot(userDocRef, async (snapshot) => {
       let userData = this.extractUserData(snapshot);
       userData.currentChannel = this.determineCurrentChannel(userData);
-      userData.threadOpen = false;
-      userData.postId = '';
+      userData.threadOpen = this.currentUser.threadOpen || false;
+      userData.postId = this.currentUser.postId || '';
       this.currentUser = userData;
 
       // set online-status of current user
