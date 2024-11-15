@@ -256,11 +256,12 @@ export class FirebaseStorageService {
    */
   async writeDm(userId: string, contact: string, newPost: PostInterface) {
     let sendUser = this.user[this.user.findIndex(user => user.id === userId)];
-    let newDm = sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)];
+    let newDm = sendUser.dm ? sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)] : null;
 
     if (newDm) {
       newDm.posts.push(newPost);
     } else {
+      sendUser.dm = [];
       sendUser.dm.push({
         contact: contact,
         id: this.uid.generateUid(),
