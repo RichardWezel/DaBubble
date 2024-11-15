@@ -20,6 +20,8 @@ export class MessageComponent implements OnInit, OnChanges {
   authorName: string = '';
   authorAvatar: string = '';
 
+  isAuthorCurrentUser: boolean = false;
+
   constructor(private authorService: AuthorService) { }
 
   /**
@@ -27,12 +29,14 @@ export class MessageComponent implements OnInit, OnChanges {
    */
   ngOnInit() {
     this.resolveAuthor();
+    this.updateAuthorStatus();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
-    //Add '${implements OnChanges}' to the class.
-    this.resolveAuthor();
+    if (changes['post']) {
+      this.resolveAuthor();
+      this.updateAuthorStatus();
+    }
   }
 
   /**
@@ -54,6 +58,10 @@ export class MessageComponent implements OnInit, OnChanges {
     if (!this.post.threadMsg?.length) return '';
     const date = new Date(this.post.threadMsg[this.post.threadMsg.length - 1].timestamp);
     return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  private updateAuthorStatus() {
+    this.isAuthorCurrentUser = this.post.author === this.storage.currentUser?.id;
   }
 
 }
