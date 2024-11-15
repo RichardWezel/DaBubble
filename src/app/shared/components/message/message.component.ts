@@ -4,11 +4,12 @@ import { AuthorService } from '../../services/author.service.ts.service';
 import { User } from '@angular/fire/auth';
 import { UserInterface } from '../../interfaces/user.interface';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
+import { NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-message',
   standalone: true,
-  imports: [],
+  imports: [NgStyle],
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'
 })

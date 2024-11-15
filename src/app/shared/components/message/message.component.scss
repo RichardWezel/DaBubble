@@ -78,7 +78,24 @@ main {
 
         }
 
+        .more {
+            display: none;
+            div {
+                justify-content: center;
+                align-items: center;
+            }
+        }
+
+        .answer{
+            div {
+                justify-content: center;
+                align-items: center;
+            }
+        }
+
     }
+
+   
 
     .avatar {
         height: 70px;
