@@ -168,6 +168,7 @@ export class FirebaseStorageService {
    */
   setChannel(channelId: string) {
     this.currentUser.currentChannel = channelId;
+    this.currentUser.threadOpen = false;
     sessionStorage.setItem("currentChannel", channelId);
     console.log("Current Channel of User: ", this.currentUser.currentChannel)
   }

@@ -1,6 +1,6 @@
-<main>
+<main [class.self]="post.author === storage.currentUser.id">
 
-  <div class="avatar" [class.self]="post.author === storage.currentUser.id">
+  <div class="avatar">
     <img [src]="'assets/img/profile-pictures/' + authorAvatar" alt="avatar">
   </div>
 
@@ -12,7 +12,7 @@
     </div>
 
     <div class="message" [class.self]="post.author === storage.currentUser.id">{{post.text}}</div>
-    @if (post.thread) {
+    @if (post.thread && !threadHead) {
       <div class="answer-section" [class.self]="post.author === storage.currentUser.id">
         <div class="answers">{{post.threadMsg?.length + (post.threadMsg?.length === 1 ? ' Antwort' : ' Antworten')}}
         </div>
@@ -22,3 +22,13 @@
     }
   </section>
 </main>
+@if (threadHead) {
+  <div class="thread-start">
+    @if (post.thread) {
+      <div class="threadAnswers">
+        {{post.threadMsg?.length + (post.threadMsg?.length === 1 ? ' Antwort' : ' Antworten')}}
+      </div>
+    }
+    <div class="oLine"></div>
+  </div>
+}

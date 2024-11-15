@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
 export class ChannelMessagesComponent extends ChannelHeadComponent {
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
   compareTimestamp: number = 0;
+  originalPost: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
 
   constructor() {
     super();

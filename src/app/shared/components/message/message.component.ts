@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { PostInterface } from '../../interfaces/post.interface';
 import { AuthorService } from '../../services/author.service.ts.service';
 import { User } from '@angular/fire/auth';
@@ -12,9 +12,10 @@ import { FirebaseStorageService } from '../../services/firebase-storage.service'
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'
 })
-export class MessageComponent implements OnInit {
+export class MessageComponent implements OnInit, OnChanges {
   storage = inject(FirebaseStorageService);
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
+  @Input() threadHead: boolean = false;
   authorName: string = '';
   authorAvatar: string = '';
 
@@ -24,13 +25,19 @@ export class MessageComponent implements OnInit {
    * Der OnInit-Hook ist nützlich, um eine Methode direkt nach der Initialisierung der Komponente auszuführen.
    */
   ngOnInit() {
-    this.resolveAuthorName();
+    this.resolveAuthor();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
+    //Add '${implements OnChanges}' to the class.
+    this.resolveAuthor();
   }
 
   /**
    * Diese Methode verwendet den authorService, um den Namen basierend auf der ID abzurufen. Wenn der Name geladen ist, wird er der Variable
    */
-  private resolveAuthorName() {
+  private resolveAuthor() {
     this.authorService.getAuthorNameById(this.post.author).subscribe((user: UserInterface) => {
       this.authorName = user.name;
       this.authorAvatar = user.avatar;

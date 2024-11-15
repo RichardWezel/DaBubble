@@ -17,11 +17,22 @@ export class ThreadMessagesComponent extends ChannelMessagesComponent {
     super();
   }
 
+  getOriginalPostFromChannel() {
+    let posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
+    let post = posts?.find(post => post.id === this.storage.currentUser.postId);
+    return post ? post : { text: '', author: '', timestamp: 0, thread: false, id: '' };
+  }
+
   getThreadOfPost() {
     let posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
     let post = posts?.find(post => post.id === this.storage.currentUser.postId);
-    if (post) return post.threadMsg;
-    else return [];
+    return post ? post.threadMsg : [];
+  }
+
+  getOriginalPostFromDm() {
+    let posts = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.posts;
+    let post = posts?.find(post => post.id === this.storage.currentUser.postId);
+    return post ? post : { text: '', author: '', timestamp: 0, thread: false, id: '' };
   }
 
   getThreadOfDm() {
