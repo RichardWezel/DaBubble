@@ -13,7 +13,6 @@ export const routes: Routes = [
     { path: 'signin', component: SignInComponent },
     { path: 'resetpassword', component: ResetPasswordComponent },
     { path: 'workspace', component: WorkspaceComponent },
-    { path: 'choose-avatar', component: ChooseAvatarCardComponent },
     { path: 'imprint', component: ImprintComponent },
     { path: 'privacy-policy', component: PrivacyPolicyComponent },
 ];
