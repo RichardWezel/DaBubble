@@ -16,9 +16,4 @@ main {
 
 app-message {
     scroll-snap-align: end;
-
-    &:hover {
-        cursor: pointer;
-        background-color: $backgroundColor;
-    }
 }

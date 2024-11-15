@@ -1,18 +1,83 @@
 @import "variables";
+@import "mixins";
 
 main {
     position: relative;
     display: flex;
     padding: 10px 45px;
     gap: 30px;
+    transition: background-color 100ms ease-in-out;
+
 
     &:hover{
-        cursor: pointer;
         background-color: $backgroundColor;
+        .reaction-bar {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-3px); // Verschiebung nach links
+        }
     }
 
-    &.self {
+    &.self{
         flex-direction: row-reverse;
+    }
+
+    .reaction-bar {
+        position: absolute;
+        right: 40.06px;
+        top: -18px;
+        padding: 3px 15px 3px 20px;
+        gap: 5px;
+        border-radius: 25px 25px 0px 25px;
+        border: 1px solid $dividerColor;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(0); // Ausgangsposition
+        display: flex;
+        background-color: #fff;
+        transition: opacity 100ms ease-out, visibility 100ms ease-out, transform 100ms ease-out; // Hinzufügen von transform zur Transition
+
+        .reaction-bar-icon {
+            width: 40px;
+            height: 40px;
+            @include dja;
+      
+
+            &:hover{
+                background-color: $backgroundColor;
+                cursor: pointer;
+                border-radius: 100%;
+            }
+        }
+
+        .reaction-bar-icon-special{
+            div {
+                width: 24px;
+                height: 24px;
+                display: flex;
+                justify-content: end;
+                align-items: start;
+            }
+
+            &:hover{
+                div {
+                    svg {
+                        width: 23.13px;
+                        height: 22.13px;
+                        top: 8.68px;
+                        left: 9.2px;
+                        gap: 0px;
+                        opacity: 0px;
+
+                        path {
+                            fill: $primaryColor;
+                        }
+                    }
+                }
+            }
+
+        }
+
     }
 
     .avatar {
