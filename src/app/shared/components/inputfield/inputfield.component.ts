@@ -43,10 +43,16 @@ export class InputfieldComponent {
           this.storage.updateChannelPost(this.storage.currentUser.currentChannel, this.storage.currentUser.postId, post);
         }
       } else if (this.isDM()) {
-
+        let dm = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
+        let post = dm?.posts.find(post => post.id === this.storage.currentUser.postId);
+        if (post && this.storage.currentUser.postId) {
+          post.thread = true;
+          post.threadMsg?.push(newPost);
+          this.storage.updateDmPost(this.storage.currentUser.id, dm?.contact || '', this.storage.currentUser.postId, post);
+          this.storage.updateDmPost(dm?.contact || '', this.storage.currentUser.id, this.storage.currentUser.postId, post);
+        }
       }
     } else {
-
       if (this.isChannel()) {
         this.storage.writePosts(this.storage.currentUser.currentChannel, newPost);
       } else if (this.isDM()) {

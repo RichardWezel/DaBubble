@@ -307,4 +307,21 @@ export class FirebaseStorageService {
   }
 
 
+  async updateDmPost(userId: string, contact: string, postId: string, newPost: PostInterface) {
+    let sendUser = this.user[this.user.findIndex(user => user.id === userId)];
+    let newDm = sendUser.dm ? sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)] : null;
+    if (newDm) {
+      let post = newDm.posts.find(post => post.id === postId);
+      if (post) {
+        post.text = newPost.text;
+        post.emoticons = newPost.emoticons;
+        post.threadMsg = newPost.threadMsg;
+        post.thread = newPost.thread;
+        await updateDoc(doc(this.firestore, "user", userId), {
+          dm: sendUser.dm
+        })
+      }
+    }
+  }
+
 }
