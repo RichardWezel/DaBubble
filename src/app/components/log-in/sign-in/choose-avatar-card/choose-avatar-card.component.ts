@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
 import { CommonModule } from '@angular/common';
 
@@ -13,6 +13,11 @@ export class ChooseAvatarCardComponent {
   pictures = ['assets/img/profile-pictures/profile-1.png', 'assets/img/profile-pictures/profile-2.png', 'assets/img/profile-pictures/profile-3.png', 'assets/img/profile-pictures/profile-4.png', 'assets/img/profile-pictures/profile-5.png', 'assets/img/profile-pictures/profile-6.png'];
   currentProfilePicture = 'assets/img/profile-basic.png';
   avatarSelected = false;
+  @Output() generateAccount = new EventEmitter<boolean>();
+
+  goToGenerateAccount() {
+    this.generateAccount.emit(true);
+  }
 
   chosePicture(path: string) {
     this.currentProfilePicture = path;

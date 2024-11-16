@@ -62,7 +62,7 @@
                 <span class="text-privacy-policy">Ich stimme der <a class="privacy-policy-btn">Datenschutzerklärung</a> zu.</span>
             </div>
             <div>
-                <button type="submit" [disabled]="signInForm.invalid" class="mainButton buttonPrimary">Weiter</button>
+                <button type="submit" [disabled]="signInForm.invalid" class="mainButton buttonPrimary" (click)="goToChooseAvatar()">Weiter</button>
             </div>
     
         </form>

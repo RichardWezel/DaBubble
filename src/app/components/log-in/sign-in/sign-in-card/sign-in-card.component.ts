@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
 import { FormsModule } from '@angular/forms';
 
@@ -16,4 +16,9 @@ export class SignInCardComponent {
     password: "",
   };
   checkboxChecked: boolean = false;
+  @Output() generateAccount = new EventEmitter<boolean>();
+
+  goToChooseAvatar() {
+    this.generateAccount.emit(false);
+  }
 }

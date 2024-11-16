@@ -1,4 +1,7 @@
 <app-background>
-<!--     <app-sign-in-card></app-sign-in-card> -->
-    <app-choose-avatar-card></app-choose-avatar-card>
+    @if (generateAccount) {
+        <app-sign-in-card (generateAccount)="generateAccount = $event"></app-sign-in-card>
+    } @else {
+        <app-choose-avatar-card (generateAccount)="generateAccount = $event"></app-choose-avatar-card>
+    }
 </app-background>
