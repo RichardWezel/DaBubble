@@ -17,6 +17,8 @@
         border: 8px solid transparent;
         border-radius: 100%;
         box-sizing: content-box;
+        object-fit: cover;
+        object-position: top;
         &:hover {
             border: 8px solid $lightGrey;
         }
