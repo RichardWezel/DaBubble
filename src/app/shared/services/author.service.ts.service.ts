@@ -4,17 +4,15 @@ import { Injectable } from '@angular/core';
 import { FirebaseStorageService } from './firebase-storage.service';
 import { Observable, of } from 'rxjs';
 import { UserInterface } from '../interfaces/user.interface';
-import { Auth, signInWithPopup, GoogleAuthProvider, signOut as firebaseSignOut, signInWithRedirect } from '@angular/fire/auth';
+import { Auth, signInWithPopup, GoogleAuthProvider, signOut as firebaseSignOut } from '@angular/fire/auth';
+import { User } from 'firebase/auth';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthorService {
-  signInWithPopup(provider: GoogleAuthProvider) {
-    throw new Error('Method not implemented.');
-  }
-
+ 
   constructor(private firebaseService: FirebaseStorageService, private auth: Auth) { }
 
   /**
@@ -37,8 +35,13 @@ export class AuthorService {
   async signInWithGoogle(): Promise<void> {
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithRedirect(this.auth, provider); 
-      console.log('User signed in');
+      const result = await signInWithPopup(this.auth, provider);
+      const user: User = result.user;
+
+      console.log('User signed in:', user.displayName);
+      console.log('User email:', user.email);
+      console.log('User profile photo:', user.photoURL);
+
     } catch (error) {
       console.error('Error during Google sign-in:', error);
     }
@@ -46,12 +49,10 @@ export class AuthorService {
 
   async signOut(): Promise<void> {
     try {
-      await firebaseSignOut(this.auth);  
+      await firebaseSignOut(this.auth);
       console.log('User signed out');
-      
     } catch (error) {
       console.error('Error during sign-out:', error);
-      
     }
   }
 }

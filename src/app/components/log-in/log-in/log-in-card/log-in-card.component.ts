@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { Auth } from '@angular/fire/auth';
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from '@firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from '@firebase/auth';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -42,8 +42,9 @@ export class LogInCardComponent {
       });
   }
 
-  // Gast-Login (direkt zum Workspace)
+ 
   guestLogin() {
+    localStorage.setItem('guestUser', 'true');
     this.router.navigate(['/workspace']);
   }
 
@@ -61,4 +62,22 @@ export class LogInCardComponent {
         alert('Fehler bei der Anmeldung mit Google!');
       });
   }
+
+  // // Funktion zum Zurücksetzen des Passworts (Passwort vergessen)
+  // resetPassword() {
+  //   if (!this.loginData.email) {
+  //     alert('Bitte gib deine E-Mail-Adresse ein, um dein Passwort zurückzusetzen.');
+  //     return;
+  //   }
+
+  //   sendPasswordResetEmail(this.auth, this.loginData.email)
+  //     .then(() => {
+  //       console.log('E-Mail zum Zurücksetzen des Passworts gesendet');
+  //       alert('Eine E-Mail zum Zurücksetzen des Passworts wurde gesendet!');
+  //     })
+  //     .catch((error) => {
+  //       console.error('Fehler beim Zurücksetzen des Passworts: ', error.message);
+  //       alert('Fehler beim Zurücksetzen des Passworts! Bitte versuche es erneut.');
+  //     });
+  // }
 }
