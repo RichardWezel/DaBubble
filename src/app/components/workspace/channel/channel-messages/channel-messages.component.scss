@@ -3,7 +3,7 @@
 main {
     overflow-y: auto;
     scroll-snap-type: y mandatory;
-    margin: 24px 0;
+    padding: 24px 0;
     display: flex;
     flex-direction: column-reverse;
 }
