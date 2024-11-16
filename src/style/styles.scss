@@ -9,8 +9,11 @@
 }
 
 body {
-  height: 100dvh;
-  width: 100dvw;
+  height: 100vh;
+  margin: 0;
+  font-family: 'Nunito';
+  background-color: rgba(236, 238, 254, 1);
+  scrollbar-width: none;
 }
 
 .mainButton {
