@@ -6,7 +6,13 @@
     <div class="tags">
       <div class="icon appendix"></div>
       <div class="divider"></div>
-      <div class="icon smileys"></div>
+      <div class="icon smileys" (click)="showEmojiSelector = !showEmojiSelector">
+        @if (showEmojiSelector) {
+          <div class="smileys-container">
+            <app-emoji-selector [inputField]="this"></app-emoji-selector>
+          </div>
+        }
+      </div>
       <div class="icon at"></div>
     </div>
     <button class="inputfield-send" (click)="sendMessage()"></button>

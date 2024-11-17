@@ -1,13 +1,15 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, HostListener, inject, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { PostInterface } from '../../interfaces/post.interface';
 import { UidService } from '../../services/uid.service';
+import { PickerModule } from '@ctrl/ngx-emoji-mart';
+import { EmojiSelectorComponent } from "../emoji-selector/emoji-selector.component";
 
 @Component({
   selector: 'app-inputfield',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, PickerModule, EmojiSelectorComponent],
   templateUrl: './inputfield.component.html',
   styleUrl: './inputfield.component.scss'
 })
@@ -18,9 +20,21 @@ export class InputfieldComponent {
   @Input() thread: boolean = false;
 
   src = 'assets/icons/send.svg';
-  message: string = '';
+  public message: string = '';
+  showEmojiSelector: boolean = false;
 
   constructor() { }
+
+  @HostListener('document:click', ['$event'])
+
+  outsideClick(event: any) {
+    if (event.target.contains(document.querySelector('.smileys'))) {
+      this.showEmojiSelector = true;
+    } else {
+      this.showEmojiSelector = false;
+    }
+  }
+
 
   sendMessage() {
     if (!this.message || !this.storage.currentUser.id || !this.storage.currentUser.currentChannel) return;
@@ -69,6 +83,11 @@ export class InputfieldComponent {
 
   isDM() {
     return this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
+  }
+
+
+  addEmoji(emoji: string) {
+    this.message += emoji;
   }
 }
 

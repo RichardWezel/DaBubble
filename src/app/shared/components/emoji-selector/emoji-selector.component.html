@@ -1,0 +1,20 @@
+<emoji-mart class="emoji-mart" [color]="'#eceefe'" [darkMode]="false" [skin]="2" [sheetSize]="32" title="Wähle Emojis"
+  [emojiSize]="24" [i18n]="{
+search: 'Suche',
+emojilist: 'Emoji Liste',
+notfound: 'Keine Emoji gefunden',
+clear: 'Zurücksetzen',
+categories: {
+  search: 'Suche',
+  recent: 'Zuletzt genutzt',
+  people: 'Smileys & Leute',
+  nature: 'Tiere & Natur',
+  foods: 'Essen & Trinken',
+  activity: 'Aktivitäten',
+  places: 'Orte & Gebäude',
+  objects: 'Objekte',
+  symbols: 'Symbole',
+  flags: 'Flaggen',
+  custom: 'Eigene Emoji',
+}
+}" (emojiClick)="addEmojiToMessage($event)"></emoji-mart>
