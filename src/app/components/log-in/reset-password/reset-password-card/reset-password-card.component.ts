@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-reset-password-card',
   standalone: true,
-  imports: [CardComponent,FormsModule],
+  imports: [CardComponent, FormsModule],
   templateUrl: './reset-password-card.component.html',
   styleUrl: './reset-password-card.component.scss'
 })

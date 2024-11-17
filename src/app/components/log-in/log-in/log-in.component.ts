@@ -4,7 +4,7 @@ import { BackgroundWithSignInComponent } from "../../../shared/components/log-in
 import { SendEmailCardComponent } from "./send-email-card/send-email-card.component";
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthorService } from '../../../shared/services/author.service.ts.service';
+import { AuthorService } from '../../../shared/services/author.service';
 
 
 @Component({
@@ -36,7 +36,7 @@ export class LogInComponent {
   loginWithGoogle() {
     this.authorservice.signInWithGoogle().then(() => {
       console.log('Google Login successful');
-      this.router.navigate(['/workspace']); 
+      this.router.navigate(['/send-email-card']); 
     }).catch(error => {
       console.error('Google Login failed', error);
     });
