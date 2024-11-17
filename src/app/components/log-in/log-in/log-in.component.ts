@@ -32,13 +32,4 @@ export class LogInComponent {
       this.showLoading = false;
     }, 3000); 
   }
-
-  loginWithGoogle() {
-    this.authorservice.signInWithGoogle().then(() => {
-      console.log('Google Login successful');
-      this.router.navigate(['/send-email-card']); 
-    }).catch(error => {
-      console.error('Google Login failed', error);
-    });
-  }
 }
