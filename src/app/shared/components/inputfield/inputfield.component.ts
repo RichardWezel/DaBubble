@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, Input } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { PostInterface } from '../../interfaces/post.interface';
@@ -14,6 +14,7 @@ import { EmojiSelectorComponent } from "../emoji-selector/emoji-selector.compone
   styleUrl: './inputfield.component.scss'
 })
 export class InputfieldComponent {
+  elementRef: ElementRef = inject(ElementRef);
   storage = inject(FirebaseStorageService);
   uid = inject(UidService);
 
@@ -28,9 +29,7 @@ export class InputfieldComponent {
   @HostListener('document:click', ['$event'])
 
   outsideClick(event: any) {
-    if (event.target.contains(document.querySelector('.smileys'))) {
-      this.showEmojiSelector = true;
-    } else {
+    if (!this.elementRef.nativeElement.querySelector('.smileys').contains(event.target)) {
       this.showEmojiSelector = false;
     }
   }

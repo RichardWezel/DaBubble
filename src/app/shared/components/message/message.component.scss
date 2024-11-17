@@ -9,8 +9,9 @@ main {
     transition: background-color 100ms ease-in-out;
 
 
-    &:hover{
+    &:hover {
         background-color: $backgroundColor;
+
         .reaction-bar {
             opacity: 1;
             visibility: visible;
@@ -18,7 +19,7 @@ main {
         }
     }
 
-    &.self{
+    &.self {
         flex-direction: row-reverse;
     }
 
@@ -41,16 +42,16 @@ main {
             width: 40px;
             height: 40px;
             @include dja;
-      
 
-            &:hover{
+
+            &:hover {
                 background-color: $backgroundColor;
                 cursor: pointer;
                 border-radius: 100%;
             }
         }
 
-        .reaction-bar-icon-special{
+        .reaction-bar-icon-special {
             div {
                 width: 24px;
                 height: 24px;
@@ -59,7 +60,7 @@ main {
                 align-items: start;
             }
 
-            &:hover{
+            &:hover {
                 div {
                     svg {
                         width: 23.13px;
@@ -80,13 +81,14 @@ main {
 
         .more {
             display: none;
+
             div {
                 justify-content: center;
                 align-items: center;
             }
         }
 
-        .answer{
+        .answer {
             div {
                 justify-content: center;
                 align-items: center;
@@ -95,7 +97,7 @@ main {
 
     }
 
-   
+
 
     .avatar {
         height: 70px;
@@ -130,7 +132,6 @@ main {
             }
 
             .author {
-                font-family: "Nunito";
                 font-size: 18px;
                 font-weight: 700;
                 line-height: 24.55px;
@@ -142,7 +143,6 @@ main {
             padding: 15px;
             border-radius: 0px 30px 30px 30px;
             background-color: $backgroundColor;
-            font-family: "Nunito";
             font-size: 18px;
             font-weight: 400;
             line-height: 24.55px;
@@ -166,7 +166,6 @@ main {
             }
 
             .answers {
-                font-family: "Nunito";
                 font-size: 18px;
                 font-weight: 400;
                 line-height: 24.55px;
@@ -179,7 +178,6 @@ main {
     }
 
     .post-time {
-        font-family: "Nunito";
         font-size: 14px;
         font-weight: 400;
         line-height: 19.1px;

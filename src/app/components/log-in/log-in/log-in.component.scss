@@ -55,7 +55,6 @@ app-password-main {
     transform: translate(-50%, -50%);
     color: white;
     font-size: 83px;
-    font-family: 'Nunito', sans-serif;
     font-weight: 700;
     animation: moveToTopLeft 1s ease-in-out forwards 2s;
 }
@@ -64,15 +63,17 @@ app-password-main {
     display: flex;
     align-items: center;
     gap: 16px;
+
     img {
         width: auto;
         height: 184px;
         animation: fadeInLogo 1s ease-in-out forwards;
     }
+
     p {
         padding-top: 10px;
         opacity: 0;
-        animation: fadeInText  1s ease-in-out forwards 1s;
+        animation: fadeInText 1s ease-in-out forwards 1s;
     }
 }
 
@@ -84,10 +85,11 @@ app-password-main {
     }
 
     100% {
-        top: 30px; /* Position im Header */
+        top: 30px;
+        /* Position im Header */
         left: 30px;
         transform: translate(0, 0) scale(0.5);
-        color: black ;
+        color: black;
         font-size: 64px;
     }
 }
@@ -97,6 +99,7 @@ app-password-main {
         opacity: 0;
         transform: translateX(50px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -134,7 +137,7 @@ app-password-main {
 }
 
 @media (max-width: 768px) {
- 
+
     .logo img {
         height: 120px;
     }
