@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 
 @Component({
   selector: 'app-head-section',
@@ -8,5 +9,9 @@ import { Component } from '@angular/core';
   styleUrl: './head-section.component.scss'
 })
 export class HeadSectionComponent {
+
+  storage = inject(FirebaseStorageService);
+
+  constructor() {}
 
 }

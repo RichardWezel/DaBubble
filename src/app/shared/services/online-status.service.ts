@@ -29,7 +29,7 @@ export class OnlineStatusService {
     const userDocRef = doc(this.firestore, 'user', userId);
     try {
       await updateDoc(userDocRef, { online: isOnline });
-      console.log(`User ${userId} online status set to ${isOnline}`);
+      // console.log(`User ${userId} online status set to ${isOnline}`);
     } catch (error) {
       console.error(`Error setting online status for user ${userId}:`, error);
       throw error;

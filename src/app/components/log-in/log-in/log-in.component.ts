@@ -33,12 +33,4 @@ export class LogInComponent {
     }, 3000);
   }
 
-  loginWithGoogle() {
-    this.authorservice.signInWithGoogle().then(() => {
-      console.log('Google Login successful');
-      this.router.navigate(['/workspace']);
-    }).catch(error => {
-      console.error('Google Login failed', error);
-    });
-  }
 }
