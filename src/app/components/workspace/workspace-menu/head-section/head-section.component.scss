@@ -8,7 +8,7 @@ main {
     gap: 16px;
     align-items: center;
 
-    &:hover{
+    &:hover {
         background-color: $backgroundColor;
         border-radius: 30px;
         cursor: pointer;
@@ -17,6 +17,7 @@ main {
     div {
         display: flex;
         align-items: center;
+
         .ws-icon {
             position: relative;
             width: 60px;
@@ -37,17 +38,16 @@ main {
         }
 
         .ws-name {
-            font-family: "Nunito";
             font-size: 24px;
             font-weight: 700;
             line-height: 32.74px;
             text-align: left;
             margin: 13.5px 20px 13.5px 15px;
 
-            &:hover{
+            &:hover {
                 color: $thirdColor;
             }
-      }
+        }
     }
 
     .new-message-btn {
@@ -60,13 +60,14 @@ main {
         background-color: unset;
 
         @include icon-style;
+
         div {
-            &:hover{
-                svg{
+            &:hover {
+                svg {
                     width: 21.52px;
                     height: 21.55px;
                 }
             }
         }
-    } 
+    }
 }

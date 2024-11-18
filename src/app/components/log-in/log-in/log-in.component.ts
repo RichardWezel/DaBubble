@@ -10,26 +10,27 @@ import { AuthorService } from '../../../shared/services/author.service';
 @Component({
   selector: 'app-log-in',
   standalone: true,
-  imports: [CommonModule, LogInCardComponent, BackgroundWithSignInComponent, SendEmailCardComponent], 
+  imports: [CommonModule, LogInCardComponent, BackgroundWithSignInComponent, SendEmailCardComponent],
   templateUrl: './log-in.component.html',
   styleUrls: ['./log-in.component.scss']
 })
 export class LogInComponent {
-  
+
   login: boolean = true;
   password: boolean = false;
   showLoading: boolean = true;
 
-  constructor(private route: ActivatedRoute, private authorservice: AuthorService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private authorservice: AuthorService, private router: Router) { }
 
   ngOnInit() {
     const urlSegments = this.route.snapshot.url.map(segment => segment.path);
     if (urlSegments.includes('password-main') && urlSegments.includes('reset-password')) {
-      this.password = true; 
+      this.password = true;
     }
 
     setTimeout(() => {
       this.showLoading = false;
-    }, 3000); 
+    }, 3000);
   }
+
 }
