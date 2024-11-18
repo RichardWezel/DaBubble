@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { OpenNewMessageService } from '../../../../shared/services/open-new-message.service';
+import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 
 @Component({
   selector: 'app-head-section',
@@ -9,6 +10,8 @@ import { OpenNewMessageService } from '../../../../shared/services/open-new-mess
   styleUrl: './head-section.component.scss'
 })
 export class HeadSectionComponent {
+
+  storage = inject(FirebaseStorageService);
 
   constructor(private openNewMessageService: OpenNewMessageService) {}
 
