@@ -19,12 +19,15 @@ export class ChannelHeadComponent implements OnInit, OnDestroy{
   newMessage: boolean = false;
   private subscription!: Subscription;
   
-  constructor() {}
+  constructor() {
+    console.log(this.newMessage)
+  }
 
   ngOnInit() {
     this.subscription = this.openNewMessageService.newMessage$.subscribe(() => {
       this.newMessage = !this.newMessage;
       console.log('newMessage wurde geändert:', this.newMessage);
+      console.log('Channel ist auf ', this.findChannel(), ' gesetzt.')
     });
   }
 
@@ -48,7 +51,7 @@ export class ChannelHeadComponent implements OnInit, OnDestroy{
     } else if (foundDM) {
       this.storage.currentUser.currentChannelName = this.storage.user.find(user => user.id === foundDM?.contact)?.name;
       return 'dm';
-    } else if (this.newMessage) {
+    } else if (this.newMessage == true) {
       return 'newMessage';
     }
     else 

@@ -1,4 +1,11 @@
 <section class="channel-head">
+
+  @if (findChannel() === 'newMessage') {
+    <div class="newMessage-name">
+      <p>Neue Nachricht</p>
+    </div>
+  }
+  
   @if (findChannel() === 'channel') {
 
     <div class="channel-name"
@@ -35,9 +42,5 @@
     </div>
   }
 
-  @if (findChannel() === 'newMessage') {
-    <div class="newMessage-name">
-      <p>Neue Nachricht</p>
-    </div>
-  }
+  
 </section>
