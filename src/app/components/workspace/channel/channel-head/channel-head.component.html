@@ -3,9 +3,18 @@
   @if (findChannel() === 'newMessage') {
     <div class="newMessage">
       <p>Neue Nachricht</p>
-      <input type="text" #messageAddresseeInput placeholder="An: #channel, oder @jemand oder E-Mail Adresse" (keyup)="checkInput(messageAddresseeInput.value)">
+      <div class="autocomplete-container" (click)="focusInput()">
+        <div class="suggestion" [innerHTML]="displayText"></div>
+        <input 
+          #inputField 
+          type="text" 
+          [(ngModel)]="userInput"
+          (input)="onInput()"
+          (keydown)="onKeyDown($event)"
+          autocomplete="off"
+          placeholder="An: #channel, oder @jemand oder E-Mail Adresse" (keyup)="checkInput(inputField.value)">
+      </div>
     </div>
-   
   }
   
   @if (findChannel() === 'channel') {
@@ -44,6 +53,4 @@
       <p>{{ userName() }}</p>
     </div>
   }
-
-  
 </section>
