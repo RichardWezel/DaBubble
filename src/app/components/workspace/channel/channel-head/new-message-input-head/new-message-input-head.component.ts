@@ -2,7 +2,8 @@ import { Component, inject, ViewChild, ElementRef, NgModule } from '@angular/cor
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
 import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Importiere FormsModule
-
+import { CurrentUserInterface } from '../../../../../shared/interfaces/current-user-interface';
+import { ChannelInterface } from '../../../../../shared/interfaces/channel.interface';
 
 @Component({
   selector: 'app-new-message-input-head',
@@ -48,17 +49,35 @@ export class NewMessageInputHeadComponent {
    */
   updateSuggestion(): void {
     if (this.userInput) {
-      const match = this.suggestionsList.find(item =>
-        item.toLowerCase().startsWith(this.userInput.toLowerCase())
-      );
-      if (match) {
-        this.suggestion = match;
-      } else {
-        this.suggestion = '';
-      }
+      const match = this.findMatch(this.userInput);
+      this.suggestion = match || '';
     } else {
       this.suggestion = '';
     }
+  }
+
+
+  findMatch(userInput: string): string | undefined {
+    let firstLetter = userInput.slice(0,1);
+    if (firstLetter == '#') {
+     return this.matchChannel(userInput);
+    } else {
+      return ''
+    }
+  }
+
+  matchChannel(userInput: string): string | undefined {
+    const channels: ChannelInterface[] = this.storage.channel;
+    const match = channels.find(channel => channel.name === userInput);
+    return match?.name; // Gibt den Namen zurück oder undefined, wenn kein Treffer gefunden wurde
+  }
+
+  matchUser() {
+    
+  }
+
+  matchMail() {
+    
   }
 
   /**
@@ -96,29 +115,5 @@ export class NewMessageInputHeadComponent {
     let users = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.user;
     if (users) return users;
     else return [];
-  }
-
-  checkInput(value: string): void {
-    let firstLetter = value.slice(0,1);
-   
-     if (firstLetter == '#') {
-      this.autocompleteChannel();
-     } else if (firstLetter == '@') {
-      this.autocompleteUser()
-     } else {
-      this.autocompleteMail()
-     }
-  }
-
-  autocompleteChannel() {
-    console.log('autocomplete Channel')
-  }
-
-  autocompleteUser() {
-    console.log('autocomplete User')
-  }
-
-  autocompleteMail() {
-    console.log('autocomplete Mail')
   }
 }
