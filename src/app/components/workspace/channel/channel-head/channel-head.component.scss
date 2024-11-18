@@ -130,63 +130,6 @@
   }
 }
 
-.newMessage {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+app-new-message-input-head {
   width: 100%;
-
-  .autocomplete-container {
-    position: relative;
-    width: 300px; /* Passe die Breite nach Bedarf an */
-    display: flex;
-    align-items: center;
-    @include font;
-
-    .suggestion {
-      position: absolute;
-      // top: 0;
-      // left: 0;
-      padding: 8px; /* Passe das Padding entsprechend dem Input an */
-      color: #ccc; /* Helle Schrift für die Vorschläge */
-      pointer-events: none; /* Erlaubt Klicks durch das Vorschlags-`div` zum Input */
-      font-family: inherit;
-      font-size: inherit;
-      white-space: nowrap;
-      overflow: hidden;
-      padding: 18px 20px 18px;
-      @include font;
-    }
-
-    input {
-      background: transparent;
-      position: relative;
-      width: 100%;
-      padding: 18px 20px 18px;
-      gap: 20px;
-      border-radius: 40px;
-      border: 1px solid $textGrey;
-      @include font;
-  
-      &::placeholder {
-        color: $textGrey;
-        @include font;
-      }
-    }
-  }
-
-  
-
-  p {
-    font-family: "Nunito";
-    font-size: 24px;
-    font-weight: 700;
-    line-height: 32.74px;
-    text-align: left;
-    text-underline-position: from-font;
-    text-decoration-skip-ink: none;
-
-  }
-
-  
 }
