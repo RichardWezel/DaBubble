@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import { OpenNewMessageService } from '../../../../shared/services/open-new-message.service';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 
 @Component({
@@ -13,10 +12,6 @@ export class HeadSectionComponent {
 
   storage = inject(FirebaseStorageService);
 
-  constructor(private openNewMessageService: OpenNewMessageService) {}
-
-  openNewMessage() {
-    this.openNewMessageService.triggerNewMessage();
-  }
+  constructor() {}
 
 }

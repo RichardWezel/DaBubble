@@ -1,8 +1,6 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { NgStyle } from '@angular/common';
-import { Subscription } from 'rxjs';
-import { OpenNewMessageService } from '../../../../shared/services/open-new-message.service';
 
 @Component({
   selector: 'app-channel-head',
@@ -11,28 +9,13 @@ import { OpenNewMessageService } from '../../../../shared/services/open-new-mess
   templateUrl: './channel-head.component.html',
   styleUrl: './channel-head.component.scss'
 })
-export class ChannelHeadComponent implements OnInit, OnDestroy{
+export class ChannelHeadComponent {
   protected storage = inject(FirebaseStorageService);
-  private openNewMessageService = inject(OpenNewMessageService);
   imgTag: string = 'assets/icons/tag.svg';
   imgCaret: string = 'assets/icons/user-caret.svg';
   newMessage: boolean = false;
-  private subscription!: Subscription;
   
   constructor() {
-    console.log(this.newMessage)
-  }
-
-  ngOnInit() {
-    this.subscription = this.openNewMessageService.newMessage$.subscribe(() => {
-      this.newMessage = !this.newMessage;
-      console.log('newMessage wurde geändert:', this.newMessage);
-      console.log('Channel ist auf ', this.findChannel(), ' gesetzt.')
-    });
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
   }
 
   /**
