@@ -1,7 +1,11 @@
 <section class="channel-head">
 
   @if (findChannel() === 'newMessage') {
-      Neue Nachricht
+    <div class="newMessage">
+      <p>Neue Nachricht</p>
+      <input type="text" placeholder="An: #channel, oder @jemand oder E-Mail Adresse">
+    </div>
+   
   }
   
   @if (findChannel() === 'channel') {
