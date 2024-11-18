@@ -29,7 +29,9 @@ export class InputfieldComponent {
   @HostListener('document:click', ['$event'])
 
   outsideClick(event: any) {
-    if (!this.elementRef.nativeElement.querySelector('.smileys').contains(event.target)) {
+    event.stopPropagation();
+    const path = event.path || (event.composedPath && event.composedPath());
+    if (!path.includes(this.elementRef.nativeElement.querySelector('.smileys, .smileys-container'))) {
       this.showEmojiSelector = false;
     }
   }

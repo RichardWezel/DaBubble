@@ -1,6 +1,6 @@
 import { Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { PostInterface } from '../../interfaces/post.interface';
-import { AuthorService } from '../../services/author.service.ts.service';
+import { AuthorService } from '../../services/author.service';
 import { User } from '@angular/fire/auth';
 import { UserInterface } from '../../interfaces/user.interface';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';

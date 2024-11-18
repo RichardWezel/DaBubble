@@ -7,11 +7,9 @@
       <div class="icon appendix"></div>
       <div class="divider"></div>
       <div class="icon smileys" (click)="showEmojiSelector = !showEmojiSelector">
-        @if (showEmojiSelector) {
-          <div class="smileys-container">
-            <app-emoji-selector [inputField]="this"></app-emoji-selector>
-          </div>
-        }
+        <div class="smileys-container" [class.active]="showEmojiSelector" (click)="outsideClick($event)">
+          <app-emoji-selector [inputField]="this"></app-emoji-selector>
+        </div>
       </div>
       <div class="icon at"></div>
     </div>

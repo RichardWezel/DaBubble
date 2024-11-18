@@ -136,4 +136,11 @@
   align-items: center;
   justify-content: center;
   background-color: $backgroundColor;
+  transition: all 125ms ease-in-out;
+  transform-origin: bottom center;
+  transform: scale(0);
+
+  &.active {
+    transform: scale(1);
+  }
 }
