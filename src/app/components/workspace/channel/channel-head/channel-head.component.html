@@ -1,9 +1,7 @@
 <section class="channel-head">
 
   @if (findChannel() === 'newMessage') {
-    <div class="newMessage-name">
-      <p>Neue Nachricht</p>
-    </div>
+      Neue Nachricht
   }
   
   @if (findChannel() === 'channel') {
@@ -35,6 +33,7 @@
     </div>
 
   }
+
   @if (findChannel() === 'dm') {
     <div class="dm-name">
       <img class="user-avatar" [src]="'assets/img/profile-pictures/' + userAvatar()" alt="user">

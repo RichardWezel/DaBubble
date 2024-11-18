@@ -33,13 +33,13 @@ export class ChannelHeadComponent {
     } else if (foundDM) {
       this.storage.currentUser.currentChannelName = this.storage.user.find(user => user.id === foundDM?.contact)?.name;
       return 'dm';
-    } else if (this.newMessage == true) {
+    } else if (sessionStorage.getItem('currentChannel') == "newMessage") {
       return 'newMessage';
     }
     else 
+    console.log('currentUser.currentChannelName is set to `` ')
     return '';
   }
-
 
   channelName() {
     return this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.name;
