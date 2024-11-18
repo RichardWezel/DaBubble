@@ -68,6 +68,30 @@ export class ChannelHeadComponent {
     let foundUser = this.storage.currentUser.dm.find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel)?.contact;
     return this.storage.user.find(user => user.id === foundUser)?.name;
   }
+
+  checkInput(value: string): void {
+    let firstLetter = value.slice(0,1);
+   
+     if (firstLetter == '#') {
+      this.autocompleteChannel();
+     } else if (firstLetter == '@') {
+      this.autocompleteUser()
+     } else {
+      this.autocompleteMail()
+     }
+  }
+
+  autocompleteChannel() {
+    console.log('autocomplete Channel')
+  }
+
+  autocompleteUser() {
+    console.log('autocomplete User')
+  }
+
+  autocompleteMail() {
+    console.log('autocomplete Mail')
+  }
 }
 
 

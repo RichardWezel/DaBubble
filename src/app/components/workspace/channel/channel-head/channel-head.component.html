@@ -3,7 +3,7 @@
   @if (findChannel() === 'newMessage') {
     <div class="newMessage">
       <p>Neue Nachricht</p>
-      <input type="text" placeholder="An: #channel, oder @jemand oder E-Mail Adresse">
+      <input type="text" #messageAddresseeInput placeholder="An: #channel, oder @jemand oder E-Mail Adresse" (keyup)="checkInput(messageAddresseeInput.value)">
     </div>
    
   }
