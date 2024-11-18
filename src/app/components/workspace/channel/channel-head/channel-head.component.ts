@@ -1,6 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { NgStyle } from '@angular/common';
+import { Subscription } from 'rxjs';
+import { OpenNewMessageService } from '../../../../shared/services/open-new-message.service';
 
 @Component({
   selector: 'app-channel-head',
@@ -9,14 +11,25 @@ import { NgStyle } from '@angular/common';
   templateUrl: './channel-head.component.html',
   styleUrl: './channel-head.component.scss'
 })
-export class ChannelHeadComponent {
-  storage = inject(FirebaseStorageService);
+export class ChannelHeadComponent implements OnInit, OnDestroy{
+  protected storage = inject(FirebaseStorageService);
+  private openNewMessageService = inject(OpenNewMessageService);
   imgTag: string = 'assets/icons/tag.svg';
   imgCaret: string = 'assets/icons/user-caret.svg';
+  newMessage: boolean = false;
+  private subscription!: Subscription;
+  
+  constructor() {}
 
+  ngOnInit() {
+    this.subscription = this.openNewMessageService.newMessage$.subscribe(() => {
+      this.newMessage = !this.newMessage;
+      console.log('newMessage wurde geändert:', this.newMessage);
+    });
+  }
 
-  constructor() { 
-
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   /**
@@ -25,7 +38,7 @@ export class ChannelHeadComponent {
    *
    * @returns {string} 
    */
-  findChannel(): "channel" | "dm" | "" {
+  findChannel(): "channel" | "dm" | "newMessage" | "" {
     // findet den ersten Channel, deren id mit der currentChannel des currentUser übereinstimmt.
     let foundChannel = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
     let foundDM = this.storage.currentUser.dm.find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel);
@@ -35,6 +48,8 @@ export class ChannelHeadComponent {
     } else if (foundDM) {
       this.storage.currentUser.currentChannelName = this.storage.user.find(user => user.id === foundDM?.contact)?.name;
       return 'dm';
+    } else if (this.newMessage) {
+      return 'newMessage';
     }
     else 
     return '';

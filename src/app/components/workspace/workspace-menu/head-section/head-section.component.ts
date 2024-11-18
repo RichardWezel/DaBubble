@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { OpenNewMessageService } from '../../../../shared/services/open-new-message.service';
 
 @Component({
   selector: 'app-head-section',
@@ -8,5 +9,11 @@ import { Component } from '@angular/core';
   styleUrl: './head-section.component.scss'
 })
 export class HeadSectionComponent {
+
+  constructor(private openNewMessageService: OpenNewMessageService) {}
+
+  openNewMessage() {
+    this.openNewMessageService.triggerNewMessage();
+  }
 
 }
