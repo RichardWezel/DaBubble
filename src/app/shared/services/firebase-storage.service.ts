@@ -61,7 +61,7 @@ export class FirebaseStorageService {
         channelData.id = doc.id;
         this.channel.push(channelData);
       });
-      console.log("Channel Collection: ", this.channel)
+      // console.log("Channel Collection: ", this.channel)
     });
   }
 
@@ -77,7 +77,7 @@ export class FirebaseStorageService {
         userData.id = doc.id;
         this.user.push(userData);
       });
-      console.log("User Collection: ", this.user); // Korrigiert
+      // console.log("User Collection: ", this.user);
     });
   }
 
@@ -97,7 +97,7 @@ export class FirebaseStorageService {
       if (this.currentUser.id) {
         try {
           await this.onlineStatusService.setUserOnlineStatus(this.currentUser.id, true);
-          console.log(`User ${this.currentUser.id} set to online.`);
+          // console.log(`User ${this.currentUser.id} set to online.`);
         } catch (error) {
           console.error(`Error setting user ${this.currentUser.id} online:`, error);
         }

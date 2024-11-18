@@ -15,8 +15,7 @@ export class ChannelHeadComponent {
   imgCaret: string = 'assets/icons/user-caret.svg';
   newMessage: boolean = false;
   
-  constructor() {
-  }
+  constructor() {}
 
   /**
    * Gleicht ab, ob ein Channel oder eine DM als ID in currentChannel des currentUsers enthalten ist 
