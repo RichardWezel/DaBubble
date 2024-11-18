@@ -23,26 +23,26 @@ export class NewMessageInputHeadComponent {
   userInput: string = ''; // Binding to input value
   suggestion: string = ''; // save the current autocomplete
 
-  // Beispielhafte Liste von Suchvorschlägen
-  suggestionsList: string[] = [
-    'Angular',
-    'Angular Material',
-    'Angular CLI',
-    'Angular Universal',
-    'Angular Forms',
-    'Angular Router'
-  ];
+  selectedSuggestionIndex: number = -1;
 
   onInput(): void {
     this.updateSuggestion();
   }
 
-  onKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'Tab' && this.suggestion) {
-      event.preventDefault();
-      this.acceptSuggestion();
-    }
+  // new-message-input-head.component.ts
+
+onKeyDown(event: KeyboardEvent): void {
+  if (event.key === 'Tab' && this.suggestion) {
+    event.preventDefault();
+    this.acceptSuggestion();
   }
+
+  if (event.key === 'Enter' && this.suggestion) {
+    event.preventDefault();
+    this.acceptSuggestion();
+  }
+}
+
 
   /**
    * Searches the suggestionsList for the first entry that begins with the userInput. If a match is found, suggestion is updated, otherwise it is emptied.
@@ -58,17 +58,26 @@ export class NewMessageInputHeadComponent {
 
 
   findMatch(userInput: string): string | undefined {
-    let firstLetter = userInput.slice(0,1);
-    if (firstLetter == '#') {
-     return this.matchChannel(userInput);
-    } else {
-      return ''
+    const firstLetter = userInput.slice(0, 1);
+    
+    if (firstLetter === '#') {
+      if (userInput.length === 1) {
+        return this.storage.channel.length > 0 ? this.storage.channel[0].name : undefined;
+      } else {
+        const searchTerm = userInput.slice(1); // Entferne das '#' für die Suche
+        return this.matchChannel(searchTerm);
+      }
     }
+    
+    // Andere Präfixe wie '@' oder E-Mail können hier hinzugefügt werden
+    return undefined;
   }
 
-  matchChannel(userInput: string): string | undefined {
+  matchChannel(searchTerm: string): string | undefined {
     const channels: ChannelInterface[] = this.storage.channel;
-    const match = channels.find(channel => channel.name === userInput);
+    const match = channels.find(channel => 
+      channel.name.toLowerCase().startsWith(searchTerm.toLowerCase())
+    );
     return match?.name; // Gibt den Namen zurück oder undefined, wenn kein Treffer gefunden wurde
   }
 
@@ -81,22 +90,35 @@ export class NewMessageInputHeadComponent {
   }
 
   /**
-   * Sets the userInput to the suggestion found and empties the suggestion.
-   */
-  acceptSuggestion(): void {
+ * Sets the userInput to the suggestion found and empties the suggestion.
+ */
+acceptSuggestion(): void {
+  if (this.userInput.startsWith('#')) {
+    this.userInput = `#${this.suggestion}`;
+  } else {
     this.userInput = this.suggestion;
-    this.suggestion = '';
   }
+  this.suggestion = '';
+}
 
-  /**
-   * A getter that assembles the displayed text in the suggestion div. It combines the userInput with the rest of the suggestion to display the suggestion.
-   */
-  get displayText(): string {
-    if (this.suggestion) {
-      return this.userInput + this.suggestion.slice(this.userInput.length);
+/**
+ * A getter that assembles the displayed text in the suggestion div. 
+ * It combines the userInput with the rest of the suggestion to display the suggestion.
+ */
+get displayText(): string {
+  if (this.suggestion) {
+    if (this.userInput.length === 1 && this.userInput.startsWith('#')) {
+      // Nur '#' eingegeben: Zeige den Vorschlag komplett an
+      return `#${this.suggestion}`;
+    } else if (this.userInput.startsWith('#')) {
+      // '#A' und suggestion 'Angular': Zeige '#Angular' an
+      const searchTerm = this.userInput.slice(1); // Entferne '#'
+      const remaining = this.suggestion.slice(searchTerm.length);
+      return `${this.userInput}${remaining}`;
     }
-    return this.userInput;
   }
+  return this.userInput;
+}
 
   
   focusInput(): void {
