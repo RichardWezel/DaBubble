@@ -15,7 +15,7 @@
             <img src="{{ currentProfilePicture }}">
         </div>
 
-        <h3>Frederik Beck</h3>
+        <h3>{{ signInService.signInData.name }}</h3>
         <p class="instruction left">Aus der Liste wählen</p>
         <div class="profile-picture-container">
             @for (picture of pictures; track picture) {
