@@ -126,9 +126,18 @@ export class NewMessageInputHeadComponent {
     }
   }
 
+  // storage.setChannel(dm.id)
+
   handleSubmitSuggestion(event: KeyboardEvent) {
     event.preventDefault();
     this.acceptSuggestion();
+    let firstLetter = this.userInput.slice(0, 1);
+    if (firstLetter === '#') {
+      
+    }
+    if (firstLetter === '@') {
+      
+    }
   }
 
    /**
