@@ -12,5 +12,4 @@ import { ChooseAvatarCardComponent } from "./choose-avatar-card/choose-avatar-ca
 })
 export class SignInComponent {
   generateAccount: boolean = true;
-
 }

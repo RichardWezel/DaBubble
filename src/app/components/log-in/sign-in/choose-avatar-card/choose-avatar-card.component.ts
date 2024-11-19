@@ -1,11 +1,13 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
 import { CommonModule } from '@angular/common';
+import { SignInService } from '../../../../shared/services/sign-in.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-choose-avatar-card',
   standalone: true,
-  imports: [ CardComponent, CommonModule ],
+  imports: [ CardComponent, CommonModule, FormsModule ],
   templateUrl: './choose-avatar-card.component.html',
   styleUrl: './choose-avatar-card.component.scss'
 })
@@ -13,6 +15,7 @@ export class ChooseAvatarCardComponent {
   pictures = ['assets/img/profile-pictures/profile-1.png', 'assets/img/profile-pictures/profile-2.png', 'assets/img/profile-pictures/profile-3.png', 'assets/img/profile-pictures/profile-4.png', 'assets/img/profile-pictures/profile-5.png', 'assets/img/profile-pictures/profile-6.png'];
   currentProfilePicture = 'assets/img/profile-basic.png';
   avatarSelected = false;
+  signInService: SignInService = inject(SignInService);
   @Output() generateAccount = new EventEmitter<boolean>();
 
   goToGenerateAccount() {
@@ -22,6 +25,7 @@ export class ChooseAvatarCardComponent {
   chosePicture(path: string) {
     this.currentProfilePicture = path;
     this.avatarSelected = true;
+    this.signInService.signInData.img = path;
   }
 
   openFileExplorer(fileInput: HTMLInputElement) {
@@ -38,6 +42,7 @@ export class ChooseAvatarCardComponent {
       reader.onload = () => {
         if (reader.result) {
           this.currentProfilePicture = reader.result as string;
+          this.signInService.signInData.img = reader.result as string;
           this.avatarSelected = true;
         }
       };
@@ -48,6 +53,10 @@ export class ChooseAvatarCardComponent {
   
       reader.readAsDataURL(file);
     }
+  }
+
+  showInfo() {
+    console.log('Data', this.signInService.signInData);
   }
 
 }

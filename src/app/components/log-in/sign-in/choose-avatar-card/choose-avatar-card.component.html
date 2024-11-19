@@ -10,6 +10,7 @@
                 </svg>
             </div>
         </div>
+        <form (ngSubmit)="showInfo()" #avatarForm="ngForm">
         <div class="chosen-picture-container">
             <img src="{{ currentProfilePicture }}">
         </div>
@@ -21,13 +22,14 @@
                 <img (click)="chosePicture(picture)" src="{{ picture }}">
             }
         </div>
-        <div class="own-picture-container">
-            <span class="instruction left">eigenes Bild verwenden</span>
-            <button (click)="openFileExplorer(fileInput)" class="mainButton buttonSecondary">Datei hochladen</button>
-            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" [ngStyle]="{'display' : 'none'}">
-        </div>
-        <div class="button-container">
-            <button class="mainButton buttonPrimary" [disabled]="!avatarSelected">Weiter</button>
-        </div>
+            <div class="own-picture-container">
+                <span class="instruction left">eigenes Bild verwenden</span>
+                <button type="button" (click)="openFileExplorer(fileInput)" class="mainButton buttonSecondary">Datei hochladen</button>
+                <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" [ngStyle]="{'display' : 'none'}">
+            </div>
+            <div class="button-container">
+                <button type="submit" class="mainButton buttonPrimary" [disabled]="!avatarSelected">Weiter</button>
+            </div>
+            </form>
     </app-card>
 </div>
