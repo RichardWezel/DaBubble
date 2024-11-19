@@ -3,6 +3,7 @@ import { CardComponent } from '../../../../shared/components/log-in/card/card.co
 import { CommonModule } from '@angular/common';
 import { SignInService } from '../../../../shared/services/sign-in.service';
 import { FormsModule } from '@angular/forms';
+import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 
 @Component({
   selector: 'app-choose-avatar-card',
@@ -16,6 +17,7 @@ export class ChooseAvatarCardComponent {
   currentProfilePicture = 'assets/img/profile-basic.png';
   avatarSelected = false;
   signInService: SignInService = inject(SignInService);
+  storage: FirebaseStorageService = inject(FirebaseStorageService);
   @Output() generateAccount = new EventEmitter<boolean>();
 
 
@@ -76,10 +78,15 @@ export class ChooseAvatarCardComponent {
 
 
   /**
-   * Logs the data submitted by the form to the console for testing purposes.
+   * Adds a new user to the user collection in the Firebase storage.
    */
-  showInfo() {
+  setNewUser() {
     console.log('Data', this.signInService.signInData);
+    const userData = {
+      name: this.signInService.signInData.name,
+      email: this.signInService.signInData.email,
+      avatar: this.signInService.signInData.img,
+    };
+    this.storage.addUser('abcdefghi111', userData);
   }
-
 }
