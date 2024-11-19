@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-choose-avatar-card',
   standalone: true,
-  imports: [ CardComponent, CommonModule, FormsModule ],
+  imports: [CardComponent, CommonModule, FormsModule],
   templateUrl: './choose-avatar-card.component.html',
   styleUrl: './choose-avatar-card.component.scss'
 })
@@ -18,27 +18,46 @@ export class ChooseAvatarCardComponent {
   signInService: SignInService = inject(SignInService);
   @Output() generateAccount = new EventEmitter<boolean>();
 
+
+  /**
+   * This method navigates back to the sign-in-card component.
+   * For that, it emits an event to the sign-in component.
+   */
   goToGenerateAccount() {
     this.generateAccount.emit(true);
   }
 
+
+  /**
+   * The chosen picture from the selection gets saved as the currentProfilePicture and in the signInService.
+   * @param path 
+   */
   chosePicture(path: string) {
     this.currentProfilePicture = path;
     this.avatarSelected = true;
     this.signInService.signInData.img = path;
   }
 
+
+  /**
+   * Triggers a click event on the provided file input element to open the file explorer.
+   * @param fileInput 
+   */
   openFileExplorer(fileInput: HTMLInputElement) {
     fileInput.click();
   }
 
+
+  /**
+   * This method selects a picture from the file explorer.
+   * @param event - The file input change event that contains the selected file.
+   */
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length) {
       const file = input.files[0];
-      console.log('file ', file);
       const reader = new FileReader();
-  
+
       reader.onload = () => {
         if (reader.result) {
           this.currentProfilePicture = reader.result as string;
@@ -46,15 +65,19 @@ export class ChooseAvatarCardComponent {
           this.avatarSelected = true;
         }
       };
-  
+
       reader.onerror = () => {
         console.error('Fehler beim Lesen der Datei');
       };
-  
+
       reader.readAsDataURL(file);
     }
   }
 
+
+  /**
+   * Logs the data submitted by the form to the console for testing purposes.
+   */
   showInfo() {
     console.log('Data', this.signInService.signInData);
   }

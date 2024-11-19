@@ -15,6 +15,11 @@ export class SignInCardComponent {
   checkboxChecked: boolean = false;
   @Output() generateAccount = new EventEmitter<boolean>();
 
+
+  /**
+   * This method navigates the user to the card to choose an avatar.
+   * For that, it emits an event to the sign-in component.
+   */
   goToChooseAvatar() {
     this.generateAccount.emit(false);
   }

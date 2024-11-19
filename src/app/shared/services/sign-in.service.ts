@@ -11,5 +11,6 @@ export class SignInService {
     checkboxChecked: false,
     img: ""
   }
+  
   constructor() { }
 }
