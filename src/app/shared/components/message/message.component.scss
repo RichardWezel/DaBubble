@@ -52,7 +52,7 @@ main {
         }
 
         .reaction-bar-icon-special {
-            div {
+            div:not(.smileys-container) {
                 width: 24px;
                 height: 24px;
                 display: flex;
@@ -171,6 +171,11 @@ main {
                 line-height: 24.55px;
                 text-align: left;
                 color: $thirdColor;
+
+                &:hover {
+                    cursor: pointer;
+                    font-weight: 700;
+                }
             }
         }
 
@@ -202,5 +207,28 @@ main {
         flex: 1;
         height: 1px;
         background-color: $dividerColor;
+    }
+}
+
+.smileys-container {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: $backgroundColor;
+    transition: all 125ms ease-in-out;
+    transform-origin: center;
+    transform: scale(0);
+    z-index: 5;
+    border-radius: 8px;
+
+    &.active {
+        transform: scale(1);
     }
 }

@@ -1,28 +1,40 @@
-import { Component, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { PostInterface } from '../../interfaces/post.interface';
 import { AuthorService } from '../../services/author.service';
 import { User } from '@angular/fire/auth';
 import { UserInterface } from '../../interfaces/user.interface';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { NgStyle } from '@angular/common';
+import { EmojiSelectorComponent } from '../emoji-selector/emoji-selector.component';
 
 @Component({
   selector: 'app-message',
   standalone: true,
-  imports: [NgStyle],
+  imports: [NgStyle, EmojiSelectorComponent],
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'
 })
 export class MessageComponent implements OnInit, OnChanges {
   storage = inject(FirebaseStorageService);
+  elementRef: ElementRef = inject(ElementRef);
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
   @Input() threadHead: boolean = false;
   authorName: string = '';
   authorAvatar: string = '';
+  showEmojiSelector: boolean = false;
 
   isAuthorCurrentUser: boolean = false;
 
   constructor(private authorService: AuthorService) { }
+
+
+  outsideClick(event: any) {
+    event.stopPropagation();
+    const path = event.path || (event.composedPath && event.composedPath());
+    if (!path.includes(this.elementRef.nativeElement.querySelector('.add-reaction, .smileys-container'))) {
+      this.showEmojiSelector = false;
+    }
+  }
 
   /**
    * Der OnInit-Hook ist nützlich, um eine Methode direkt nach der Initialisierung der Komponente auszuführen.
@@ -62,6 +74,11 @@ export class MessageComponent implements OnInit, OnChanges {
 
   private updateAuthorStatus() {
     this.isAuthorCurrentUser = this.post.author === this.storage.currentUser?.id;
+  }
+
+  openThread(postId: string) {
+    this.storage.currentUser.postId = postId;
+    this.storage.currentUser.threadOpen = true;
   }
 
 }

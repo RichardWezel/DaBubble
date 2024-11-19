@@ -139,6 +139,8 @@
   transition: all 125ms ease-in-out;
   transform-origin: bottom center;
   transform: scale(0);
+  z-index: 2;
+  border-radius: 8px;
 
   &.active {
     transform: scale(1);
