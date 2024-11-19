@@ -119,15 +119,16 @@ export class NewMessageInputHeadComponent {
      * @param event 
      */
   onKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'Tab' && this.suggestion) {
-      event.preventDefault();
-      this.acceptSuggestion();
+    if (event.key === 'Tab' && this.suggestion ||
+        event.key === 'Enter' && this.suggestion
+    ) {
+      this.handleSubmitSuggestion(event)
     }
+  }
 
-    if (event.key === 'Enter' && this.suggestion) {
-      event.preventDefault();
-      this.acceptSuggestion();
-    }
+  handleSubmitSuggestion(event: KeyboardEvent) {
+    event.preventDefault();
+    this.acceptSuggestion();
   }
 
    /**
