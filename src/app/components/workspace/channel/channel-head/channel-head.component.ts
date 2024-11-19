@@ -18,10 +18,6 @@ export class ChannelHeadComponent {
   imgTag: string = 'assets/icons/tag.svg';
   imgCaret: string = 'assets/icons/user-caret.svg';
 
-  
-  
-  constructor() {}
-
   /**
    * Gleicht ab, ob ein Channel oder eine DM als ID in currentChannel des currentUsers enthalten ist 
    * und gibt je nach Ergebnis 'channel' || 'dm' || '' zurück.

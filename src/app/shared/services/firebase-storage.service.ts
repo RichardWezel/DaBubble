@@ -61,7 +61,7 @@ export class FirebaseStorageService {
         channelData.id = doc.id;
         this.channel.push(channelData);
       });
-      // console.log("Channel Collection: ", this.channel)
+       console.log("Channel Collection: ", this.channel)
     });
   }
 
@@ -77,7 +77,7 @@ export class FirebaseStorageService {
         userData.id = doc.id;
         this.user.push(userData);
       });
-      // console.log("User Collection: ", this.user);
+       console.log("User Collection: ", this.user);
     });
   }
 

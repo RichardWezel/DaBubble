@@ -4,6 +4,7 @@ import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Importiere FormsModule
 import { CurrentUserInterface } from '../../../../../shared/interfaces/current-user-interface';
 import { ChannelInterface } from '../../../../../shared/interfaces/channel.interface';
+import { UserInterface } from '../../../../../shared/interfaces/user.interface';
 
 @Component({
   selector: 'app-new-message-input-head',
@@ -14,63 +15,63 @@ import { ChannelInterface } from '../../../../../shared/interfaces/channel.inter
 })
 export class NewMessageInputHeadComponent {
 
-
   protected storage = inject(FirebaseStorageService);
-  
-
-  @ViewChild('inputField') inputField!: ElementRef;
-
   userInput: string = ''; // Binding to input value
-  suggestion: string = ''; // save the current autocomplete
+  suggestion: string = ''; // saves the current autocomplete
 
-  selectedSuggestionIndex: number = -1;
-
+  /**
+   * During input in the input field, the function “updateSuggestion” is called, which updates the suggested text in the background of input field.
+   */
   onInput(): void {
     this.updateSuggestion();
   }
-
-  // new-message-input-head.component.ts
-
-onKeyDown(event: KeyboardEvent): void {
-  if (event.key === 'Tab' && this.suggestion) {
-    event.preventDefault();
-    this.acceptSuggestion();
-  }
-
-  if (event.key === 'Enter' && this.suggestion) {
-    event.preventDefault();
-    this.acceptSuggestion();
-  }
-}
-
+  
 
   /**
-   * Searches the suggestionsList for the first entry that begins with the userInput. If a match is found, suggestion is updated, otherwise it is emptied.
+   * Finds a conditional match with usern, channel or e-mail and sets the default text for autocomplete.
    */
   updateSuggestion(): void {
     if (this.userInput) {
-      const match = this.findMatch(this.userInput);
+      let match = this.findMatch(this.userInput);
       this.suggestion = match || '';
     } else {
       this.suggestion = '';
     }
   }
 
-
+  /**
+   * 
+   * 
+   * @param userInput 
+   * @returns 
+   */
   findMatch(userInput: string): string | undefined {
-    const firstLetter = userInput.slice(0, 1);
-    
+    let firstLetter = userInput.slice(0, 1);
     if (firstLetter === '#') {
-      if (userInput.length === 1) {
-        return this.storage.channel.length > 0 ? this.storage.channel[0].name : undefined;
-      } else {
-        const searchTerm = userInput.slice(1); // Entferne das '#' für die Suche
-        return this.matchChannel(searchTerm);
-      }
+      return this.handleChannelSearch(userInput);
     }
-    
-    // Andere Präfixe wie '@' oder E-Mail können hier hinzugefügt werden
+    if (firstLetter === '@') {
+      return this.handleUserSearch(userInput)
+    }
     return undefined;
+  }
+
+  handleChannelSearch(userInput: string): string | undefined {
+    if (userInput.length === 1) {
+      return this.storage.channel.length > 0 ? this.storage.channel[0].name : undefined;
+    } else {
+      let searchTerm = userInput.slice(1);
+      return this.matchChannel(searchTerm);
+    }
+  }
+
+  handleUserSearch(userInput: string): string | undefined {
+    if (userInput.length === 1) {
+      return this.storage.user.length > 0 ? this.storage.user[0].name : undefined;
+    } else {
+      let searchTerm = userInput.slice(1); 
+      return this.matchUser(searchTerm);
+    }
   }
 
   matchChannel(searchTerm: string): string | undefined {
@@ -78,54 +79,70 @@ onKeyDown(event: KeyboardEvent): void {
     const match = channels.find(channel => 
       channel.name.toLowerCase().startsWith(searchTerm.toLowerCase())
     );
-    return match?.name; // Gibt den Namen zurück oder undefined, wenn kein Treffer gefunden wurde
+    return match?.name;
   }
 
-  matchUser() {
-    
-  }
-
-  matchMail() {
-    
+  matchUser(searchTerm: string): string | undefined {
+    const users: UserInterface[] = this.storage.user;
+    const match = users.find(user => 
+      user.name.toLowerCase().startsWith(searchTerm.toLowerCase())
+    );
+    return match?.name;
   }
 
   /**
- * Sets the userInput to the suggestion found and empties the suggestion.
- */
-acceptSuggestion(): void {
-  if (this.userInput.startsWith('#')) {
-    this.userInput = `#${this.suggestion}`;
-  } else {
-    this.userInput = this.suggestion;
+   * A getter that assembles the displayed text in the suggestion div. 
+   * It combines the userInput with the rest of the suggestion to display the suggestion.
+   */
+  get displayText(): string {
+    if (this.suggestion) {
+      const prefix = this.userInput.charAt(0); // '#' oder '@'
+      
+      if ((prefix === '#' || prefix === '@') && this.userInput.length === 1) {
+        // Nur '#' oder '@' eingegeben: Zeige den Vorschlag komplett an
+        return `${prefix}${this.suggestion}`;
+      } else if (prefix === '#' || prefix === '@') {
+        // '#A' oder '@A' und Vorschlag 'Angular' oder 'Alice': Zeige '#Angular' oder '@Alice' an
+        const searchTerm = this.userInput.slice(1); // Entferne '#' oder '@'
+        const remaining = this.suggestion.slice(searchTerm.length);
+        return `${this.userInput}${remaining}`;
+      }
+    }
+    return this.userInput;
   }
-  this.suggestion = '';
-}
+  
+  
 
-/**
- * A getter that assembles the displayed text in the suggestion div. 
- * It combines the userInput with the rest of the suggestion to display the suggestion.
- */
-get displayText(): string {
-  if (this.suggestion) {
-    if (this.userInput.length === 1 && this.userInput.startsWith('#')) {
-      // Nur '#' eingegeben: Zeige den Vorschlag komplett an
-      return `#${this.suggestion}`;
-    } else if (this.userInput.startsWith('#')) {
-      // '#A' und suggestion 'Angular': Zeige '#Angular' an
-      const searchTerm = this.userInput.slice(1); // Entferne '#'
-      const remaining = this.suggestion.slice(searchTerm.length);
-      return `${this.userInput}${remaining}`;
+  /**
+     * Accepts the destination suggestion when the Enter or Tab key is pressed.
+     * 
+     * @param event 
+     */
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Tab' && this.suggestion) {
+      event.preventDefault();
+      this.acceptSuggestion();
+    }
+
+    if (event.key === 'Enter' && this.suggestion) {
+      event.preventDefault();
+      this.acceptSuggestion();
     }
   }
-  return this.userInput;
-}
 
-  
-  focusInput(): void {
-    this.inputField.nativeElement.focus();
+   /**
+   * Sets the userInput to the suggestion found and empties the suggestion.
+   */
+   acceptSuggestion(): void {
+    if (this.userInput.startsWith('#')) {
+      this.userInput = `#${this.suggestion}`;
+    } else if (this.userInput.startsWith('@')) {
+      this.userInput = `@${this.suggestion}`;
+    } else {
+      this.userInput = this.suggestion;
+    }
+    this.suggestion = '';
   }
-  
-  constructor() {}
 
 
   channelName() {
