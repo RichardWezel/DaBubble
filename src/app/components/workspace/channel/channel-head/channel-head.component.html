@@ -3,7 +3,7 @@
   @if (findChannel() === 'newMessage') {
     <app-new-message-input-head></app-new-message-input-head>
   }
-  
+
   @if (findChannel() === 'channel') {
 
     <div class="channel-name"
@@ -39,5 +39,9 @@
       <img class="user-avatar" [src]="'assets/img/profile-pictures/' + userAvatar()" alt="user">
       <p>{{ userName() }}</p>
     </div>
+  }
+
+  @if (findChannel() === '') {
+    <span class="loader"></span>
   }
 </section>

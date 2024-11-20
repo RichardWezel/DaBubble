@@ -6,12 +6,39 @@
   margin: 0;
   padding: 0;
   font-family: 'Nunito', 'Noto Color Emoji', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $primaryColor;
+    border-radius: 6px;
+
+    &:hover {
+      background-color: $secondaryColor;
+    }
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: $textWhite;
+    border-radius: 6px;
+    opacity: 0.2;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-width: auto;
+    scrollbar-color: $primaryColor $textWhite;
+  }
 }
 
 body {
   height: 100vh;
   margin: 0;
-  font-family: 'Nunito';
   background-color: rgba(236, 238, 254, 1);
   scrollbar-width: none;
 }

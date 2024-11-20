@@ -7,6 +7,7 @@ main {
     padding: 10px 45px;
     gap: 30px;
     transition: background-color 100ms ease-in-out;
+    z-index: 1;
 
 
     &:hover {
@@ -52,6 +53,8 @@ main {
         }
 
         .reaction-bar-icon-special {
+            position: relative;
+
             div:not(.smileys-container) {
                 width: 24px;
                 height: 24px;
@@ -212,23 +215,25 @@ main {
 
 .smileys-container {
     position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    margin: auto;
+    height: 100%;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    right: unset;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: $backgroundColor;
+    background-color: rgba($backgroundColor, 0.2);
     transition: all 125ms ease-in-out;
-    transform-origin: center;
-    transform: scale(0);
+    transform-origin: center center;
+    transform: translate(-50%, -50%) scale(0);
     z-index: 5;
     border-radius: 8px;
 
+
     &.active {
-        transform: scale(1);
+        transform: translate(-50%, -50%) scale(1);
     }
+
 }

@@ -1,5 +1,6 @@
-<emoji-mart class="emoji-mart" set="google" [color]="'#eceefe'" [darkMode]="false" [skin]="2" [sheetSize]="32"
-  title="Wähle Emojis" [emojiSize]="24" [i18n]="{
+@if (isInput) {
+  <emoji-mart class="emoji-mart" set="google" [color]="'#eceefe'" [darkMode]="false" [skin]="2" [sheetSize]="32"
+    title="Wähle Emojis" [emojiSize]="24" [i18n]="{
 search: 'Suche',
 emojilist: 'Emoji Liste',
 notfound: 'Keine Emoji gefunden',
@@ -18,3 +19,29 @@ categories: {
   custom: 'Eigene Emoji',
 }
 }" (emojiClick)="addEmojiToMessage($event)"></emoji-mart>
+}
+
+@if (!isInput) {
+
+  <emoji-mart class="emoji-mart reaction" [enableSearch]="false" set="google" [color]="'#eceefe'" [darkMode]="false"
+    [skin]="2" [sheetSize]="16" title="Wähle Emojis" [emojiSize]="20" [showSingleCategory]="true" [perLine]="8"
+    [showPreview]="false" [totalFrequentLines]="2" [i18n]="{
+search: 'Suche',
+emojilist: 'Emoji Liste',
+notfound: 'Keine Emoji gefunden',
+clear: 'Zurücksetzen',
+categories: {
+  search: 'Suche',
+  recent: 'Zuletzt genutzt',
+  people: 'Smileys & Leute',
+  nature: 'Tiere & Natur',
+  foods: 'Essen & Trinken',
+  activity: 'Aktivitäten',
+  places: 'Orte & Gebäude',
+  objects: 'Objekte',
+  symbols: 'Symbole',
+  flags: 'Flaggen',
+  custom: 'Eigene Emoji',
+}
+}" [style]="{'z-index': '5', }" (emojiClick)="addEmojiToReaction($event)"></emoji-mart>
+}

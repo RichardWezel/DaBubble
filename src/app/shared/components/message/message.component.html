@@ -1,4 +1,4 @@
-<main [class.self]="isAuthorCurrentUser" (mouseleave)="showEmojiSelector = false">
+<main [class.self]="isAuthorCurrentUser">
 
   <section class="reaction-bar" [ngStyle]="{
     'right': isAuthorCurrentUser ? 'unset' : '40.06px',
@@ -66,9 +66,6 @@
             fill="black" />
         </svg>
       </div>
-      <div class="smileys-container" [class.active]="showEmojiSelector" (click)="outsideClick($event)">
-        <app-emoji-selector></app-emoji-selector>
-      </div>
     </div>
     <div class="reaction-bar-icon answer reaction-bar-icon-special" (click)="openThread(post.id)">
       <div>
@@ -124,3 +121,7 @@
     <div class="oLine"></div>
   </div>
 }
+
+<div class="smileys-container" [class.active]="showEmojiSelector" (click)="outsideClick($event)">
+  <app-emoji-selector [origin]="origin" [isThread]="isThread" [post]="post" [isInput]="false"></app-emoji-selector>
+</div>

@@ -19,6 +19,8 @@ export class MessageComponent implements OnInit, OnChanges {
   elementRef: ElementRef = inject(ElementRef);
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
   @Input() threadHead: boolean = false;
+  @Input() origin: string = '';
+  @Input() isThread: boolean = false;
   authorName: string = '';
   authorAvatar: string = '';
   showEmojiSelector: boolean = false;
@@ -31,7 +33,7 @@ export class MessageComponent implements OnInit, OnChanges {
   outsideClick(event: any) {
     event.stopPropagation();
     const path = event.path || (event.composedPath && event.composedPath());
-    if (!path.includes(this.elementRef.nativeElement.querySelector('.add-reaction, .smileys-container'))) {
+    if (!path.includes(this.elementRef.nativeElement.querySelector('app-emoji-selector'))) {
       this.showEmojiSelector = false;
     }
   }

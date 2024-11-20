@@ -15,7 +15,7 @@
         @if (currentDate(post.timestamp) > compareTimestamp) {
           <app-date-separator [date]="trackByDate(post)"></app-date-separator>
         }
-        <app-message [post]="post"></app-message>
+        <app-message [origin]="'channel'" [isThread]="true" [post]="post"></app-message>
       }
       {{ resetCompareTimestamp() }}
     }
@@ -30,7 +30,7 @@
         @if (currentDate(post.timestamp) > compareTimestamp) {
           <app-date-separator [date]="trackByDate(post)"></app-date-separator>
         }
-        <app-message [post]="post"></app-message>
+        <app-message [origin]="'dm'" [isThread]="true" [post]="post"></app-message>
       }
       {{ resetCompareTimestamp() }}
     }

@@ -8,7 +8,7 @@
       <div class="divider"></div>
       <div class="icon smileys" (click)="showEmojiSelector = !showEmojiSelector">
         <div class="smileys-container" [class.active]="showEmojiSelector" (click)="outsideClick($event)">
-          <app-emoji-selector [inputField]="this"></app-emoji-selector>
+          <app-emoji-selector [isInput]="true" [inputField]="this"></app-emoji-selector>
         </div>
       </div>
       <div class="icon at"></div>

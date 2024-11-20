@@ -10,13 +10,11 @@
   padding: 0 36px;
 
   .line {
-    z-index: 1;
     border: 1px solid $dividerColor;
     width: 100%;
   }
 
   .date {
-    z-index: 2;
     position: absolute;
     padding: 5px 15px 5px;
     border-radius: 30px;

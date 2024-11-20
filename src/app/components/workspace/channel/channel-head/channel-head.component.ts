@@ -14,7 +14,7 @@ import { NewMessageInputHeadComponent } from "./new-message-input-head/new-messa
   styleUrl: './channel-head.component.scss'
 })
 export class ChannelHeadComponent {
-  protected storage = inject(FirebaseStorageService);
+  storage = inject(FirebaseStorageService);
   imgTag: string = 'assets/icons/tag.svg';
   imgCaret: string = 'assets/icons/user-caret.svg';
 
@@ -37,8 +37,8 @@ export class ChannelHeadComponent {
     } else if (sessionStorage.getItem('currentChannel') == "newMessage") {
       return 'newMessage';
     }
-    else 
-    console.log('currentUser.currentChannelName is set to `` ')
+    else
+      console.log('currentUser.currentChannelName is set to `` ')
     return '';
   }
 
