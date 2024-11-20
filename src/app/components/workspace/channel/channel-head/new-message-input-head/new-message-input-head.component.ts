@@ -25,7 +25,6 @@ export class NewMessageInputHeadComponent {
   onInput(): void {
     this.updateSuggestion();
   }
-  
 
   /**
    * Finds a conditional match with usern, channel or e-mail and sets the default text for autocomplete.
@@ -40,9 +39,9 @@ export class NewMessageInputHeadComponent {
   }
 
   /**
+   * Depending on the initial character, a function is called that returns a match with the entered term from the respective property array.
    * 
-   * 
-   * @param userInput 
+   * @param userInput - Input String of User
    * @returns 
    */
   findMatch(userInput: string): string | undefined {
@@ -56,6 +55,13 @@ export class NewMessageInputHeadComponent {
     return undefined;
   }
 
+  /**
+   * If userInput starts with a #, the first channel name of the current user's channel is returned. 
+   * If further inputs follow #, matching channel names of the current user are returned.  
+   * 
+   * @param userInput - Input String of User
+   * @returns 
+   */
   handleChannelSearch(userInput: string): string | undefined {
     if (userInput.length === 1) {
       return this.storage.channel.length > 0 ? this.storage.channel[0].name : undefined;
@@ -65,6 +71,13 @@ export class NewMessageInputHeadComponent {
     }
   }
 
+  /**
+   * If userInput starts with a @, the first User name is returned. 
+   * If further inputs follow @, matching User names returned.  
+   * 
+   * @param userInput - Input String of User
+   * @returns 
+   */
   handleUserSearch(userInput: string): string | undefined {
     if (userInput.length === 1) {
       return this.storage.user.length > 0 ? this.storage.user[0].name : undefined;
@@ -74,17 +87,29 @@ export class NewMessageInputHeadComponent {
     }
   }
 
+  /**
+   * Finds the first match between the input content and the channel array and returns it.
+   * 
+   * @param searchTerm - Input String of User
+   * @returns 
+   */
   matchChannel(searchTerm: string): string | undefined {
-    const channels: ChannelInterface[] = this.storage.channel;
-    const match = channels.find(channel => 
+    let channels: ChannelInterface[] = this.storage.channel;
+    let match = channels.find(channel => 
       channel.name.toLowerCase().startsWith(searchTerm.toLowerCase())
     );
     return match?.name;
   }
 
+  /**
+   * Finds the first match between the input content and the User array and returns it.
+   * 
+   * @param searchTerm 
+   * @returns 
+   */
   matchUser(searchTerm: string): string | undefined {
-    const users: UserInterface[] = this.storage.user;
-    const match = users.find(user => 
+    let users: UserInterface[] = this.storage.user;
+    let match = users.find(user => 
       user.name.toLowerCase().startsWith(searchTerm.toLowerCase())
     );
     return match?.name;
@@ -96,22 +121,17 @@ export class NewMessageInputHeadComponent {
    */
   get displayText(): string {
     if (this.suggestion) {
-      const prefix = this.userInput.charAt(0); // '#' oder '@'
-      
+      let prefix = this.userInput.charAt(0); // '#' oder '@'
       if ((prefix === '#' || prefix === '@') && this.userInput.length === 1) {
-        // Nur '#' oder '@' eingegeben: Zeige den Vorschlag komplett an
         return `${prefix}${this.suggestion}`;
       } else if (prefix === '#' || prefix === '@') {
-        // '#A' oder '@A' und Vorschlag 'Angular' oder 'Alice': Zeige '#Angular' oder '@Alice' an
-        const searchTerm = this.userInput.slice(1); // Entferne '#' oder '@'
-        const remaining = this.suggestion.slice(searchTerm.length);
+        let searchTerm = this.userInput.slice(1); // Entferne '#' oder '@'
+        let remaining = this.suggestion.slice(searchTerm.length);
         return `${this.userInput}${remaining}`;
       }
     }
     return this.userInput;
   }
-  
-  
 
   /**
      * Accepts the destination suggestion when the Enter or Tab key is pressed.
@@ -131,13 +151,9 @@ export class NewMessageInputHeadComponent {
   handleSubmitSuggestion(event: KeyboardEvent) {
     event.preventDefault();
     this.acceptSuggestion();
-    let firstLetter = this.userInput.slice(0, 1);
-    if (firstLetter === '#') {
-      
-    }
-    if (firstLetter === '@') {
-      
-    }
+    this.showSuggestion();
+    let searchTerm = this.userInput.slice(1); // Entferne '#' oder '@'
+   
   }
 
    /**
@@ -154,11 +170,55 @@ export class NewMessageInputHeadComponent {
     this.suggestion = '';
   }
 
+  showSuggestion() {
+    let prefix = this.userInput.charAt(0); 
+    let searchTerm = this.userInput.slice(1);
+    if (prefix === '#') {
+      let foundChannelId = this.findChannelId(searchTerm);
+      this.storage.setChannel(foundChannelId);
+    }
+    if (prefix === '@') {
+      let foundUserId = this.findUserId(searchTerm);
+      this.storage.setChannel(foundUserId);
+    }
+  }
+
+  findChannelId(searchTerm: string): string {
+    let channels: ChannelInterface[] = this.storage.channel;
+    let match = channels.find(channel => 
+      channel.name.toLowerCase().startsWith(searchTerm.toLowerCase())
+    );
+    return match?.id!;
+  }
+
+  findUserId(searchTerm: string): string {
+    let users: UserInterface[] = this.storage.user;
+    let match = users.find(user => 
+      user.name.toLowerCase().startsWith(searchTerm.toLowerCase())
+    );
+    if (
+      //!this.findUserInCurrentUserDms()
+      true) {
+      this.addUserToCurrentUserDms();
+      return match?.id!;
+    } else {
+      return match?.id!;
+    }
+  }
+
+  // funktion die den User in den dms sucht
+  findUserInCurrentUserDms() {
+
+  }
+
+  // funktion die den user zu den dms des current users hinzufügt
+  addUserToCurrentUserDms() {
+
+  }
 
   channelName() {
     return this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.name;
   }
-
 
   channelUser() {
     let users = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.user;

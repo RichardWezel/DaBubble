@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 
 @Component({
@@ -9,14 +9,5 @@ import { NavigationService } from '../../../../shared/services/navigation.servic
   styleUrl: './background-with-sign-in.component.scss'
 })
 export class BackgroundWithSignInComponent {
-
-  constructor(private navigationService: NavigationService) {}
-
-  goToImprint() {
-    this.navigationService.navigateTo('/imprint');
-  }
-
-  goToPrivacy() {
-    this.navigationService.navigateTo('/privacy-policy');
-  }
+  navigationService: NavigationService = inject(NavigationService);
 }

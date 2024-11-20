@@ -2,6 +2,7 @@ import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
 import { FormsModule } from '@angular/forms';
 import { SignInService } from '../../../../shared/services/sign-in.service';
+import { NavigationService } from '../../../../shared/services/navigation.service';
 
 @Component({
   selector: 'app-sign-in-card',
@@ -12,6 +13,7 @@ import { SignInService } from '../../../../shared/services/sign-in.service';
 })
 export class SignInCardComponent {
   signInService: SignInService = inject(SignInService);
+  navigationService: NavigationService = inject(NavigationService);
   checkboxChecked: boolean = false;
   @Output() generateAccount = new EventEmitter<boolean>();
 
