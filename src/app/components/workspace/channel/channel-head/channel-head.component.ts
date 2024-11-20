@@ -38,7 +38,6 @@ export class ChannelHeadComponent {
       return 'newMessage';
     }
     else 
-    console.log('currentUser.currentChannelName is set to `` ')
     return '';
   }
 
