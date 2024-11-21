@@ -28,13 +28,13 @@ export class ChannelMessagesComponent extends ChannelHeadComponent {
    * 
    * @returns {array}
    */
-  getPostsofChannel() {
+  getPostOfChannel() {
     let getPosts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
     if (getPosts) return getPosts;
     else return [];
   }
 
-  getPostsofDm() {
+  getPostOfDm() {
     let getPosts = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.posts;
     return getPosts ? getPosts : [];
   }

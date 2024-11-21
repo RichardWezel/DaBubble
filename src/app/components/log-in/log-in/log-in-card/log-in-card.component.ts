@@ -10,7 +10,7 @@ import { ResetPasswordCardComponent } from '../../reset-password/reset-password-
 @Component({
   selector: 'app-log-in-card',
   standalone: true,
-  imports: [FormsModule, CardComponent, CommonModule ],
+  imports: [FormsModule, CardComponent, CommonModule],
   templateUrl: './log-in-card.component.html',
   styleUrls: ['./log-in-card.component.scss']
 })
@@ -28,12 +28,12 @@ export class LogInCardComponent {
   };
   @Output() login = new EventEmitter<boolean>();
 
- 
+
   goToResetPassword() {
-    this.router.navigate(['/reset-password']);  
+    this.router.navigate(['/reset-password']);
   }
 
- 
+
   checkLogin(ngForm: NgForm) {
     console.log('LoginData: ', this.loginData);
     signInWithEmailAndPassword(this.auth, this.loginData.email, this.loginData.password)
@@ -58,6 +58,7 @@ export class LogInCardComponent {
     const provider = new GoogleAuthProvider();
     signInWithPopup(this.auth, provider)
       .then((result) => {
+        console.log(result);
         const user = result.user;
         console.log('Eingeloggt mit Google: ', user);
         this.router.navigate(['/workspace']);
@@ -71,13 +72,13 @@ export class LogInCardComponent {
   // Passwort zurücksetzen
   resetPassword() {
     if (this.samePasswords) {
-      
+
       const user = this.auth.currentUser;
       if (user) {
         updatePassword(user, this.passwordData)
           .then(() => {
             alert('Passwort erfolgreich zurückgesetzt!');
-            this.router.navigate(['/login']); 
+            this.router.navigate(['/login']);
           })
           .catch((error) => {
             console.error('Fehler beim Zurücksetzen des Passworts:', error);

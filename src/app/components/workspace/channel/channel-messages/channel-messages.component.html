@@ -5,7 +5,7 @@
     <!-- Wenn die Methode findChannel() die ID eines Channels in currentUser.currentChannel findet, dann true -->
     @if(findChannel() === 'channel') {
 
-      @for (post of getPostsofChannel(); track $index) {
+      @for (post of getPostOfChannel(); track $index) {
         @if (currentDate(post.timestamp) > compareTimestamp) {
           <app-date-separator [date]="trackByDate(post)"></app-date-separator>
         }
@@ -16,7 +16,7 @@
 
     @if(findChannel() === 'dm') {
 
-      @for (post of getPostsofDm(); track $index) {
+      @for (post of getPostOfDm(); track $index) {
         @if (currentDate(post.timestamp) > compareTimestamp) {
           <app-date-separator [date]="trackByDate(post)"></app-date-separator>
         }
