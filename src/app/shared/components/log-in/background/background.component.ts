@@ -10,13 +10,5 @@ import { NavigationService } from '../../../../shared/services/navigation.servic
 })
 export class BackgroundComponent {
 
-  constructor(private navigationService: NavigationService) {}
-
-  goToImprint() {
-    this.navigationService.navigateTo('/imprint');
-  }
-
-  goToPrivacy() {
-    this.navigationService.navigateTo('/privacy-policy');
-  }
+  constructor(public navigationService: NavigationService) {}
 }

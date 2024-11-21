@@ -33,6 +33,10 @@ export class LogInCardComponent {
 
   @Output() login = new EventEmitter<boolean>();
 
+  goToSendMail() {
+    this.login.emit(false);
+  }
+
   checkLogin(ngForm: NgForm) {
     if (ngForm.invalid) {
       alert('Bitte füllen Sie alle erforderlichen Felder aus.');
