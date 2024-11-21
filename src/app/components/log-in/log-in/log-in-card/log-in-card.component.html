@@ -30,7 +30,7 @@
                 }
             </label>
             <div class="btn-container">
-                <button class="mainButton btn-new-password" (click)="goToResetPassword()">Passwort vergessen</button>
+                <button class="mainButton btn-new-password" (click)="this.navigationService.navigateTo('resetpassword')">Passwort vergessen</button>
             </div>
             <div class="separation">
                 <span class="line"></span>
@@ -55,7 +55,7 @@
                 <span>Anmelden mit Google</span>
             </button>
             <div class="btns-container">
-                <button type="submit" (click)="testClick()" [disabled]="loginForm.invalid"
+                <button type="submit" [disabled]="loginForm.invalid"
                     class="mainButton buttonPrimary">Anmelden</button>
                 <button class="mainButton buttonSecondary" (click)="authService.guestLogin()">Gäste-Login</button>
             </div>

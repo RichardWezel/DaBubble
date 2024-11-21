@@ -9,6 +9,7 @@ import { Firestore, doc, getDoc, setDoc, updateDoc } from '@angular/fire/firesto
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { PostInterface } from '../../../../shared/interfaces/post.interface';
 import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
+import { NavigationService } from '../../../../shared/services/navigation.service';
 
 @Component({
   selector: 'app-log-in-card',
@@ -22,24 +23,15 @@ export class LogInCardComponent {
   private router = inject(Router);
   private firestore = inject(Firestore);
   protected storage = inject(FirebaseStorageService);
+  navigationService: NavigationService = inject(NavigationService);
   authService = inject(FirebaseAuthService);
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
-
   loginData = {
     email: '',
     password: ''
   };
 
   @Output() login = new EventEmitter<boolean>();
-
-  testClick() {
-    console.log('Hello');
-  }
-
-  goToResetPassword() {
-    this.router.navigate(['/reset-password']);
-  }
-
 
   checkLogin(ngForm: NgForm) {
     if (ngForm.invalid) {
