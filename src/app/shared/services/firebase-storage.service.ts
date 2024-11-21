@@ -21,11 +21,13 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
 
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
+  CurrentUserChannel: ChannelInterface[] = [];
   currentUser: CurrentUserInterface = { name: '', email: '', avatar: '', online: false, dm: [], id: '' };
   authUid = sessionStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l';
 
   unsubUsers: () => void = () => { };
   unsubChannels: () => void = () => { };
+  unsubCurrentUserChannels: () => void = () => { };
   unsubscribeSnapshot: () => void = () => { };
 
   /**
@@ -34,6 +36,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
    */
   constructor() {
     this.unsubChannels = this.getChannelCollection();
+    this.unsubCurrentUserChannels = this.getCurrentUserChannelCollection();
     this.unsubUsers = this.getUserCollection();
     this.getCurrentUser();
   }
@@ -44,6 +47,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   ngOnDestroy(): void {
     this.unsubUsers();
     this.unsubChannels();
+    this.unsubCurrentUserChannels();
     this.unsubscribeSnapshot();
     if (this.currentUser.id) {
       this.onlineStatusService.setUserOnlineStatus(this.currentUser.id, false)
@@ -78,6 +82,30 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
       });
       console.log("Channel Collection: ", this.channel)
     });
+  }
+
+  /**
+   * 
+   * 
+   * @returns 
+   */
+  getCurrentUserChannelCollection() {
+    return onSnapshot(collection(this.firestore, "channel"), (snapshot) => {
+      this.CurrentUserChannel = [];
+      snapshot.forEach((doc) => {
+        const channelData = doc.data() as ChannelInterface;
+        channelData.id = doc.id;
+        if (this.checkCurrentUserIsmemberOfChannel(channelData.user)) {
+          this.CurrentUserChannel.push(channelData);
+        }
+      });
+       console.log("Current User Channels: ", this.CurrentUserChannel)
+    });
+  }
+
+  checkCurrentUserIsmemberOfChannel(users: string []) {
+    return users.includes('oYhCXFUTy11sm1uKLK4l')
+    // users.includes(this.currentUser.id)
   }
 
   /**

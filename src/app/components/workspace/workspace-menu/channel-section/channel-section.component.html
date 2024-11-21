@@ -19,7 +19,7 @@
                 <div class="name">Channels</div>
             </div>
         </div>
-        <button>
+        <button (click)="callopenDialog()">
             <div>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -64,3 +64,4 @@
         </div>
     </div>
 </main>
+<app-add-channel-dialog #addChannelDialog></app-add-channel-dialog>
