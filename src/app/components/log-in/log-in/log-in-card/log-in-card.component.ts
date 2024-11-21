@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
-import {  sendPasswordResetEmail, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut } from '@firebase/auth';
+import { sendPasswordResetEmail, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut } from '@firebase/auth';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -12,7 +12,7 @@ import { PostInterface } from '../../../../shared/interfaces/post.interface';
 @Component({
   selector: 'app-log-in-card',
   standalone: true,
-  imports: [FormsModule, CardComponent, CommonModule ],
+  imports: [FormsModule, CardComponent, CommonModule],
   templateUrl: './log-in-card.component.html',
   styleUrls: ['./log-in-card.component.scss']
 })
@@ -30,9 +30,13 @@ export class LogInCardComponent {
 
   @Output() login = new EventEmitter<boolean>();
 
+
+
   goToResetPassword() {
     this.router.navigate(['/reset-password']);
   }
+
+
 
   checkLogin(ngForm: NgForm) {
     if (ngForm.invalid) {
@@ -41,28 +45,28 @@ export class LogInCardComponent {
     }
 
     signInWithEmailAndPassword(this.auth, this.loginData.email, this.loginData.password)
-    .then(async (userCredential) => {
-      const user = userCredential.user;
-      console.log('Eingeloggt', user);
+      .then(async (userCredential) => {
+        const user = userCredential.user;
+        console.log('Eingeloggt', user);
 
-      const userDocRef = doc(this.firestore, 'user', user.uid);
+        const userDocRef = doc(this.firestore, 'user', user.uid);
 
-      // Online-Status aktualisieren
-      await updateDoc(userDocRef, { online: true });
+        // Online-Status aktualisieren
+        await updateDoc(userDocRef, { online: true });
 
-      this.router.navigate(['/workspace']);
-    })
-    .catch((error) => {
-      console.error('Fehler beim Einloggen: ', error.message);
-      alert('Anmeldung fehlgeschlagen! Überprüfe die Anmeldedaten.');
-    });
-}
+        this.router.navigate(['/workspace']);
+      })
+      .catch((error) => {
+        console.error('Fehler beim Einloggen: ', error.message);
+        alert('Anmeldung fehlgeschlagen! Überprüfe die Anmeldedaten.');
+      });
+  }
 
-guestLogin() {
-  // Lokale Daten löschen
-  console.log('Gast-Login aktiviert.');
-  this.router.navigate(['/workspace']);
-}
+  guestLogin() {
+    // Lokale Daten löschen
+    console.log('Gast-Login aktiviert.');
+    this.router.navigate(['/workspace']);
+  }
 
   googleLogin() {
     const provider = new GoogleAuthProvider();
@@ -70,10 +74,10 @@ guestLogin() {
       .then(async (result) => {
         const user = result.user;
         console.log('Google-Benutzer:', user);
-  
+
         const userDocRef = doc(this.firestore, 'user', user.uid);
         const docSnapshot = await getDoc(userDocRef);
-  
+
         if (!docSnapshot.exists()) {
             const userData = {
               name: user.displayName?? '',
@@ -84,14 +88,14 @@ guestLogin() {
         } else {
           await updateDoc(userDocRef, { online: true });
         }
-  
+
         this.router.navigate(['/workspace']);
       })
       .catch((error) => {
         console.error('Fehler beim Google-Login: ', error.message);
       });
   }
-  
+
 
   getGoogleLoginErrorMessage(errorCode: string): string {
     switch (errorCode) {
@@ -122,7 +126,7 @@ guestLogin() {
 
   logout() {
     const user = this.storage.auth.currentUser; // Authentifizierter Benutzer aus dem Service abrufen
-  
+
     if (user) {
       const userDocRef = doc(this.storage.firestore, 'user', user.uid);
       this.guestLogin();
@@ -135,7 +139,7 @@ guestLogin() {
           console.error(`Fehler beim Zurücksetzen des Online-Status für ${user.uid}:`, error);
         });
     }
-  
+
     // Firebase-Session beenden
     signOut(this.storage.auth)
       .then(() => {
@@ -146,5 +150,5 @@ guestLogin() {
         console.error('Fehler beim Abmelden:', error);
       });
   }
-  
+
 }
