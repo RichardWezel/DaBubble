@@ -100,6 +100,11 @@ export class FirebaseStorageService {
     });
   }
 
+  /**
+   * 
+   * 
+   * @returns 
+   */
   getCurrentUserChannelCollection() {
     return onSnapshot(collection(this.firestore, "channel"), (snapshot) => {
       this.CurrentUserChannel = [];
