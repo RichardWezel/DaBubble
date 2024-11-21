@@ -75,12 +75,12 @@ guestLogin() {
         const docSnapshot = await getDoc(userDocRef);
   
         if (!docSnapshot.exists()) {
-          await setDoc(userDocRef, {
-            name: user.displayName || 'Unbekannter Benutzer',
-            email: user.email || '',
-            avatar: user.photoURL || '',
-            online: true,
-          });
+            const userData = {
+              name: user.displayName?? '',
+              email: user.email?? '',
+              avatar: user.photoURL?? '',
+            }
+            await this.storage.addUser(user.uid, userData);
         } else {
           await updateDoc(userDocRef, { online: true });
         }
