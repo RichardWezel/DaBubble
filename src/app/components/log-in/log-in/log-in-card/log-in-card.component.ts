@@ -8,6 +8,7 @@ import { Auth } from '@angular/fire/auth';
 import { Firestore, doc, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { PostInterface } from '../../../../shared/interfaces/post.interface';
+import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
 
 @Component({
   selector: 'app-log-in-card',
@@ -21,6 +22,7 @@ export class LogInCardComponent {
   private router = inject(Router);
   private firestore = inject(Firestore);
   protected storage = inject(FirebaseStorageService);
+  authService = inject(FirebaseAuthService);
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
 
   loginData = {
@@ -30,12 +32,9 @@ export class LogInCardComponent {
 
   @Output() login = new EventEmitter<boolean>();
 
-
-
   goToResetPassword() {
     this.router.navigate(['/reset-password']);
   }
-
 
 
   checkLogin(ngForm: NgForm) {
@@ -59,40 +58,6 @@ export class LogInCardComponent {
       .catch((error) => {
         console.error('Fehler beim Einloggen: ', error.message);
         alert('Anmeldung fehlgeschlagen! Überprüfe die Anmeldedaten.');
-      });
-  }
-
-  guestLogin() {
-    // Lokale Daten löschen
-    console.log('Gast-Login aktiviert.');
-    this.router.navigate(['/workspace']);
-  }
-
-  googleLogin() {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(this.auth, provider)
-      .then(async (result) => {
-        const user = result.user;
-        console.log('Google-Benutzer:', user);
-
-        const userDocRef = doc(this.firestore, 'user', user.uid);
-        const docSnapshot = await getDoc(userDocRef);
-
-        if (!docSnapshot.exists()) {
-            const userData = {
-              name: user.displayName?? '',
-              email: user.email?? '',
-              avatar: user.photoURL?? '',
-            }
-            await this.storage.addUser(user.uid, userData);
-        } else {
-          await updateDoc(userDocRef, { online: true });
-        }
-
-        this.router.navigate(['/workspace']);
-      })
-      .catch((error) => {
-        console.error('Fehler beim Google-Login: ', error.message);
       });
   }
 
@@ -121,33 +86,6 @@ export class LogInCardComponent {
       .catch((error) => {
         console.error('Fehler beim Zurücksetzen des Passworts:', error);
         alert('Es gab ein Problem beim Zurücksetzen des Passworts. Bitte überprüfe deine Eingaben.');
-      });
-  }
-
-  logout() {
-    const user = this.storage.auth.currentUser; // Authentifizierter Benutzer aus dem Service abrufen
-
-    if (user) {
-      const userDocRef = doc(this.storage.firestore, 'user', user.uid);
-      this.guestLogin();
-      // Online-Status in Firestore zurücksetzen
-      updateDoc(userDocRef, { online: false })
-        .then(() => {
-          console.log(`Benutzer ${user.uid} wurde als offline markiert.`);
-        })
-        .catch((error) => {
-          console.error(`Fehler beim Zurücksetzen des Online-Status für ${user.uid}:`, error);
-        });
-    }
-
-    // Firebase-Session beenden
-    signOut(this.storage.auth)
-      .then(() => {
-        console.log('Benutzer erfolgreich abgemeldet.');
-        this.storage.clearCurrentUser(); // Lokale Daten über den Service löschen
-      })
-      .catch((error) => {
-        console.error('Fehler beim Abmelden:', error);
       });
   }
 

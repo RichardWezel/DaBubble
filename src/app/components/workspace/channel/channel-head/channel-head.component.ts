@@ -54,13 +54,17 @@ export class ChannelHeadComponent {
 
 
   findAvatar(user: string) {
-    return this.storage.user.find(u => u.id === user)?.avatar;
+    let avatar = this.storage.user.find(u => u.id === user)?.avatar;
+    if (avatar) return avatar;
+    else return '';
   }
 
 
   userAvatar() {
     let foundUser = this.storage.currentUser.dm.find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel)?.contact;
-    return this.storage.user.find(user => user.id === foundUser)?.avatar;
+    let avatar: string = this.storage.user.find(user => user.id === foundUser)!.avatar;
+    if (avatar) return avatar;
+    else return '';
   }
 
 

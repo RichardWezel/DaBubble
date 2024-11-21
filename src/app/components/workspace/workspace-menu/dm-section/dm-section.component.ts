@@ -13,7 +13,7 @@ import { NavigationService } from '../../../../shared/services/navigation.servic
 export class DmSectionComponent {
   storage = inject(FirebaseStorageService);
 
-  constructor(private navigationService: NavigationService) {}
+  constructor(private navigationService: NavigationService) { }
 
   // Statusvariable zur Steuerung der Sichtbarkeit
   isListVisible: boolean = true;
@@ -27,6 +27,12 @@ export class DmSectionComponent {
     let name = this.storage.user[this.storage.user.findIndex(user => user.id === dm.contact)]?.name;
     if (dm.contact === this.storage.currentUser.id) return name + ' (Du)';
     else return name;
+  }
+
+  getDmAvatar(dm: { contact: string, id: string, posts: any[] }) {
+    let avatar = this.storage.user[this.storage.user.findIndex(user => user.id === dm.contact)]?.avatar;
+    avatar = avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + avatar : this.storage.openImage(avatar);
+    return avatar;
   }
 
   // Methode zum Umschalten des Status
