@@ -18,8 +18,9 @@
       <div class="channel-member">
         @for (user of channelUser(); track $index) {
           @if ($index <= 5) {
-            <img class="user-avatar" [src]="'assets/img/profile-pictures/' + findAvatar(user)" alt="user-avatar"
-              [ngStyle]="{'margin-right': channelUser().length === $index + 1 ? '0px' : '-24px' }">
+            <img class="user-avatar"
+              [src]="findAvatar(user).startsWith('profile-') ? 'assets/img/profile-pictures/' + findAvatar(user) : storage.openImage(findAvatar(user))"
+              alt="user-avatar" [ngStyle]="{'margin-right': channelUser().length === $index + 1 ? '0px' : '-24px' }">
           }
         }
         @if (channelUser().length > 6) {
@@ -36,7 +37,9 @@
 
   @if (findChannel() === 'dm') {
     <div class="dm-name">
-      <img class="user-avatar" [src]="'assets/img/profile-pictures/' + userAvatar()" alt="user">
+      <img class="user-avatar"
+        [src]="userAvatar().startsWith('profile-') ? 'assets/img/profile-pictures/' + userAvatar() : storage.openImage(userAvatar())"
+        alt="user">
       <p>{{ userName() }}</p>
     </div>
   }

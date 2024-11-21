@@ -6,11 +6,13 @@
   <div class="current-user" (mouseout)="caretSrc = 'assets/icons/user-caret.svg'"
     (mouseover)="caretSrc = 'assets/icons/user-caret-hover.svg'" (click)="dropDownOpen = !dropDownOpen">
     <h3>{{storage.currentUser.name}}</h3>
-    <img class="user-avatar" [src]="'assets/img/profile-pictures/' + storage.currentUser.avatar" alt="">
+    <img class="user-avatar"
+      [src]=" storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + storage.currentUser.avatar : storage.openImage(storage.currentUser.avatar)"
+      alt="">
     <img class="dropdown-arrow" [class.rotate]="dropDownOpen" [src]="caretSrc" alt="">
     <div [class.open]="dropDownOpen" class="user-dropdown-menu">
       <p>Profil</p>
-      <p (click)="logout()">Logout</p>
+      <p (click)="authService.logout()">Logout</p>
     </div>
   </div>
 </section>

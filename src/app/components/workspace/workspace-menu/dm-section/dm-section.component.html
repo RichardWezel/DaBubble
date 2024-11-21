@@ -27,7 +27,7 @@
             <div class="ws-member-content" (click)="storage.setChannel(dm.id)"
                 [ngClass]="{'active': dm.id == storage.currentUser.currentChannel}">
                 <div class="member-profile-icon">
-                    <img src="assets/img/profile-pictures/profile-1.png" alt="">
+                    <img [src]="getDmAvatar(dm)" alt="">
                     <div [class.online]="storage.isUserOnline(dm.contact)" class="status-dott"></div>
                 </div>
                 <div class="member-name">

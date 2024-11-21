@@ -1,9 +1,8 @@
 import { Component, HostListener, ElementRef, inject } from '@angular/core';
-import { Router } from '@angular/router';
 import { SearchComponent } from "./search/search.component";
 import { FirebaseStorageService } from '../../../shared/services/firebase-storage.service';
-import { signOut } from '@angular/fire/auth';
-import { updateDoc, doc } from '@angular/fire/firestore';
+import { FirebaseAuthService } from '../../../shared/services/firebase-auth.service';
+
 
 @Component({
   selector: 'app-navbar',
@@ -15,7 +14,7 @@ import { updateDoc, doc } from '@angular/fire/firestore';
 export class NavbarComponent {
   elementRef: ElementRef = inject(ElementRef);
   storage = inject(FirebaseStorageService);
-  router = inject(Router);
+  authService = inject(FirebaseAuthService);
 
   caretSrc: string = 'assets/icons/user-caret.svg';
   dropDownOpen: boolean = false;
@@ -27,39 +26,4 @@ export class NavbarComponent {
     }
   }
 
-  guestLogin() {
-  this.storage.guestLogin(); // Lokale Gastdaten setzen
-  this.router.navigate(['/workspace']); // Navigation zur Hauptansicht
-}
-
-  logout() {
-    const user = this.storage.auth.currentUser; // Aktuellen Benutzer abrufen
-
-    if (user) {
-      const userDocRef = doc(this.storage.firestore, 'user', user.uid);
-
-      updateDoc(userDocRef, { online: false })
-        .then(() => {
-          console.log(`Benutzer ${user.uid} wurde als offline markiert.`);
-        })
-        .catch((error) => {
-          console.error(`Fehler beim Zurücksetzen des Online-Status für ${user.uid}:`, error);
-        });
-    }
-
-    signOut(this.storage.auth)
-      .then(() => {
-        console.log('Benutzer erfolgreich abgemeldet.');
-
-        // Lokale Benutzerdaten löschen
-        this.storage.clearCurrentUser();
-
-        this.router.navigate(['/login']);
-      })
-      .catch((error) => {
-        console.error('Fehler beim Abmelden:', error);
-      });
-  }
-
-  
 }

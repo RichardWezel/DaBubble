@@ -19,25 +19,10 @@ import { FirebaseStorageService } from '../../shared/services/firebase-storage.s
   templateUrl: './workspace.component.html',
   styleUrl: './workspace.component.scss'
 })
-export class WorkspaceComponent implements OnInit {
+export class WorkspaceComponent {
   storage = inject(FirebaseStorageService);
 
+  constructor() { }
 
-  constructor(public storageService: FirebaseStorageService) {}
-
-  ngOnInit(): void {
-    if (this.storage.currentUser.id === 'guest') {
-    } else {
-      this.loadUserData(); // Authentifizierte Daten laden
-    }
-  }
-  loadUserData() {
-    // Firestore-Abfrage für echte Benutzerdaten
-    this.storage.getUserCollection();
-    this.storage.getChannelCollection();
-    console.log('Echte Benutzerdaten geladen.');
-  }
-
-  
 }
 

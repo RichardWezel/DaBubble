@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
 import { collection, doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { UserInterface } from '../interfaces/user.interface';
@@ -13,7 +13,7 @@ import { Auth } from '@angular/fire/auth';
 @Injectable({
   providedIn: 'root'
 })
-export class FirebaseStorageService {
+export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   firestore: Firestore = inject(Firestore);
   uid = inject(UidService);
   onlineStatusService = inject(OnlineStatusService);
@@ -33,42 +33,14 @@ export class FirebaseStorageService {
    * and fetching the current user.
    */
   constructor() {
-    this.auth.onAuthStateChanged((user) => {
-      if (user) {
-        console.log('Benutzer ist angemeldet:', user);
-        this.getCurrentUser(user); // Benutzer an `getCurrentUser` übergeben
-      } else {
-        console.log('Kein Benutzer ist angemeldet.');
-        this.clearCurrentUser(); // Lokale Benutzerdaten zurücksetzen
-      }
-    });
-  
     this.unsubChannels = this.getChannelCollection();
     this.unsubUsers = this.getUserCollection();
-  }
-
-  clearCurrentUser() {
-    this.currentUser = {
-      name: '',
-      email: '',
-      avatar: '',
-      online: false,
-      dm: [],
-      id: '',
-    };
-    console.log('Lokale Benutzerdaten wurden zurückgesetzt.');
-  }
-
-  guestLogin() {
-    this.clearCurrentUser(); // Lokale Daten zurücksetzen
-    
-  
-    console.log('Gast-Login erfolgreich. Benutzer:', this.currentUser);
+    this.getCurrentUser();
   }
 
   /**
-   * Cleans up all active subscriptions when the service is destroyed.
-   */
+ * Cleans up all active subscriptions when the service is destroyed.
+ */
   ngOnDestroy(): void {
     this.unsubUsers();
     this.unsubChannels();
@@ -78,6 +50,18 @@ export class FirebaseStorageService {
         .then(() => console.log(`User ${this.currentUser.id} set to offline.`))
         .catch(error => console.error(`Error setting user ${this.currentUser.id} offline:`, error));
     }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.unsubscribeSnapshot();
+    console.log("Current User: ", this.currentUser);
+  }
+
+  ngOnInit(): void {
+    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+    //Add 'implements OnInit' to the class.
+    this.unsubscribeSnapshot();
+    console.log("Current User: ", this.currentUser);
   }
 
   /**
@@ -92,7 +76,7 @@ export class FirebaseStorageService {
         channelData.id = doc.id;
         this.channel.push(channelData);
       });
-       console.log("Channel Collection: ", this.channel)
+      console.log("Channel Collection: ", this.channel)
     });
   }
 
@@ -108,48 +92,37 @@ export class FirebaseStorageService {
         userData.id = doc.id;
         this.user.push(userData);
       });
-       console.log("User Collection: ", this.user);
+      console.log("User Collection: ", this.user);
     });
   }
 
   /**
    * Subscribes to the current user's document in Firestore and updates the currentUser object.
    */
-  getCurrentUser(user?: any) {
-    user = user || this.auth.currentUser; 
-  
-    if (!user) {
-      console.error('Kein authentifizierter Benutzer gefunden.');
-      return;
-    }
-  
-    const userDocRef = doc(this.firestore, 'user', user.uid);
+  getCurrentUser() {
+    const userDocRef = doc(this.firestore, "user", this.authUid);
     this.unsubscribeSnapshot = onSnapshot(userDocRef, async (snapshot) => {
-      if (!snapshot.exists()) {
-        console.error('Benutzer nicht in Firestore gefunden.');
-        return;
-      }
-  
       let userData = this.extractUserData(snapshot);
       userData.currentChannel = this.determineCurrentChannel(userData);
       userData.threadOpen = this.currentUser.threadOpen || false;
       userData.postId = this.currentUser.postId || '';
       this.currentUser = userData;
-  
+
+      // set online-status of current user
       if (this.currentUser.id) {
         try {
           await this.onlineStatusService.setUserOnlineStatus(this.currentUser.id, true);
-          console.log(`Benutzer ${this.currentUser.id} ist online.`);
+          // console.log(`User ${this.currentUser.id} set to online.`);
         } catch (error) {
-          console.error(`Fehler beim Setzen des Online-Status für ${this.currentUser.id}:`, error);
+          console.error(`Error setting user ${this.currentUser.id} online:`, error);
         }
       }
     }, (error) => {
-      console.error('Fehler beim Abrufen des Benutzer-Snapshots:', error);
+      console.error("Fehler beim Abrufen des Benutzer-Snapshots:", error);
     });
-  } 
-  
-  
+  }
+
+
 
   /**
    * Extracts user data from a Firestore snapshot and assigns the document ID.
@@ -366,6 +339,12 @@ export class FirebaseStorageService {
         })
       }
     }
+  }
+
+  openImage(url: string) {
+    const img = new Image();
+    img.src = url;
+    return img.src;
   }
 
 }

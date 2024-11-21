@@ -89,7 +89,9 @@
   </section>
 
   <section class="avatar">
-    <img [src]="'assets/img/profile-pictures/' + authorAvatar" alt="avatar">
+    <img
+      [src]="authorAvatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + authorAvatar : storage.openImage(authorAvatar)"
+      alt="avatar">
   </section>
 
   <section class="message-section" [class.self]="isAuthorCurrentUser">
