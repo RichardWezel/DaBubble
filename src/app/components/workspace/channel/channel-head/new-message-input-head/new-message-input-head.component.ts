@@ -146,20 +146,17 @@ export class NewMessageInputHeadComponent {
     }
   }
 
-  // storage.setChannel(dm.id)
-
   handleSubmitSuggestion(event: KeyboardEvent) {
     event.preventDefault();
     this.acceptSuggestion();
     this.showSuggestion();
     let searchTerm = this.userInput.slice(1); // Entferne '#' oder '@'
-   
   }
 
-   /**
-   * Sets the userInput to the suggestion found and empties the suggestion.
-   */
-   acceptSuggestion(): void {
+  /**
+  * Sets the userInput to the suggestion found and empties the suggestion.
+  */
+  acceptSuggestion(): void {
     if (this.userInput.startsWith('#')) {
       this.userInput = `#${this.suggestion}`;
     } else if (this.userInput.startsWith('@')) {
