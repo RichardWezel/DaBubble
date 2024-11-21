@@ -41,7 +41,7 @@ export class LogInCardComponent {
 
   checkLogin(ngForm: NgForm) {
     if (ngForm.invalid) {
-      alert('Bitte füllen Sie alle erforderlichen Felder aus.');
+      // alert('Bitte füllen Sie alle erforderlichen Felder aus.');
       return;
     }
     console.log('Start');
