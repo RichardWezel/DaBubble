@@ -64,33 +64,33 @@ guestLogin() {
   this.router.navigate(['/workspace']);
 }
 
-  googleLogin() {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(this.auth, provider)
-      .then(async (result) => {
-        const user = result.user;
-        console.log('Google-Benutzer:', user);
-  
-        const userDocRef = doc(this.firestore, 'user', user.uid);
-        const docSnapshot = await getDoc(userDocRef);
-  
-        if (!docSnapshot.exists()) {
-          await setDoc(userDocRef, {
-            name: user.displayName || 'Unbekannter Benutzer',
-            email: user.email || '',
-            avatar: user.photoURL || '',
-            online: true,
-          });
-        } else {
-          await updateDoc(userDocRef, { online: true });
-        }
-  
-        this.router.navigate(['/workspace']);
-      })
-      .catch((error) => {
-        console.error('Fehler beim Google-Login: ', error.message);
-      });
-  }
+googleLogin() {
+  const provider = new GoogleAuthProvider();
+  signInWithPopup(this.auth, provider)
+    .then(async (result) => {
+      const user = result.user;
+      console.log('Google-Benutzer:', user);
+
+      const userDocRef = doc(this.firestore, 'user', user.uid);
+      const docSnapshot = await getDoc(userDocRef);
+
+      if (!docSnapshot.exists()) {
+          const userData = {
+            name: user.displayName?? '',
+            email: user.email?? '',
+            avatar: user.photoURL?? '',
+          }
+          await this.storage.addUser(user.uid, userData);
+      } else {
+        await updateDoc(userDocRef, { online: true });
+      }
+
+      this.router.navigate(['/workspace']);
+    })
+    .catch((error) => {
+      console.error('Fehler beim Google-Login: ', error.message);
+    });
+}
   
 
   getGoogleLoginErrorMessage(errorCode: string): string {
@@ -146,5 +146,4 @@ guestLogin() {
         console.error('Fehler beim Abmelden:', error);
       });
   }
-  
 }
