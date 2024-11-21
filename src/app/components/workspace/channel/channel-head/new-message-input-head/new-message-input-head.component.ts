@@ -88,13 +88,13 @@ export class NewMessageInputHeadComponent {
   }
 
   /**
-   * Finds the first match between the input content and the channel array and returns it.
+   * Finds the first match between the input content and the CurrentUserChannel array and returns it.
    * 
    * @param searchTerm - Input String of User
    * @returns 
    */
   matchChannel(searchTerm: string): string | undefined {
-    let channels: ChannelInterface[] = this.storage.channel;
+    let channels: ChannelInterface[] = this.storage.CurrentUserChannel;
     let match = channels.find(channel => 
       channel.name.toLowerCase().startsWith(searchTerm.toLowerCase())
     );
