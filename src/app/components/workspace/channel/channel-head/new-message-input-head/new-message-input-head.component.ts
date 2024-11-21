@@ -170,6 +170,11 @@ export class NewMessageInputHeadComponent {
     this.suggestion = '';
   }
 
+  /**
+   * Depending on whether # or @ is at the beginning of the input field, 
+   * the channel of the currentUser is set to the entered channel or direct message 
+   * so that it is displayed.
+   */
   showSuggestion() {
     let prefix = this.userInput.charAt(0); 
     let searchTerm = this.userInput.slice(1);
@@ -183,22 +188,32 @@ export class NewMessageInputHeadComponent {
     }
   }
 
+  /**
+   * Matches the input with the names of the channels of the current user and returns the id of the matching channel.
+   * 
+   * @param searchTerm - string of input content
+   * @returns - id of channel is matched with input
+   */
   findChannelId(searchTerm: string): string {
     let channels: ChannelInterface[] = this.storage.channel;
     let match = channels.find(channel => 
-      channel.name.toLowerCase().startsWith(searchTerm.toLowerCase())
-    );
+      channel.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
+    console.log(match);
     return match?.id!;
   }
 
+  /**
+   * Matches the input with the names of the users of the current user and returns the id of the matching user.
+   * 
+   * @param searchTerm - string of input content
+   * @returns - id of user is matched with input
+   */
   findUserId(searchTerm: string): string {
     let users: UserInterface[] = this.storage.user;
     let match = users.find(user => 
       user.name.toLowerCase().startsWith(searchTerm.toLowerCase())
     );
-    if (
-      //!this.findUserInCurrentUserDms()
-      true) {
+    if (!this.findUserInCurrentUserDms(match)) {
       this.addUserToCurrentUserDms();
       return match?.id!;
     } else {
@@ -207,13 +222,17 @@ export class NewMessageInputHeadComponent {
   }
 
   // funktion die den User in den dms sucht
-  findUserInCurrentUserDms() {
-
+  findUserInCurrentUserDms(user: UserInterface | undefined) {
+    let dms = this.storage.currentUser.dm;
+    let match = dms.find(dm => 
+      dm.contact.startsWith(user?.id!)
+    );
+    return match
   }
 
   // funktion die den user zu den dms des current users hinzufügt
   addUserToCurrentUserDms() {
-
+    
   }
 
   channelName() {
