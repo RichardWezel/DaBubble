@@ -32,9 +32,11 @@ export class LogInCardComponent {
   };
 
   @Output() login = new EventEmitter<boolean>();
+  @Output() newAccount = new EventEmitter<boolean>();
 
   goToSendMail() {
     this.login.emit(false);
+    this.newAccount.emit(false);
   }
 
   checkLogin(ngForm: NgForm) {

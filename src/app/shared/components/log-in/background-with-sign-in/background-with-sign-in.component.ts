@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 
 @Component({
@@ -10,4 +10,5 @@ import { NavigationService } from '../../../../shared/services/navigation.servic
 })
 export class BackgroundWithSignInComponent {
   navigationService: NavigationService = inject(NavigationService);
+  @Input() newAccount: boolean = true;
 }
