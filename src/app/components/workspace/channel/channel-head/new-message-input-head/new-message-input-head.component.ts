@@ -232,7 +232,7 @@ export class NewMessageInputHeadComponent {
 
   // funktion die den user zu den dms des current users hinzufügt
   addUserToCurrentUserDms() {
-    
+    // writeDm 257
   }
 
   channelName() {
