@@ -32,6 +32,10 @@ export class LogInCardComponent {
 
   @Output() login = new EventEmitter<boolean>();
 
+  testClick() {
+    console.log('Hello');
+  }
+
   goToResetPassword() {
     this.router.navigate(['/reset-password']);
   }
@@ -42,6 +46,7 @@ export class LogInCardComponent {
       alert('Bitte füllen Sie alle erforderlichen Felder aus.');
       return;
     }
+    console.log('Start');
 
     signInWithEmailAndPassword(this.auth, this.loginData.email, this.loginData.password)
       .then(async (userCredential) => {
