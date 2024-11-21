@@ -5,6 +5,7 @@ import { FirebaseStorageService } from './firebase-storage.service';
 import { Observable, of } from 'rxjs';
 import { UserInterface } from '../interfaces/user.interface';
 import { Auth, signInWithPopup, GoogleAuthProvider, signOut as firebaseSignOut } from '@angular/fire/auth';
+import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';   
 import { User } from 'firebase/auth';
 
 
@@ -13,7 +14,7 @@ import { User } from 'firebase/auth';
 })
 export class AuthorService {
  
-  constructor(private firebaseService: FirebaseStorageService, private auth: Auth) { }
+  constructor(private firebaseService: FirebaseStorageService, private auth: Auth, private firestore: Firestore) { }
 
   /**
    * Gibt den Namen des Autors basierend auf der authorId zurück.
@@ -38,12 +39,37 @@ export class AuthorService {
       const result = await signInWithPopup(this.auth, provider);
       const user: User = result.user;
 
-      console.log('User signed in:', user.displayName);
-      console.log('User email:', user.email);
-      console.log('User profile photo:', user.photoURL);
+      if (user) {
+        console.log('User signed in:', user.displayName);
+        console.log('User email:', user.email);
+        console.log('User profile photo:', user.photoURL);
 
+        await this.checkUserInFirestore(user);
+      }
     } catch (error) {
       console.error('Error during Google sign-in:', error);
+    }
+  }
+
+  async checkUserInFirestore(googleUser: User): Promise<void> {
+    const userDocRef = doc(this.firestore, 'user', googleUser.uid);
+    const docSnapshot = await getDoc(userDocRef);
+
+    if (!docSnapshot.exists()) {
+      // Create new user in Firestore
+      const newUser: UserInterface = {
+        name: googleUser.displayName || 'Unknown User',
+        email: googleUser.email || '',
+        avatar: googleUser.photoURL || '',
+        online: true,
+        dm: [],
+        id: googleUser.uid,
+      };
+
+      await setDoc(userDocRef, newUser);
+      console.log('New user created in Firestore:', newUser);
+    } else {
+      console.log('User already exists in Firestore.');
     }
   }
 
