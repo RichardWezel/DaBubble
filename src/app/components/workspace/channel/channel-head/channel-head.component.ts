@@ -28,6 +28,7 @@ export class ChannelHeadComponent {
     // findet den ersten Channel, deren id mit der currentChannel des currentUser übereinstimmt.
     let foundChannel = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
     let foundDM = this.storage.currentUser.dm.find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel);
+    // console.log('foundDM: ', foundDM)
     if (foundChannel) {
       this.storage.currentUser.currentChannelName = '#' + foundChannel.name;
       return 'channel';

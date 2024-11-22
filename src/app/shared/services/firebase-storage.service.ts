@@ -334,8 +334,8 @@ async createNewEmptyDm(contact: string) {
   }
 
   // Initialisieren und Hinzufügen der neuen DM
-  sendUser.dm = [];
-  sendUser.dm.push({
+  this.currentUser.dm = [];
+  this.currentUser.dm.push({
     contact: contact,
     id: this.uid.generateUid(),
     posts: [],

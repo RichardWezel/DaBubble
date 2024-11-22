@@ -133,6 +133,10 @@ export class NewMessageInputHeadComponent {
     return this.userInput;
   }
 
+
+
+  // FUNCTIONS FOR TRANSFERRING THE SUGGESTION TO THE CHANNEL DISPLAY
+
   /**
      * Accepts the destination suggestion when the Enter or Tab key is pressed.
      * 
@@ -141,13 +145,13 @@ export class NewMessageInputHeadComponent {
   onKeyDown(event: KeyboardEvent): void {
     if (event.key === 'Tab' && this.suggestion ||
         event.key === 'Enter' && this.suggestion) {
-          
+
       this.handleSubmitSuggestion(event)
     }
   }
 
   handleSubmitSuggestion(event: KeyboardEvent) {
-    event.preventDefault();
+    event.preventDefault(); 
     this.acceptSuggestion();
     this.showSuggestion();
     let searchTerm = this.userInput.slice(1); // Entferne '#' oder '@'
@@ -180,9 +184,22 @@ export class NewMessageInputHeadComponent {
       this.storage.setChannel(foundChannelId);
     }
     if (prefix === '@') {
-      let foundUserId = this.findUserId(searchTerm);
-      this.storage.setChannel(foundUserId);
+      let foundUser = this.storage.user.find(user => user.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
+      if (foundUser && this.findUserInCurrentUserDms(foundUser)) {
+        this.storage.setChannel(foundUser?.id!); 
+        console.log('Channel of current user is set to: ',foundUser?.id!)
+        console.log('Current Channel of User is: ',this.storage.currentUser.currentChannelName)
+      } else {
+        this.storage.createNewEmptyDm(foundUser?.id!);
+        this.storage.setChannel(foundUser?.id!);
+        console.log('Created new dm [] and channel of current user is set to: ',foundUser?.id!)
+      }
     }
+  }
+
+  findUserInCurrentUserDms(foundUser: UserInterface) {
+    let match = this.storage.currentUser.dm.find(user => user.id === foundUser.id);
+    return match
   }
 
   /**
@@ -192,39 +209,10 @@ export class NewMessageInputHeadComponent {
    * @returns - id of channel is matched with input
    */
   findChannelId(searchTerm: string): string {
-    let channels: ChannelInterface[] = this.storage.channel;
+    let channels: ChannelInterface[] = this.storage.CurrentUserChannel;
     let match = channels.find(channel => 
       channel.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
-    console.log(match);
     return match?.id!;
-  }
-
-  /**
-   * Matches the input with the names of the users of the current user and returns the id of the matching user.
-   * 
-   * @param searchTerm - string of input content
-   * @returns - id of user is matched with input
-   */
-  findUserId(searchTerm: string): string {
-    let users: UserInterface[] = this.storage.user;
-    let match = users.find(user => 
-      user.name.toLowerCase().startsWith(searchTerm.toLowerCase())
-    );
-    if (!this.findUserInCurrentUserDms(match)) {
-      this.storage.createNewEmptyDm(match?.id!);
-      return match?.id!;
-    } else {
-      return match?.id!;
-    }
-  }
-
-  // funktion die den User in den dms sucht
-  findUserInCurrentUserDms(user: UserInterface | undefined) {
-    let dms = this.storage.currentUser.dm;
-    let match = dms.find(dm => 
-      dm.contact.startsWith(user?.id!)
-    );
-    return match
   }
 
   channelName() {
