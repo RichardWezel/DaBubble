@@ -32,21 +32,71 @@ export class EmojiSelectorComponent {
   }
 
   addEmojiToReaction(event: any) {
-    let react: EmoticonsInterface = {
+    let react: EmoticonsInterface = this.generateReaction(event);
+    this.searchCurrentReaction(event, react);
+    this.postReaction();
+  }
+
+
+  generateReaction(event: any) {
+    return {
       type: event.emoji.native,
       name: [this.storage.currentUser?.id ?? ''],
       count: 1
+    }
+  }
+
+  searchCurrentReaction(event: any, react: EmoticonsInterface) {
+    if (!this.storage.currentUser.id) return;
+    if (this.post.emoticons) {
+      let emote = this.post.emoticons.find(emote => emote.type === event.emoji.native);
+      if (emote?.name.includes(this.storage.currentUser?.id)) {
+        emote.count -= 1;
+        emote.name.splice(emote.name.indexOf(this.storage.currentUser?.id), 1);
+        if (emote.count === 0) this.post.emoticons.splice(this.post.emoticons.indexOf(emote), 1);
+      } else if (emote) {
+        emote.count += 1;
+        emote.name.push(this.storage.currentUser?.id);
+      } else {
+        this.post.emoticons.push(react);
+      }
+    } else {
+      this.post.emoticons = [react];
     };
-    let newPost = this.storage.channel.find(channel => channel.id === this.storage.currentUser?.currentChannel)?.posts?.find(post => post.id === this.storage.currentUser?.postId);
-    if (!newPost) return;
-    if (!newPost.emoticons) newPost.emoticons = [react];
-    else {
-      let found = newPost.emoticons.find(emoticon => emoticon.type === event.emoji.native);
-      if (found) found.count++;
-      else newPost.emoticons.push(react);
+  }
+
+
+  postReaction() {
+    if (!this.storage.currentUser.currentChannel || !this.storage.currentUser.id) return;
+    console.log(this.post);
+    let posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
+    let currentPost = posts?.find(post => post.id === this.storage.currentUser.postId);
+    let currentDm = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
+    let dmPost = currentDm?.posts?.find(post => post.id === this.storage.currentUser.postId);
+    switch (true) {
+      case this.isThread && this.origin === 'channel':
+        let threadMsg = currentPost?.threadMsg?.find(thread => thread.id === this.post.id);
+        if (threadMsg) threadMsg.emoticons = this.post.emoticons;
+        this.storage.updateChannelPost(this.storage.currentUser.currentChannel, this.storage.currentUser.postId!, currentPost!);
+        break;
+      case this.isThread && this.origin === 'dm':
+        let dmThreadMsg = dmPost?.threadMsg?.find(thread => thread.id === this.post.id);
+        if (dmThreadMsg) dmThreadMsg.emoticons = this.post.emoticons;
+        this.storage.updateDmPost(this.storage.currentUser.id, currentDm?.contact!, this.storage.currentUser.postId!, dmPost!);
+        break;
+      case !this.isThread && this.origin === 'channel':
+        currentPost = posts?.find(post => post.id === this.post.id);
+        if (currentPost) currentPost.emoticons = this.post.emoticons;
+        this.storage.updateChannelPost(this.storage.currentUser.currentChannel, this.post.id, currentPost!);
+        break;
+      case !this.isThread && this.origin === 'dm':
+        console.log(this.storage.currentUser.id);
+        dmPost = currentDm!.posts?.find(post => post.id === this.post.id);
+        if (dmPost) dmPost.emoticons = this.post.emoticons;
+        this.storage.updateDmPost(this.storage.currentUser.id, currentDm?.contact!, this.post.id, dmPost!);
+        break;
     }
 
-
-
   }
+
 }
