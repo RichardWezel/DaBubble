@@ -64,7 +64,7 @@ export class NewMessageInputHeadComponent {
    */
   handleChannelSearch(userInput: string): string | undefined {
     if (userInput.length === 1) {
-      return this.storage.channel.length > 0 ? this.storage.channel[0].name : undefined;
+      return this.storage.CurrentUserChannel.length > 0 ? this.storage.CurrentUserChannel[0].name : undefined;
     } else {
       let searchTerm = userInput.slice(1);
       return this.matchChannel(searchTerm);
@@ -140,8 +140,8 @@ export class NewMessageInputHeadComponent {
      */
   onKeyDown(event: KeyboardEvent): void {
     if (event.key === 'Tab' && this.suggestion ||
-        event.key === 'Enter' && this.suggestion
-    ) {
+        event.key === 'Enter' && this.suggestion) {
+          
       this.handleSubmitSuggestion(event)
     }
   }
@@ -211,7 +211,7 @@ export class NewMessageInputHeadComponent {
       user.name.toLowerCase().startsWith(searchTerm.toLowerCase())
     );
     if (!this.findUserInCurrentUserDms(match)) {
-      this.addUserToCurrentUserDms();
+      this.storage.createNewEmptyDm(match?.id!);
       return match?.id!;
     } else {
       return match?.id!;
@@ -225,11 +225,6 @@ export class NewMessageInputHeadComponent {
       dm.contact.startsWith(user?.id!)
     );
     return match
-  }
-
-  // funktion die den user zu den dms des current users hinzufügt
-  addUserToCurrentUserDms() {
-    // writeDm 257
   }
 
   channelName() {

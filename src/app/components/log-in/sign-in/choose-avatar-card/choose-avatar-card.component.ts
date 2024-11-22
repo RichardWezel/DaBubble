@@ -86,17 +86,19 @@ export class ChooseAvatarCardComponent {
    * A new user gets crated in the Firestore Database with the authUid and the insereted user data.
    * When the authentication and the new user are created the signinData gets cleared and the user gets routed to the login.
    */
-  setNewUser() {
-    this.setUserInFirebaseAuthentication()
-      .then((authUid) => {
+  async setNewUser(): Promise<void> {
+    try {
+      const authUid = await this.setUserInFirebaseAuthentication();
+      if (authUid) {
         const userData = this.getSignInData();
         this.storage.addUser(authUid, userData);
         this.clearSignInServiceData();
         this.goBackToLogin();
-      })
-      .catch((error) => {
-        throw error;
-      })
+      }
+    } catch (error) {
+      // Fehler wird hier behandelt, falls nötig
+      console.error("Fehler beim Anlegen eines neuen Benutzers:", error);
+    }
   }
 
   
@@ -105,16 +107,18 @@ export class ChooseAvatarCardComponent {
    * The user uid gets returned as authUid to create a new user document with this id.
    * @returns - AuthUid to create the id for a new user document.
    */
-  async setUserInFirebaseAuthentication(): Promise<string> {
+  async setUserInFirebaseAuthentication(): Promise<any> {
     const auth = getAuth();
     const email = this.signInService.signInData.email;
     const password = this.signInService.signInData.password;
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const authUid = userCredential.user.uid;
-      return authUid;
-    } catch (error ) {
-      throw error;
+      return userCredential.user.uid;
+    } catch {
+      alert("Mit dieser E-Mail Adresse existiert bereits ein Benutzer.");
+      this.goToGenerateAccount();
+      this.clearSignInServiceData();
+      return undefined; // Explicitly return undefined on failure
     }
   }
 
