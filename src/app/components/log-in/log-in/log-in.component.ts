@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { LogInCardComponent } from './log-in-card/log-in-card.component';
 import { BackgroundWithSignInComponent } from "../../../shared/components/log-in/background-with-sign-in/background-with-sign-in.component";
 import { SendEmailCardComponent } from "./send-email-card/send-email-card.component";

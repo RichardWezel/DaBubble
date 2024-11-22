@@ -1,4 +1,4 @@
-<app-background-with-sign-in>
+<app-background-with-sign-in [newAccount]="login">
     <ng-container *ngIf="login; else sendEmail">
         <app-log-in-card (login)="login = $event"></app-log-in-card>
     </ng-container>
