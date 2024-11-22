@@ -1,5 +1,5 @@
 <section class="inputfield">
-  <textarea class="inputfield-textarea"
+  <textarea [id]="thread ? 'inputfieldThread' : 'inputfield'" class="inputfield-textarea"
     [placeholder]="thread ? 'Antworten...' : 'Schreibe an ' + storage.currentUser.currentChannelName"
     [(ngModel)]="message"></textarea>
   <div class="inputfield-buttons">

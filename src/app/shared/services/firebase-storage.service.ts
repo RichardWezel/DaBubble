@@ -95,15 +95,15 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
       snapshot.forEach((doc) => {
         const channelData = doc.data() as ChannelInterface;
         channelData.id = doc.id;
-        if (this.checkCurrentUserIsmemberOfChannel(channelData.user)) {
+        if (this.checkCurrentUserIsMemberOfChannel(channelData.user)) {
           this.CurrentUserChannel.push(channelData);
         }
       });
-       console.log("Current User Channels: ", this.CurrentUserChannel)
+      console.log("Current User Channels: ", this.CurrentUserChannel)
     });
   }
 
-  checkCurrentUserIsmemberOfChannel(users: string []) {
+  checkCurrentUserIsMemberOfChannel(users: string[]) {
     return users.includes('oYhCXFUTy11sm1uKLK4l')
     // users.includes(this.currentUser.id)
   }
