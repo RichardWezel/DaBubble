@@ -39,8 +39,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     this.unsubCurrentUserChannels = this.getCurrentUserChannelCollection();
     this.unsubUsers = this.getUserCollection();
     this.getCurrentUser();
-    console.log('Current User Data: ',this.currentUser.currentChannel);
-    this.setChannel("17tpdlhZoSBUIsS0XdO3")
+    console.log('Current User Data: ', this.currentUser.currentChannel);
   }
 
   /**

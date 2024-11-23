@@ -1,4 +1,4 @@
-import { Component, inject} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
 import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Importiere FormsModule
@@ -83,7 +83,7 @@ export class NewMessageInputHeadComponent {
     if (userInput.length === 1) {
       return this.storage.user.length > 0 ? this.storage.user[0].name : undefined;
     } else {
-      let searchTerm = userInput.slice(1); 
+      let searchTerm = userInput.slice(1);
       return this.matchUser(searchTerm);
     }
   }
@@ -96,7 +96,7 @@ export class NewMessageInputHeadComponent {
    */
   matchChannel(searchTerm: string): string | undefined {
     let channels: ChannelInterface[] = this.storage.CurrentUserChannel;
-    let match = channels.find(channel => 
+    let match = channels.find(channel =>
       channel.name.toLowerCase().startsWith(searchTerm.toLowerCase())
     );
     return match?.name;
@@ -110,7 +110,7 @@ export class NewMessageInputHeadComponent {
    */
   matchUser(searchTerm: string): string | undefined {
     let users: UserInterface[] = this.storage.user;
-    let match = users.find(user => 
+    let match = users.find(user =>
       user.name.toLowerCase().startsWith(searchTerm.toLowerCase())
     );
     return match?.name;
@@ -145,14 +145,14 @@ export class NewMessageInputHeadComponent {
      */
   onKeyDown(event: KeyboardEvent): void {
     if (event.key === 'Tab' && this.suggestion ||
-        event.key === 'Enter' && this.suggestion) {
+      event.key === 'Enter' && this.suggestion) {
 
       this.handleSubmitSuggestion(event)
     }
   }
 
   handleSubmitSuggestion(event: KeyboardEvent) {
-    event.preventDefault(); 
+    event.preventDefault();
     this.acceptSuggestion();
     this.showSuggestion();
     let searchTerm = this.userInput.slice(1); // Entferne '#' oder '@'
@@ -177,8 +177,8 @@ export class NewMessageInputHeadComponent {
    * the channel of the currentUser is set to the entered channel or direct message 
    * so that it is displayed.
    */
-  showSuggestion() {
-    let prefix = this.userInput.charAt(0); 
+  async showSuggestion() {
+    let prefix = this.userInput.charAt(0);
     let searchTerm = this.userInput.slice(1);
     if (prefix === '#') {
       let foundChannelId = this.findChannelId(searchTerm);
@@ -186,20 +186,23 @@ export class NewMessageInputHeadComponent {
     }
     if (prefix === '@') {
       // UserOfSuggestion entspricht dem Objekt in user collection, welches mit dem serchTerm überienstimmt
-        // avatar: "profile-5.png"
-        // email: "ichbinelias@beispiel.com"
-        // id: "BnmpU2U2CzA671AY4tms"
-        // name: "Elias Neumann"
-        // online: true
+      // avatar: "profile-5.png"
+      // email: "ichbinelias@beispiel.com"
+      // id: "BnmpU2U2CzA671AY4tms"
+      // name: "Elias Neumann"
+      // online: true
       const UserOfSuggestion = this.storage.user.find(user => user.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
+      console.log(UserOfSuggestion);
       if (UserOfSuggestion && this.findUserInDms(UserOfSuggestion)) {
         let dmsOfCurrentUser = this.storage.currentUser.dm;
         let dmWithUserOfSuggestion = dmsOfCurrentUser.find(dm => dm.contact === UserOfSuggestion.id);
-        console.log(dmWithUserOfSuggestion!.id);
-        // this.storage.setChannel(dmWithUserOfSuggestion!.id);
-      } else if (UserOfSuggestion && !this.findUserInDms(UserOfSuggestion)){
-        // this.storage.createNewEmptyDm(this.storage.currentUser?.id!, UserOfSuggestion?.id!);
-        // this.storage.setChannel(this.storage.currentUser.dm.find(dm => dm.contact === UserOfSuggestion.id)?.id!);
+        this.storage.setChannel(dmWithUserOfSuggestion!.id);
+      } else if (UserOfSuggestion && !this.findUserInDms(UserOfSuggestion) && this.storage.currentUser.id && UserOfSuggestion.id) {
+        console.log(UserOfSuggestion.id);
+        await this.storage.createNewEmptyDm(this.storage.currentUser.id, UserOfSuggestion.id);
+        await this.storage.createNewEmptyDm(UserOfSuggestion.id, this.storage.currentUser.id);
+        let dmWithUserOfSuggestion = this.storage.currentUser.dm.find(dm => dm.contact === UserOfSuggestion.id);
+        if (dmWithUserOfSuggestion) this.storage.setChannel(dmWithUserOfSuggestion!.id);
       }
     }
   }
@@ -221,7 +224,7 @@ export class NewMessageInputHeadComponent {
    */
   findChannelId(searchTerm: string): string {
     let channels: ChannelInterface[] = this.storage.CurrentUserChannel;
-    let match = channels.find(channel => 
+    let match = channels.find(channel =>
       channel.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
     return match?.id!;
   }
