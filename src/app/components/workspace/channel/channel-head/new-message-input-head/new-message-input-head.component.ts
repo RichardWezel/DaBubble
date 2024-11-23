@@ -185,11 +185,21 @@ export class NewMessageInputHeadComponent {
       this.storage.setChannel(foundChannelId);
     }
     if (prefix === '@') {
-      let UserOfsuggestion = this.storage.user.find(user => user.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
-      if (UserOfsuggestion && this.findUserInDms(UserOfsuggestion)) {
-        this.storage.setChannel(this.storage.currentUser.dm.find(dm => dm.contact === UserOfsuggestion.id)?.id!);
-      } else if (UserOfsuggestion && !this.findUserInDms(UserOfsuggestion)){
-        this.storage.createNewEmptyDm(UserOfsuggestion?.id!, this.storage.currentUser?.id!);
+      // UserOfSuggestion entspricht dem Objekt in user collection, welches mit dem serchTerm überienstimmt
+        // avatar: "profile-5.png"
+        // email: "ichbinelias@beispiel.com"
+        // id: "BnmpU2U2CzA671AY4tms"
+        // name: "Elias Neumann"
+        // online: true
+      const UserOfSuggestion = this.storage.user.find(user => user.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
+      if (UserOfSuggestion && this.findUserInDms(UserOfSuggestion)) {
+        let dmsOfCurrentUser = this.storage.currentUser.dm;
+        let dmWithUserOfSuggestion = dmsOfCurrentUser.find(dm => dm.contact === UserOfSuggestion.id);
+        console.log(dmWithUserOfSuggestion!.id);
+        // this.storage.setChannel(dmWithUserOfSuggestion!.id);
+      } else if (UserOfSuggestion && !this.findUserInDms(UserOfSuggestion)){
+        // this.storage.createNewEmptyDm(this.storage.currentUser?.id!, UserOfSuggestion?.id!);
+        // this.storage.setChannel(this.storage.currentUser.dm.find(dm => dm.contact === UserOfSuggestion.id)?.id!);
       }
     }
   }

@@ -39,6 +39,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     this.unsubCurrentUserChannels = this.getCurrentUserChannelCollection();
     this.unsubUsers = this.getUserCollection();
     this.getCurrentUser();
+    console.log('Current User Data: ',this.currentUser.currentChannel);
   }
 
   /**
@@ -324,24 +325,23 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
    * Creates a new empty direct message (DM) for a user and updates the Firestore "user" collection.
    * @param contact - The ID of the contact receiving the DM.
    */
-  async createNewEmptyDm(user1: string, user2: string) {
+  async createNewEmptyDm(user1: string, contact: string) {
+    let sendUser = this.user[this.user.findIndex(user => user.id === user1)];
 
-    // Aktualisieren des Dokuments in Firestore
+    if (!sendUser.dm) sendUser.dm = [{
+      contact: contact,
+      id: this.uid.generateUid(),
+      posts: [],
+    }];
+    else {
+      sendUser.dm.push({
+        contact: contact,
+        id: this.uid.generateUid(),
+        posts: [],
+      });
+    }
     await updateDoc(doc(this.firestore, "user", user1), {
-      dm: [{
-        contact: user2,
-        id: this.uid.generateUid(),
-        posts: [],
-      }]
-    });
-
-    // Aktualisieren des Dokuments in Firestore
-    await updateDoc(doc(this.firestore, "user", user2), {
-      dm: [{
-        contact: user1,
-        id: this.uid.generateUid(),
-        posts: [],
-      }]
+      dm: sendUser.dm
     });
   }
 
