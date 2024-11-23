@@ -281,8 +281,6 @@ main {
                 font-weight: bold;
                 text-align: center;
             }
-
-
         }
 
         &:hover {
@@ -292,5 +290,35 @@ main {
                 transform: scale(1);
             }
         }
+    }
+
+    .emoticon-add-reaction {
+        position: relative;
+
+        div {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: end;
+            align-items: start;
+        }
+
+        &:hover {
+            div {
+                svg {
+                    width: 23.13px;
+                    height: 22.13px;
+                    top: 8.68px;
+                    left: 9.2px;
+                    gap: 0px;
+                    opacity: 0px;
+
+                    path {
+                        fill: $primaryColor;
+                    }
+                }
+            }
+        }
+
     }
 }
