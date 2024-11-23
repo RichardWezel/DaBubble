@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Injectable, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { InputfieldComponent } from '../inputfield/inputfield.component';
@@ -13,6 +13,9 @@ import { PostInterface } from '../../interfaces/post.interface';
   imports: [FormsModule, PickerModule],
   templateUrl: './emoji-selector.component.html',
   styleUrl: './emoji-selector.component.scss'
+})
+@Injectable({
+  providedIn: 'root'
 })
 export class EmojiSelectorComponent {
   storage = inject(FirebaseStorageService);
@@ -32,9 +35,17 @@ export class EmojiSelectorComponent {
   }
 
   addEmojiToReaction(event: any) {
+    console.log(this.post);
+
+    if (this.origin === '' || this.post.id === '') {
+      this.origin = event.emoji.origin;
+      this.post = event.emoji.post;
+      this.isThread = event.emoji.isThread;
+    };
+    console.log(this.post);
     let react: EmoticonsInterface = this.generateReaction(event);
     this.searchCurrentReaction(event, react);
-    this.postReaction();
+    this.postReaction(event);
   }
 
 
@@ -66,7 +77,7 @@ export class EmojiSelectorComponent {
   }
 
 
-  postReaction() {
+  postReaction(event: any) {
     if (!this.storage.currentUser.currentChannel || !this.storage.currentUser.id) return;
     console.log(this.post);
     let posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
@@ -96,7 +107,11 @@ export class EmojiSelectorComponent {
         this.storage.updateDmPost(this.storage.currentUser.id, currentDm?.contact!, this.post.id, dmPost!);
         break;
     }
-
+    if (event.emoji.post || event.emoji.isThread) {
+      this.post = { text: '', author: '', timestamp: 0, thread: false, id: '' };
+      this.origin = '';
+      this.isThread = false;
+    }
   }
 
 }

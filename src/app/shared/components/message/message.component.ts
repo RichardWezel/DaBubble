@@ -17,6 +17,7 @@ import { EmojiSelectorComponent } from '../emoji-selector/emoji-selector.compone
 export class MessageComponent implements OnInit, OnChanges {
   storage = inject(FirebaseStorageService);
   elementRef: ElementRef = inject(ElementRef);
+  emojiSelector = inject(EmojiSelectorComponent);
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
   @Input() threadHead: boolean = false;
   @Input() origin: string = '';
@@ -24,6 +25,8 @@ export class MessageComponent implements OnInit, OnChanges {
   authorName: string = '';
   authorAvatar: string = '';
   showEmojiSelector: boolean = false;
+  reactSelf: boolean = false;
+
 
   isAuthorCurrentUser: boolean = false;
 
@@ -83,4 +86,17 @@ export class MessageComponent implements OnInit, OnChanges {
     this.storage.currentUser.threadOpen = true;
   }
 
+  getUserName(id: string) {
+    const user = this.storage.user.find(user => user.id === id);
+    if (user) return user.name;
+    return '';
+  }
+
+  filterEmoticonNameArray(names: string[], index: number) {
+    if ((names.length - 1 === index) && this.reactSelf) return names[index] + 'und Du';
+    else if ((names.length - 1 === index) && (names[index] === this.storage.currentUser?.id)) return 'Du';
+    else if (names[index] !== this.storage.currentUser?.id) return this.getUserName(names[index]);
+    else { this.reactSelf = true; return ''; };
+  }
 }
+

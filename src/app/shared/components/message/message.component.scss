@@ -229,11 +229,68 @@ main {
     transform-origin: center center;
     transform: translate(-50%, -50%) scale(0);
     z-index: 5;
-    border-radius: 8px;
+    border-radius: 16px;
 
 
     &.active {
         transform: translate(-50%, -50%) scale(1);
     }
+}
 
+.emoticons-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 16px;
+
+    .emoticon {
+        position: relative;
+        height: 36px;
+        width: 64px;
+        padding: 8px;
+        border-radius: 20px;
+        border: 1px solid $dividerColor ;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .emoticon-type {
+            font-size: 24px;
+        }
+
+        .emoticon-names-container {
+            position: absolute;
+            bottom: 36px;
+            left: 50%;
+            padding: 8px 16px;
+            width: max-content;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: $primaryColor;
+            color: $textWhite;
+            border-radius: 30px 30px 30px 0px;
+            transform-origin: left bottom;
+            transition: all 125ms ease-in-out;
+            transform: scale(0);
+
+            .emoticon-name {
+                font-size: 16px;
+                font-weight: bold;
+                text-align: center;
+            }
+
+
+        }
+
+        &:hover {
+            cursor: pointer;
+
+            .emoticon-names-container {
+                transform: scale(1);
+            }
+        }
+    }
 }

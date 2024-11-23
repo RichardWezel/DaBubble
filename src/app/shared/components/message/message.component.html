@@ -102,6 +102,28 @@
     </div>
 
     <div class="message" [class.self]="isAuthorCurrentUser">{{post.text}}</div>
+
+    @if (post.emoticons && post.emoticons.length > 0) {
+      <div class="emoticons-container">
+        @for (emoticon of post.emoticons; track $index) {
+          <div class="emoticon"
+            (click)="emojiSelector.addEmojiToReaction({'emoji': {'native': emoticon.type, 'origin': origin, 'isThread': isThread, 'post': post, 'isInput': false}})">
+            <h4 class="emoticon-type">{{emoticon.type}}</h4>
+            <p class="emoticon-count">{{emoticon.count}}</p>
+            <div class="emoticon-names-container">
+              <h4 class="emoticon-type">{{emoticon.type}}</h4>
+              @for (emoticonName of emoticon.name; track $index) {
+                <p class="emoticon-name">{{filterEmoticonNameArray(emoticon.name, $index)}}</p>
+              }
+              <span
+                class="emoticon-name-end">{{emoticon.name.length === 1 ? emoticon.name[0] === storage.currentUser.id ? 'hast reagiert' : 'hat reagiert' : 'haben reagiert'}}</span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+
     @if (post.thread && !threadHead) {
       <div class="answer-section" [class.self]="isAuthorCurrentUser">
         <div class="answers" (click)="openThread(post.id)">
