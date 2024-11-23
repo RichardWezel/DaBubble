@@ -297,55 +297,61 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
    */
   async writeDm(userId: string, contact: string, newPost: PostInterface) {
     let sendUser = this.user[this.user.findIndex(user => user.id === userId)];
-    let newDm = sendUser.dm ? sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)] : null; 
+    let newDm = sendUser.dm ? sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)] : null;
 
     if (newDm) {
       newDm.posts.push(newPost);
     } else {
-      sendUser.dm = [];
-      sendUser.dm.push({
+      if (!sendUser.dm) sendUser.dm = [{
         contact: contact,
         id: this.uid.generateUid(),
         posts: [newPost],
-      });
+      }];
+      else {
+        sendUser.dm.push({
+          contact: contact,
+          id: this.uid.generateUid(),
+          posts: [newPost],
+        });
+      }
     }
     await updateDoc(doc(this.firestore, "user", userId), {
       dm: sendUser.dm
     });
   };
 
-   /**
- * Creates a new empty direct message (DM) for a user and updates the Firestore "user" collection.
- * @param contact - The ID of the contact receiving the DM.
- */
-async createNewEmptyDm(contact: string) {
-  const userId = this.currentUser.id;
+  /**
+* Creates a new empty direct message (DM) for a user and updates the Firestore "user" collection.
+* @param contact - The ID of the contact receiving the DM.
+*/
+  async createNewEmptyDm(contact: string) {
+    const userId = this.currentUser.id;
 
-  // Überprüfen, ob userId definiert und nicht leer ist
-  if (!userId) {
-    throw new Error("User ID is undefined");
+    // Überprüfen, ob userId definiert und nicht leer ist
+    if (!userId) {
+      throw new Error("User ID is undefined");
+    }
+
+    // Finden des Benutzers anhand der userId
+    const sendUser = this.user.find(user => user.id === userId);
+
+    if (!sendUser) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+
+    // Initialisieren und Hinzufügen der neuen DM
+    this.currentUser.dm = [];
+    this.currentUser.dm.push({
+      contact: contact,
+      id: this.uid.generateUid(),
+      posts: [],
+    });
+
+    // Aktualisieren des Dokuments in Firestore
+    await updateDoc(doc(this.firestore, "user", userId), {
+      dm: sendUser.dm
+    });
   }
-
-  // Finden des Benutzers anhand der userId
-  const sendUser = this.user.find(user => user.id === userId);
-  
-  if (!sendUser) {
-    throw new Error(`User with ID ${userId} not found`);
-  }
-
-  // Initialisieren und Hinzufügen der neuen DM
-  this.currentUser.dm = [];
-  this.currentUser.dm.push({
-    contact: contact,
-    id: this.uid.generateUid(),
-    posts: [],
-  });
-
-  // Aktualisieren des Dokuments in Firestore
-  await updateDoc(doc(this.firestore, "user", userId), {
-    dm: sendUser.dm
-  });
-}
 
 
   /**

@@ -1,3 +1,9 @@
+@if (findChannel() === '') {
+  <div class="loader-container">
+    <img src="assets/img/dabubble-logo.png">
+    <span class="loader"></span>
+  </div>
+}
 <section class="channel-head">
 
   @if (findChannel() === 'newMessage') {
@@ -44,7 +50,4 @@
     </div>
   }
 
-  @if (findChannel() === '') {
-    <span class="loader"></span>
-  }
 </section>

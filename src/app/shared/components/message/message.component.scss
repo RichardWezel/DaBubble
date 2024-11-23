@@ -58,9 +58,7 @@ main {
             div:not(.smileys-container) {
                 width: 24px;
                 height: 24px;
-                display: flex;
-                justify-content: end;
-                align-items: start;
+                @include dja;
             }
 
             &:hover {
@@ -299,8 +297,8 @@ main {
             width: 24px;
             height: 24px;
             display: flex;
-            justify-content: end;
-            align-items: start;
+            justify-content: center;
+            align-items: center;
         }
 
         &:hover {

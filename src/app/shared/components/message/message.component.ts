@@ -83,7 +83,7 @@ export class MessageComponent implements OnInit, OnChanges {
 
   openThread(postId: string) {
     this.storage.currentUser.postId = postId;
-    this.storage.currentUser.threadOpen = true;
+    this.storage.currentUser.threadOpen = !this.storage.currentUser.threadOpen;
   }
 
   getUserName(id: string) {
