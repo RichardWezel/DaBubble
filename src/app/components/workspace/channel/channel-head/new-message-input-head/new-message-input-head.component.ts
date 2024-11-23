@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild, ElementRef, NgModule } from '@angular/core';
+import { Component, inject} from '@angular/core';
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
 import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Importiere FormsModule
@@ -11,7 +11,8 @@ import { UserInterface } from '../../../../../shared/interfaces/user.interface';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './new-message-input-head.component.html',
-  styleUrl: './new-message-input-head.component.scss'
+  styleUrls: ['./new-message-input-head.component.scss']
+
 })
 export class NewMessageInputHeadComponent {
 
@@ -184,17 +185,17 @@ export class NewMessageInputHeadComponent {
       this.storage.setChannel(foundChannelId);
     }
     if (prefix === '@') {
-      let foundUser = this.storage.user.find(user => user.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
-      if (foundUser && this.findUserInCurrentUserDms(foundUser)) {
-        this.storage.setChannel(foundUser?.id!); 
-        console.log('Channel of current user is set to: ',foundUser?.id!)
-        console.log('Current Channel of User is: ',this.storage.currentUser.currentChannelName)
-      } else {
-        this.storage.createNewEmptyDm(foundUser?.id!);
-        this.storage.setChannel(foundUser?.id!);
-        console.log('Created new dm [] and channel of current user is set to: ',foundUser?.id!)
+      let UserOfsuggestion = this.storage.user.find(user => user.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
+      if (UserOfsuggestion && this.findUserInDms(UserOfsuggestion)) {
+        this.storage.setChannel(this.storage.currentUser.dm.find(dm => dm.contact === UserOfsuggestion.id)?.id!);
+      } else if (UserOfsuggestion && !this.findUserInDms(UserOfsuggestion)){
+        this.storage.createNewEmptyDm(UserOfsuggestion?.id!, this.storage.currentUser?.id!);
       }
     }
+  }
+
+  findUserInDms(UserOfsuggestion: UserInterface): boolean {
+    return this.storage.currentUser.dm.some(dm => dm.contact === UserOfsuggestion.id);
   }
 
   findUserInCurrentUserDms(foundUser: UserInterface) {
@@ -224,4 +225,6 @@ export class NewMessageInputHeadComponent {
     if (users) return users;
     else return [];
   }
+
+
 }

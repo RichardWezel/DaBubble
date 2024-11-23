@@ -321,38 +321,29 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   };
 
   /**
-* Creates a new empty direct message (DM) for a user and updates the Firestore "user" collection.
-* @param contact - The ID of the contact receiving the DM.
-*/
-  async createNewEmptyDm(contact: string) {
-    const userId = this.currentUser.id;
+   * Creates a new empty direct message (DM) for a user and updates the Firestore "user" collection.
+   * @param contact - The ID of the contact receiving the DM.
+   */
+  async createNewEmptyDm(user1: string, user2: string) {
 
-    // Überprüfen, ob userId definiert und nicht leer ist
-    if (!userId) {
-      throw new Error("User ID is undefined");
-    }
-
-    // Finden des Benutzers anhand der userId
-    const sendUser = this.user.find(user => user.id === userId);
-
-    if (!sendUser) {
-      throw new Error(`User with ID ${userId} not found`);
-    }
-
-    // Initialisieren und Hinzufügen der neuen DM
-    this.currentUser.dm = [];
-    this.currentUser.dm.push({
-      contact: contact,
-      id: this.uid.generateUid(),
-      posts: [],
+    // Aktualisieren des Dokuments in Firestore
+    await updateDoc(doc(this.firestore, "user", user1), {
+      dm: [{
+        contact: user2,
+        id: this.uid.generateUid(),
+        posts: [],
+      }]
     });
 
     // Aktualisieren des Dokuments in Firestore
-    await updateDoc(doc(this.firestore, "user", userId), {
-      dm: sendUser.dm
+    await updateDoc(doc(this.firestore, "user", user2), {
+      dm: [{
+        contact: user1,
+        id: this.uid.generateUid(),
+        posts: [],
+      }]
     });
   }
-
 
   /**
    * Writes a new post to a channel and updates the Firestore "channel" collection.
