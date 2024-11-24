@@ -36,9 +36,7 @@ export class AddChannelDialogComponent {
       description: this.channelData.description, 
       owner: this.storage.currentUser.id || ""
     }).then(() => {
-      // Optionale Aktionen nach erfolgreichem Hinzufügen
       this.closeDialog();
-      // Optional: Formular zurücksetzen
       this.channelData = {
         name: "",
         description: "",
@@ -49,7 +47,6 @@ export class AddChannelDialogComponent {
       };
     }).catch(error => {
       console.error("Fehler beim Hinzufügen des Channels:", error);
-      // Optional: Fehlerbehandlung für den Benutzer
     });
   }
   
