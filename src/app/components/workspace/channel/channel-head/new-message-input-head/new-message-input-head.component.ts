@@ -92,10 +92,10 @@ export class NewMessageInputHeadComponent {
   }
 
   /**
-   * Finds the first match between the input content and the CurrentUserChannel array and returns it.
+   * Finds the first match between the input content and the CurrentUserChannel array and return an object of matched channel.
    * 
    * @param searchTerm - Input String of User
-   * @returns 
+   * @returns - object of channel is matched
    */
   matchChannel(searchTerm: string): string | undefined {
     let channels: ChannelInterface[] = this.storage.CurrentUserChannel;
@@ -106,7 +106,7 @@ export class NewMessageInputHeadComponent {
   }
 
   /**
-   * Finds the first match between the input content and the User array and returns it.
+   * Finds the first match between the input content and the User array and returns an object of matched channel.
    * 
    * @param searchTerm 
    * @returns 
@@ -124,14 +124,21 @@ export class NewMessageInputHeadComponent {
    * It combines the userInput with the rest of the suggestion to display the suggestion.
    */
   get displayText(): string {
+    let prefix = this.userInput.charAt(0);
+    let inputHasOnlyPrefix = this.userInput.length === 1;
+    let inputHasCertainPrefixes = prefix === '#' || prefix === '@';
+
     if (this.suggestion) {
-      let prefix = this.userInput.charAt(0); // '#' oder '@'
-      if ((prefix === '#' || prefix === '@') && this.userInput.length === 1) {
+
+      if ((inputHasCertainPrefixes) && inputHasOnlyPrefix) {
+
         return `${prefix}${this.suggestion}`;
-      } else if (prefix === '#' || prefix === '@') {
+
+      } else if (inputHasCertainPrefixes) {
+
         let searchTerm = this.userInput.slice(1); // Entferne '#' oder '@'
-        let remaining = this.suggestion.slice(searchTerm.length);
-        return `${this.userInput}${remaining}`;
+        let remainingTerm = this.suggestion.slice(searchTerm.length);
+        return `${this.userInput}${remainingTerm}`;
       }
     }
     return this.userInput;
