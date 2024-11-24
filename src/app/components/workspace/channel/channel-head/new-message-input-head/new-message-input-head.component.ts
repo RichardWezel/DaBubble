@@ -206,6 +206,8 @@ export class NewMessageInputHeadComponent {
       this.userInput = this.suggestion;
     }
     this.suggestion = '';
+    console.log('acceptSuggestion(), userInput: ', this.userInput);
+    console.log('acceptSuggestion(), suggestion: ', this.suggestion);
   }
 
   /**
