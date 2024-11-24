@@ -51,8 +51,8 @@ export class NewMessageInputHeadComponent {
     if (prefix === '@') {
       return this.handleUserSearch(userInput)
     }
-    if (prefix) {
-      return this.handleUserSearch(userInput)
+    if (!(prefix === '@') && !(prefix === '#')) {
+      return this.handleEmailSearch(userInput)
     }
     return undefined;
   }
@@ -66,12 +66,12 @@ export class NewMessageInputHeadComponent {
    */
   handleChannelSearch(userInput: string): string | undefined {
     let inputHasOnlyPrefix = userInput.length === 1;
-    let ChannelsAssignedToCurrentUser = this.storage.CurrentUserChannel.length > 0;
+    let channelsAssignedToCurrentUser = this.storage.CurrentUserChannel.length > 0;
     let firstChannelOfCurrentUser = this.storage.CurrentUserChannel[0].name;
     let userInputWithoutPrefix = userInput.slice(1);
 
     if (inputHasOnlyPrefix) {
-      return ChannelsAssignedToCurrentUser ? firstChannelOfCurrentUser : undefined;
+      return channelsAssignedToCurrentUser ? firstChannelOfCurrentUser : undefined;
     } else {
       let searchTerm = userInputWithoutPrefix;
       return this.matchChannel(searchTerm);
@@ -92,6 +92,10 @@ export class NewMessageInputHeadComponent {
       let searchTerm = userInput.slice(1);
       return this.matchUser(searchTerm);
     }
+  }
+
+  handleEmailSearch(userInput: string): string | undefined {
+      return this.matchEmail(userInput);
   }
 
   /**
@@ -122,30 +126,43 @@ export class NewMessageInputHeadComponent {
     return match?.name;
   }
 
+  matchEmail(searchTerm: string): string | undefined {
+    let users: UserInterface[] = this.storage.user;
+    let match = users.find(user =>
+      user.email.toLowerCase().startsWith(searchTerm.toLowerCase())
+    );
+    return match?.email;
+  }
+
   /**
    * A getter that assembles the displayed text in the suggestion div. 
    * It combines the userInput with the rest of the suggestion to display the suggestion.
    */
   get displayText(): string {
-    let prefix = this.userInput.charAt(0);
-    let inputHasOnlyPrefix = this.userInput.length === 1;
-    let inputHasCertainPrefixes = prefix === '#' || prefix === '@';
-
-    if (this.suggestion) {
-
-      if ((inputHasCertainPrefixes) && inputHasOnlyPrefix) {
-
+    if (!this.suggestion) {
+      return this.userInput;
+    }
+  
+    const prefix = this.userInput.charAt(0);
+    const inputHasOnlyPrefix = this.userInput.length === 1;
+    const hasPrefix = prefix === '#' || prefix === '@';
+  
+    if (hasPrefix) {
+      if (inputHasOnlyPrefix) {
+        // Beispiel: Eingabe ist nur '#' oder '@'
         return `${prefix}${this.suggestion}`;
-
-      } else if (inputHasCertainPrefixes) {
-
-        let searchTerm = this.userInput.slice(1); // Entferne '#' oder '@'
-        let remainingTerm = this.suggestion.slice(searchTerm.length);
+      } else {
+        // Beispiel: Eingabe ist '#chan' oder '@user'
+        const searchTerm = this.userInput.slice(1);
+        const remainingTerm = this.suggestion.slice(searchTerm.length);
         return `${this.userInput}${remainingTerm}`;
       }
+    } else {
+      // Kein Präfix vorhanden, Suggestion direkt anzeigen
+      return this.suggestion;
     }
-    return this.userInput;
   }
+  
 
 
 
@@ -224,43 +241,43 @@ export class NewMessageInputHeadComponent {
    * @param {string} searchTerm - user name as submitted
    */
   showSubmittedDirectMessage(searchTerm: string) {
-    const UserOfSuggestion = this.storage.user.find(user => user.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
+    const userOfSuggestion = this.storage.user.find(user => user.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
 
-    if (UserOfSuggestion && this.findUserInDms(UserOfSuggestion)) {
-      this.showExistingDm(UserOfSuggestion)
-    } else if (UserOfSuggestion && !this.findUserInDms(UserOfSuggestion) ) {
-      this.showNewDm(UserOfSuggestion)
+    if (userOfSuggestion && this.findUserInDms(userOfSuggestion)) {
+      this.showExistingDm(userOfSuggestion)
+    } else if (userOfSuggestion && !this.findUserInDms(userOfSuggestion) ) {
+      this.showNewDm(userOfSuggestion)
     }
   }
 
   /**
    * 
    * 
-   * @param UserOfSuggestion 
+   * @param userOfSuggestion 
    */
-  showExistingDm(UserOfSuggestion: UserInterface) {
+  showExistingDm(userOfSuggestion: UserInterface) {
     let dmsOfCurrentUser = this.storage.currentUser.dm;
-    let dmWithUserOfSuggestion = dmsOfCurrentUser.find(dm => dm.contact === UserOfSuggestion.id);
+    let dmWithUserOfSuggestion = dmsOfCurrentUser.find(dm => dm.contact === userOfSuggestion.id);
     this.storage.setChannel(dmWithUserOfSuggestion!.id);
   }
 
-  showNewDm(UserOfSuggestion: UserInterface) {
-    this.createEmptyDms(UserOfSuggestion);
-    let dmWithUserOfSuggestion = this.storage.currentUser.dm.find(dm => dm.contact === UserOfSuggestion.id);
+  showNewDm(userOfSuggestion: UserInterface) {
+    this.createEmptyDms(userOfSuggestion);
+    let dmWithUserOfSuggestion = this.storage.currentUser.dm.find(dm => dm.contact === userOfSuggestion.id);
     if (dmWithUserOfSuggestion) this.storage.setChannel(dmWithUserOfSuggestion!.id);
   }
 
-  async createEmptyDms(UserOfSuggestion: UserInterface) {
+  async createEmptyDms(userOfSuggestion: UserInterface) {
     let currentUserId = this.storage.currentUser.id;
-    let suggestedUserId = UserOfSuggestion.id;
+    let suggestedUserId = userOfSuggestion.id;
     if (currentUserId && suggestedUserId) {
     await this.storage.createNewEmptyDm(currentUserId, suggestedUserId);
     await this.storage.createNewEmptyDm(suggestedUserId, currentUserId);
     }
   }
 
-  findUserInDms(UserOfsuggestion: UserInterface): boolean {
-    return this.storage.currentUser.dm.some(dm => dm.contact === UserOfsuggestion.id);
+  findUserInDms(userOfsuggestion: UserInterface): boolean {
+    return this.storage.currentUser.dm.some(dm => dm.contact === userOfsuggestion.id);
   }
 
   findUserInCurrentUserDms(foundUser: UserInterface) {
