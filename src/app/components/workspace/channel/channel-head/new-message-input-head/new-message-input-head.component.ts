@@ -206,6 +206,8 @@ export class NewMessageInputHeadComponent {
       this.userInput = this.suggestion;
     }
     this.suggestion = '';
+    console.log('acceptSuggestion(), userInput: ', this.userInput);
+    console.log('acceptSuggestion(), suggestion: ', this.suggestion);
   }
 
   /**
@@ -222,6 +224,8 @@ export class NewMessageInputHeadComponent {
       this.showSubmittedDirectMessage(searchTerm);
     } else if (prefix){
       this.showSubmittedEmail()
+      console.log('showSuggestion(), userInput: ', this.userInput);
+      console.log('showSuggestion(), suggestion', this.suggestion);
     }
   }
 
@@ -252,32 +256,40 @@ export class NewMessageInputHeadComponent {
     }
   }
 
+    showExistingDm(userOfSuggestion: UserInterface) {
+      let dmsOfCurrentUser = this.storage.currentUser.dm;
+      let dmWithUserOfSuggestion = dmsOfCurrentUser.find(dm => dm.contact === userOfSuggestion.id);
+      this.storage.setChannel(dmWithUserOfSuggestion!.id);
+    }
+
+    showNewDm(userOfSuggestion: UserInterface) {
+      this.createEmptyDms(userOfSuggestion);
+      let dmWithUserOfSuggestion = this.storage.currentUser.dm.find(dm => dm.contact === userOfSuggestion.id);
+      if (dmWithUserOfSuggestion) this.storage.setChannel(dmWithUserOfSuggestion!.id);
+    }
+
   showSubmittedEmail() {
-    const userOfSuggestion = this.storage.user.find(user => user.email.startsWith(this.suggestion.toLowerCase()));
+    const userOfSuggestion = this.storage.user.find(user => user.email.startsWith(this.userInput.toLowerCase()));
 
     if (userOfSuggestion && this.findUserInDms(userOfSuggestion)) {
-      this.showExistingDm(userOfSuggestion)
+      this.showExistingDmEmail(userOfSuggestion)
     } else if (userOfSuggestion && !this.findUserInDms(userOfSuggestion) ) {
-      this.showNewDm(userOfSuggestion)
+      this.showNewDmEmail(userOfSuggestion)
     }
   }
 
-  /**
-   * 
-   * 
-   * @param userOfSuggestion 
-   */
-  showExistingDm(userOfSuggestion: UserInterface) {
-    let dmsOfCurrentUser = this.storage.currentUser.dm;
-    let dmWithUserOfSuggestion = dmsOfCurrentUser.find(dm => dm.contact === userOfSuggestion.id);
-    this.storage.setChannel(dmWithUserOfSuggestion!.id);
-  }
-
-  showNewDm(userOfSuggestion: UserInterface) {
-    this.createEmptyDms(userOfSuggestion);
-    let dmWithUserOfSuggestion = this.storage.currentUser.dm.find(dm => dm.contact === userOfSuggestion.id);
-    if (dmWithUserOfSuggestion) this.storage.setChannel(dmWithUserOfSuggestion!.id);
-  }
+    showExistingDmEmail(userOfSuggestion: UserInterface) {
+      let dmsOfCurrentUser = this.storage.currentUser.dm;
+      let dmWithUserOfSuggestion = dmsOfCurrentUser.find(dm => dm.contact === userOfSuggestion.id);
+      this.storage.setChannel(dmWithUserOfSuggestion!.id);
+    }
+  
+    async showNewDmEmail(userOfSuggestion: UserInterface) {
+      console.log('showNewDmEmail(userOfSuggestion: UserInterface): ', userOfSuggestion)
+      await this.createEmptyDms(userOfSuggestion);
+      let dmWithUserOfSuggestion = this.storage.currentUser.dm.find(dm => dm.contact === userOfSuggestion.id);
+      if (dmWithUserOfSuggestion) this.storage.setChannel(dmWithUserOfSuggestion!.id);
+    }
 
   async createEmptyDms(userOfSuggestion: UserInterface) {
     let currentUserId = this.storage.currentUser.id;
