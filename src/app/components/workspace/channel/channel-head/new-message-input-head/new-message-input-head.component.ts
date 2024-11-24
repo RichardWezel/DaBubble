@@ -51,6 +51,9 @@ export class NewMessageInputHeadComponent {
     if (prefix === '@') {
       return this.handleUserSearch(userInput)
     }
+    if (prefix) {
+      return this.handleUserSearch(userInput)
+    }
     return undefined;
   }
 
@@ -149,28 +152,33 @@ export class NewMessageInputHeadComponent {
   // FUNCTIONS FOR TRANSFERRING THE SUGGESTION TO THE CHANNEL DISPLAY
 
   /**
-     * Accepts the destination suggestion when the Enter or Tab key is pressed.
+     * Renders the userInput such as channel or user by pressing Enter or Tab key.
      * 
      * @param event 
      */
   onKeyDown(event: KeyboardEvent): void {
     if (event.key === 'Tab' && this.suggestion ||
       event.key === 'Enter' && this.suggestion) {
-
       this.handleSubmitSuggestion(event)
     }
   }
 
+  /**
+   * Accepts the submitted autocomplete by transferring it to the input field. 
+   * Calls the showSuggestion() function, which renders the channel or direct messages.
+   * 
+   * @param event 
+   */
   handleSubmitSuggestion(event: KeyboardEvent) {
     event.preventDefault();
     this.acceptSuggestion();
     this.showSuggestion();
-    let searchTerm = this.userInput.slice(1); // Entferne '#' oder '@'
   }
 
   /**
-  * Sets the userInput to the suggestion found and empties the suggestion.
-  */
+   * Depending on which prefix is placed in front, 
+   * the submitted autocomplete with the corresponding prefix is placed as content in the input field.
+   */
   acceptSuggestion(): void {
     if (this.userInput.startsWith('#')) {
       this.userInput = `#${this.suggestion}`;
@@ -187,33 +195,67 @@ export class NewMessageInputHeadComponent {
    * the channel of the currentUser is set to the entered channel or direct message 
    * so that it is displayed.
    */
-  async showSuggestion() {
+  showSuggestion() {
     let prefix = this.userInput.charAt(0);
     let searchTerm = this.userInput.slice(1);
     if (prefix === '#') {
-      let foundChannelId = this.findChannelId(searchTerm);
-      this.storage.setChannel(foundChannelId);
+      this.showSubmittedChannel(searchTerm);
     }
     if (prefix === '@') {
-      // UserOfSuggestion entspricht dem Objekt in user collection, welches mit dem serchTerm überienstimmt
-      // avatar: "profile-5.png"
-      // email: "ichbinelias@beispiel.com"
-      // id: "BnmpU2U2CzA671AY4tms"
-      // name: "Elias Neumann"
-      // online: true
-      const UserOfSuggestion = this.storage.user.find(user => user.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
-      console.log(UserOfSuggestion);
-      if (UserOfSuggestion && this.findUserInDms(UserOfSuggestion)) {
-        let dmsOfCurrentUser = this.storage.currentUser.dm;
-        let dmWithUserOfSuggestion = dmsOfCurrentUser.find(dm => dm.contact === UserOfSuggestion.id);
-        this.storage.setChannel(dmWithUserOfSuggestion!.id);
-      } else if (UserOfSuggestion && !this.findUserInDms(UserOfSuggestion) && this.storage.currentUser.id && UserOfSuggestion.id) {
-        console.log(UserOfSuggestion.id);
-        await this.storage.createNewEmptyDm(this.storage.currentUser.id, UserOfSuggestion.id);
-        await this.storage.createNewEmptyDm(UserOfSuggestion.id, this.storage.currentUser.id);
-        let dmWithUserOfSuggestion = this.storage.currentUser.dm.find(dm => dm.contact === UserOfSuggestion.id);
-        if (dmWithUserOfSuggestion) this.storage.setChannel(dmWithUserOfSuggestion!.id);
-      }
+      this.showSubmittedDirectMessage(searchTerm);
+    }
+  }
+
+  /**
+   * Sets the current Channel of current User to the submitted channel
+   * 
+   * @param {string} searchTerm  - channel name as submitted
+   */
+  showSubmittedChannel(searchTerm: string) {
+    let foundChannelId = this.findChannelId(searchTerm);
+    this.storage.setChannel(foundChannelId);
+  }
+
+  /**
+   * Sets the current Channel of current User to the submitted direct message user. 
+   * If a dm already exists, it will be shown, 
+   * otherwise a new dm will be created for the affected users (current user and submitted user) and shown.
+   * 
+   * @param {string} searchTerm - user name as submitted
+   */
+  showSubmittedDirectMessage(searchTerm: string) {
+    const UserOfSuggestion = this.storage.user.find(user => user.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
+
+    if (UserOfSuggestion && this.findUserInDms(UserOfSuggestion)) {
+      this.showExistingDm(UserOfSuggestion)
+    } else if (UserOfSuggestion && !this.findUserInDms(UserOfSuggestion) ) {
+      this.showNewDm(UserOfSuggestion)
+    }
+  }
+
+  /**
+   * 
+   * 
+   * @param UserOfSuggestion 
+   */
+  showExistingDm(UserOfSuggestion: UserInterface) {
+    let dmsOfCurrentUser = this.storage.currentUser.dm;
+    let dmWithUserOfSuggestion = dmsOfCurrentUser.find(dm => dm.contact === UserOfSuggestion.id);
+    this.storage.setChannel(dmWithUserOfSuggestion!.id);
+  }
+
+  showNewDm(UserOfSuggestion: UserInterface) {
+    this.createEmptyDms(UserOfSuggestion);
+    let dmWithUserOfSuggestion = this.storage.currentUser.dm.find(dm => dm.contact === UserOfSuggestion.id);
+    if (dmWithUserOfSuggestion) this.storage.setChannel(dmWithUserOfSuggestion!.id);
+  }
+
+  async createEmptyDms(UserOfSuggestion: UserInterface) {
+    let currentUserId = this.storage.currentUser.id;
+    let suggestedUserId = UserOfSuggestion.id;
+    if (currentUserId && suggestedUserId) {
+    await this.storage.createNewEmptyDm(currentUserId, suggestedUserId);
+    await this.storage.createNewEmptyDm(suggestedUserId, currentUserId);
     }
   }
 
