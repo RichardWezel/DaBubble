@@ -43,6 +43,12 @@
     &:hover {
       background-color: $backgroundColor;
       border-radius: 50%;
+
+      svg {
+        path {
+          fill: $thirdColor;
+        }
+      }
     }
   }
 }

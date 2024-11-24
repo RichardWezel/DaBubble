@@ -30,6 +30,14 @@
     h3 {
       color: $secondaryColor;
     }
+
+    .dropdown-arrow {
+      svg {
+        path {
+          fill: $primaryColor;
+        }
+      }
+    }
   }
 
   .user-avatar {
@@ -39,6 +47,9 @@
 
 
   .dropdown-arrow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
     transform-origin: center center;
     transform: rotate(0deg);

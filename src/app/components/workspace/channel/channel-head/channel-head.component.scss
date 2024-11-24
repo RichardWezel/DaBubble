@@ -35,6 +35,12 @@
     font-weight: bold;
   }
 
+  .icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   &:hover {
     cursor: pointer;
     background-color: $backgroundColor;
@@ -42,6 +48,14 @@
 
     p {
       color: $thirdColor;
+    }
+
+    .icon {
+      svg {
+        path {
+          fill: $thirdColor;
+        }
+      }
     }
   }
 }
@@ -101,17 +115,18 @@
     height: 40px;
     border-radius: 50%;
     background-color: $backgroundColor;
-    background-image: url('./../../../../../assets/icons/add-user.svg');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
     display: flex;
     align-items: center;
     justify-content: center;
 
     &:hover {
       cursor: pointer;
-      background-image: url('./../../../../../assets/icons/add-user-hover.svg');
+
+      svg {
+        path {
+          fill: $thirdColor;
+        }
+      }
     }
   }
 }

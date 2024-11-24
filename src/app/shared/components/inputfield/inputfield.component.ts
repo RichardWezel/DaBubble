@@ -20,7 +20,6 @@ export class InputfieldComponent {
 
   @Input() thread: boolean = false;
 
-  src = 'assets/icons/send.svg';
   public message: string = '';
   showEmojiSelector: boolean = false;
 

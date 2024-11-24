@@ -34,7 +34,11 @@
       ~.inputfield-buttons {
         button {
           &:hover {
-            background-image: url('./../../../../assets/icons/send-hover.svg');
+            svg {
+              path {
+                fill: $thirdColor;
+              }
+            }
           }
         }
       }
@@ -45,27 +49,21 @@
           border-radius: 50%;
         }
 
-        &.appendix {
-          background-image: url('./../../../../assets/icons/add-focus.svg');
-
-          &:hover {
-            background-image: url('./../../../../assets/icons/add-hover.svg');
-          }
-        }
-
-        &.smileys {
-          background-image: url('./../../../../assets/icons/smiley-focus.svg');
-
-          &:hover {
-            background-image: url('./../../../../assets/icons/smiley-hover.svg');
-          }
-        }
-
+        &.appendix,
+        &.smileys,
         &.at {
-          background-image: url('./../../../../assets/icons/at-focus.svg');
+          svg {
+            path {
+              fill: $textBlack;
+            }
+          }
 
           &:hover {
-            background-image: url('./../../../../assets/icons/at-hover.svg');
+            svg {
+              path {
+                fill: $thirdColor
+              }
+            }
           }
         }
       }
@@ -92,35 +90,26 @@
       }
 
       .icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         width: 40px;
         height: 40px;
         background-repeat: no-repeat;
         background-position: center;
         cursor: pointer;
 
-
-        &.appendix {
-          background-image: url('./../../../../assets/icons/add.svg');
-        }
-
-        &.smileys {
-          background-image: url('./../../../../assets/icons/smiley.svg');
-        }
-
-        &.at {
-          background-image: url('./../../../../assets/icons/at.svg');
-        }
       }
     }
   }
 
   button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: unset;
     width: 48px;
     height: 48px;
-    background-color: transparent;
-    background-image: url('./../../../../assets/icons/send.svg');
-    background-repeat: no-repeat;
-    background-position: center;
     border: none;
     outline: none;
     cursor: pointer;

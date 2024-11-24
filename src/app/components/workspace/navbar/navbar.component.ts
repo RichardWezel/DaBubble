@@ -16,7 +16,6 @@ export class NavbarComponent {
   storage = inject(FirebaseStorageService);
   authService = inject(FirebaseAuthService);
 
-  caretSrc: string = 'assets/icons/user-caret.svg';
   dropDownOpen: boolean = false;
 
   @HostListener('document:click', ['$event'])

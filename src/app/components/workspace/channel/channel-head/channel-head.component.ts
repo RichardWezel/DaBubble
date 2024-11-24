@@ -15,8 +15,7 @@ import { NewMessageInputHeadComponent } from "./new-message-input-head/new-messa
 })
 export class ChannelHeadComponent {
   storage = inject(FirebaseStorageService);
-  imgTag: string = 'assets/icons/tag.svg';
-  imgCaret: string = 'assets/icons/user-caret.svg';
+
 
   /**
    * Gleicht ab, ob ein Channel oder eine DM als ID in currentChannel des currentUsers enthalten ist 
