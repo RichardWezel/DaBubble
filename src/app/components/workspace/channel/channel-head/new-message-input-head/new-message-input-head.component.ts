@@ -218,9 +218,10 @@ export class NewMessageInputHeadComponent {
     let searchTerm = this.userInput.slice(1);
     if (prefix === '#') {
       this.showSubmittedChannel(searchTerm);
-    }
-    if (prefix === '@') {
+    } else if (prefix === '@') {
       this.showSubmittedDirectMessage(searchTerm);
+    } else if (prefix){
+      this.showSubmittedEmail()
     }
   }
 
@@ -243,6 +244,16 @@ export class NewMessageInputHeadComponent {
    */
   showSubmittedDirectMessage(searchTerm: string) {
     const userOfSuggestion = this.storage.user.find(user => user.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
+
+    if (userOfSuggestion && this.findUserInDms(userOfSuggestion)) {
+      this.showExistingDm(userOfSuggestion)
+    } else if (userOfSuggestion && !this.findUserInDms(userOfSuggestion) ) {
+      this.showNewDm(userOfSuggestion)
+    }
+  }
+
+  showSubmittedEmail() {
+    const userOfSuggestion = this.storage.user.find(user => user.email.startsWith(this.suggestion.toLowerCase()));
 
     if (userOfSuggestion && this.findUserInDms(userOfSuggestion)) {
       this.showExistingDm(userOfSuggestion)
