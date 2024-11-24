@@ -6,11 +6,13 @@ import { UserInterface } from '../../interfaces/user.interface';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { NgStyle } from '@angular/common';
 import { EmojiSelectorComponent } from '../emoji-selector/emoji-selector.component';
+import { EmojiComponent, EmojiData, EmojiService } from '@ctrl/ngx-emoji-mart/ngx-emoji';
+
 
 @Component({
   selector: 'app-message',
   standalone: true,
-  imports: [NgStyle, EmojiSelectorComponent],
+  imports: [NgStyle, EmojiSelectorComponent, EmojiComponent],
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'
 })
@@ -18,6 +20,7 @@ export class MessageComponent implements OnInit, OnChanges {
   storage = inject(FirebaseStorageService);
   elementRef: ElementRef = inject(ElementRef);
   emojiSelector = inject(EmojiSelectorComponent);
+  emoji = inject(EmojiService);
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
   @Input() threadHead: boolean = false;
   @Input() origin: string = '';
@@ -93,10 +96,47 @@ export class MessageComponent implements OnInit, OnChanges {
   }
 
   filterEmoticonNameArray(names: string[], index: number) {
-    if ((names.length - 1 === index) && this.reactSelf) return names[index] + 'und Du';
-    else if ((names.length - 1 === index) && (names[index] === this.storage.currentUser?.id)) return 'Du';
-    else if (names[index] !== this.storage.currentUser?.id) return this.getUserName(names[index]);
-    else { this.reactSelf = true; return ''; };
+    let newNames = [...names];
+    let self = newNames.findIndex(name => name === this.storage.currentUser?.id);
+    if (self !== -1) {
+      newNames.splice(self, 1);
+      this.reactSelf = true;
+    }
+    let newIndex = this.reactSelf ? index - 1 : index;
+    if (newNames.length === 0) return 'Du';
+    else if ((newNames.length - 1 === newIndex) && this.reactSelf) return this.getUserName(newNames[newIndex]) + ' und Du';
+    else if (newNames[newIndex] !== this.storage.currentUser?.id) return this.getUserName(newNames[newIndex]);
+    else return;
+  }
+
+  getLastEmoji() {
+    let last = localStorage.getItem('emoji-mart.last') || '';
+    let emojiObject = this.emoji.getData(last);
+    if (emojiObject) return {
+      'emoji':
+      {
+        'native': emojiObject.native,
+        'origin': this.origin,
+        'isThread': this.isThread,
+        'post': this.post,
+        'isInput': false
+      }
+    }
+    else return { 'emoji': { 'native': this.emoji.getData('+1')?.native, 'origin': this.origin, 'isThread': this.isThread, 'post': this.post, 'isInput': false } };
+  }
+
+
+  getMostRecentEmoji() {
+    let recentEmojis = localStorage.getItem('emoji-mart.frequently') || '';
+    let lastUsed = localStorage.getItem('emoji-mart.last') || '';
+    let most = recentEmojis ? JSON.parse(recentEmojis) : '';
+    if (!most) return { emoji: { native: this.emoji.getData('clap')?.native, origin: this.origin, isThread: this.isThread, post: this.post, isInput: false } };
+    const mostKeys = Object.keys(most);
+    const mostUsed = mostKeys.reduce((a, b) => most[a] > most[b] ? a : b);
+    const secondMostUsed = mostKeys.filter(key => key !== mostUsed).reduce((a, b) => most[a] > most[b] ? a : b);
+    if (mostUsed !== lastUsed) return { emoji: { native: this.emoji.getData(mostUsed)?.native, origin: this.origin, isThread: this.isThread, post: this.post, isInput: false } };
+    else if (secondMostUsed !== lastUsed) return { emoji: { native: this.emoji.getData(secondMostUsed)?.native, origin: this.origin, isThread: this.isThread, post: this.post, isInput: false } };
+    else return { emoji: { native: this.emoji.getData('clap')?.native, origin: this.origin, isThread: this.isThread, post: this.post, isInput: false } };
   }
 }
 

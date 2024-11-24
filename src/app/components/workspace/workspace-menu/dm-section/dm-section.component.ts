@@ -30,7 +30,7 @@ export class DmSectionComponent {
   }
 
   getDmAvatar(dm: { contact: string, id: string, posts: any[] }) {
-    let avatar = this.storage.user[this.storage.user.findIndex(user => user.id === dm.contact)]?.avatar;
+    let avatar: string = this.storage.user[this.storage.user.findIndex(user => user.id === dm.contact)]?.avatar;
     avatar = avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + avatar : this.storage.openImage(avatar);
     return avatar;
   }

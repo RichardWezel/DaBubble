@@ -5,16 +5,19 @@
     'right': isAuthorCurrentUser ? 'unset' : '40.06px',
     'left': isAuthorCurrentUser ? '40.06px' : 'unset'
     }">
-      <div class="reaction-bar-icon check-mark">
-        <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div class="reaction-bar-icon" (click)="emojiSelector.addEmojiToReaction(getLastEmoji())">
+        <p class="emoji">{{getLastEmoji().emoji.native}}</p>
+
+        <!-- <svg width=" 21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M10.9365 20C16.4594 20 20.9365 15.5228 20.9365 10C20.9365 4.47715 16.4594 0 10.9365 0C5.41368 0 0.936523 4.47715 0.936523 10C0.936523 15.5228 5.41368 20 10.9365 20Z"
             fill="#4BD37B" />
           <path d="M15.6032 4L8.60319 11.2L6.26986 8.8L3.93652 11.2L8.60319 16L17.9365 6.4L15.6032 4Z" fill="white" />
-        </svg>
+          </svg> -->
       </div>
-      <div class="reaction-bar-icon hands-up">
-        <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div class="reaction-bar-icon" (click)="emojiSelector.addEmojiToReaction(getMostRecentEmoji())">
+        <p class="emoji">{{getMostRecentEmoji().emoji.native}}</p>
+        <!-- <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M9.27417 0L10.9408 3.33333L12.6075 0H9.27417ZM15.2408 0.333333L15.0075 4.06667L18.1075 2L15.2408 0.333333ZM3.77417 2L6.9075 4.06667L6.67417 0.333333L3.77417 2Z"
             fill="#4AA9FF" />
@@ -56,7 +59,7 @@
           <path
             d="M13.9409 12.7331C15.2409 12.2665 17.9743 13.1665 17.6076 15.7665C17.6076 13.3331 15.4409 12.7665 14.2409 12.7665C14.0743 12.7665 13.9409 12.7331 13.9409 12.7331Z"
             fill="#EBA352" />
-        </svg>
+        </svg> -->
       </div>
       <div class="reaction-bar-icon add-reaction reaction-bar-icon-special"
         (click)="showEmojiSelector = !showEmojiSelector">
