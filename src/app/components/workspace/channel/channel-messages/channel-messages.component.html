@@ -5,6 +5,18 @@
     <!-- Wenn die Methode findChannel() die ID eines Channels in currentUser.currentChannel findet, dann true -->
     @if(findChannel() === 'channel') {
 
+      @if (getPostOfChannel().length === 0) {
+        <div class="empty">
+          <div class="header">
+            <p>{{ '# ' + channelName() }}</p>
+          </div>
+          <p class="example">
+            Du hast diesen Channel heute erstellt. Das ist der Anfang des Channels <span class="highlight">#
+              {{ channelName() }}</span>
+          </p>
+        </div>
+      }
+
       @for (post of getPostOfChannel(); track $index) {
         @if (currentDate(post.timestamp) > compareTimestamp) {
           <app-date-separator [date]="trackByDate(post)"></app-date-separator>
@@ -16,14 +28,38 @@
 
     @if(findChannel() === 'dm') {
 
-      @for (post of getPostOfDm(); track $index) {
-        @if (currentDate(post.timestamp) > compareTimestamp) {
-          <app-date-separator [date]="trackByDate(post)"></app-date-separator>
-        }
-        <app-message [origin]="'dm'" [post]="post" #message></app-message>
-      }
-      {{ resetCompareTimestamp() }}
-    }
+      @if(getPostOfDm().length === 0) {
+        <div class="empty">
+          <div class="header">
+            <img class="user-avatar"
+              [src]="userAvatar().startsWith('profile-') ? 'assets/img/profile-pictures/' + userAvatar() : storage.openImage(userAvatar())"
+              alt="user">
+            <p>{{ userName() }}</p>
+          </div>
+          @if(userName()?.includes('(Du)')) {
 
+            <p class="example">
+              <span class="bold">Dieser Raum ist nur für dich da.</span> Mache dir Notizen, liste deine
+              To-dos auf oder bewahre Links und Dateien griffbereit auf. Du kannst hier auch gerne Dinge mit dir selbst
+              besprechen.
+            </p>
+          }
+          @else {
+            <p class="example">Diese Unterhaltung findet nur zwischen <span
+                class="highlight">{{ '@' + userName() }}</span> und dir statt.
+            </p>
+          }
+        </div>
+      }
+      @else {
+        @for (post of getPostOfDm(); track $index) {
+          @if (currentDate(post.timestamp) > compareTimestamp) {
+            <app-date-separator [date]="trackByDate(post)"></app-date-separator>
+          }
+          <app-message [origin]="'dm'" [post]="post" #message></app-message>
+        }
+        {{ resetCompareTimestamp() }}
+      }
+    }
   </section>
 </main>

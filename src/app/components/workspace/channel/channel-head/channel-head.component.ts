@@ -70,7 +70,8 @@ export class ChannelHeadComponent {
 
   userName() {
     let foundUser = this.storage.currentUser.dm.find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel)?.contact;
-    return this.storage.user.find(user => user.id === foundUser)?.name;
+    if (foundUser === this.storage.currentUser.id) return this.storage.currentUser.name + ' (Du)';
+    else return this.storage.user.find(user => user.id === foundUser)?.name;
   }
 
 
