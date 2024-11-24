@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
-import { FormsModule } from '@angular/forms'; // Importiere FormsModule
+import { FormsModule } from '@angular/forms';
 import { ChannelInterface } from '../../../../../shared/interfaces/channel.interface';
 import { UserInterface } from '../../../../../shared/interfaces/user.interface';
 
@@ -38,17 +38,17 @@ export class NewMessageInputHeadComponent {
   }
 
   /**
-   * Depending on the initial character, a function is called that returns a match with the entered term from the respective property array.
+   * Depending on the initial prefix, a function is called that returns a match with the entered term from the respective property array.
    * 
    * @param userInput - Input String of User
    * @returns 
    */
   findMatch(userInput: string): string | undefined {
-    let firstLetter = userInput.slice(0, 1);
-    if (firstLetter === '#') {
+    let prefix = userInput.slice(0, 1);
+    if (prefix === '#') {
       return this.handleChannelSearch(userInput);
     }
-    if (firstLetter === '@') {
+    if (prefix === '@') {
       return this.handleUserSearch(userInput)
     }
     return undefined;
@@ -62,10 +62,15 @@ export class NewMessageInputHeadComponent {
    * @returns 
    */
   handleChannelSearch(userInput: string): string | undefined {
-    if (userInput.length === 1) {
-      return this.storage.CurrentUserChannel.length > 0 ? this.storage.CurrentUserChannel[0].name : undefined;
+    let inputHasOnlyPrefix = userInput.length === 1;
+    let ChannelsAssignedToCurrentUser = this.storage.CurrentUserChannel.length > 0;
+    let firstChannelOfCurrentUser = this.storage.CurrentUserChannel[0].name;
+    let userInputWithoutPrefix = userInput.slice(1);
+
+    if (inputHasOnlyPrefix) {
+      return ChannelsAssignedToCurrentUser ? firstChannelOfCurrentUser : undefined;
     } else {
-      let searchTerm = userInput.slice(1);
+      let searchTerm = userInputWithoutPrefix;
       return this.matchChannel(searchTerm);
     }
   }
