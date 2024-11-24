@@ -1,8 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
-import { NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Importiere FormsModule
-import { CurrentUserInterface } from '../../../../../shared/interfaces/current-user-interface';
 import { ChannelInterface } from '../../../../../shared/interfaces/channel.interface';
 import { UserInterface } from '../../../../../shared/interfaces/user.interface';
 
