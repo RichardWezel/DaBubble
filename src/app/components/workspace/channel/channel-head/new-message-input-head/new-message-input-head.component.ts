@@ -142,28 +142,29 @@ export class NewMessageInputHeadComponent {
     if (!this.suggestion) {
       return this.userInput;
     }
-  
+    return this.handleUserInputForSuggestionText();
+  }
+
+  handleUserInputForSuggestionText() {
     const prefix = this.userInput.charAt(0);
     const inputHasOnlyPrefix = this.userInput.length === 1;
     const hasPrefix = prefix === '#' || prefix === '@';
-  
     if (hasPrefix) {
       if (inputHasOnlyPrefix) {
-        // Beispiel: Eingabe ist nur '#' oder '@'
         return `${prefix}${this.suggestion}`;
       } else {
-        // Beispiel: Eingabe ist '#chan' oder '@user'
-        const searchTerm = this.userInput.slice(1);
-        const remainingTerm = this.suggestion.slice(searchTerm.length);
-        return `${this.userInput}${remainingTerm}`;
+        return this.returnUserInputWithRemainingTerm();
       }
     } else {
-      // Kein Präfix vorhanden, Suggestion direkt anzeigen
       return this.suggestion;
     }
   }
   
-
+  returnUserInputWithRemainingTerm() {
+    const searchTerm = this.userInput.slice(1);
+    const remainingTerm = this.suggestion.slice(searchTerm.length);
+    return `${this.userInput}${remainingTerm}`;
+  }
 
 
   // FUNCTIONS FOR TRANSFERRING THE SUGGESTION TO THE CHANNEL DISPLAY
