@@ -1,6 +1,6 @@
 import { inject, Injectable, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
-import { collection, doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, addDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { UserInterface } from '../interfaces/user.interface';
 import { ChannelInterface } from '../interfaces/channel.interface';
 import { PostInterface } from '../interfaces/post.interface';
@@ -8,7 +8,6 @@ import { CurrentUserInterface } from '../interfaces/current-user-interface';
 import { UidService } from './uid.service';
 import { OnlineStatusService } from '../services/online-status.service';
 import { Auth } from '@angular/fire/auth';
-
 
 @Injectable({
   providedIn: 'root'
@@ -240,15 +239,26 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   * Adds a new channel to the Firestore "channel" collection after sending the new channel form.
   * @param channelData - An object containing the channel's name, description, and owner.
   */
+ 
+
   async addChannel(channelData: { name: string, description: string, owner: string }) {
-    await setDoc(doc(this.firestore, "channel"), {
-      name: channelData.name,
-      description: channelData.description,
-      owner: channelData.owner,
-      user: [channelData.owner],
-      posts: [],
-    } as ChannelInterface);
+    try {
+      const channelsCollection = collection(this.firestore, "channel");
+      const docRef = await addDoc(channelsCollection, {
+        name: channelData.name,
+        description: channelData.description,
+        owner: channelData.owner,
+        user: [channelData.owner],
+        posts: [],
+      } as ChannelInterface);
+      console.log("Neuer Channel hinzugefügt mit ID: ", docRef.id);
+      return docRef;
+    } catch (error) {
+      console.error("Fehler beim Hinzufügen des Channels: ", error);
+      throw error;
+    }
   }
+  
 
 
   /**
