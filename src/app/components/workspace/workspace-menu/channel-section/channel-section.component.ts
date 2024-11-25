@@ -11,16 +11,9 @@ import { AddChannelDialogComponent } from "./add-channel-dialog/add-channel-dial
   templateUrl: './channel-section.component.html',
   styleUrl: './channel-section.component.scss'
 })
-export class ChannelSectionComponent implements AfterViewInit {
+export class ChannelSectionComponent {
 
   @ViewChild('addChannelDialog') addChannelDialogComponent!: AddChannelDialogComponent;
-
-  ngAfterViewInit(): void {
-    // Die Child-Komponente ist jetzt verfügbar
-    // Du kannst hier initiale Aufrufe machen, falls nötig
-    // Beispiel:
-    // this.childComponent.childMethod();
-  }
 
   storage = inject(FirebaseStorageService);
 

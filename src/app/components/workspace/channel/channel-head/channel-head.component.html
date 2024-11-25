@@ -43,7 +43,7 @@
     </div>
 
     <div class=" channel-member-container">
-      <div class="channel-member">
+      <div class="channel-member" (click)="callOpenDialog($event)">
         @for (user of channelUser(); track $index) {
           @if ($index <= 5) {
             <img class="user-avatar"
@@ -71,6 +71,7 @@
           </g>
         </svg>
       </div>
+      <app-channel-member-dialog #channelMemberDialog></app-channel-member-dialog>
     </div>
 
   }

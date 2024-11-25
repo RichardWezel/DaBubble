@@ -1,21 +1,34 @@
-import { Component, inject, ViewChild, ElementRef, NgModule } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { NgStyle } from '@angular/common';
-
 import { FormsModule } from '@angular/forms';
 import { NewMessageInputHeadComponent } from "./new-message-input-head/new-message-input-head.component"; // Importiere FormsModule
+import { ChannelMemberDialogComponent } from './channel-member-dialog/channel-member-dialog.component';
 
 @Component({
   selector: 'app-channel-head',
   standalone: true,
-  imports: [NgStyle,
-    FormsModule, NewMessageInputHeadComponent],
+  imports: [
+    NgStyle,
+    FormsModule, 
+    NewMessageInputHeadComponent, 
+    ChannelMemberDialogComponent],
   templateUrl: './channel-head.component.html',
   styleUrl: './channel-head.component.scss'
 })
 export class ChannelHeadComponent {
   storage = inject(FirebaseStorageService);
 
+  @ViewChild('channelMemberDialog') channelMemberDialog!: ChannelMemberDialogComponent;
+
+  callOpenDialog(event: Event) {
+    event.stopPropagation();
+    if (this.channelMemberDialog) {
+      this.channelMemberDialog.openDialog();
+    } else {
+      console.log("Error of call channelMemberDialog.openDialog()")
+    }
+  }
 
   /**
    * Gleicht ab, ob ein Channel oder eine DM als ID in currentChannel des currentUsers enthalten ist 
