@@ -27,7 +27,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
 
   unsubUsers: () => void = () => { };
   unsubChannels: () => void = () => { };
-  unsubCurrentUserChannels: () => void = () => { };
   unsubscribeSnapshot: () => void = () => { };
 
   /**
@@ -47,7 +46,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   ngOnDestroy(): void {
     this.unsubUsers();
     this.unsubChannels();
-    this.unsubCurrentUserChannels();
+
     this.unsubscribeSnapshot();
     if (this.currentUser.id) {
       this.onlineStatusService.setUserOnlineStatus(this.currentUser.id, false)
@@ -57,7 +56,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.unsubCurrentUserChannels();
     this.unsubscribeSnapshot();
     console.log("Current User: ", this.currentUser);
   }
@@ -65,7 +63,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   ngOnInit(): void {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
-    this.unsubCurrentUserChannels();
     this.unsubscribeSnapshot();
     console.log("Current User: ", this.currentUser);
   }
@@ -92,7 +89,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
    * @returns 
    */
   getCurrentUserChannelCollection() {
-    this.CurrentUserChannel = this.channel.filter(channel => 
+    this.CurrentUserChannel = this.channel.filter(channel =>
       this.checkCurrentUserIsMemberOfChannel(channel.user)
     );
     console.log("Current User Channels: ", this.CurrentUserChannel);
