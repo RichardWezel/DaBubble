@@ -11,6 +11,45 @@
   border: 1px solid $dividerColor;
   border-radius: 20px;
 
+  &:focus-within {
+    .inputfield-buttons {
+      button {
+        &:hover {
+          svg {
+            path {
+              fill: $thirdColor;
+            }
+          }
+        }
+      }
+    }
+
+    .inputfield-buttons .tags .icon {
+      &:hover {
+        background-color: $backgroundColor;
+        border-radius: 50%;
+      }
+
+      &.appendix,
+      &.smileys,
+      &.at {
+        svg {
+          path {
+            fill: $textBlack;
+          }
+        }
+
+        &:hover {
+          svg {
+            path {
+              fill: $thirdColor
+            }
+          }
+        }
+      }
+    }
+  }
+
   &:hover {
     border-color: $secondaryColor;
   }
@@ -30,44 +69,6 @@
       color: $textGrey;
     }
 
-    &:focus {
-      ~.inputfield-buttons {
-        button {
-          &:hover {
-            svg {
-              path {
-                fill: $thirdColor;
-              }
-            }
-          }
-        }
-      }
-
-      ~.inputfield-buttons .tags .icon {
-        &:hover {
-          background-color: $backgroundColor;
-          border-radius: 50%;
-        }
-
-        &.appendix,
-        &.smileys,
-        &.at {
-          svg {
-            path {
-              fill: $textBlack;
-            }
-          }
-
-          &:hover {
-            svg {
-              path {
-                fill: $thirdColor
-              }
-            }
-          }
-        }
-      }
-    }
   }
 
 

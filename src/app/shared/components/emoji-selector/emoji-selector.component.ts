@@ -35,14 +35,11 @@ export class EmojiSelectorComponent {
   }
 
   addEmojiToReaction(event: any) {
-    console.log(this.post);
-
     if (this.origin === '' || this.post.id === '') {
       this.origin = event.emoji.origin;
       this.post = event.emoji.post;
       this.isThread = event.emoji.isThread;
     };
-    console.log(this.post);
     let react: EmoticonsInterface = this.generateReaction(event);
     this.searchCurrentReaction(event, react);
     this.postReaction(event);

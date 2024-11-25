@@ -31,7 +31,20 @@ app-message {
     .header {
         display: flex;
         align-items: flex-end;
+        justify-content: center;
         gap: 24px;
+
+        .icon {
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            svg {
+                height: 32px;
+                width: 32px;
+            }
+        }
 
         img {
             height: 100px;
