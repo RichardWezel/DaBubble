@@ -87,22 +87,15 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   }
 
   /**
-   * 
+   * Filters the channel collection according to which channel contains the current user and uses it to fill currentUserChannel.
    * 
    * @returns 
    */
   getCurrentUserChannelCollection() {
-    return onSnapshot(collection(this.firestore, "channel"), (snapshot) => {
-      this.CurrentUserChannel = [];
-      snapshot.forEach((doc) => {
-        const channelData = doc.data() as ChannelInterface;
-        channelData.id = doc.id;
-        if (this.checkCurrentUserIsMemberOfChannel(channelData.user)) {
-          this.CurrentUserChannel.push(channelData);
-        }
-      });
-      console.log("Current User Channels: ", this.CurrentUserChannel)
-    });
+    this.CurrentUserChannel = this.channel.filter(channel => 
+      this.checkCurrentUserIsMemberOfChannel(channel.user)
+    );
+    console.log("Current User Channels: ", this.CurrentUserChannel);
   }
 
   checkCurrentUserIsMemberOfChannel(users: string[]) {
@@ -142,7 +135,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         try {
           await this.onlineStatusService.setUserOnlineStatus(this.currentUser.id, true);
           // console.log(`User ${this.currentUser.id} set to online.`);
-          this.unsubCurrentUserChannels = this.getCurrentUserChannelCollection();
+          this.getCurrentUserChannelCollection();
         } catch (error) {
           console.error(`Error setting user ${this.currentUser.id} online:`, error);
         }
