@@ -121,6 +121,7 @@ export class FirebaseAuthService {
   deleteLocalData() {
     console.log('Benutzer erfolgreich abgemeldet.');
     sessionStorage.clear();
+    this.storage.unsubCurrentUserChannels();
     this.storage.unsubscribeSnapshot();
     this.storage.authUid = '';
     this.router.navigate(['/login']);

@@ -36,7 +36,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
    */
   constructor() {
     this.unsubChannels = this.getChannelCollection();
-    this.unsubCurrentUserChannels = this.getCurrentUserChannelCollection();
     this.unsubUsers = this.getUserCollection();
     this.getCurrentUser();
     console.log('Current User Data: ', this.currentUser.currentChannel);
@@ -58,6 +57,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.unsubCurrentUserChannels();
     this.unsubscribeSnapshot();
     console.log("Current User: ", this.currentUser);
   }
@@ -65,6 +65,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   ngOnInit(): void {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
+    this.unsubCurrentUserChannels();
     this.unsubscribeSnapshot();
     console.log("Current User: ", this.currentUser);
   }
@@ -105,8 +106,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   }
 
   checkCurrentUserIsMemberOfChannel(users: string[]) {
-    return users.includes('oYhCXFUTy11sm1uKLK4l')
-    // users.includes(this.currentUser.id)
+    return users.includes(this.currentUser.id || '');
   }
 
   /**
@@ -142,6 +142,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         try {
           await this.onlineStatusService.setUserOnlineStatus(this.currentUser.id, true);
           // console.log(`User ${this.currentUser.id} set to online.`);
+          this.unsubCurrentUserChannels = this.getCurrentUserChannelCollection();
         } catch (error) {
           console.error(`Error setting user ${this.currentUser.id} online:`, error);
         }
@@ -239,7 +240,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   * Adds a new channel to the Firestore "channel" collection after sending the new channel form.
   * @param channelData - An object containing the channel's name, description, and owner.
   */
- 
+
 
   async addChannel(channelData: { name: string, description: string, owner: string }) {
     try {
@@ -258,7 +259,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
       throw error;
     }
   }
-  
+
 
 
   /**
