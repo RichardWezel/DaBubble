@@ -7,11 +7,11 @@ import { AddChannelDialogComponent } from "./add-channel-dialog/add-channel-dial
 @Component({
   selector: 'app-channel-section',
   standalone: true,
-  imports: [NgFor, NgIf, FormsModule, NgClass, AddChannelDialogComponent], 
+  imports: [NgIf, FormsModule, NgClass, AddChannelDialogComponent],
   templateUrl: './channel-section.component.html',
   styleUrl: './channel-section.component.scss'
 })
-export class ChannelSectionComponent implements AfterViewInit{
+export class ChannelSectionComponent implements AfterViewInit {
 
   @ViewChild('addChannelDialog') addChannelDialogComponent!: AddChannelDialogComponent;
 
@@ -30,7 +30,8 @@ export class ChannelSectionComponent implements AfterViewInit{
     this.isListVisible = !this.isListVisible;
   }
 
-  callopenDialog() {
+  callOpenDialog(event: Event) {
+    event.stopPropagation();
     if (this.addChannelDialogComponent) {
       this.addChannelDialogComponent.openDialog();
     } else {
