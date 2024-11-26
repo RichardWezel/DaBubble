@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
-import { sendPasswordResetEmail, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut } from '@firebase/auth';
+import { sendPasswordResetEmail, signInWithEmailAndPassword } from '@firebase/auth';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, doc, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
+import { Firestore, doc, updateDoc } from '@angular/fire/firestore';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { PostInterface } from '../../../../shared/interfaces/post.interface';
 import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
@@ -41,29 +41,32 @@ export class LogInCardComponent {
 
   checkLogin(ngForm: NgForm) {
     if (ngForm.invalid) {
-      // alert('Bitte füllen Sie alle erforderlichen Felder aus.');
+      // console.error("Formular ungültig. Bitte alle Felder ausfüllen.");
       return;
     }
-    console.log('Start');
+    console.log("Login gestartet...");
 
     signInWithEmailAndPassword(this.auth, this.loginData.email, this.loginData.password)
       .then(async (userCredential) => {
         const user = userCredential.user;
-        console.log('Eingeloggt', user);
+        console.log("Benutzer eingeloggt:", user);
 
-        const userDocRef = doc(this.firestore, 'user', user.uid);
+        sessionStorage.setItem("authUid", user.uid); // UID speichern
+        this.storage.authUid = user.uid;
+        this.storage.getCurrentUser();  // Benutzerinformationen laden
+        this.storage.getCurrentUserChannelCollection(); // Benutzerkanäle laden
+        console.log("Benutzerkanäle geladen:", this.storage.CurrentUserChannel);
 
-        // Online-Status aktualisieren
+        const userDocRef = doc(this.firestore, 'user', user.uid); // Benutzerstatus aktualisieren
         await updateDoc(userDocRef, { online: true });
 
         this.router.navigate(['/workspace']);
       })
       .catch((error) => {
-        console.error('Fehler beim Einloggen: ', error.message);
-        alert('Anmeldung fehlgeschlagen! Überprüfe die Anmeldedaten.');
+        console.error("Fehler beim Einloggen:", error.message);
+        alert("Anmeldung fehlgeschlagen! Überprüfe die Anmeldedaten.");
       });
   }
-
 
   getGoogleLoginErrorMessage(errorCode: string): string {
     switch (errorCode) {
@@ -91,5 +94,4 @@ export class LogInCardComponent {
         alert('Es gab ein Problem beim Zurücksetzen des Passworts. Bitte überprüfe deine Eingaben.');
       });
   }
-
 }
