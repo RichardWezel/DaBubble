@@ -1,5 +1,5 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
 
 @Component({
@@ -10,6 +10,8 @@ import { FirebaseStorageService } from '../../../../../shared/services/firebase-
   styleUrl: './channel-member-dialog.component.scss'
 })
 export class ChannelMemberDialogComponent {
+  @Input() channelUsers: string[] = []; 
+
   storage = inject(FirebaseStorageService)
   isDialogVisible = false;
 
