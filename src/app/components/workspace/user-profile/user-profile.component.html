@@ -1,0 +1,48 @@
+<main *ngIf="isDialogVisible">
+    <div class="dialog">
+        <section class="head">
+            <div>Profil</div>
+            <button (click)="closeDialog()">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6.9998 8.3998L2.0998 13.2998C1.91647 13.4831 1.68314 13.5748 1.3998 13.5748C1.11647 13.5748 0.883138 13.4831 0.699805 13.2998C0.516471 13.1165 0.424805 12.8831 0.424805 12.5998C0.424805 12.3165 0.516471 12.0831 0.699805 11.8998L5.5998 6.9998L0.699805 2.0998C0.516471 1.91647 0.424805 1.68314 0.424805 1.3998C0.424805 1.11647 0.516471 0.883138 0.699805 0.699805C0.883138 0.516471 1.11647 0.424805 1.3998 0.424805C1.68314 0.424805 1.91647 0.516471 2.0998 0.699805L6.9998 5.5998L11.8998 0.699805C12.0831 0.516471 12.3165 0.424805 12.5998 0.424805C12.8831 0.424805 13.1165 0.516471 13.2998 0.699805C13.4831 0.883138 13.5748 1.11647 13.5748 1.3998C13.5748 1.68314 13.4831 1.91647 13.2998 2.0998L8.3998 6.9998L13.2998 11.8998C13.4831 12.0831 13.5748 12.3165 13.5748 12.5998C13.5748 12.8831 13.4831 13.1165 13.2998 13.2998C13.1165 13.4831 12.8831 13.5748 12.5998 13.5748C12.3165 13.5748 12.0831 13.4831 11.8998 13.2998L6.9998 8.3998Z" fill="black"/>
+                    </svg>
+            </button>
+        </section>
+        <section class="user-avatar">
+           <img src="assets/img/profile-pictures/profile-1.png" alt="User Avatar">
+             <!-- <div [class.online]="storage.isUserOnline(user)" class="status-dot"></div> -->
+        </section>
+        <section class="user-name">
+           <div class="name">Noah Braun</div>
+           <div class="online">
+            <div class="dott"></div>
+            <div class="status">Aktiv</div>
+           </div>
+        </section>
+        <section class="user-email">
+           <div class="label">
+            <div class="icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <mask id="mask0_93145_3198" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                    <rect width="24" height="24" fill="#D9D9D9"/>
+                    </mask>
+                    <g mask="url(#mask0_93145_3198)">
+                    <path d="M4 20C3.45 20 2.97933 19.8043 2.588 19.413C2.196 19.021 2 18.55 2 18V6C2 5.45 2.196 4.97933 2.588 4.588C2.97933 4.196 3.45 4 4 4H20C20.55 4 21.021 4.196 21.413 4.588C21.8043 4.97933 22 5.45 22 6V18C22 18.55 21.8043 19.021 21.413 19.413C21.021 19.8043 20.55 20 20 20H4ZM20 8L12.525 12.675C12.4417 12.725 12.354 12.7623 12.262 12.787C12.1707 12.8123 12.0833 12.825 12 12.825C11.9167 12.825 11.8293 12.8123 11.738 12.787C11.646 12.7623 11.5583 12.725 11.475 12.675L4 8V18H20V8ZM12 11L20 6H4L12 11ZM4 8.25V6.775V6.8V6.787V8.25Z" fill="#686868"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="label-name">E-Mail-Adresse</div></div>
+           <div class="email">noahbra&#64;beispiel.com</div>
+        </section>
+        <section class="newMessage-btn ">
+            <button>
+                <div class="message-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.3 18.8L16 16.5H2C1.45 16.5 0.979333 16.3043 0.588 15.913C0.196 15.521 0 15.05 0 14.5V2.5C0 1.95 0.196 1.479 0.588 1.087C0.979333 0.695667 1.45 0.5 2 0.5H18C18.55 0.5 19.021 0.695667 19.413 1.087C19.8043 1.479 20 1.95 20 2.5V18.075C20 18.525 19.796 18.8373 19.388 19.012C18.9793 19.1873 18.6167 19.1167 18.3 18.8ZM2 2.5V14.5H16.825L18 15.675V2.5H2Z" fill="white"/>
+                    </svg>
+                </div>
+                <div class="message">Nachricht</div>
+            </button>
+        </section>
+    </div>
+</main>

@@ -1,9 +1,10 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild, OnInit } from '@angular/core';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
-import { NgStyle } from '@angular/common';
+import { NgStyle, CommonModule, NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NewMessageInputHeadComponent } from "./new-message-input-head/new-message-input-head.component"; // Importiere FormsModule
 import { ChannelMemberDialogComponent } from './channel-member-dialog/channel-member-dialog.component';
+import { UserInterface } from '../../../../shared/interfaces/user.interface';
 
 @Component({
   selector: 'app-channel-head',
@@ -12,12 +13,26 @@ import { ChannelMemberDialogComponent } from './channel-member-dialog/channel-me
     NgStyle,
     FormsModule, 
     NewMessageInputHeadComponent, 
-    ChannelMemberDialogComponent],
+    ChannelMemberDialogComponent,
+  CommonModule,
+NgFor,
+NgIf],
   templateUrl: './channel-head.component.html',
   styleUrl: './channel-head.component.scss'
 })
-export class ChannelHeadComponent {
+
+export class ChannelHeadComponent implements OnInit{
   storage = inject(FirebaseStorageService);
+  channelUsers: string [] = [];
+
+  ngOnInit() {
+    this.updateChannelUsers();
+  }
+
+  updateChannelUsers() {
+    const users = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.user;
+    this.channelUsers = users ? users : [];
+  }
 
   @ViewChild('channelMemberDialog') channelMemberDialog!: ChannelMemberDialogComponent;
 

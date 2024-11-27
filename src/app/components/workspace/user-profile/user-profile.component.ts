@@ -1,19 +1,20 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
-import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
+import { FirebaseStorageService } from '../../../shared/services/firebase-storage.service';
 
 @Component({
-  selector: 'app-channel-member-dialog',
+  selector: 'app-user-profile',
   standalone: true,
   imports: [NgFor, NgIf],
-  templateUrl: './channel-member-dialog.component.html',
-  styleUrl: './channel-member-dialog.component.scss'
+  templateUrl: './user-profile.component.html',
+  styleUrl: './user-profile.component.scss'
 })
-export class ChannelMemberDialogComponent {
+export class UserProfileComponent {
+
   @Input() channelUsers: string[] = []; 
 
   storage = inject(FirebaseStorageService)
-  isDialogVisible = false;
+  isDialogVisible = true;
 
   public openDialog() {
     this.isDialogVisible = true;

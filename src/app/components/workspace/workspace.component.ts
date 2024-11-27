@@ -6,6 +6,7 @@ import { WorkspaceMenuComponent } from './workspace-menu/workspace-menu.componen
 import { ThreadComponent } from './thread/thread.component';
 import { FirebaseStorageService } from '../../shared/services/firebase-storage.service';
 import { AddChannelDialogComponent } from "./workspace-menu/channel-section/add-channel-dialog/add-channel-dialog.component";
+import { UserProfileComponent } from "./user-profile/user-profile.component";
 
 @Component({
   selector: 'app-workspace',
@@ -16,7 +17,8 @@ import { AddChannelDialogComponent } from "./workspace-menu/channel-section/add-
     ChannelComponent,
     ThreadComponent,
     CommonModule,
-    AddChannelDialogComponent
+    AddChannelDialogComponent,
+    UserProfileComponent
 ],
   templateUrl: './workspace.component.html',
   styleUrl: './workspace.component.scss'
