@@ -1,50 +1,28 @@
 import { Directive, ElementRef, forwardRef, inject } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { InputfieldComponent } from '../components/inputfield/inputfield.component';
+
 
 @Directive({
   selector: '[appTextFormatter]',
   standalone: true,
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => TextFormatterDirective),
-      multi: true
-    }
-  ]
 })
-export class TextFormatterDirective implements ControlValueAccessor {
+export class TextFormatterDirective {
   elementRef: ElementRef = inject(ElementRef)
 
-  messageContent: Element = this.elementRef.nativeElement.querySelector('.message-content') || {};
-
-  constructor() {
+  constructor(private inputElement: InputfieldComponent) {
   }
 
-  ngAfterContentInit(): void {
-    //Called after ngOnInit when the component's or directive's content has been initialized.
-    //Add 'implements AfterContentInit' to the class.
-    this.messageContent = this.elementRef.nativeElement.querySelector('.message-content');
-  }
-
-  writeValue(value: any): void {
-    this.messageContent.innerHTML = value;
-  }
-
-  registerOnChange(fn: any): void {
-    this.elementRef.nativeElement.addEventListener('input', fn);
-  }
-
-  registerOnTouched(fn: any): void {
-    this.elementRef.nativeElement.addEventListener('blur', fn);
-  }
 
   addTag(text: string) {
-    const formattedText = `<span class="tag">@${text}</span>`;
-    this.messageContent.innerHTML += formattedText;
-    let messageContent = this.messageContent.innerHTML;
+    const formattedText = ` <span contentEditable="false" class="tag">&#64;${text}</span> `;
+    let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
+    console.log(message);
+    message.innerHTML += formattedText;
+    let messageContent = message.innerHTML;
     let lastIndex = messageContent.lastIndexOf('<br>');
     if (lastIndex !== -1) messageContent = messageContent.slice(0, lastIndex);
-    this.messageContent.innerHTML = messageContent;
+    message.innerHTML = messageContent;
+    this.inputElement.startInput = true;
   }
 
 }

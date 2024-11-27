@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, Input, ViewChild, Renderer2 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { PostInterface } from '../../interfaces/post.interface';
@@ -18,18 +18,21 @@ export class InputfieldComponent {
   elementRef: ElementRef = inject(ElementRef);
   storage = inject(FirebaseStorageService);
   uid = inject(UidService);
+  renderer = inject(Renderer2);
 
   @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective
 
   @Input() thread: boolean = false;
 
   public message: string = '';
+  startInput: boolean = false;
   showEmojiSelector: boolean = false;
 
 
   constructor() { }
 
   @HostListener('document:click', ['$event'])
+  @HostListener('document:keydown', ['$event'])
 
 
   /**
@@ -47,6 +50,57 @@ export class InputfieldComponent {
   }
 
 
+
+  checkInput(event: KeyboardEvent) {
+    console.log(event);
+    let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
+    if (message.innerHTML === '' || message.innerHTML === '<br>') this.startInput = false;
+    else this.startInput = true;
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.sendMessage();
+    }
+    if (event.key === 'Backspace') {
+      const selection = window.getSelection();
+
+      if (!selection || selection.rangeCount === 0) {
+        return;
+      }
+
+      const range = selection.getRangeAt(0);
+      const currentNode = range.startContainer;
+      const offset = range.startOffset;
+
+      // Prüfe, ob der Cursor direkt hinter einem <span class="tag"> steht
+      if (currentNode.nodeType === Node.TEXT_NODE && offset === 0 && currentNode.previousSibling) {
+        const previousElement = currentNode.previousSibling as HTMLElement;
+
+        if (previousElement.tagName === 'SPAN' && previousElement.classList.contains('tag')) {
+          // Prüfen, ob es Text oder andere Elemente nach dem <span> gibt
+          const parentElement = currentNode.parentElement;
+          const siblingAfter = currentNode.nextSibling;
+
+          if (parentElement && siblingAfter) {
+            // Nur löschen, wenn es weitere Inhalte gibt
+            previousElement.remove();
+            event.preventDefault();
+          }
+        }
+      }
+
+      // Falls der Cursor direkt im <span> selbst ist, lösche es
+      if (currentNode.nodeType === Node.ELEMENT_NODE) {
+        const element = currentNode as HTMLElement;
+
+        if (element.tagName === 'SPAN' && element.classList.contains('tag')) {
+          element.remove();
+          event.preventDefault();
+        }
+      }
+    }
+  }
+
+
   /**
    * Handles sending a message.
    * If the message is empty or the user is not logged in or no channel is selected, do nothing.
@@ -54,11 +108,14 @@ export class InputfieldComponent {
    * @returns {void}
    */
   sendMessage() {
-    if (!this.message || !this.storage.currentUser.id || !this.storage.currentUser.currentChannel) return;
+    let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
+    console.log(message);
+    if (!message.innerHTML || !this.storage.currentUser.id || !this.storage.currentUser.currentChannel) return;
     let newPost: PostInterface = this.generateNewPost();
     if (this.thread) this.handleThreadPost(newPost);
     else this.handleNormalPost(newPost);
-    this.message = '';
+    message.innerHTML = '';
+    this.startInput = false;
   }
 
 
@@ -241,12 +298,13 @@ export class InputfieldComponent {
    * @param emoji - The emoji string to add to the message.
    */
   addEmoji(emoji: string) {
-    let newMessage = this.elementRef.nativeElement.querySelector('.message-content');
+    let newMessage = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
     newMessage.innerHTML += emoji;
     let messageContent = newMessage.innerHTML;
     let lastIndex = messageContent.lastIndexOf('<br>');
     if (lastIndex !== -1) messageContent = messageContent.slice(0, lastIndex);
     newMessage.innerHTML = messageContent;
+    this.startInput = true;
   }
 }
 

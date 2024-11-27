@@ -61,7 +61,7 @@
   .inputfield-textarea {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: 70px;
     border: none;
     resize: none;
     outline: none;
@@ -72,6 +72,10 @@
       top: 0;
       left: 0;
       z-index: 0;
+
+      &.disabled {
+        display: none;
+      }
     }
 
     .message-content {
@@ -79,9 +83,21 @@
       z-index: 1;
       width: 100%;
       height: 100%;
-      overflow-y: auto;
-      overflow-x: hidden;
-      cursor: text
+      border: none;
+      resize: none;
+      outline: none;
+      cursor: text;
+      flex-grow: 0;
+
+
+
+      .tag {
+        color: $secondaryColor;
+        background-color: $backgroundColor;
+        border: 1px solid $thirdColor;
+        border-radius: 4px;
+        padding: 2px 4px;
+      }
     }
   }
 
@@ -149,4 +165,12 @@
   &.active {
     transform: scale(1);
   }
+}
+
+::ng-deep .inputfield-textarea .message-content .tag {
+  color: $secondaryColor;
+  background-color: $backgroundColor;
+  border: 1px solid $thirdColor;
+  border-radius: 4px;
+  padding: 2px 4px;
 }
