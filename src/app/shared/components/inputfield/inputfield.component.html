@@ -1,7 +1,13 @@
 <section class="inputfield">
-  <textarea [id]="thread ? 'inputfieldThread' : 'inputfield'" class="inputfield-textarea"
-    [placeholder]="thread ? 'Antworten...' : 'Schreibe an ' + storage.currentUser.currentChannelName"
-    [(ngModel)]="message"></textarea>
+  <!-- <textarea  [placeholder]=""></textarea> -->
+  <div [id]="thread ? 'inputfieldThread' : 'inputfield'" class="inputfield-textarea" contenteditable="true"
+    class="inputfield-textarea" appTextFormatter [(ngModel)]="message">
+    @if (message.length === 0) {
+      <span class="placeholder"
+        [innerHTML]="thread ? 'Antworten...' : 'Schreibe an ' + storage.currentUser.currentChannelName"></span>
+    }
+    <div class="message-content">{{ message }}</div>
+  </div>
   <div class="inputfield-buttons">
     <div class="tags">
       <div class="icon appendix">
@@ -41,7 +47,7 @@
           <app-emoji-selector [isInput]="true" [inputField]="this"></app-emoji-selector>
         </div>
       </div>
-      <div class="icon at">
+      <div class="icon at" (click)="formatText('@Jan') ">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <mask id="mask0_813_12157" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24"
             height="24">

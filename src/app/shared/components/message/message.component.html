@@ -11,7 +11,7 @@
       </div>
 
       <div class="reaction-bar-icon" (click)="emojiSelector.addEmojiToReaction(getMostRecentEmoji())">
-        <p class="emoji">{{getMostRecentEmoji().emoji.native}}</p>
+        <p class="emoji" [innerHTML]="getMostRecentEmoji().emoji.native"></p>
       </div>
 
       <div class="reaction-bar-icon add-reaction reaction-bar-icon-special"
@@ -59,26 +59,26 @@
   <section class="message-section" [class.self]="isAuthorCurrentUser">
 
     <div class="author-section" [class.self]="isAuthorCurrentUser">
-      <div class="author">{{authorName}}</div>
-      <div class="post-time">{{ postTime(post.timestamp) + ' Uhr' }}</div>
+      <div class="author" [innerHTML]="authorName"></div>
+      <div class="post-time" [innerHTML]="postTime(post.timestamp) + ' Uhr'"></div>
     </div>
 
-    <div class="message" [class.self]="isAuthorCurrentUser">{{post.text}}</div>
+    <div class="message" [class.self]="isAuthorCurrentUser" [innerHTML]="post.text"></div>
 
     @if (post.emoticons && post.emoticons.length > 0 && !threadHead) {
       <div class="emoticons-container">
         @for (emoticon of post.emoticons; track $index) {
           <div class="emoticon"
             (click)="emojiSelector.addEmojiToReaction({'emoji': {'native': emoticon.type, 'origin': origin, 'isThread': isThread, 'post': post, 'isInput': false}})">
-            <h4 class="emoticon-type">{{emoticon.type}}</h4>
-            <p class="emoticon-count">{{emoticon.count}}</p>
+            <h4 class="emoticon-type" [innerHTML]="emoticon.type"></h4>
+            <p class="emoticon-count" [innerHTML]="emoticon.count"></p>
             <div class="emoticon-names-container">
-              <h4 class="emoticon-type">{{emoticon.type}}</h4>
+              <h4 class="emoticon-type" [innerHTML]="emoticon.type"></h4>
               @for (emoticonName of emoticon.name; track $index) {
-                <p class="emoticon-name">{{filterEmoticonNameArray(emoticon.name, $index)}}</p>
+                <p class="emoticon-name" [innerHTML]="filterEmoticonNameArray(emoticon.name, $index)"></p>
               }
-              <span
-                class="emoticon-name-end">{{emoticon.name.length === 1 ? emoticon.name[0] === storage.currentUser.id ? 'hast reagiert' : 'hat reagiert' : 'haben reagiert'}}</span>
+              <span class="emoticon-name-end"
+                [innerHTML]="emoticon.name.length === 1 ? emoticon.name[0] === storage.currentUser.id ? 'hast reagiert' : 'hat reagiert' : 'haben reagiert'"></span>
             </div>
           </div>
         }
@@ -97,11 +97,9 @@
 
     @if (post.thread && !threadHead) {
       <div class="answer-section" [class.self]="isAuthorCurrentUser">
-        <div class="answers" (click)="openThread(post.id)">
-          {{post.threadMsg?.length + (post.threadMsg?.length === 1 ? ' Antwort' : ' Antworten')}}
-        </div>
-        <div class="post-time">Letzte Antwort {{ lastThreadMsgTime() + ' Uhr' }}
-        </div>
+        <div class="answers" (click)="openThread(post.id)"
+          [innerHTML]="post.threadMsg?.length + (post.threadMsg?.length === 1 ? ' Antwort' : ' Antworten')"></div>
+        <div class="post-time" [innerHTML]="'Letzte Antwort ' + lastThreadMsgTime() + ' Uhr'"></div>
       </div>
     }
   </section>
@@ -109,9 +107,8 @@
 @if (threadHead) {
   <div class="thread-start">
     @if (post.thread) {
-      <div class="threadAnswers">
-        {{post.threadMsg?.length + (post.threadMsg?.length === 1 ? ' Antwort' : ' Antworten')}}
-      </div>
+      <div class="threadAnswers"
+        [innerHTML]="post.threadMsg?.length + (post.threadMsg?.length === 1 ? ' Antwort' : ' Antworten')"></div>
     }
     <div class="oLine"></div>
   </div>

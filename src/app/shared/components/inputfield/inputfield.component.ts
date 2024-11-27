@@ -1,15 +1,16 @@
-import { Component, ElementRef, HostListener, inject, Input } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { PostInterface } from '../../interfaces/post.interface';
 import { UidService } from '../../services/uid.service';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { EmojiSelectorComponent } from "../emoji-selector/emoji-selector.component";
+import { TextFormatterDirective } from '../../directive/text-formatter.directive';
 
 @Component({
   selector: 'app-inputfield',
   standalone: true,
-  imports: [FormsModule, PickerModule, EmojiSelectorComponent],
+  imports: [FormsModule, PickerModule, EmojiSelectorComponent, TextFormatterDirective],
   templateUrl: './inputfield.component.html',
   styleUrl: './inputfield.component.scss'
 })
@@ -18,10 +19,13 @@ export class InputfieldComponent {
   storage = inject(FirebaseStorageService);
   uid = inject(UidService);
 
+  @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective
+
   @Input() thread: boolean = false;
 
   public message: string = '';
   showEmojiSelector: boolean = false;
+
 
   constructor() { }
 
@@ -55,6 +59,11 @@ export class InputfieldComponent {
     if (this.thread) this.handleThreadPost(newPost);
     else this.handleNormalPost(newPost);
     this.message = '';
+  }
+
+
+  formatText(text: string) {
+    if (this.formatter) this.formatter.addTag(text);
   }
 
 
@@ -96,8 +105,9 @@ export class InputfieldComponent {
    * @returns {PostInterface}
    */
   generateNewPost() {
+    let newMessage = this.elementRef.nativeElement.querySelector('.message-content');
     return {
-      text: this.message,
+      text: newMessage.innerHTML,
       timestamp: new Date().getTime(),
       author: this.storage.currentUser.id || '',
       id: this.uid.generateUid(),
@@ -231,7 +241,12 @@ export class InputfieldComponent {
    * @param emoji - The emoji string to add to the message.
    */
   addEmoji(emoji: string) {
-    this.message += emoji;
+    let newMessage = this.elementRef.nativeElement.querySelector('.message-content');
+    newMessage.innerHTML += emoji;
+    let messageContent = newMessage.innerHTML;
+    let lastIndex = messageContent.lastIndexOf('<br>');
+    if (lastIndex !== -1) messageContent = messageContent.slice(0, lastIndex);
+    newMessage.innerHTML = messageContent;
   }
 }
 
