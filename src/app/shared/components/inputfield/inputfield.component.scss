@@ -91,7 +91,7 @@
 
 
 
-      .tag {
+      .tagMessage {
         color: $secondaryColor;
         background-color: $backgroundColor;
         border: 1px solid $thirdColor;
@@ -167,10 +167,12 @@
   }
 }
 
-::ng-deep .inputfield-textarea .message-content .tag {
+::ng-deep .inputfield-textarea .message-content .tagMessage {
   color: $secondaryColor;
   background-color: $backgroundColor;
   border: 1px solid $thirdColor;
   border-radius: 4px;
   padding: 2px 4px;
+  margin: 0 4px;
+  font-size: 16px;
 }

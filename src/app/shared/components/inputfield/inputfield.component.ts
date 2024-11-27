@@ -32,7 +32,6 @@ export class InputfieldComponent {
   constructor() { }
 
   @HostListener('document:click', ['$event'])
-  @HostListener('document:keydown', ['$event'])
 
 
   /**
@@ -50,54 +49,45 @@ export class InputfieldComponent {
   }
 
 
-
-  checkInput(event: KeyboardEvent) {
-    console.log(event);
-    let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
-    if (message.innerHTML === '' || message.innerHTML === '<br>') this.startInput = false;
-    else this.startInput = true;
+  checkKey(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.preventDefault();
       this.sendMessage();
     }
     if (event.key === 'Backspace') {
       const selection = window.getSelection();
-
-      if (!selection || selection.rangeCount === 0) {
-        return;
-      }
+      if (!selection || selection.rangeCount === 0) return;
 
       const range = selection.getRangeAt(0);
       const currentNode = range.startContainer;
       const offset = range.startOffset;
 
-      // Prüfe, ob der Cursor direkt hinter einem <span class="tag"> steht
-      if (currentNode.nodeType === Node.TEXT_NODE && offset === 0 && currentNode.previousSibling) {
+
+      if (currentNode.nodeType === Node.TEXT_NODE && currentNode.previousSibling) {
         const previousElement = currentNode.previousSibling as HTMLElement;
 
-        if (previousElement.tagName === 'SPAN' && previousElement.classList.contains('tag')) {
-          // Prüfen, ob es Text oder andere Elemente nach dem <span> gibt
-          const parentElement = currentNode.parentElement;
-          const siblingAfter = currentNode.nextSibling;
+        if (previousElement.tagName === 'SPAN' && previousElement.classList.contains('tagMessage')) {
+          // Prüfen, ob das letzte Zeichen vor dem Cursor ein Zero Width Space ist (&#8203;)
+          const textBeforeCursor = currentNode.textContent?.slice(0, offset) || '';
+          const zeroWidthSpace = '\u200B'; // Unicode für &#8203;
 
-          if (parentElement && siblingAfter) {
-            // Nur löschen, wenn es weitere Inhalte gibt
+          if (textBeforeCursor.endsWith(zeroWidthSpace)) {
+            // Entferne das <span> und das Zero Width Space
             previousElement.remove();
+            // Entferne das Zero Width Space vor dem Cursor
+            currentNode.textContent = textBeforeCursor.slice(0, -1) + (currentNode.textContent?.slice(offset) || '');
             event.preventDefault();
           }
         }
       }
-
-      // Falls der Cursor direkt im <span> selbst ist, lösche es
-      if (currentNode.nodeType === Node.ELEMENT_NODE) {
-        const element = currentNode as HTMLElement;
-
-        if (element.tagName === 'SPAN' && element.classList.contains('tag')) {
-          element.remove();
-          event.preventDefault();
-        }
-      }
     }
+  }
+
+
+  checkInput(event: KeyboardEvent) {
+    console.log(event);
+    let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
+    this.startInput = (message.innerHTML === '' || message.innerHTML === '<br>') ? false : true;
   }
 
 

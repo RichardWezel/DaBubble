@@ -14,10 +14,9 @@ export class TextFormatterDirective {
 
 
   addTag(text: string) {
-    const formattedText = ` <span contentEditable="false" class="tag">&#64;${text}</span>  `;
+    const formattedText = `<span contentEditable="false" class="tagMessage">&#64;${text}</span>&#8203`;
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
-    console.log(message);
-    message.innerHTML += formattedText;
+    message.innerHTML += formattedText + '';
     let messageContent = message.innerHTML;
     let lastIndex = messageContent.lastIndexOf('<br>');
     if (lastIndex !== -1) messageContent = messageContent.slice(0, lastIndex);

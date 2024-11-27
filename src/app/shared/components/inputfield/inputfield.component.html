@@ -2,8 +2,8 @@
   <div [id]="thread ? 'inputfieldThread' : 'inputfield'" class="inputfield-textarea" class="inputfield-textarea">
     <span class="placeholder" [class.disabled]="startInput"
       [innerHTML]="thread ? 'Antworten...' : 'Schreibe an ' + storage.currentUser.currentChannelName"></span>
-    <div (keydown)="checkInput($event)" class="message-content" contentEditable="true" [innerHTML]="message"
-      appTextFormatter></div>
+    <div (keyup)="checkInput($event)" (keydown)="checkKey($event)" class="message-content" contentEditable="true"
+      [innerHTML]="message" appTextFormatter></div>
   </div>
   <div class="inputfield-buttons">
     <div class="tags">

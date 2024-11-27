@@ -27,7 +27,12 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "node_modules/path-to-noto-font",
+                "output": "assets/fonts"
+              }
             ],
             "styles": [
               "src/style/styles.scss",
