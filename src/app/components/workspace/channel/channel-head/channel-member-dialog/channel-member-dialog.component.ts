@@ -1,6 +1,7 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
+import { OpenUserProfileService } from '../../../../../shared/services/open-user-profile.service';
 
 @Component({
   selector: 'app-channel-member-dialog',
@@ -10,6 +11,16 @@ import { FirebaseStorageService } from '../../../../../shared/services/firebase-
   styleUrl: './channel-member-dialog.component.scss'
 })
 export class ChannelMemberDialogComponent {
+
+  constructor(private openUserProfileService: OpenUserProfileService) {}
+
+  async openUserProfile(user: string) {
+    await  this.openUserProfileService.updateUserId(user)
+    this.openUserProfileService.updateToggle(true);
+    console.log('User clicked: ',user);
+  }
+
+
   @Input() channelUsers: string[] = []; 
 
   storage = inject(FirebaseStorageService)
