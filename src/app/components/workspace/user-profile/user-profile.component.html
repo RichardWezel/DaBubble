@@ -1,4 +1,4 @@
-<main *ngIf="isDialogVisible">
+<main *ngIf="isDialogVisible" >
     <div class="dialog">
         <section class="head">
             <div>Profil</div>
@@ -13,7 +13,7 @@
              <!-- <div [class.online]="storage.isUserOnline(user)" class="status-dot"></div> -->
         </section>
         <section class="user-name">
-           <div class="name">Noah Braun</div>
+           <div class="name">{{ userObject?.name }}</div>
            <div class="online">
             <div class="dott"></div>
             <div class="status">Aktiv</div>
@@ -32,7 +32,7 @@
                 </svg>
             </div>
             <div class="label-name">E-Mail-Adresse</div></div>
-           <div class="email">noahbra&#64;beispiel.com</div>
+           <div class="email">{{ userObject?.email }}</div>
         </section>
         <section class="newMessage-btn ">
             <button>
