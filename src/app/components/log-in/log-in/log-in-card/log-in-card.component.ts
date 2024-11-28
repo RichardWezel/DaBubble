@@ -10,11 +10,12 @@ import { FirebaseStorageService } from '../../../../shared/services/firebase-sto
 import { PostInterface } from '../../../../shared/interfaces/post.interface';
 import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
 import { NavigationService } from '../../../../shared/services/navigation.service';
+import { ResetPasswordCardComponent } from '../../reset-password/reset-password-card/reset-password-card.component';
 
 @Component({
   selector: 'app-log-in-card',
   standalone: true,
-  imports: [FormsModule, CardComponent, CommonModule],
+  imports: [FormsModule, CardComponent, CommonModule ],
   templateUrl: './log-in-card.component.html',
   styleUrls: ['./log-in-card.component.scss']
 })
@@ -87,11 +88,17 @@ export class LogInCardComponent {
     sendPasswordResetEmail(this.auth, this.loginData.email)
       .then(() => {
         alert('Passwort-Reset-Link wurde an Ihre E-Mail-Adresse gesendet.');
-        this.router.navigate(['/login']);
+        this.router.navigate(['/resetpassword']); // Navigiert zur Reset-Password-Komponente
       })
       .catch((error) => {
         console.error('Fehler beim Zurücksetzen des Passworts:', error);
         alert('Es gab ein Problem beim Zurücksetzen des Passworts. Bitte überprüfe deine Eingaben.');
       });
   }
+  
+  validateEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+  
 }
