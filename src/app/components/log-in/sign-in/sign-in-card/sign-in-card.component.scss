@@ -116,6 +116,7 @@ form {
     padding: 2px 4px;
     @include dja;
     border-radius: 20px;
+    text-decoration: none;
 
     &:hover {
         color: $primaryColor;

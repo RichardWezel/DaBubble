@@ -6,12 +6,16 @@ import { ResetPasswordComponent } from './components/log-in/reset-password/reset
 import { ChooseAvatarCardComponent } from './components/log-in/sign-in/choose-avatar-card/choose-avatar-card.component';
 import { ImprintComponent } from './components/imprint/imprint.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
+import { ResetPasswordCardComponent } from './components/log-in/reset-password/reset-password-card/reset-password-card.component';
+import { SendEmailCardComponent } from './components/log-in/log-in/send-email-card/send-email-card.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' }, // Umleitung zur Login-Seite
     { path: 'login', component: LogInComponent },
     { path: 'signin', component: SignInComponent },
-    { path: 'resetpassword', component: ResetPasswordComponent },
+    { path: 'auth/action', component: ResetPasswordCardComponent }, // Firebase-Link-Route
+    { path: 'resetpassword', component: ResetPasswordCardComponent },
+    { path: 'sendemail', component: SendEmailCardComponent },
     { path: 'workspace', component: WorkspaceComponent },
     { path: 'choose-avatar', component: ChooseAvatarCardComponent },
     { path: 'imprint', component: ImprintComponent },

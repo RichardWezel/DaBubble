@@ -82,7 +82,7 @@ export class ChooseAvatarCardComponent {
 
 
   /**
-   * Adds a new user in the Firebase Authentication and gets the uid from the authentication as authUid back.
+   * Adds a new user in the Firebase Authentication and saves the uid from the authentication as authUid.
    * A new user gets crated in the Firestore Database with the authUid and the insereted user data.
    * When the authentication and the new user are created the signinData gets cleared and the user gets routed to the login.
    */
@@ -96,7 +96,6 @@ export class ChooseAvatarCardComponent {
         this.goBackToLogin();
       }
     } catch (error) {
-      // Fehler wird hier behandelt, falls nötig
       console.error("Fehler beim Anlegen eines neuen Benutzers:", error);
     }
   }
@@ -105,12 +104,14 @@ export class ChooseAvatarCardComponent {
   /**
    * This method creates a new user in the authentication from Firebase with the inserted email and password.
    * The user uid gets returned as authUid to create a new user document with this id.
+   * If the email address already exists, the user gets routed back to the sign-in-card and the data gets cleared.
    * @returns - AuthUid to create the id for a new user document.
    */
   async setUserInFirebaseAuthentication(): Promise<any> {
     const auth = getAuth();
     const email = this.signInService.signInData.email;
     const password = this.signInService.signInData.password;
+    console.log('img', this.signInService.signInData.img);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       return userCredential.user.uid;

@@ -14,10 +14,17 @@ export class ChannelMemberDialogComponent {
 
   constructor(private openUserProfileService: OpenUserProfileService) {}
 
-  async openUserProfile(user: string) {
-    await  this.openUserProfileService.updateUserId(user)
+  /**
+   * The user ID of the user clicked on is transferred via the open-user-service
+   *  and saved in a property in the service called userIDSource. 
+   * The dialogue of the profile with the data of the clicked user is then opened.
+   * 
+   * @param {string} userID - ID of clicked User
+   */
+  async openUserProfile(userID: string) {
+    await  this.openUserProfileService.updateUserId(userID)
     this.openUserProfileService.updateToggle(true);
-    console.log('User clicked: ',user);
+    console.log('User ', userID, ' is clicked to open the respective dialogue!');
   }
 
 

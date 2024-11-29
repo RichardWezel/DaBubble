@@ -1,23 +1,19 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FirebaseStorageService } from '../../../shared/services/firebase-storage.service';
 import { OpenUserProfileService } from '../../../shared/services/open-user-profile.service';
 import { UserInterface } from '../../../shared/interfaces/user.interface';
+import { Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [NgFor, NgIf],
+  imports: [NgIf],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.scss'
 })
-export class UserProfileComponent {
-
-  constructor(private openUserProfileService: OpenUserProfileService) {
-    this.openUserProfileService.isOpen$.subscribe(value => this.isDialogVisible = value);
-    this.openUserProfileService.userName$.subscribe(value => this.userId = value);
-    this.updateUser(this.userId);
-  }
+export class UserProfileComponent implements OnInit, OnDestroy{
 
   @Input() channelUsers: string[] = []; 
 
@@ -25,6 +21,36 @@ export class UserProfileComponent {
   isDialogVisible = true;
   userId: string = "";
   userObject: UserInterface | undefined = undefined;
+
+
+  private subscriptions: Subscription = new Subscription();
+
+  constructor(private openUserProfileService: OpenUserProfileService) {}
+
+  ngOnInit(): void {
+    const isOpenSub = this.openUserProfileService.isOpen$.subscribe(value => {
+      this.isDialogVisible = value;
+      console.log('isDialogVisible changed to:', value);
+    });
+
+    const userIdSub = this.openUserProfileService.userID$.subscribe(value => {
+      this.userId = value;
+      console.log('userId changed to:', value);
+    });
+
+    this.subscriptions.add(isOpenSub);
+    this.subscriptions.add(userIdSub);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  updateUser(userId: string) {
+    let userData = this.storage.user.find(user => user.id === userId);
+    this.userObject = userData;
+    console.log('UserProfileComponent userObject is updated to: ', this.userObject)
+  }
 
   public openDialog() {
     this.isDialogVisible = true;
@@ -46,9 +72,6 @@ export class UserProfileComponent {
       : this.storage.openImage(avatar);
   }
 
-  updateUser(userId: string) {
-    let userData = this.storage.user.find(user => user.id === userId);
-    this.userObject = userData;
-  }
+  
 
 }
