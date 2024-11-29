@@ -1,5 +1,6 @@
 <main *ngIf="isDialogVisible" >
     <div class="dialog">
+
         <section class="head">
             <div>Profil</div>
             <button (click)="closeDialog()">
@@ -8,10 +9,12 @@
                     </svg>
             </button>
         </section>
+
         <section class="user-avatar">
            <img src="assets/img/profile-pictures/profile-1.png" alt="User Avatar">
              <!-- <div [class.online]="storage.isUserOnline(user)" class="status-dot"></div> -->
         </section>
+
         <section class="user-name">
            <div class="name">{{ userObject?.name }}</div>
            <div class="online">
@@ -19,6 +22,7 @@
             <div class="status">Aktiv</div>
            </div>
         </section>
+
         <section class="user-email">
            <div class="label">
             <div class="icon">
@@ -34,6 +38,7 @@
             <div class="label-name">E-Mail-Adresse</div></div>
            <div class="email">{{ userObject?.email }}</div>
         </section>
+        
         <section class="newMessage-btn ">
             <button>
                 <div class="message-icon">
