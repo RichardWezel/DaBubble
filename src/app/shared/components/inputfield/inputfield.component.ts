@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, inject, Input, ViewChild, Renderer2 } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { PostInterface } from '../../interfaces/post.interface';
@@ -6,6 +6,7 @@ import { UidService } from '../../services/uid.service';
 import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { EmojiSelectorComponent } from "../emoji-selector/emoji-selector.component";
 import { TextFormatterDirective } from '../../directive/text-formatter.directive';
+import { UserInterface } from '../../interfaces/user.interface';
 
 @Component({
   selector: 'app-inputfield',
@@ -14,11 +15,10 @@ import { TextFormatterDirective } from '../../directive/text-formatter.directive
   templateUrl: './inputfield.component.html',
   styleUrl: './inputfield.component.scss'
 })
-export class InputfieldComponent {
+export class InputfieldComponent implements AfterViewInit {
   elementRef: ElementRef = inject(ElementRef);
   storage = inject(FirebaseStorageService);
   uid = inject(UidService);
-  renderer = inject(Renderer2);
 
   @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective
 
@@ -27,11 +27,40 @@ export class InputfieldComponent {
   public message: string = '';
   startInput: boolean = false;
   showEmojiSelector: boolean = false;
+  showTagSearch: boolean = false;
+  tagSearch: string = '';
+  suggestion: UserInterface | undefined = undefined;
+  matchingUsers: UserInterface[] = [];
 
 
   constructor() { }
 
   @HostListener('document:click', ['$event'])
+
+  ngAfterViewInit() {
+    setTimeout(() => this.setFocus(), 250);
+  }
+
+  ngOnChanges(): void {
+    setTimeout(() => this.setFocus(), 250);
+  }
+
+
+  setFocus() {
+    const focusElement = this.getFocusElement();
+    if (focusElement) focusElement.focus();
+  }
+
+
+  getFocusElement(): HTMLElement | null {
+    const isThreadOpen = this.storage.currentUser.threadOpen;
+    if (this.showTagSearch) return this.elementRef.nativeElement.querySelector(
+      isThreadOpen ? '#tag-search-input-thread' : '#tag-search-input'
+    );
+    return this.elementRef.nativeElement.querySelector(
+      isThreadOpen ? '#messageContentThread' : '#messageContent'
+    );
+  }
 
 
   /**
@@ -50,42 +79,52 @@ export class InputfieldComponent {
 
 
   checkKey(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      this.sendMessage();
+    console.log(event);
+    const targetElement = event.target as HTMLElement;
+    console.log(event.key);
+    console.log(targetElement.id);
+
+    if (targetElement.id === 'tag-search-input' || targetElement.id === 'tag-search-input-thread') {
+      if ((event.key === 'Enter' || event.key === 'NumpadEnter' || event.key === 'Tab') && this.suggestion) {
+        this.formatter.addTag(this.suggestion);
+      }
+      if (event.key === 'Escape') this.toggleTagSearch();
     }
-    if (event.key === 'Backspace') {
-      const selection = window.getSelection();
-      if (!selection || selection.rangeCount === 0) return;
 
-      const range = selection.getRangeAt(0);
-      const currentNode = range.startContainer;
-      const offset = range.startOffset;
+    if (targetElement.id === 'messageContent' || targetElement.id === 'messageContentThread') {
+      if ((event.key === 'Enter' || event.key === 'NumpadEnter') && this.message !== '') {
+        this.sendMessage();
+      }
+      if (event.key === 'Backspace') {
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) return;
 
+        const range = selection.getRangeAt(0);
+        const currentNode = range.startContainer;
+        const offset = range.startOffset;
 
-      if (currentNode.nodeType === Node.TEXT_NODE && currentNode.previousSibling) {
-        const previousElement = currentNode.previousSibling as HTMLElement;
+        if (currentNode.nodeType === Node.TEXT_NODE && currentNode.previousSibling) {
+          const previousElement = currentNode.previousSibling as HTMLElement;
 
-        if (previousElement.tagName === 'SPAN' && previousElement.classList.contains('tagMessage')) {
-          // Prüfen, ob das letzte Zeichen vor dem Cursor ein Zero Width Space ist (&#8203;)
-          const textBeforeCursor = currentNode.textContent?.slice(0, offset) || '';
-          const zeroWidthSpace = '\u200B'; // Unicode für &#8203;
+          if (previousElement.tagName === 'SPAN' && previousElement.classList.contains('tagMessage')) {
+            const textBeforeCursor = currentNode.textContent?.slice(0, offset) || '';
+            const zeroWidthSpace = '\u200B';
 
-          if (textBeforeCursor.endsWith(zeroWidthSpace)) {
-            // Entferne das <span> und das Zero Width Space
-            previousElement.remove();
-            // Entferne das Zero Width Space vor dem Cursor
-            currentNode.textContent = textBeforeCursor.slice(0, -1) + (currentNode.textContent?.slice(offset) || '');
-            event.preventDefault();
+            if (textBeforeCursor.endsWith(zeroWidthSpace)) {
+              previousElement.remove();
+              currentNode.textContent = textBeforeCursor.slice(0, -1) + (currentNode.textContent?.slice(offset) || '');
+              event.preventDefault();
+            }
           }
         }
       }
     }
+
+
   }
 
 
   checkInput(event: KeyboardEvent) {
-    console.log(event);
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
     this.startInput = (message.innerHTML === '' || message.innerHTML === '<br>') ? false : true;
   }
@@ -99,18 +138,12 @@ export class InputfieldComponent {
    */
   sendMessage() {
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
-    console.log(message);
     if (!message.innerHTML || !this.storage.currentUser.id || !this.storage.currentUser.currentChannel) return;
     let newPost: PostInterface = this.generateNewPost();
     if (this.thread) this.handleThreadPost(newPost);
     else this.handleNormalPost(newPost);
     message.innerHTML = '';
     this.startInput = false;
-  }
-
-
-  formatText(text: string) {
-    if (this.formatter) this.formatter.addTag(text);
   }
 
 
@@ -295,7 +328,33 @@ export class InputfieldComponent {
     if (lastIndex !== -1) messageContent = messageContent.slice(0, lastIndex);
     newMessage.innerHTML = messageContent;
     this.startInput = true;
+    this.showEmojiSelector = false;
+    this.setFocus();
+  }
+
+
+  toggleTagSearch() {
+    this.tagSearch = '';
+    this.matchingUsers = [];
+    this.suggestion = undefined;
+    this.showTagSearch = !this.showTagSearch;
+    this.setFocus();
+  }
+
+
+  tagSearchInput() {
+    let match: UserInterface | undefined;
+    this.matchingUsers = [];
+    if (this.tagSearch && this.tagSearch.length > 0) {
+      let users: UserInterface[] = this.storage.user;
+      this.matchingUsers = users.filter(user => user.name.toLowerCase().includes(this.tagSearch.toLowerCase()));
+      match = this.matchingUsers.length > 0 ? this.matchingUsers[0] : undefined;
+      if (match) this.suggestion = match;
+      else this.suggestion = { name: 'Channel', id: 'channel', email: '', online: false, avatar: '', dm: [] };
+    }
+    else this.suggestion = { name: 'Channel', id: 'channel', email: '', online: false, avatar: '', dm: [] };
   }
 }
+
 
 

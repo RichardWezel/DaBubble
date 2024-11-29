@@ -18,7 +18,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   onlineStatusService = inject(OnlineStatusService);
   auth: Auth = inject(Auth);
 
-
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
   CurrentUserChannel: ChannelInterface[] = [];

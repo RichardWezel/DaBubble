@@ -167,6 +167,84 @@
   }
 }
 
+.tag-search {
+  position: absolute;
+  height: 40px;
+  bottom: 56px;
+  left: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: $backgroundColor;
+  transition: all 125ms ease-in-out;
+  transform-origin: bottom right;
+  transform: scale(0);
+  z-index: 2;
+  border-radius: 8px;
+  border: 1px solid $dividerColor;
+
+  &.active {
+    transform: scale(1);
+  }
+
+  .tag-search-input {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: none;
+    resize: none;
+    outline: none;
+    cursor: text;
+    flex-grow: 0;
+    border-radius: 8px;
+    padding-left: 12px;
+
+    ::placeholder {
+      color: $textGrey;
+    }
+  }
+
+  .tag-search-results {
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    z-index: 2;
+    border-radius: 8px;
+    gap: 4px;
+    padding: 4px 0;
+
+    .suggestion-container {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 4px;
+    }
+
+    .suggestion {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      background-color: $textWhite;
+      border-radius: 8px;
+      border: 1px solid $dividerColor;
+      padding: 4px 12px;
+      width: fit-content;
+
+      &:hover {
+        background-color: $backgroundColor;
+      }
+    }
+  }
+}
+
+
+
 ::ng-deep .inputfield-textarea .message-content .tagMessage {
   color: $secondaryColor;
   background-color: $backgroundColor;
@@ -174,5 +252,9 @@
   border-radius: 4px;
   padding: 2px 4px;
   margin: 0 4px;
-  font-size: 16px;
+  font-size: 14x;
+}
+
+.op {
+  opacity: 0.25;
 }

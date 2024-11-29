@@ -63,7 +63,7 @@
       <div class="post-time" [innerHTML]="postTime(post.timestamp) + ' Uhr'"></div>
     </div>
 
-    <div class="message" [class.self]="isAuthorCurrentUser" [innerHTML]="post.text"></div>
+    <div class="message" [class.self]="isAuthorCurrentUser" [innerHTML]="getText(post.text)"></div>
 
     @if (post.emoticons && post.emoticons.length > 0 && !threadHead) {
       <div class="emoticons-container">

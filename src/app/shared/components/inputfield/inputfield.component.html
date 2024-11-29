@@ -1,9 +1,12 @@
 <section class="inputfield">
-  <div [id]="thread ? 'inputfieldThread' : 'inputfield'" class="inputfield-textarea" class="inputfield-textarea">
-    <span class="placeholder" [class.disabled]="startInput"
+  <div [class.op]="showTagSearch" [id]="thread ? 'inputfieldThread' : 'inputfield'" class="inputfield-textarea"
+    class="inputfield-textarea">
+    <span [class.op]="showTagSearch" class="placeholder" [class.disabled]="startInput"
       [innerHTML]="thread ? 'Antworten...' : 'Schreibe an ' + storage.currentUser.currentChannelName"></span>
-    <div (keyup)="checkInput($event)" (keydown)="checkKey($event)" class="message-content" contentEditable="true"
-      [innerHTML]="message" appTextFormatter></div>
+    <div [id]="thread ? 'messageContentThread' : 'messageContent'" (keyup)="checkInput($event)"
+      (keydown)="checkKey($event)" class="message-content" contentEditable="true" [innerHTML]="message"
+      appTextFormatter>
+    </div>
   </div>
   <div class="inputfield-buttons">
     <div class="tags">
@@ -44,7 +47,7 @@
           <app-emoji-selector [isInput]="true" [inputField]="this"></app-emoji-selector>
         </div>
       </div>
-      <div class="icon at" (click)="formatText('Jan') ">
+      <div class="icon at" (click)="toggleTagSearch()">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <mask id="mask0_813_12157" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24"
             height="24">
@@ -56,6 +59,29 @@
               fill="#686868" />
           </g>
         </svg>
+        <div class="tag-search" [class.active]="showTagSearch" (click)="$event.stopPropagation()">
+          <input [id]="thread ? 'tag-search-input-thread' : 'tag-search-input'" class="tag-search-input"
+            placeholder="User erwähnen" type="search" [(ngModel)]="tagSearch" (input)="tagSearchInput()"
+            (keydown)="checkKey($event)">
+          @if (matchingUsers.length >= 0) {
+            <div class="tag-search-results">
+              @if (matchingUsers.length > 3) {
+                <span class="suggestion" [innerHTML]="'+' + (matchingUsers.length - 3) + ' weitere'"></span>
+              }
+              <div class="suggestion-container">
+                @for (user of matchingUsers; track $index) {
+                  @if ($index <= 3) {
+                    <span class="suggestion" (click)="formatter.addTag(user)" [innerHTML]="user.name"></span>
+                  }
+                }
+              </div>
+              <span class="suggestion"
+                (click)="formatter.addTag({ name: 'Channel', id: 'channel', email: '', online: false, avatar: '', dm: []  })"
+                [innerHTML]="'@Channel'"></span>
+            </div>
+          }
+
+        </div>
       </div>
     </div>
     <button class="inputfield-send" (click)="sendMessage()">

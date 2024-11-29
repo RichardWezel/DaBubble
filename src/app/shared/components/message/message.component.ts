@@ -6,6 +6,7 @@ import { FirebaseStorageService } from '../../services/firebase-storage.service'
 import { NgStyle } from '@angular/common';
 import { EmojiSelectorComponent } from '../emoji-selector/emoji-selector.component';
 import { EmojiService } from '@ctrl/ngx-emoji-mart/ngx-emoji';
+import { DomSanitizer } from '@angular/platform-browser';
 
 
 @Component({
@@ -20,6 +21,8 @@ export class MessageComponent implements OnInit, OnChanges {
   elementRef: ElementRef = inject(ElementRef);
   emojiSelector = inject(EmojiSelectorComponent);
   emoji = inject(EmojiService);
+  sanitizer = inject(DomSanitizer);
+
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
   @Input() threadHead: boolean = false;
   @Input() origin: string = '';
@@ -147,6 +150,11 @@ export class MessageComponent implements OnInit, OnChanges {
     const user = this.storage.user.find(user => user.id === id);
     if (user) return user.name;
     return '';
+  }
+
+
+  getText(text: string) {
+    return this.sanitizer.bypassSecurityTrustHtml(text);
   }
 
 
