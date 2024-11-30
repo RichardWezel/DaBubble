@@ -26,14 +26,15 @@ export class SendEmailCardComponent {
   }
 
   async sendMail() {
-    if (!this.mailData) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!this.mailData || !emailRegex.test(this.mailData)) {
       alert('Bitte geben Sie Ihre E-Mail-Adresse ein.');
       return;
     }
 
     try {
       await sendPasswordResetEmail(this.auth, this.mailData);
-      this.showEmailSentDialog(); 
+      this.showEmailSentDialog();
     } catch (error: any) {
       console.error('Fehler beim Zurücksetzen des Passworts:', error);
       alert('Es gab ein Problem beim Zurücksetzen des Passworts.');

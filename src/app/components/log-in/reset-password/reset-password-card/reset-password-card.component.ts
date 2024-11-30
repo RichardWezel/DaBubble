@@ -1,11 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { confirmPasswordReset, getAuth, sendEmailVerification, signInWithEmailAndPassword, verifyPasswordResetCode } from "@angular/fire/auth";
+import { PasswordChangedDialogComponent } from "../password-changed-dialog/password-changed-dialog.component";
+import { Component, EnvironmentInjector, EventEmitter, inject, OnInit, Output, ViewContainerRef } from "@angular/core";
+import { NavigationService } from "../../../../shared/services/navigation.service";
+import { ActivatedRoute, Router } from "@angular/router";
 import { CardComponent } from "../../../../shared/components/log-in/card/card.component";
-import { FormsModule } from '@angular/forms';
-import { NavigationService } from '../../../../shared/services/navigation.service';
-import { ActivatedRoute } from '@angular/router';
-import { Auth, getAuth, confirmPasswordReset, verifyPasswordResetCode } from '@angular/fire/auth';
-import { CommonModule } from '@angular/common';
-
+import { FormsModule } from "@angular/forms";
+import { CommonModule } from "@angular/common";
 
 @Component({
   selector: 'app-reset-password-card',
@@ -14,11 +14,17 @@ import { CommonModule } from '@angular/common';
   templateUrl: './reset-password-card.component.html',
   styleUrl: './reset-password-card.component.scss'
 })
+
 export class ResetPasswordCardComponent implements OnInit {
   navigationService: NavigationService = inject(NavigationService);
   route = inject(ActivatedRoute);
   auth = getAuth();
+  private viewContainerRef = inject(ViewContainerRef); // Für dynamische Komponentenerstellung
+  private injector = inject(EnvironmentInjector);
+  private router = inject(Router);
+  @Output() login = new EventEmitter<boolean>();
 
+  mailData: string = '';
   passwordData: string = '';
   confirmPasswordData: string = '';
   samePasswords = false;
@@ -57,15 +63,15 @@ export class ResetPasswordCardComponent implements OnInit {
     }
     const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
     if (!passwordRegex.test(this.passwordData)) {
-      this.errorMessage = 'Das Passwort muss mindestens 6 Zeichen lang sein und mindestens einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen enthalten.';
+      this.errorMessage = 'Das Passwort muss mindestens 6 Zeichen lang sein.';
       return;
     }
     this.isLoading = true;
     confirmPasswordReset(this.auth, this.oobCode, this.passwordData)
       .then(() => {
         this.isLoading = false;
-        alert('Passwort wurde erfolgreich geändert!'); 
-        this.navigationService.navigateTo('/login'); 
+        this.showPasswordChangedDialog(); // Dialog anzeigen
+        this.resetPasswordSuccess(); // Bestätigungs-E-Mail senden
       })
       .catch(err => {
         this.isLoading = false;
@@ -76,5 +82,43 @@ export class ResetPasswordCardComponent implements OnInit {
         }
         console.error('Passwort-Reset-Fehler:', err);
       });
+  }
+
+  resetPasswordSuccess() {
+    const email = this.mailData; // Die E-Mail des Benutzers (muss im Formular abgefragt werden)
+    const password = this.passwordData; // Das neue Passwort, das der Benutzer gesetzt hat
+
+    // Benutzer erneut anmelden
+    signInWithEmailAndPassword(this.auth, email, password)
+      .then((userCredential) => {
+        // Nach erfolgreicher Anmeldung die Bestätigungs-E-Mail senden
+        sendEmailVerification(userCredential.user)
+          .then(() => {
+            console.log('Bestätigungs-E-Mail wurde gesendet.');
+          })
+          .catch((err) => {
+            console.error('Fehler beim Senden der Bestätigungs-E-Mail:', err);
+          });
+      })
+      .catch((err) => {
+        console.error('Fehler beim erneuten Anmelden:', err);
+      });
+  }
+
+  // Dialog anzeigen
+  showPasswordChangedDialog() {
+    const componentRef = this.viewContainerRef.createComponent(PasswordChangedDialogComponent, {
+      environmentInjector: this.injector,
+    });
+
+    setTimeout(() => {
+      console.log('Navigiere zur Login-Seite'); // Debugging
+      componentRef.destroy();
+      this.router.navigate(['/login']).then(success => {
+        if (!success) {
+          console.error('Navigation zur Login-Seite fehlgeschlagen.');
+        }
+      });
+    }, 3000);
   }
 }

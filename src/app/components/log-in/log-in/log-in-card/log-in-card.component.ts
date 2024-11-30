@@ -79,26 +79,4 @@ export class LogInCardComponent {
         return 'Fehler bei der Anmeldung mit Google. Bitte versuche es später erneut.';
     }
   }
-
-  resetPassword() {
-    if (!this.loginData.email) {
-      alert('Bitte geben Sie Ihre E-Mail-Adresse ein, um das Passwort zurückzusetzen.');
-      return;
-    }
-    sendPasswordResetEmail(this.auth, this.loginData.email)
-      .then(() => {
-        alert('Passwort-Reset-Link wurde an Ihre E-Mail-Adresse gesendet.');
-        this.router.navigate(['/resetpassword']); // Navigiert zur Reset-Password-Komponente
-      })
-      .catch((error) => {
-        console.error('Fehler beim Zurücksetzen des Passworts:', error);
-        alert('Es gab ein Problem beim Zurücksetzen des Passworts. Bitte überprüfe deine Eingaben.');
-      });
-  }
-  
-  validateEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
-  
 }
