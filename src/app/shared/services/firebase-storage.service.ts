@@ -396,6 +396,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     }
   }
 
+
   openImage(url: string) {
     const img = new Image();
     img.src = url;

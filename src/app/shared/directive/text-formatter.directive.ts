@@ -14,14 +14,41 @@ export class TextFormatterDirective {
   }
 
 
+  /**
+   * Formats a given user's name as a tag and appends it to the messageContent
+   * of the input field. It also removes any line breaks from the messageContent
+   * and closes the search bar.
+   *
+   * @param user The user to be tagged
+   */
   addTag(user: UserInterface) {
     const formattedText = `<span contentEditable="false" class="tagMessage">&#64;${user.name}</span>&#8203`;
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
     message.innerHTML += formattedText + '';
+    message.innerHTML = this.clearLineBreak(message);
+    this.closeSearch();
+  }
+
+
+  /**
+   * Removes the last line break from the inner HTML of the given message element.
+   *
+   * @param message The HTMLElement containing the message content.
+   * @returns The message content without the last line break.
+   */
+  clearLineBreak(message: HTMLElement) {
     let messageContent = message.innerHTML;
     let lastIndex = messageContent.lastIndexOf('<br>');
     if (lastIndex !== -1) messageContent = messageContent.slice(0, lastIndex);
-    message.innerHTML = messageContent;
+    return messageContent;
+  }
+
+
+  /**
+   * Closes the search bar and sets startInput to true, which will re-enable
+   * the input field.
+   */
+  closeSearch() {
     this.inputElement.startInput = true;
     this.inputElement.toggleTagSearch();
   }

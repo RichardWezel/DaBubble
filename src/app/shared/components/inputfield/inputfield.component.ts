@@ -37,21 +37,47 @@ export class InputfieldComponent implements AfterViewInit {
 
   @HostListener('document:click', ['$event'])
 
+
+  /**
+   * Sets the focus on the input field after the component has finished rendering.
+   * This is needed because the input field is not yet rendered when the component
+   * is initialized, so setting the focus immediately does not work.
+   */
   ngAfterViewInit() {
     setTimeout(() => this.setFocus(), 250);
   }
+
+  /**
+   * Lifecycle hook that is called when any data-bound property of the component changes.
+   * Sets the focus on the input field after the component has finished rendering.
+   * This is needed because the input field is not yet rendered when the component
+   * is initialized, so setting the focus immediately does not work.
+   */
 
   ngOnChanges(): void {
     setTimeout(() => this.setFocus(), 250);
   }
 
 
+  /**
+   * Sets the focus on the input field if it exists.
+   * This method is called in lifecycle hooks to ensure that the focus is set
+   * after the component has finished rendering.
+   */
   setFocus() {
     const focusElement = this.getFocusElement();
     if (focusElement) focusElement.focus();
   }
 
 
+  /**
+   * Retrieves the HTML element that should receive focus based on the current state.
+   * If the tag search is active, it returns the input element for tag search, 
+   * otherwise returns the message content element. The specific element is chosen 
+   * based on whether the thread is open or not.
+   * 
+   * @returns {HTMLElement | null} The HTML element to be focused, or null if not found.
+   */
   getFocusElement(): HTMLElement | null {
     const isThreadOpen = this.storage.currentUser.threadOpen;
     if (this.showTagSearch) return this.elementRef.nativeElement.querySelector(
@@ -69,7 +95,7 @@ export class InputfieldComponent implements AfterViewInit {
    * @param {MouseEvent} event The event object.
    * @returns {void}
    */
-  outsideClick(event: any) {
+  outsideClick(event: any): void {
     event.stopPropagation();
     const path = event.path || (event.composedPath && event.composedPath());
     if (!path.includes(this.elementRef.nativeElement.querySelector('.smileys, .smileys-container'))) {
@@ -78,49 +104,184 @@ export class InputfieldComponent implements AfterViewInit {
   }
 
 
+  /**
+   * Handles keydown events for the input field.
+   * Determines the context of the key press by checking whether the event target
+   * is within the tag search input or the message content area, and delegates
+   * handling to respective functions.
+   * 
+   * @param {KeyboardEvent} event - The keyboard event triggered by user input.
+   */
   checkKey(event: KeyboardEvent) {
-    console.log(event);
     const targetElement = event.target as HTMLElement;
-    console.log(event.key);
-    console.log(targetElement.id);
+    if (this.isInsideTagSearch(targetElement)) this.handleTagSearch(event);
+    if (this.isInsideMessageContent(targetElement)) this.handleMessage(event);
+  }
 
-    if (targetElement.id === 'tag-search-input' || targetElement.id === 'tag-search-input-thread') {
-      if ((event.key === 'Enter' || event.key === 'NumpadEnter' || event.key === 'Tab') && this.suggestion) {
-        this.formatter.addTag(this.suggestion);
-      }
-      if (event.key === 'Escape') this.toggleTagSearch();
+
+  /**
+   * Handles key presses in the message content element.
+   * If the 'Enter' key is pressed and there is a message in the input field, it sends the message.
+   * If the 'Backspace' key is pressed and the caret is at the beginning of the message content, it removes the last tag.
+   * @param {KeyboardEvent} event The event object.
+   * @returns {void}
+   */
+  handleMessage(event: KeyboardEvent): void {
+    if (this.isSendButtonAndMessage(event) && this.message !== '') this.sendMessage();
+    if (event.key === 'Backspace') this.isBackspaceAndMessage(event);
+  }
+
+
+  /**
+   * Determines if the target element is either the message content or the thread message content.
+   * @param {HTMLElement} targetElement - The element to check.
+   * @returns {boolean} True if the target element is either the message content or the thread message content, otherwise false.
+   */
+  isInsideMessageContent(targetElement: HTMLElement): boolean {
+    return targetElement.id === 'messageContent' || targetElement.id === 'messageContentThread'
+  }
+
+
+  /**
+   * Determines if the event corresponds to pressing the Enter or NumpadEnter key.
+   *
+   * @param {KeyboardEvent} event - The keyboard event to check.
+   * @returns {boolean} True if the event key is 'Enter' or 'NumpadEnter', otherwise false.
+   */
+  isSendButtonAndMessage(event: KeyboardEvent): boolean {
+    return event.key === 'Enter' || event.key === 'NumpadEnter'
+  }
+
+
+  /**
+   * Handles the Backspace key being pressed while the caret is inside the message content.
+   * If the caret is after a zero-width space character and the previous element is a tag message,
+   * it removes the tag by calling the removeTag() function and prevents the default event action.
+   * @param {KeyboardEvent} event The event object.
+   * @returns {void}
+   */
+  isBackspaceAndMessage(event: KeyboardEvent): void {
+    const selection = window.getSelection() as Selection;
+    if (!this.isValidSelection(selection)) return;
+
+    const { currentNode, offset } = this.getSelectionDetails(selection);
+    if (!this.isValidTextNode(currentNode)) return;
+
+    const previousElement = currentNode.previousSibling as HTMLElement;
+    if (this.isTagMessage(previousElement) && this.isCursorAfterZeroWidthSpace(currentNode, offset)) {
+      this.removeTag(previousElement, currentNode, offset);
+      event.preventDefault();
     }
-
-    if (targetElement.id === 'messageContent' || targetElement.id === 'messageContentThread') {
-      if ((event.key === 'Enter' || event.key === 'NumpadEnter') && this.message !== '') {
-        this.sendMessage();
-      }
-      if (event.key === 'Backspace') {
-        const selection = window.getSelection();
-        if (!selection || selection.rangeCount === 0) return;
-
-        const range = selection.getRangeAt(0);
-        const currentNode = range.startContainer;
-        const offset = range.startOffset;
-
-        if (currentNode.nodeType === Node.TEXT_NODE && currentNode.previousSibling) {
-          const previousElement = currentNode.previousSibling as HTMLElement;
-
-          if (previousElement.tagName === 'SPAN' && previousElement.classList.contains('tagMessage')) {
-            const textBeforeCursor = currentNode.textContent?.slice(0, offset) || '';
-            const zeroWidthSpace = '\u200B';
-
-            if (textBeforeCursor.endsWith(zeroWidthSpace)) {
-              previousElement.remove();
-              currentNode.textContent = textBeforeCursor.slice(0, -1) + (currentNode.textContent?.slice(offset) || '');
-              event.preventDefault();
-            }
-          }
-        }
-      }
-    }
+  }
 
 
+  /**
+   * Determines if the given selection is valid, i.e. it contains one or more ranges.
+   * @param {Selection | null} selection - The selection to check.
+   * @returns {boolean} True if the selection is valid, otherwise false.
+   */
+  isValidSelection(selection: Selection | null): boolean {
+    return !!selection && selection.rangeCount > 0;
+  }
+
+
+
+  /**
+   * Returns an object containing the node and offset of the caret in the message content element.
+   * The node is the element that contains the caret, and the offset is the number of characters
+   * from the start of the node where the caret is.
+   * @param {Selection} selection - The selection object containing the range of the caret position.
+   * @returns {{ currentNode: Node, offset: number }} - An object containing the node and offset of the caret.
+   */
+  getSelectionDetails(selection: Selection): { currentNode: Node, offset: number } {
+    const range = selection.getRangeAt(0);
+    return { currentNode: range.startContainer, offset: range.startOffset };
+  }
+
+
+  /**
+   * Checks whether the given node is a valid text node.
+   * A valid text node is defined as a node with a nodeType of TEXT_NODE
+   * and having a previous sibling.
+   *
+   * @param {Node} node - The node to be checked.
+   * @returns {boolean} True if the node is a valid text node, otherwise false.
+   */
+  isValidTextNode(node: Node): boolean {
+    return node.nodeType === Node.TEXT_NODE && !!node.previousSibling;
+  }
+
+
+  /**
+   * Determines if the given HTML element is a tag message.
+   * A tag message is defined as a <span> element with the class 'tagMessage'.
+   *
+   * @param {HTMLElement} element - The HTML element to check.
+   * @returns {boolean} True if the element is a tag message, otherwise false.
+   */
+  isTagMessage(element: HTMLElement): boolean {
+    return element?.tagName === 'SPAN' && element.classList.contains('tagMessage');
+  }
+
+
+  /**
+   * Checks if the cursor is positioned immediately after a zero-width space character
+   * in the given text node.
+   *
+   * @param {Node} node - The text node to check within.
+   * @param {number} offset - The offset position of the cursor within the text node.
+   * @returns {boolean} True if the cursor is after a zero-width space character, otherwise false.
+   */
+  isCursorAfterZeroWidthSpace(node: Node, offset: number): boolean {
+    const textBeforeCursor = (node.textContent || '').slice(0, offset);
+    return textBeforeCursor.endsWith('\u200B');
+  }
+
+
+  /**
+   * Removes a tag message from the message content.
+   * The tag element is removed from the DOM and the text content of the message content is updated.
+   * The offset position of the cursor is updated by subtracting the length of the tag message.
+   * @param {HTMLElement} tagElement The <span> element representing the tag message to be removed.
+   * @param {Node} textNode The text node containing the tag message.
+   * @param {number} offset The offset position of the cursor within the text node.
+   */
+  removeTag(tagElement: HTMLElement, textNode: Node, offset: number): void {
+    tagElement.remove();
+    const textContent = textNode.textContent || '';
+    textNode.textContent = textContent.slice(0, offset - 1) + textContent.slice(offset);
+  }
+
+
+  /**
+   * Checks if the given target element is inside the tag search input.
+   * @param {HTMLElement} targetElement The element to check.
+   * @returns {boolean} True if the element is inside the tag search input, false otherwise.
+   */
+  isInsideTagSearch(targetElement: HTMLElement): boolean {
+    return targetElement.id === 'tag-search-input' || targetElement.id === 'tag-search-input-thread'
+  }
+
+
+  /**
+   * Handles key events in the tag search input.
+   * If the user presses the send button and a suggestion is available, adds the suggestion as a tag.
+   * If the user presses the escape key, toggles the tag search input.
+   * @param {KeyboardEvent} event The event object.
+   */
+  handleTagSearch(event: KeyboardEvent) {
+    if (this.isSendButtonAndTagSearch(event) && this.suggestion) this.formatter.addTag(this.suggestion);
+    if (event.key === 'Escape') this.toggleTagSearch();
+  }
+
+
+  /**
+   * Checks if the given key event is a send button event.
+   * @param {KeyboardEvent} event The event object.
+   * @returns {boolean} True if the event is a send button event, false otherwise.
+   */
+  isSendButtonAndTagSearch(event: KeyboardEvent): boolean {
+    return event.key === 'Enter' || event.key === 'NumpadEnter' || event.key === 'Tab';
   }
 
 
@@ -136,7 +297,7 @@ export class InputfieldComponent implements AfterViewInit {
    * Otherwise, generate a new post and handle it differently depending on whether it's a thread or not.
    * @returns {void}
    */
-  sendMessage() {
+  sendMessage(): void {
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
     if (!message.innerHTML || !this.storage.currentUser.id || !this.storage.currentUser.currentChannel) return;
     let newPost: PostInterface = this.generateNewPost();
@@ -153,7 +314,7 @@ export class InputfieldComponent implements AfterViewInit {
    * 
    * @returns {object | undefined} The channel object if found, otherwise undefined.
    */
-  isChannel() {
+  isChannel(): object | undefined {
     return this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
   }
 
@@ -164,7 +325,7 @@ export class InputfieldComponent implements AfterViewInit {
    * 
    * @returns {object | undefined} The DM object if found, otherwise undefined.
    */
-  isDM() {
+  isDM(): object | undefined {
     return this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
   }
 
@@ -174,17 +335,18 @@ export class InputfieldComponent implements AfterViewInit {
    * A self-direct message is a direct message where the contact is the same as the current user.
    * @returns {boolean}
    */
-  isSelfDm() {
+  isSelfDm(): boolean {
     return this.storage.currentUser.id === this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.contact;
   }
 
 
+
   /**
-   * Generates a new post object with the current message as the text and
-   * fills in the other properties with sensible defaults.
-   * @returns {PostInterface}
+   * Generates a new post from the current message content.
+   * 
+   * @returns {PostInterface} A new post object with the current message content.
    */
-  generateNewPost() {
+  generateNewPost(): PostInterface {
     let newMessage = this.elementRef.nativeElement.querySelector('.message-content');
     return {
       text: newMessage.innerHTML,
@@ -343,16 +505,24 @@ export class InputfieldComponent implements AfterViewInit {
 
 
   tagSearchInput() {
-    let match: UserInterface | undefined;
     this.matchingUsers = [];
-    if (this.tagSearch && this.tagSearch.length > 0) {
-      let users: UserInterface[] = this.storage.user;
-      this.matchingUsers = users.filter(user => user.name.toLowerCase().includes(this.tagSearch.toLowerCase()));
-      match = this.matchingUsers.length > 0 ? this.matchingUsers[0] : undefined;
-      if (match) this.suggestion = match;
-      else this.suggestion = { name: 'Channel', id: 'channel', email: '', online: false, avatar: '', dm: [] };
-    }
-    else this.suggestion = { name: 'Channel', id: 'channel', email: '', online: false, avatar: '', dm: [] };
+    if (this.tagSearch && this.tagSearch.length > 0) this.initiateTagSearch();
+    else this.suggestion = this.generateChannelTag();
+  }
+
+
+  initiateTagSearch() {
+    let match: UserInterface | undefined;
+    let channelUsers: string[] = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.user || [];
+    let users: UserInterface[] = channelUsers.length > 0 ? this.storage.user.filter(user => channelUsers.includes(user.id!)) : [];
+    this.matchingUsers = users.filter(user => user.name.toLowerCase().includes(this.tagSearch.toLowerCase()));
+    match = this.matchingUsers.length > 0 ? this.matchingUsers[0] : undefined;
+    if (match) this.suggestion = match;
+    else this.suggestion = this.generateChannelTag();
+  }
+
+  generateChannelTag() {
+    return { name: 'Channel', id: 'channel', email: '', online: false, avatar: '', dm: [] };
   }
 }
 
