@@ -1,24 +1,35 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CardComponent } from "../../../../shared/components/log-in/card/card.component";
+// src/app/components/log-in/reset-password/reset-password-card/reset-password-card.component.ts
+import { Component, EnvironmentInjector, EventEmitter, inject, OnInit, Output, ViewContainerRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { confirmPasswordReset, getAuth, sendEmailVerification, signInWithEmailAndPassword, verifyPasswordResetCode } from '@angular/fire/auth';
+import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
 import { FormsModule } from '@angular/forms';
-import { NavigationService } from '../../../../shared/services/navigation.service';
-import { ActivatedRoute } from '@angular/router';
-import { Auth, getAuth, confirmPasswordReset, verifyPasswordResetCode } from '@angular/fire/auth';
 import { CommonModule } from '@angular/common';
-
+import { PasswordChangedDialogComponent } from '../password-changed-dialog/password-changed-dialog.component';
+import { DialogService } from '../../../../shared/services/dialog-service.service';
+import { ValidatorService } from '../../../../shared/services/validator-service.service';
+import { NavigationService } from '../../../../shared/services/navigation.service';
 
 @Component({
   selector: 'app-reset-password-card',
   standalone: true,
-  imports: [CardComponent, FormsModule, CommonModule],
+  imports: [CardComponent, FormsModule, CommonModule ],
   templateUrl: './reset-password-card.component.html',
-  styleUrl: './reset-password-card.component.scss'
+  styleUrl: './reset-password-card.component.scss',
 })
 export class ResetPasswordCardComponent implements OnInit {
   navigationService: NavigationService = inject(NavigationService);
   route = inject(ActivatedRoute);
   auth = getAuth();
+  private dialogService = inject(DialogService);
+  private validator = inject(ValidatorService);
+  private viewContainerRef = inject(ViewContainerRef);
+  private injector = inject(EnvironmentInjector);
+  private router = inject(Router);
 
+  @Output() login = new EventEmitter<boolean>();
+
+  mailData: string = '';
   passwordData: string = '';
   confirmPasswordData: string = '';
   samePasswords = false;
@@ -36,9 +47,7 @@ export class ResetPasswordCardComponent implements OnInit {
       }
 
       verifyPasswordResetCode(this.auth, this.oobCode)
-        .then(() => {
-          this.isLoading = false;
-        })
+        .then(() => (this.isLoading = false))
         .catch(() => {
           this.errorMessage = 'Ungültiger oder abgelaufener Link.';
           this.isLoading = false;
@@ -55,25 +64,21 @@ export class ResetPasswordCardComponent implements OnInit {
       this.errorMessage = 'Kein gültiger Reset-Code gefunden.';
       return;
     }
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
-    if (!passwordRegex.test(this.passwordData)) {
-      this.errorMessage = 'Das Passwort muss mindestens 6 Zeichen lang sein und mindestens einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen enthalten.';
+    if (!this.validator.validatePassword(this.passwordData)) {
+      this.errorMessage = 'Das Passwort erfüllt nicht die Anforderungen.';
       return;
     }
     this.isLoading = true;
     confirmPasswordReset(this.auth, this.oobCode, this.passwordData)
       .then(() => {
         this.isLoading = false;
-        alert('Passwort wurde erfolgreich geändert!'); 
-        this.navigationService.navigateTo('/login'); 
+        this.dialogService.openDialog(PasswordChangedDialogComponent, this.viewContainerRef, this.injector, 3000, '/login', this.router);
       })
-      .catch(err => {
+      .catch((err) => {
         this.isLoading = false;
-        if (err.code === 'auth/invalid-action-code') {
-          this.errorMessage = 'Der Link ist ungültig oder abgelaufen.';
-        } else {
-          this.errorMessage = 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.';
-        }
+        this.errorMessage = err.code === 'auth/invalid-action-code'
+          ? 'Der Link ist ungültig oder abgelaufen.'
+          : 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.';
         console.error('Passwort-Reset-Fehler:', err);
       });
   }
