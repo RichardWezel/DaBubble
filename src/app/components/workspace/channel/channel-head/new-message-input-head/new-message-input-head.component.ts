@@ -3,6 +3,7 @@ import { FirebaseStorageService } from '../../../../../shared/services/firebase-
 import { FormsModule } from '@angular/forms';
 import { ChannelInterface } from '../../../../../shared/interfaces/channel.interface';
 import { UserInterface } from '../../../../../shared/interfaces/user.interface';
+import { NavigationService } from '../../../../../shared/services/navigation.service';
 
 @Component({
   selector: 'app-new-message-input-head',
@@ -15,6 +16,7 @@ import { UserInterface } from '../../../../../shared/interfaces/user.interface';
 export class NewMessageInputHeadComponent {
 
   protected storage = inject(FirebaseStorageService);
+  navigationService: NavigationService = inject(NavigationService);
   userInput: string = ''; // Binding to input value
   suggestion: string = ''; // saves the current autocomplete
 
@@ -236,7 +238,7 @@ export class NewMessageInputHeadComponent {
    */
   showSubmittedChannel(searchTerm: string) {
     let foundChannelId = this.findChannelId(searchTerm);
-    this.storage.setChannel(foundChannelId);
+    this.navigationService.setChannel(foundChannelId);
   }
 
   /**
@@ -259,13 +261,13 @@ export class NewMessageInputHeadComponent {
   showExistingDm(userOfSuggestion: UserInterface) {
     let dmsOfCurrentUser = this.storage.currentUser.dm;
     let dmWithUserOfSuggestion = dmsOfCurrentUser.find(dm => dm.contact === userOfSuggestion.id);
-    this.storage.setChannel(dmWithUserOfSuggestion!.id);
+    this.navigationService.setChannel(dmWithUserOfSuggestion!.id);
   }
 
   async showNewDm(userOfSuggestion: UserInterface) {
     await this.createEmptyDms(userOfSuggestion);
     let dmWithUserOfSuggestion = this.storage.currentUser.dm.find(dm => dm.contact === userOfSuggestion.id);
-    if (dmWithUserOfSuggestion) this.storage.setChannel(dmWithUserOfSuggestion!.id);
+    if (dmWithUserOfSuggestion) this.navigationService.setChannel(dmWithUserOfSuggestion!.id);
   }
 
   showSubmittedEmail() {
@@ -281,14 +283,14 @@ export class NewMessageInputHeadComponent {
   showExistingDmEmail(userOfSuggestion: UserInterface) {
     let dmsOfCurrentUser = this.storage.currentUser.dm;
     let dmWithUserOfSuggestion = dmsOfCurrentUser.find(dm => dm.contact === userOfSuggestion.id);
-    this.storage.setChannel(dmWithUserOfSuggestion!.id);
+    this.navigationService.setChannel(dmWithUserOfSuggestion!.id);
   }
 
   async showNewDmEmail(userOfSuggestion: UserInterface) {
     console.log('showNewDmEmail(userOfSuggestion: UserInterface): ', userOfSuggestion)
     await this.createEmptyDms(userOfSuggestion);
     let dmWithUserOfSuggestion = this.storage.currentUser.dm.find(dm => dm.contact === userOfSuggestion.id);
-    if (dmWithUserOfSuggestion) this.storage.setChannel(dmWithUserOfSuggestion!.id);
+    if (dmWithUserOfSuggestion) this.navigationService.setChannel(dmWithUserOfSuggestion!.id);
   }
 
   async createEmptyDms(userOfSuggestion: UserInterface) {

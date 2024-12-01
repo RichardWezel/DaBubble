@@ -12,8 +12,9 @@ import { NavigationService } from '../../../../shared/services/navigation.servic
 })
 export class DmSectionComponent {
   storage = inject(FirebaseStorageService);
+  navigationService = inject(NavigationService);
 
-  constructor(private navigationService: NavigationService) { }
+  constructor() { }
 
   // Statusvariable zur Steuerung der Sichtbarkeit
   isListVisible: boolean = true;

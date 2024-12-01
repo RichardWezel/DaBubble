@@ -36,6 +36,76 @@ main {
             }
         }
     }
+}
 
 
+.loader-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100dvh;
+    width: 100dvw;
+    background-color: $backgroundColor;
+    z-index: 10;
+
+    &.hidden {
+        display: none;
+    }
+}
+
+.loader {
+    width: 100px;
+    height: 75px;
+    margin: 0 auto;
+    background: $backgroundColor;
+    position: relative;
+    border-radius: 100%;
+}
+
+.loader:before {
+    content: '';
+    position: absolute;
+    box-sizing: border-box;
+    border: 15px solid transparent;
+    border-top: 25px solid $backgroundColor;
+    transform: rotate(45deg);
+    top: 50px;
+    left: -15px;
+}
+
+.loader:after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background-color: $primaryColor;
+    box-shadow: 20px 0 $primaryColor -20px 0 $primaryColor;
+    animation: flash 0.5s ease-out infinite alternate;
+}
+
+@keyframes flash {
+    0% {
+        background-color: $secondaryColor;
+        box-shadow: 20px 0 $secondaryColor, -20px 0 $primaryColor;
+    }
+
+    50% {
+        background-color: $primaryColor;
+        box-shadow: 20px 0 $secondaryColor, -20px 0 $secondaryColor;
+    }
+
+    100% {
+        background-color: $secondaryColor;
+        box-shadow: 20px 0 $primaryColor, -20px 0 $secondaryColor;
+    }
 }

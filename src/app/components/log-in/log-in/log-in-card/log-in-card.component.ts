@@ -5,7 +5,7 @@ import { CardComponent } from '../../../../shared/components/log-in/card/card.co
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, doc, updateDoc } from '@angular/fire/firestore';
+import { Firestore, doc } from '@angular/fire/firestore';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { PostInterface } from '../../../../shared/interfaces/post.interface';
 import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
@@ -15,7 +15,7 @@ import { ResetPasswordCardComponent } from '../../reset-password/reset-password-
 @Component({
   selector: 'app-log-in-card',
   standalone: true,
-  imports: [FormsModule, CardComponent, CommonModule ],
+  imports: [FormsModule, CardComponent, CommonModule],
   templateUrl: './log-in-card.component.html',
   styleUrls: ['./log-in-card.component.scss']
 })
@@ -54,12 +54,11 @@ export class LogInCardComponent {
 
         sessionStorage.setItem("authUid", user.uid); // UID speichern
         this.storage.authUid = user.uid;
-        this.storage.getCurrentUser();  // Benutzerinformationen laden
+        this.authService.getCurrentUser();  // Benutzerinformationen laden
         this.storage.getCurrentUserChannelCollection(); // Benutzerkanäle laden
         console.log("Benutzerkanäle geladen:", this.storage.CurrentUserChannel);
 
-        const userDocRef = doc(this.firestore, 'user', user.uid); // Benutzerstatus aktualisieren
-        await updateDoc(userDocRef, { online: true });
+        await this.authService.setCurrentUserOnline(user.uid);
 
         this.router.navigate(['/workspace']);
       })
@@ -95,10 +94,10 @@ export class LogInCardComponent {
         alert('Es gab ein Problem beim Zurücksetzen des Passworts. Bitte überprüfe deine Eingaben.');
       });
   }
-  
+
   validateEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
-  
+
 }

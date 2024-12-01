@@ -13,9 +13,9 @@ import { Subscription } from 'rxjs';
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.scss'
 })
-export class UserProfileComponent implements OnInit, OnDestroy{
+export class UserProfileComponent implements OnInit, OnDestroy {
 
-  @Input() channelUsers: string[] = []; 
+  @Input() channelUsers: string[] = [];
 
   storage = inject(FirebaseStorageService)
   isDialogVisible = true;
@@ -25,7 +25,7 @@ export class UserProfileComponent implements OnInit, OnDestroy{
 
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private openUserProfileService: OpenUserProfileService) {}
+  constructor(private openUserProfileService: OpenUserProfileService) { }
 
   ngOnInit(): void {
     const isOpenSub = this.openUserProfileService.isOpen$.subscribe(value => {
@@ -67,11 +67,11 @@ export class UserProfileComponent implements OnInit, OnDestroy{
 
   findAvatar(userId: string): string {
     const avatar = this.storage.user.find(u => u.id === userId)?.avatar || '';
-    return avatar.startsWith('profile-') 
-      ? `assets/img/profile-pictures/${avatar}` 
+    return avatar.startsWith('profile-')
+      ? `assets/img/profile-pictures/${avatar}`
       : this.storage.openImage(avatar);
   }
 
-  
+
 
 }

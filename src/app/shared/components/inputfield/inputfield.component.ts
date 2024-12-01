@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, inject, Input, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { PostInterface } from '../../interfaces/post.interface';
@@ -7,6 +7,9 @@ import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import { EmojiSelectorComponent } from "../emoji-selector/emoji-selector.component";
 import { TextFormatterDirective } from '../../directive/text-formatter.directive';
 import { UserInterface } from '../../interfaces/user.interface';
+import { NavigationService } from '../../services/navigation.service';
+import { Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-inputfield',
@@ -15,10 +18,11 @@ import { UserInterface } from '../../interfaces/user.interface';
   templateUrl: './inputfield.component.html',
   styleUrl: './inputfield.component.scss'
 })
-export class InputfieldComponent implements AfterViewInit {
+export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   elementRef: ElementRef = inject(ElementRef);
   storage = inject(FirebaseStorageService);
   uid = inject(UidService);
+  navigationService = inject(NavigationService);
 
   @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective
 
@@ -31,11 +35,29 @@ export class InputfieldComponent implements AfterViewInit {
   tagSearch: string = '';
   suggestion: UserInterface | undefined = undefined;
   matchingUsers: UserInterface[] = [];
+  private subscription!: Subscription;
 
 
   constructor() { }
 
+
+
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
   @HostListener('document:click', ['$event'])
+
+
+  ngOnInit() {
+    this.subscription = this.navigationService.channelChanged.subscribe((channelId) => {
+      console.log('Kanal geändert:', channelId);
+      this.reset();
+    });
+  }
+
 
 
   /**
@@ -500,6 +522,14 @@ export class InputfieldComponent implements AfterViewInit {
     this.matchingUsers = [];
     this.suggestion = undefined;
     this.showTagSearch = !this.showTagSearch;
+    this.showEmojiSelector = false;
+    this.setFocus();
+  }
+
+
+  toggleEmojiSelector() {
+    this.showEmojiSelector = !this.showEmojiSelector;
+    this.showTagSearch = false;
     this.setFocus();
   }
 
@@ -524,6 +554,18 @@ export class InputfieldComponent implements AfterViewInit {
   generateChannelTag() {
     return { name: 'Channel', id: 'channel', email: '', online: false, avatar: '', dm: [] };
   }
+
+
+  reset() {
+    let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
+    message.innerHTML = '';
+    this.tagSearch = '';
+    this.matchingUsers = [];
+    this.suggestion = undefined;
+    this.showTagSearch = false;
+    this.showEmojiSelector = false;
+  }
+
 }
 
 

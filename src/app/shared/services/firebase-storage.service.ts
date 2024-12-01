@@ -1,4 +1,4 @@
-import { inject, Injectable, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { inject, Injectable, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
 import { collection, doc, addDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { UserInterface } from '../interfaces/user.interface';
@@ -6,8 +6,7 @@ import { ChannelInterface } from '../interfaces/channel.interface';
 import { PostInterface } from '../interfaces/post.interface';
 import { CurrentUserInterface } from '../interfaces/current-user-interface';
 import { UidService } from './uid.service';
-import { OnlineStatusService } from '../services/online-status.service';
-import { Auth } from '@angular/fire/auth';
+
 
 @Injectable({
   providedIn: 'root'
@@ -15,54 +14,43 @@ import { Auth } from '@angular/fire/auth';
 export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   firestore: Firestore = inject(Firestore);
   uid = inject(UidService);
-  onlineStatusService = inject(OnlineStatusService);
-  auth: Auth = inject(Auth);
+
 
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
   CurrentUserChannel: ChannelInterface[] = [];
   currentUser: CurrentUserInterface = { name: '', email: '', avatar: '', online: false, dm: [], id: '' };
   authUid = sessionStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l';
+  doneLoading: boolean = true;
 
   unsubUsers: () => void = () => { };
   unsubChannels: () => void = () => { };
-  unsubscribeSnapshot: () => void = () => { };
+
 
   /**
    * Initializes the service by subscribing to channel and user collections
    * and fetching the current user.
-   */
+  */
   constructor() {
-    this.unsubChannels = this.getChannelCollection();
+    this.unsubChannels = this.getChannelCollection()
     this.unsubUsers = this.getUserCollection();
-    this.getCurrentUser();
   }
+
 
   /**
  * Cleans up all active subscriptions when the service is destroyed.
  */
-  ngOnDestroy(): void {
+  async ngOnDestroy(): Promise<void> {
     this.unsubUsers();
     this.unsubChannels();
-
-    this.unsubscribeSnapshot();
-    if (this.currentUser.id) {
-      this.onlineStatusService.setUserOnlineStatus(this.currentUser.id, false)
-        .then(() => console.log(`User ${this.currentUser.id} set to offline.`))
-        .catch(error => console.error(`Error setting user ${this.currentUser.id} offline:`, error));
-    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.unsubscribeSnapshot();
-    console.log("Current User: ", this.currentUser);
   }
 
   ngOnInit(): void {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
-    this.unsubscribeSnapshot();
-    console.log("Current User: ", this.currentUser);
   }
 
   /**
@@ -91,6 +79,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
       this.checkCurrentUserIsMemberOfChannel(channel.user)
     );
     console.log("Current User Channels: ", this.CurrentUserChannel);
+    this.doneLoading = true;
   }
 
   checkCurrentUserIsMemberOfChannel(users: string[]) {
@@ -113,62 +102,22 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     });
   }
 
-  /**
-   * Subscribes to the current user's document in Firestore and updates the currentUser object.
-   */
-  getCurrentUser() {
-    const userDocRef = doc(this.firestore, "user", this.authUid);
-    this.unsubscribeSnapshot = onSnapshot(userDocRef, async (snapshot) => {
-      let userData = this.extractUserData(snapshot);
-      userData.currentChannel = this.determineCurrentChannel(userData);
-      userData.threadOpen = this.currentUser.threadOpen || false;
-      userData.postId = this.currentUser.postId || '';
-      this.currentUser = userData;
-
-      // set online-status of current user
-      if (this.currentUser.id) {
-        try {
-          await this.onlineStatusService.setUserOnlineStatus(this.currentUser.id, true);
-          // console.log(`User ${this.currentUser.id} set to online.`);
-          this.getCurrentUserChannelCollection();
-        } catch (error) {
-          console.error(`Error setting user ${this.currentUser.id} online:`, error);
-        }
-      }
-    }, (error) => {
-      console.error("Fehler beim Abrufen des Benutzer-Snapshots:", error);
-    });
-  }
-
-  /**
-   * Extracts user data from a Firestore snapshot and assigns the document ID.
-   * @param snapshot - The Firestore document snapshot.
-   * @returns The extracted user data as a CurrentUserInterface object.
-   */
-  private extractUserData(snapshot: any): CurrentUserInterface {
-    let userData = snapshot.data() as CurrentUserInterface;
-    userData.id = snapshot.id;
-    return userData;
-  }
 
   /**
   * Determines the current channel for the user based on session storage, channels, or DMs.
   * @param userData - The current user's data.
   * @returns The ID of the current channel or undefined if none found.
   */
-  private determineCurrentChannel(userData: CurrentUserInterface): string | undefined {
+  determineCurrentChannel(userData: CurrentUserInterface): string | undefined {
     const sessionChannel = sessionStorage.getItem("currentChannel");
 
-    if (sessionChannel) {
-      return sessionChannel;
-    }
+    if (sessionChannel) return sessionChannel;
 
     if (userData.id) {
       const channelId = this.findUserChannel(userData.id);
       if (channelId) {
         return channelId;
       }
-
       return this.findUserDm(userData);
     }
     return undefined;
@@ -194,16 +143,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     return dm?.id;
   }
 
-  /**
-   * Sets the current channel for the user and stores it in session storage.
-   * @param channelId - The ID of the channel to set as current.
-   */
-  setChannel(channelId: string) {
-    this.currentUser.currentChannel = channelId;
-    this.currentUser.threadOpen = false;
-    sessionStorage.setItem("currentChannel", channelId);
-    console.log("Current Channel of User: ", this.currentUser.currentChannel)
-  }
 
   /**
    * Adds a new user to the Firestore "user" collection after Firebase Auth registration.
@@ -250,6 +189,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
 
 
 
+
   /**
    * Updates an existing user's profile in the Firestore "user" collection after sending the edit user profile form.
    * @param userId - The ID of the user to update.
@@ -281,10 +221,10 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   }
 
   /**
- * Überprüft, ob ein bestimmter Benutzer online ist, basierend auf den lokal gespeicherten Benutzerdaten.
- * @param userId - Die ID des Benutzers, der überprüft werden soll.
- * @returns `true` wenn der Benutzer online ist, `false` ansonsten.
- */
+  * Überprüft, ob ein bestimmter Benutzer online ist, basierend auf den lokal gespeicherten Benutzerdaten.
+  * @param userId - Die ID des Benutzers, der überprüft werden soll.
+  * @returns `true` wenn der Benutzer online ist, `false` ansonsten.
+  */
   isUserOnline(userId: string): boolean {
     const user = this.user.find(u => u.id === userId);
     return user ? user.online : false;
@@ -402,5 +342,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     img.src = url;
     return img.src;
   }
+
 
 }

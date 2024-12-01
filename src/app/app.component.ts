@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { FirebaseStorageService } from './shared/services/firebase-storage.service';
@@ -13,7 +13,9 @@ import { FirebaseStorageService } from './shared/services/firebase-storage.servi
 export class AppComponent implements OnInit {
   title = 'da-bubble';
 
-  constructor(private storageService: FirebaseStorageService) {}
+  storage = inject(FirebaseStorageService);
+
+  constructor() { }
 
   ngOnInit() {
     console.log('AppComponent ngOnInit aufgerufen');
@@ -21,8 +23,8 @@ export class AppComponent implements OnInit {
   }
 
   status() {
-    console.log('Current User: ', this.storageService.currentUser);
-    console.log('Current channel of Current User', this.storageService.currentUser.currentChannel);
+    console.log('Current User: ', this.storage.currentUser);
+    console.log('Current channel of Current User', this.storage.currentUser.currentChannel);
     // Fügen Sie hier weitere console.log Ausgaben hinzu
   }
 }

@@ -3,6 +3,7 @@ import { Component, inject, ViewChild, AfterViewInit } from '@angular/core';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { FormsModule } from '@angular/forms';
 import { AddChannelDialogComponent } from "./add-channel-dialog/add-channel-dialog.component";
+import { NavigationService } from '../../../../shared/services/navigation.service';
 
 @Component({
   selector: 'app-channel-section',
@@ -16,6 +17,7 @@ export class ChannelSectionComponent {
   @ViewChild('addChannelDialog') addChannelDialogComponent!: AddChannelDialogComponent;
 
   storage = inject(FirebaseStorageService);
+  navigationService = inject(NavigationService);
 
   isListVisible: boolean = true;
 

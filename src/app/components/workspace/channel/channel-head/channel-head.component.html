@@ -1,12 +1,7 @@
-<div class="loader-container" *ngIf="findChannel() === ''">
-  <img src="assets/img/dabubble-logo.png">
-  <span class="loader"></span>
-</div>
-
 <section class="channel-head">
 
   <app-new-message-input-head *ngIf="findChannel() === 'newMessage'"></app-new-message-input-head>
-  
+
   <div class="channel-name" *ngIf="findChannel() === 'channel'">
     <div class="icon tag">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -26,8 +21,7 @@
 
     <div class="icon caret">
       <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <mask id="mask0_235_460" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="30"
-          height="30">
+        <mask id="mask0_235_460" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="30" height="30">
           <rect width="30" height="30" fill="#D9D9D9" />
         </mask>
         <g mask="url(#mask0_235_460)">
@@ -45,21 +39,19 @@
         <ng-container *ngIf="i < 6">
           <img class="user-avatar"
             [src]="findAvatar(user).startsWith('profile-') ? 'assets/img/profile-pictures/' + findAvatar(user) : storage.openImage(findAvatar(user))"
-            alt="user-avatar" 
-            [ngStyle]="{'margin-right': channelUser().length === i + 1 ? '0px' : '-24px' }">
+            alt="user-avatar" [ngStyle]="{'margin-right': channelUser().length === i + 1 ? '0px' : '-24px' }">
         </ng-container>
       </ng-container>
-     
+
       <span class="more-user user-avatar" *ngIf="channelUser().length > 6">
         ...
       </span>
-      
+
       <p>{{ channelUser().length }}</p>
     </div>
     <div class="add-user">
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <mask id="mask0_210_1603" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="8" y="8" width="24"
-          height="24">
+        <mask id="mask0_210_1603" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="8" y="8" width="24" height="24">
           <rect x="8" y="8" width="24" height="24" fill="#D9D9D9" />
         </mask>
         <g mask="url(#mask0_210_1603)">

@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
+import { NavigationService } from '../../../../shared/services/navigation.service';
 
 @Component({
   selector: 'app-head-section',
@@ -11,7 +12,8 @@ import { FirebaseStorageService } from '../../../../shared/services/firebase-sto
 export class HeadSectionComponent {
 
   storage = inject(FirebaseStorageService);
+  navigationService = inject(NavigationService);
 
-  constructor() {}
+  constructor() { }
 
 }

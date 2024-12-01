@@ -1,8 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { Auth, GoogleAuthProvider, signInWithPopup, signOut } from '@angular/fire/auth';
 import { FirebaseStorageService } from './firebase-storage.service';
-import { collection, doc, getDoc, updateDoc } from '@angular/fire/firestore';
+import { doc, getDoc, onSnapshot, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
+import { CurrentUserInterface } from '../interfaces/current-user-interface';
+
 
 @Injectable({
   providedIn: 'root'
@@ -12,64 +14,63 @@ export class FirebaseAuthService {
   auth = inject(Auth);
   router = inject(Router);
 
-  constructor() { }
+  onlineTimer: any = null;
+
+  constructor() {
+    this.getCurrentUser();
+  }
 
 
   /**
-   * This method logs in a user as a guest by setting a pre-defined UID value in the session storage
-   * and the FirebaseStorageService. It activates guest mode, retrieves the current user data from 
-   * storage, and navigates the user to the workspace page, reloading it upon navigation.
+   * Logs the user in as a guest by setting a predefined authentication UID in session storage and the storage service.
+   * Updates the current user information and navigates to the workspace route with a reload option.
    */
-  guestLogin() {
+  async guestLogin() {
     sessionStorage.setItem("authUid", 'oYhCXFUTy11sm1uKLK4l');
     this.storage.authUid = 'oYhCXFUTy11sm1uKLK4l';
-    console.log('Gast-Login aktiviert.');
-    this.storage.getCurrentUser();
+    await this.getCurrentUser();
     this.router.navigate(['/workspace'], { reload: true } as any);
   }
 
 
   /**
-   * Initiates a Google login process by using Firebase Authentication with a GoogleAuthProvider.
-   * If the user's document does not exist in Firestore, it creates a new user document.
-   * Otherwise, it updates the existing user document.
-   * Finally, it navigates the user to the workspace page.
-   * Logs any errors encountered during the process.
+   * Logs the user in via Google Auth.
+   * If the user has not registered before, a new user document is created.
+   * If the user has registered before, the user document is updated.
+   * After a successful login, the user is navigated to the workspace route.
    */
-  googleLogin() {
+  async googleLogin() {
     const provider = new GoogleAuthProvider();
-    signInWithPopup(this.auth, provider)
-      .then(async (result) => {
-        const user = result.user;
-        console.log(result);
-        console.log('Google-Benutzer:', user);
-        const userDocRef = doc(this.storage.firestore, 'user', user.uid);
-        const docSnapshot = await getDoc(userDocRef);
-        if (!docSnapshot.exists()) await this.loginWithGoogleNewUser(user, userDocRef);
-        else await this.loginWithGoogleExistingUser(user, userDocRef);
-        this.router.navigate(['/workspace']);
-      })
-      .catch((error) => console.error('Fehler beim Google-Login: ', error.message));
+    try {
+      const result = signInWithPopup(this.auth, provider);
+      const user = (await result).user;
+      const userDocRef = doc(this.storage.firestore, 'user', user.uid);
+      const docSnapshot = await getDoc(userDocRef);
+      if (!docSnapshot.exists()) await this.loginWithGoogleNewUser(user);
+      else this.loginWithGoogleExistingUser(user);
+      this.router.navigate(['/workspace']);
+    } catch (error) {
+      throw error;
+    }
   }
 
 
   /**
-   * Creates a new user document in Firestore with the user's name, email, and avatar.
-   * Then, calls loginWithGoogleExistingUser to log in the user.
-   * @param user - The user object returned by the Google login process.
-   * @param userDocRef - The document reference for the user's document in Firestore.
+   * Logs the user in via Google Auth, creates a new user document in Firestore
+   * and adds the user to the storage service.
+   * @param user - The user object returned by the authentication process.
    */
-  async loginWithGoogleNewUser(user: any, userDocRef: any) {
+  async loginWithGoogleNewUser(user: any) {
     const userData = this.generateUserData(user);
     await this.storage.addUser(user.uid, userData);
-    await this.loginWithGoogleExistingUser(user, userDocRef);
+    await this.loginWithGoogleExistingUser(user);
   }
 
 
   /**
-   * Generates user data object from the given user information.
-   * @param user - The user object returned by the authentication process.
-   * @returns An object containing the user's name, email, and avatar URL.
+   * Generates user data for the user document in Firestore from the user object returned by the Google login process.
+   * @param user - The user object returned by the Google login process.
+   * @returns The user data object to be stored in Firestore.
    */
   generateUserData(user: any) {
     return {
@@ -79,52 +80,153 @@ export class FirebaseAuthService {
     };
   }
 
+
   /**
-   * Logs in an existing user by setting the user's UID in session storage and the FirebaseStorageService.
-   * It retrieves the current user data from storage and updates the user's online status in Firestore.
+   * Logs in an existing user via Google Auth by setting the user's UID in session storage 
+   * and updating the FirebaseStorageService. Fetches the current user data and sets the user's 
+   * status to online in Firestore.
    * @param user - The user object returned by the Google login process.
-   * @param userDocRef - The document reference for the user's document in Firestore.
    */
-  async loginWithGoogleExistingUser(user: any, userDocRef: any) {
+  async loginWithGoogleExistingUser(user: any) {
     sessionStorage.setItem("authUid", user.uid);
     this.storage.authUid = user.uid;
-    this.storage.getCurrentUser();
-    await updateDoc(userDocRef, { online: true });
+    await this.getCurrentUser();
   }
 
 
   /**
-   * Logs out the current user by setting the user's online status to false in Firestore,
-   * and then signing out the user from Firebase Authentication.
-   * Finally, it removes the user's UID from session storage and the FirebaseStorageService.
-   * Logs any errors encountered during the process.
+   * Logs out the current user by updating their online status to false and signing out 
+   * from the authentication service. Clears local session data and calls functions 
+   * to delete local data and set the user offline in the Firestore. Handles errors 
+   * during the sign-out process by logging them to the console.
    */
-  logout() {
-    const user = this.storage.currentUser;
-    const userDocRef = doc(collection(this.storage.firestore, 'user'), user.id);
-    if (user) {
-      updateDoc(userDocRef, { online: false })
-        .then(() => console.log(`Benutzer ${user.id} wurde als offline markiert.`))
-        .catch((error) => console.error(`Fehler beim Zurücksetzen des Online-Status für ${user.id}:`, error));
+  async logout() {
+    const user = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    if (user && user.id) {
+      user.online = false;
+      await this.setCurrentUserOffline(user.id); // Stelle sicher, dass das Setzen des Status erfolgreich ist
+      await signOut(this.auth);
+      this.deleteLocalData();
     }
-    signOut(this.auth)
-      .then(() => this.deleteLocalData())
-      .catch((error) => console.error('Fehler beim Abmelden:', error));
   }
 
 
   /**
-   * Clears the session storage and resets the FirebaseStorageService state.
-   * Unsubscribes from any active snapshots, resets the authentication UID, 
-   * and navigates to the login page. Logs a message indicating successful logout.
+   * Clears all local session data and unsubscribes from active Firestore snapshots, 
+   * sets the user offline, and navigates to the login page after a successful logout.
    */
   deleteLocalData() {
-    console.log('Benutzer erfolgreich abgemeldet.');
     sessionStorage.clear();
-
-    this.storage.unsubscribeSnapshot();
     this.storage.authUid = '';
     this.router.navigate(['/login']);
+  }
+
+
+  /**
+   * Sets the online status of the given user in Firestore.
+   * @param userId - The ID of the user whose online status is to be set.
+   * @param isOnline - Whether the user is online (true) or offline (false).
+   */
+  async setUserOnlineStatus(userId: string, isOnline: boolean): Promise<void> {
+    if (!userId) {
+      throw new Error('User ID is required to set online status.');
+    }
+    const user = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    const userDocRef = doc(this.storage.firestore, 'user', userId);
+    if (!user) return;
+    user.online = isOnline;
+    await updateDoc(userDocRef, { online: isOnline })
+    this.onlineStatusTimer(isOnline);
+  }
+
+
+  /**
+   * Sets a timer to auto-log out the user if the online status is true and they have not
+   * interacted with the application for 15 minutes (900000 ms). If the online status is false,
+   * the timer is cleared. This method is used to maintain the online status of the user in the
+   * Firestore database.
+   * @param status - Whether the user is online (true) or offline (false).
+   */
+  async onlineStatusTimer(status: boolean) {
+    if (!this.storage.currentUser.id) return;
+    if (this.onlineTimer) clearTimeout(this.onlineTimer);
+    if (status) this.onlineTimer = setTimeout(async () => {
+      this.logout();
+      this.onlineTimer = null;
+    }, 900000);
+    else this.onlineTimer = null;
+  }
+
+
+
+  /**
+   * Sets the online status of the given user in Firestore to true.
+   * @param userId - The ID of the user whose online status is to be set.
+   */
+  async setCurrentUserOnline(userId: string): Promise<void> {
+    await this.setUserOnlineStatus(userId, true);
+  }
+
+
+  /**
+   * Sets the online status of the given user in Firestore to false.
+   * @param userId - The ID of the user whose online status is to be set.
+   */
+  async setCurrentUserOffline(userId: string): Promise<void> {
+    await this.setUserOnlineStatus(userId, false);
+  }
+
+
+  /**
+   * Retrieves the current user's data from Firestore and updates the local storage with the user information.
+   * Sets up a snapshot listener on the user's document to handle real-time updates.
+   * Calls `finalizeCurrentUser` if the user ID is successfully retrieved.
+   * Logs an error to the console if there is an issue fetching the snapshot.
+   */
+  async getCurrentUser() {
+    this.storage.doneLoading = false;
+    const userDocRef = doc(this.storage.firestore, "user", this.storage.authUid);
+    const docSnapshot = await getDoc(userDocRef);
+    if (docSnapshot.exists()) {
+      let userData = this.extractUserData(docSnapshot);
+      this.storage.currentUser = userData;
+      this.finalizeCurrentUser();
+    } else {
+      console.error("User nicht gefunden");
+    }
+  }
+
+
+  /**
+   * Extracts user data from a Firestore snapshot and assigns the document ID.
+   * Sets `currentChannel` based on user data and the current channel stored in the service.
+   * Sets `threadOpen` and `postId` based on the current user stored in the service.
+   * @param snapshot - The Firestore document snapshot.
+   * @returns The extracted user data as a CurrentUserInterface object.
+   */
+  extractUserData(snapshot: any): CurrentUserInterface {
+    let userData = snapshot.data() as CurrentUserInterface;
+    userData.id = snapshot.id;
+    userData.currentChannel = this.storage.determineCurrentChannel(userData);
+    userData.threadOpen = this.storage.currentUser.threadOpen || false;
+    userData.postId = this.storage.currentUser.postId || '';
+    return userData;
+  }
+
+
+  /**
+   * Called when the current user is successfully retrieved from Firestore.
+   * Sets the current user's online status to true in Firestore.
+   * Retrieves the current user's channels from Firestore and updates the local channel array.
+   * Logs an error to the console if setting the user online fails.
+   */
+  async finalizeCurrentUser() {
+    try {
+      await this.setCurrentUserOnline(this.storage.currentUser.id!);
+      this.storage.getCurrentUserChannelCollection();
+    } catch (error) {
+      console.error(`Error setting user ${this.storage.currentUser.id} online:`, error);
+    }
   }
 
 }
