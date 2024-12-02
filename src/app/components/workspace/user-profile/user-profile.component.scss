@@ -177,6 +177,11 @@ main {
                 color: #FFFFFF;
                 border: unset;
 
+                &:hover {
+                    cursor: pointer;
+                    background-color: $secondaryColor;
+                }
+
                 .message-icon {
                     width: 24px;
                     height: 24px;

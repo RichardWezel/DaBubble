@@ -14,7 +14,7 @@ export class ChannelMemberDialogComponent {
 
   @Input() channelUsers: string[] = []; 
   storage = inject(FirebaseStorageService)
-  isDialogVisible = false;
+  isChannelMemberDialogVisible = false;
 
   constructor(private openUserProfileService: OpenUserProfileService) {}
 
@@ -28,18 +28,16 @@ export class ChannelMemberDialogComponent {
   async openUserProfile(userID: string) {
     await  this.openUserProfileService.updateUserId(userID)
     this.openUserProfileService.updateToggle(true);
+    this.closeDialog();
     console.log('User ', userID, ' is clicked to open the respective dialogue!');
   }
 
-
- 
-
   public openDialog() {
-    this.isDialogVisible = true;
+    this.isChannelMemberDialogVisible = true;
   }
 
   public closeDialog() {
-    this.isDialogVisible = false;
+    this.isChannelMemberDialogVisible = false;
   }
 
   getUserName(userId: string): string {
