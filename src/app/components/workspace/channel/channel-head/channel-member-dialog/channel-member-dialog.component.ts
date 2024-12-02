@@ -12,6 +12,10 @@ import { OpenUserProfileService } from '../../../../../shared/services/open-user
 })
 export class ChannelMemberDialogComponent {
 
+  @Input() channelUsers: string[] = []; 
+  storage = inject(FirebaseStorageService)
+  isDialogVisible = false;
+
   constructor(private openUserProfileService: OpenUserProfileService) {}
 
   /**
@@ -28,10 +32,7 @@ export class ChannelMemberDialogComponent {
   }
 
 
-  @Input() channelUsers: string[] = []; 
-
-  storage = inject(FirebaseStorageService)
-  isDialogVisible = false;
+ 
 
   public openDialog() {
     this.isDialogVisible = true;

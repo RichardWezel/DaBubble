@@ -18,18 +18,17 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   @Input() channelUsers: string[] = [];
 
   storage = inject(FirebaseStorageService)
-  isDialogVisible = true;
+  isUserProfileVisible = true;
   userId: string = "";
   userObject: UserInterface | undefined = undefined;
 
-
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private openUserProfileService: OpenUserProfileService) { }
+  constructor(public openUserProfileService: OpenUserProfileService) { }
 
   ngOnInit(): void {
     const isOpenSub = this.openUserProfileService.isOpen$.subscribe(value => {
-      this.isDialogVisible = value;
+      this.isUserProfileVisible = value;
       console.log('isDialogVisible changed to:', value);
     });
 
@@ -57,11 +56,11 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   }
 
   public openDialog() {
-    this.isDialogVisible = true;
+    this.isUserProfileVisible = true;
   }
 
   public closeDialog() {
-    this.isDialogVisible = false;
+    this.isUserProfileVisible = false;
   }
 
   getUserName(userId: string): string {
@@ -76,6 +75,9 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       : this.storage.openImage(avatar);
   }
 
-
+  writeMessageToUser (userName: string) {
+    this.openUserProfileService.showSubmittedDirectMessage(userName);
+    this.closeDialog();
+  }
 
 }
