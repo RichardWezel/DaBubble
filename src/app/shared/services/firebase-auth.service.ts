@@ -26,8 +26,8 @@ export class FirebaseAuthService {
    * Updates the current user information and navigates to the workspace route with a reload option.
    */
   async guestLogin() {
-    sessionStorage.setItem("authUid", 'oYhCXFUTy11sm1uKLK4l');
-    this.storage.authUid = 'oYhCXFUTy11sm1uKLK4l';
+    sessionStorage.setItem("authUid", 't3O7pW0P7QrjD26Bd6DZ');
+    this.storage.authUid = 't3O7pW0P7QrjD26Bd6DZ';
     await this.getCurrentUser();
     this.router.navigate(['/workspace'], { reload: true } as any);
   }
