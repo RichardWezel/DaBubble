@@ -35,8 +35,12 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
     const userIdSub = this.openUserProfileService.userID$.subscribe(value => {
       this.userId = value;
+      this.updateUser(this.userId)
       console.log('userId changed to:', value);
     });
+
+    
+    console.log('userObject:', this.userObject);
 
     this.subscriptions.add(isOpenSub);
     this.subscriptions.add(userIdSub);
