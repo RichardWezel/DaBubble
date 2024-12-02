@@ -96,6 +96,14 @@ main {
                 align-items: center;
                 gap: 15px;
 
+                .offline-status {
+                    color: $textGrey !important;
+                }
+
+                .offline-dott {
+                    background-color: $textGrey !important;
+                }
+
                 .dott {
                     width: 16px;
                     height: 16px;

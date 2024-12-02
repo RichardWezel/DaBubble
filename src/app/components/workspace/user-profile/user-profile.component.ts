@@ -1,4 +1,4 @@
-import { NgFor, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FirebaseStorageService } from '../../../shared/services/firebase-storage.service';
 import { OpenUserProfileService } from '../../../shared/services/open-user-profile.service';
@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [NgIf],
+  imports: [NgIf, NgClass],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.scss'
 })

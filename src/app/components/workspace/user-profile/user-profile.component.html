@@ -18,8 +18,14 @@
         <section class="user-name">
            <div class="name">{{ userObject?.name }}</div>
            <div class="online">
-            <div class="dott"></div>
-            <div class="status">Aktiv</div>
+            <div 
+                class="dott"
+                [ngClass]="{'offline-dott': userObject?.online === false}"
+                ></div>
+            <div 
+                class="status" 
+                [ngClass]="{'offline-status': userObject?.online === false}"
+                >{{ userObject?.online === false ? 'Abwesend' : 'Aktiv' }}</div>
            </div>
         </section>
 
@@ -38,7 +44,7 @@
             <div class="label-name">E-Mail-Adresse</div></div>
            <div class="email">{{ userObject?.email }}</div>
         </section>
-        
+
         <section class="newMessage-btn ">
             <button>
                 <div class="message-icon">
