@@ -78,6 +78,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   writeMessageToUser (userName: string) {
     this.openUserProfileService.showSubmittedDirectMessage(userName);
     this.closeDialog();
+    this.openCloseDialogService.close('channelMember')
   }
 
 }
