@@ -12,15 +12,8 @@ export class OpenUserProfileService {
   protected storage = inject(FirebaseStorageService);
   protected navigationService = inject(NavigationService);
 
-  private isOpenSource = new BehaviorSubject<boolean>(false);
-  isOpen$ = this.isOpenSource.asObservable();
-
   private userIDSource = new BehaviorSubject<string>('');
   userID$ = this.userIDSource.asObservable();
-
-  updateToggle(value: boolean) {
-    this.isOpenSource.next(value);
-  }
 
   updateUserId(user: string) {
     this.userIDSource.next(user);

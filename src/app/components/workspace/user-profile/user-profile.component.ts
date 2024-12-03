@@ -4,6 +4,7 @@ import { FirebaseStorageService } from '../../../shared/services/firebase-storag
 import { OpenUserProfileService } from '../../../shared/services/open-user-profile.service';
 import { UserInterface } from '../../../shared/interfaces/user.interface';
 import { Subscription } from 'rxjs';
+import { OpenCloseDialogService } from '../../../shared/services/open-close-dialog.service';
 
 
 @Component({
@@ -18,36 +19,39 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   @Input() channelUsers: string[] = [];
 
   storage = inject(FirebaseStorageService)
-  isUserProfileVisible = true;
+  isOpen: boolean = false;
   userId: string = "";
   userObject: UserInterface | undefined = undefined;
 
   private subscriptions: Subscription = new Subscription();
 
-  constructor(public openUserProfileService: OpenUserProfileService) { }
+  constructor(
+    public openCloseDialogService: OpenCloseDialogService,
+    public openUserProfileService: OpenUserProfileService) {}
 
   ngOnInit(): void {
-    const isOpenSub = this.openUserProfileService.isOpen$.subscribe(value => {
-      this.isUserProfileVisible = value;
-      console.log('isDialogVisible changed to:', value);
-    });
+    const sub = this.openCloseDialogService
+      .isDialogOpen('userProfile')
+      ?.subscribe((status) => {
+        this.isOpen = status;
+      });
+    if (sub) this.subscriptions.add(sub);
 
     const userIdSub = this.openUserProfileService.userID$.subscribe(value => {
       this.userId = value;
       this.updateUser(this.userId)
       console.log('userId changed to:', value);
     });
-
-    
-    console.log('userObject:', this.userObject);
-
-    this.subscriptions.add(isOpenSub);
-    this.subscriptions.add(userIdSub);
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
+
+  closeDialog(): void {
+    this.openCloseDialogService.close('userProfile');
+  }
+
 
   updateUser(userId: string) {
     let userData = this.storage.user.find(user => user.id === userId);
@@ -56,11 +60,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   }
 
   public openDialog() {
-    this.isUserProfileVisible = true;
-  }
-
-  public closeDialog() {
-    this.isUserProfileVisible = false;
+    this.isOpen = true;
   }
 
   getUserName(userId: string): string {

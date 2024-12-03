@@ -2,13 +2,15 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
-export class DialogService {
+
+export class OpenCloseDialogService {
+
   // Beispiel: Verwaltung von zwei Dialogen
   private dialogs: { [key: string]: BehaviorSubject<boolean> } = {
     userProfile: new BehaviorSubject<boolean>(false),
-    settings: new BehaviorSubject<boolean>(false),
+    channelMember: new BehaviorSubject<boolean>(false),
     // Fügen Sie hier weitere Dialoge hinzu
   };
 
@@ -43,4 +45,5 @@ export class DialogService {
     console.warn(`Dialog mit dem Namen "${dialogName}" existiert nicht.`);
     return null;
   }
+
 }

@@ -2,6 +2,8 @@ import { NgFor, NgIf } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
 import { OpenUserProfileService } from '../../../../../shared/services/open-user-profile.service';
+import { OpenCloseDialogService } from '../../../../../shared/services/open-close-dialog.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-channel-member-dialog',
@@ -14,9 +16,27 @@ export class ChannelMemberDialogComponent {
 
   @Input() channelUsers: string[] = []; 
   storage = inject(FirebaseStorageService)
-  isChannelMemberDialogVisible = false;
+  isOpen: boolean = false;
 
-  constructor(private openUserProfileService: OpenUserProfileService) {}
+  private subscriptions: Subscription = new Subscription();
+
+  constructor(
+    private openUserProfileService: OpenUserProfileService,
+    private openCloseDialogService: OpenCloseDialogService) {}
+
+    ngOnInit(): void {
+      const sub = this.openCloseDialogService
+        .isDialogOpen('channelMember')
+        ?.subscribe((status) => {
+          this.isOpen = status;
+        });
+      if (sub) this.subscriptions.add(sub);
+    }
+  
+    ngOnDestroy(): void {
+      this.subscriptions.unsubscribe();
+    }
+
 
   /**
    * The user ID of the user clicked on is transferred via the open-user-service
@@ -27,17 +47,16 @@ export class ChannelMemberDialogComponent {
    */
   async openUserProfile(userID: string) {
     await  this.openUserProfileService.updateUserId(userID)
-    this.openUserProfileService.updateToggle(true);
-    this.closeDialog();
+    this.openCloseDialogService.open('userProfile');
     console.log('User ', userID, ' is clicked to open the respective dialogue!');
   }
 
   public openDialog() {
-    this.isChannelMemberDialogVisible = true;
+    this.isOpen = true;
   }
 
   public closeDialog() {
-    this.isChannelMemberDialogVisible = false;
+    this.isOpen = false;
   }
 
   getUserName(userId: string): string {
