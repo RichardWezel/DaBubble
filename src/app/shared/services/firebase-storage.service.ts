@@ -20,7 +20,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   channel: ChannelInterface[] = [];
   CurrentUserChannel: ChannelInterface[] = [];
   currentUser: CurrentUserInterface = { name: '', email: '', avatar: '', online: false, dm: [], id: '' };
-  authUid = sessionStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l';
+  authUid = sessionStorage.getItem("authUid") || 't3O7pW0P7QrjD26Bd6DZ';
   doneLoading: boolean = true;
 
   unsubUsers: () => void = () => { };
