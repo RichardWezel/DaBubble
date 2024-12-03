@@ -47,8 +47,11 @@ export class ChannelMemberDialogComponent {
    */
   async openUserProfile(userID: string) {
     await  this.openUserProfileService.updateUserId(userID)
-    this.openCloseDialogService.open('userProfile');
-    console.log('User ', userID, ' is clicked to open the respective dialogue!');
+    if (userID !== this.storage.currentUser.id) {
+      this.openCloseDialogService.open('userProfile');
+      console.log('User ', userID, ' is clicked to open the respective dialogue!');
+    }
+   
   }
 
   public openDialog() {
