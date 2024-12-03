@@ -16,7 +16,12 @@
         </section>
 
         <section class="user-name">
-           <div class="name">{{ userObject?.name }}</div>
+            <div class="nameAndEdit"> 
+                <div class="name">{{ userObject?.name }}</div>
+                <div class="edit" *ngIf="isCurrentUser(userObject?.name!)">Bearbeiten</div>
+               
+            </div>
+          
            <div class="online">
             <div 
                 class="dott"

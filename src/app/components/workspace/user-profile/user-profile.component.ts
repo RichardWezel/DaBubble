@@ -29,6 +29,11 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     public openCloseDialogService: OpenCloseDialogService,
     public openUserProfileService: OpenUserProfileService) {}
 
+    isCurrentUser(user: string) {
+      return user === this.storage.currentUser.name
+
+    }
+  
   ngOnInit(): void {
     const sub = this.openCloseDialogService
       .isDialogOpen('userProfile')
