@@ -11,54 +11,101 @@
         </section>
 
         <section class="user-avatar">
-           <img src="assets/img/profile-pictures/profile-1.png" alt="User Avatar">
-             <!-- <div [class.online]="storage.isUserOnline(user)" class="status-dot"></div> -->
+            <img class="user-avatar"
+            [src]=" storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + storage.currentUser.avatar : storage.openImage(storage.currentUser.avatar)"
+            alt="">
         </section>
 
-        <section class="user-name">
-            <div class="nameAndEdit"> 
-                <div class="name">{{ userObject?.name }}</div>
-                <div class="edit" *ngIf="isCurrentUser(userObject?.name!)">Bearbeiten</div>
-               
-            </div>
-          
-           <div class="online">
-            <div 
-                class="dott"
-                [ngClass]="{'offline-dott': userObject?.online === false}"
-                ></div>
-            <div 
-                class="status" 
-                [ngClass]="{'offline-status': userObject?.online === false}"
-                >{{ userObject?.online === false ? 'Abwesend' : 'Aktiv' }}</div>
-           </div>
-        </section>
-
-        <section class="user-email">
-           <div class="label">
-            <div class="icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <mask id="mask0_93145_3198" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
-                    <rect width="24" height="24" fill="#D9D9D9"/>
-                    </mask>
-                    <g mask="url(#mask0_93145_3198)">
-                    <path d="M4 20C3.45 20 2.97933 19.8043 2.588 19.413C2.196 19.021 2 18.55 2 18V6C2 5.45 2.196 4.97933 2.588 4.588C2.97933 4.196 3.45 4 4 4H20C20.55 4 21.021 4.196 21.413 4.588C21.8043 4.97933 22 5.45 22 6V18C22 18.55 21.8043 19.021 21.413 19.413C21.021 19.8043 20.55 20 20 20H4ZM20 8L12.525 12.675C12.4417 12.725 12.354 12.7623 12.262 12.787C12.1707 12.8123 12.0833 12.825 12 12.825C11.9167 12.825 11.8293 12.8123 11.738 12.787C11.646 12.7623 11.5583 12.725 11.475 12.675L4 8V18H20V8ZM12 11L20 6H4L12 11ZM4 8.25V6.775V6.8V6.787V8.25Z" fill="#686868"/>
-                    </g>
-                </svg>
-            </div>
-            <div class="label-name">E-Mail-Adresse</div></div>
-           <div class="email">{{ userObject?.email }}</div>
-        </section>
-
-        <section class="newMessage-btn" *ngIf="!userIsCurrentUser()">
-            <button (click)="writeMessageToUser(userObject?.name!)">
-                <div class="message-icon">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18.3 18.8L16 16.5H2C1.45 16.5 0.979333 16.3043 0.588 15.913C0.196 15.521 0 15.05 0 14.5V2.5C0 1.95 0.196 1.479 0.588 1.087C0.979333 0.695667 1.45 0.5 2 0.5H18C18.55 0.5 19.021 0.695667 19.413 1.087C19.8043 1.479 20 1.95 20 2.5V18.075C20 18.525 19.796 18.8373 19.388 19.012C18.9793 19.1873 18.6167 19.1167 18.3 18.8ZM2 2.5V14.5H16.825L18 15.675V2.5H2Z" fill="white"/>
+        <div *ngIf="mode === 'show'" class="show">
+            <section class="user-name">
+                <div class="nameAndEdit"> 
+                    <div class="name">{{ userObject?.name }}</div>
+                    <button (click)="changeToEditMode()" class="edit" *ngIf="isCurrentUser(userObject?.name!)">Bearbeiten</button>
+                   
+                </div>
+              
+               <div class="online">
+                <div 
+                    class="dott"
+                    [ngClass]="{'offline-dott': userObject?.online === false}"
+                    ></div>
+                <div 
+                    class="status" 
+                    [ngClass]="{'offline-status': userObject?.online === false}"
+                    >{{ userObject?.online === false ? 'Abwesend' : 'Aktiv' }}</div>
+               </div>
+            </section>
+    
+            <section class="user-email">
+               <div class="label">
+                <div class="icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <mask id="mask0_93145_3198" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                        <rect width="24" height="24" fill="#D9D9D9"/>
+                        </mask>
+                        <g mask="url(#mask0_93145_3198)">
+                        <path d="M4 20C3.45 20 2.97933 19.8043 2.588 19.413C2.196 19.021 2 18.55 2 18V6C2 5.45 2.196 4.97933 2.588 4.588C2.97933 4.196 3.45 4 4 4H20C20.55 4 21.021 4.196 21.413 4.588C21.8043 4.97933 22 5.45 22 6V18C22 18.55 21.8043 19.021 21.413 19.413C21.021 19.8043 20.55 20 20 20H4ZM20 8L12.525 12.675C12.4417 12.725 12.354 12.7623 12.262 12.787C12.1707 12.8123 12.0833 12.825 12 12.825C11.9167 12.825 11.8293 12.8123 11.738 12.787C11.646 12.7623 11.5583 12.725 11.475 12.675L4 8V18H20V8ZM12 11L20 6H4L12 11ZM4 8.25V6.775V6.8V6.787V8.25Z" fill="#686868"/>
+                        </g>
                     </svg>
                 </div>
-                <div class="message">Nachricht</div>
-            </button>
-        </section>
+                <div class="label-name">E-Mail-Adresse</div></div>
+               <div class="email">{{ userObject?.email }}</div>
+            </section>
+    
+            <section class="newMessage-btn" *ngIf="!userIsCurrentUser()">
+                <button (click)="writeMessageToUser(userObject?.name!)">
+                    <div class="message-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18.3 18.8L16 16.5H2C1.45 16.5 0.979333 16.3043 0.588 15.913C0.196 15.521 0 15.05 0 14.5V2.5C0 1.95 0.196 1.479 0.588 1.087C0.979333 0.695667 1.45 0.5 2 0.5H18C18.55 0.5 19.021 0.695667 19.413 1.087C19.8043 1.479 20 1.95 20 2.5V18.075C20 18.525 19.796 18.8373 19.388 19.012C18.9793 19.1873 18.6167 19.1167 18.3 18.8ZM2 2.5V14.5H16.825L18 15.675V2.5H2Z" fill="white"/>
+                        </svg>
+                    </div>
+                    <div class="message">Nachricht</div>
+                </button>
+            </section>
+        </div>
+
+        <div *ngIf="mode === 'edit'" class="edit">
+            <section class="edit-name-section">
+                <div class="edit-name-label"> 
+                    <div class="icon-person">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3.85 15.1C4.7 14.45 5.65 13.9373 6.7 13.562C7.75 13.1873 8.85 13 10 13C11.15 13 12.25 13.1873 13.3 13.562C14.35 13.9373 15.3 14.45 16.15 15.1C16.7333 14.4167 17.1877 13.6417 17.513 12.775C17.8377 11.9083 18 10.9833 18 10C18 7.78333 17.221 5.89567 15.663 4.337C14.1043 2.779 12.2167 2 10 2C7.78333 2 5.896 2.779 4.338 4.337C2.77933 5.89567 2 7.78333 2 10C2 10.9833 2.16267 11.9083 2.488 12.775C2.81267 13.6417 3.26667 14.4167 3.85 15.1ZM10 11C9.01667 11 8.18733 10.6627 7.512 9.988C6.83733 9.31267 6.5 8.48333 6.5 7.5C6.5 6.51667 6.83733 5.68733 7.512 5.012C8.18733 4.33733 9.01667 4 10 4C10.9833 4 11.8127 4.33733 12.488 5.012C13.1627 5.68733 13.5 6.51667 13.5 7.5C13.5 8.48333 13.1627 9.31267 12.488 9.988C11.8127 10.6627 10.9833 11 10 11ZM10 20C8.61667 20 7.31667 19.7373 6.1 19.212C4.88333 18.6873 3.825 17.975 2.925 17.075C2.025 16.175 1.31267 15.1167 0.788 13.9C0.262667 12.6833 0 11.3833 0 10C0 8.61667 0.262667 7.31667 0.788 6.1C1.31267 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.31233 6.1 0.787C7.31667 0.262333 8.61667 0 10 0C11.3833 0 12.6833 0.262333 13.9 0.787C15.1167 1.31233 16.175 2.025 17.075 2.925C17.975 3.825 18.6873 4.88333 19.212 6.1C19.7373 7.31667 20 8.61667 20 10C20 11.3833 19.7373 12.6833 19.212 13.9C18.6873 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6873 13.9 19.212C12.6833 19.7373 11.3833 20 10 20ZM10 18C10.8833 18 11.7167 17.871 12.5 17.613C13.2833 17.3543 14 16.9833 14.65 16.5C14 16.0167 13.2833 15.6457 12.5 15.387C11.7167 15.129 10.8833 15 10 15C9.11667 15 8.28333 15.129 7.5 15.387C6.71667 15.6457 6 16.0167 5.35 16.5C6 16.9833 6.71667 17.3543 7.5 17.613C8.28333 17.871 9.11667 18 10 18ZM10 9C10.4333 9 10.7917 8.85833 11.075 8.575C11.3583 8.29167 11.5 7.93333 11.5 7.5C11.5 7.06667 11.3583 6.70833 11.075 6.425C10.7917 6.14167 10.4333 6 10 6C9.56667 6 9.20833 6.14167 8.925 6.425C8.64167 6.70833 8.5 7.06667 8.5 7.5C8.5 7.93333 8.64167 8.29167 8.925 8.575C9.20833 8.85833 9.56667 9 10 9Z" fill="black"/>
+                        </svg>
+                    </div>
+                    <div class="label">Vollständiger Name</div>
+                </div>
+                <input type="text" [placeholder]="userObject?.name!" class="edit-name-input">
+              
+            </section>
+    
+            <section class="edit-email-section">
+                <div class="edit-name-label">
+                    <div class="icon-person">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <mask id="mask0_93145_3198" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                            <rect width="24" height="24" fill="#D9D9D9"/>
+                            </mask>
+                            <g mask="url(#mask0_93145_3198)">
+                            <path d="M4 20C3.45 20 2.97933 19.8043 2.588 19.413C2.196 19.021 2 18.55 2 18V6C2 5.45 2.196 4.97933 2.588 4.588C2.97933 4.196 3.45 4 4 4H20C20.55 4 21.021 4.196 21.413 4.588C21.8043 4.97933 22 5.45 22 6V18C22 18.55 21.8043 19.021 21.413 19.413C21.021 19.8043 20.55 20 20 20H4ZM20 8L12.525 12.675C12.4417 12.725 12.354 12.7623 12.262 12.787C12.1707 12.8123 12.0833 12.825 12 12.825C11.9167 12.825 11.8293 12.8123 11.738 12.787C11.646 12.7623 11.5583 12.725 11.475 12.675L4 8V18H20V8ZM12 11L20 6H4L12 11ZM4 8.25V6.775V6.8V6.787V8.25Z" fill="#686868"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="label-name">E-Mail-Adresse</div>
+                </div>
+                <input type="email" [placeholder]="userObject?.email!" class="edit-name-input">
+            </section>
+    
+            <section class="button-section">
+                <button (click)="writeMessageToUser(userObject?.name!)">
+                    <div class="message-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18.3 18.8L16 16.5H2C1.45 16.5 0.979333 16.3043 0.588 15.913C0.196 15.521 0 15.05 0 14.5V2.5C0 1.95 0.196 1.479 0.588 1.087C0.979333 0.695667 1.45 0.5 2 0.5H18C18.55 0.5 19.021 0.695667 19.413 1.087C19.8043 1.479 20 1.95 20 2.5V18.075C20 18.525 19.796 18.8373 19.388 19.012C18.9793 19.1873 18.6167 19.1167 18.3 18.8ZM2 2.5V14.5H16.825L18 15.675V2.5H2Z" fill="white"/>
+                        </svg>
+                    </div>
+                    <div class="message">Nachricht</div>
+                </button>
+            </section>
+        </div>
+        
     </div>
 </main>

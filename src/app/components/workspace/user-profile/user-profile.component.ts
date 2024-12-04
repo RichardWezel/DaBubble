@@ -22,6 +22,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   isOpen: boolean = false;
   userId: string = "";
   userObject: UserInterface | undefined = undefined;
+  mode: string = "show";
 
   private subscriptions: Subscription = new Subscription();
 
@@ -61,6 +62,9 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     return this.userId === this.storage.currentUser.id
   }
 
+  changeToEditMode() {
+    this.mode = "edit"
+  }
 
   updateUser(userId: string) {
     let userData = this.storage.user.find(user => user.id === userId);
