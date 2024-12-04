@@ -57,6 +57,10 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.openCloseDialogService.close('userProfile');
   }
 
+  userIsCurrentUser() {
+    return this.userId === this.storage.currentUser.id
+  }
+
 
   updateUser(userId: string) {
     let userData = this.storage.user.find(user => user.id === userId);

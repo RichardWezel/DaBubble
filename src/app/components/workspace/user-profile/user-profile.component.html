@@ -1,5 +1,5 @@
 <main *ngIf="isOpen" >
-    <div class="dialog">
+    <div class="dialog" [class.currentUserPosition]="userIsCurrentUser()">
 
         <section class="head">
             <div>Profil</div>
@@ -50,7 +50,7 @@
            <div class="email">{{ userObject?.email }}</div>
         </section>
 
-        <section class="newMessage-btn ">
+        <section class="newMessage-btn" *ngIf="!userIsCurrentUser()">
             <button (click)="writeMessageToUser(userObject?.name!)">
                 <div class="message-icon">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
