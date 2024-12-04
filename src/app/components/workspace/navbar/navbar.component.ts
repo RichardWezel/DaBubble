@@ -5,12 +5,13 @@ import { FirebaseAuthService } from '../../../shared/services/firebase-auth.serv
 import { OpenCloseDialogService } from '../../../shared/services/open-close-dialog.service';
 import { OpenUserProfileService } from '../../../shared/services/open-user-profile.service';
 import { NgIf } from '@angular/common';
+import { SettingsComponent } from "./settings/settings.component";
 
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [SearchComponent, NgIf],
+  imports: [SearchComponent, NgIf, SettingsComponent],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })

@@ -20,9 +20,6 @@
         </g>
       </svg>
     </div>
-    <div [class.open]="dropDownOpen" class="user-dropdown-menu">
-      <p (click)="openUserProfile()">Profil</p>
-      <p (click)="authService.logout()">Logout</p>
-    </div>
+    <app-settings [class.open]="dropDownOpen"></app-settings>
   </div>
 </section>
