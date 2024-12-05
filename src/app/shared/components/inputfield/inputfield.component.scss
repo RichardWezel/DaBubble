@@ -243,6 +243,39 @@
   }
 }
 
+.upload {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: $textWhite;
+  border: 2px dashed $dividerColor;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+
+  &.active {
+    display: flex;
+  }
+
+  .file-name {
+    font-size: 14px;
+    color: $textGrey;
+
+    &.error {
+      color: $secondaryColor;
+    }
+  }
+}
+
+.d-none {
+  display: none;
+}
+
 
 
 ::ng-deep .inputfield-textarea .message-content .tagMessage {

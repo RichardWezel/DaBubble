@@ -1,16 +1,28 @@
 <section class="inputfield">
-  <div [class.op]="showTagSearch" [id]="thread ? 'inputfieldThread' : 'inputfield'" class="inputfield-textarea"
-    class="inputfield-textarea">
+  <div [class.op]="showTagSearch" [id]="thread ? 'inputfieldThread' : 'inputfield'" class="inputfield-textarea">
     <span [class.op]="showTagSearch" class="placeholder" [class.disabled]="startInput"
       [innerHTML]="thread ? 'Antworten...' : 'Schreibe an ' + storage.currentUser.currentChannelName"></span>
     <div [id]="thread ? 'messageContentThread' : 'messageContent'" (keyup)="checkInput($event)"
       (keydown)="checkKey($event)" class="message-content" contentEditable="true" [innerHTML]="message"
       appTextFormatter>
     </div>
+    <div class="upload" [class.active]="showUpload" (click)="upload.click()">
+      <label [class.d-none]="(getUploadedFiles(upload) || []).length > 0" for="fileUpload">Datei durch klicken
+        wählen</label>
+      <input class="d-none" id="fileUpload" type="file" #upload>
+      @if(upload) {
+        <div class="upload-container">
+          @for (file of getUploadedFiles(upload); track file) {
+            <p class="file-name" [class.error]="file.size > 2000000">{{ file.name }}</p>
+          }
+        </div>
+      }
+      <button (click)="cloud.uploadFile(upload)">Upload</button>
+    </div>
   </div>
   <div class="inputfield-buttons">
     <div class="tags">
-      <div class="icon appendix">
+      <div class="icon appendix" (click)="toggleAppendix()">
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_813_12245)">
             <mask id="mask0_813_12245" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="3" y="3" width="24"
