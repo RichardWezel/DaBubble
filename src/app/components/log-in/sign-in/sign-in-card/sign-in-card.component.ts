@@ -24,6 +24,7 @@ export class SignInCardComponent {
   errorMessage: string = '';  // Fehlermeldung
   successMessage: string = ''; // Erfolgsmeldung (HIER HINZUGEFÜGT)
 
+  passwordVisible: boolean = false;
 
   /**
    * Erstellt ein Konto, sendet eine Bestätigungs-E-Mail und speichert die Benutzerdaten in Firestore.
@@ -31,6 +32,10 @@ export class SignInCardComponent {
   async goToChooseAvatar() {
     console.log('goToChooseAvatar wurde aufgerufen');
     this.generateAccount.emit(false);
+  }
+
+  togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
   }
 
   async goToGenerateAccount() {

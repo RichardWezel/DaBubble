@@ -32,6 +32,7 @@ export class LogInCardComponent {
     password: '',
   };
   
+  passwordVisible: boolean = false;
   errorMessage: string = '';
 
   @Output() login = new EventEmitter<boolean>();
@@ -40,6 +41,10 @@ export class LogInCardComponent {
   goToSendMail() {
     this.login.emit(false);
     this.newAccount.emit(false);
+  }
+
+  togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
   }
 
   checkLogin(ngForm: NgForm) {
