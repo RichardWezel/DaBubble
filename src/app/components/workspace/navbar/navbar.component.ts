@@ -11,7 +11,7 @@ import { SettingsComponent } from "./settings/settings.component";
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [SearchComponent, NgIf, SettingsComponent],
+  imports: [SearchComponent, SettingsComponent],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
