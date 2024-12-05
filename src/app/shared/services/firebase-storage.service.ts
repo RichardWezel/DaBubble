@@ -7,7 +7,6 @@ import { PostInterface } from '../interfaces/post.interface';
 import { CurrentUserInterface } from '../interfaces/current-user-interface';
 import { UidService } from './uid.service';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -51,7 +50,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     this.unsubChannels = this.getChannelCollection()
     this.unsubUsers = this.getUserCollection();
   }
-
 
   /**
  * Cleans up all active subscriptions when the service is destroyed.
@@ -118,7 +116,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     });
   }
 
-
   /**
   * Determines the current channel for the user based on session storage, channels, or DMs.
   * @param userData - The current user's data.
@@ -158,7 +155,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     const dm = userData.dm.find(dm => dm.contact === userData.id);
     return dm?.id;
   }
-
 
   /**
    * Adds a new user to the Firestore "user" collection after Firebase Auth registration.
@@ -202,9 +198,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
       throw error;
     }
   }
-
-
-
 
  /**
    * Updates an existing user's profile in the Firestore "user" collection after sending the edit user profile form.
@@ -328,7 +321,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     };
   }
 
-
   async updateDmPost(userId: string, contact: string, postId: string, newPost: PostInterface) {
     let sendUser = this.user[this.user.findIndex(user => user.id === userId)];
     let newDm = sendUser.dm ? sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)] : null;
@@ -346,12 +338,9 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     }
   }
 
-
   openImage(url: string) {
     const img = new Image();
     img.src = url;
     return img.src;
   }
-
-
 }

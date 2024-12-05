@@ -124,6 +124,4 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         console.error('Fehler beim Aktualisieren des Benutzerprofils:', error);
       });
   }
-  
-
 }
