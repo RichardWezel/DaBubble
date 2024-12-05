@@ -123,4 +123,22 @@ form {
         font-weight: 700;
         background-color: $backgroundColor;
     }
+    
+    // Verification // 
+    .notification-container {
+        margin-top: 20px;
+      
+        .error-message {
+          color: #ff4d4f;
+          font-size: 14px;
+          margin-bottom: 10px;
+        }
+      
+        .success-message {
+          color: #52c41a;
+          font-size: 14px;
+          margin-bottom: 10px;
+        }
+      }
+
 }

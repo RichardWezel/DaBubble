@@ -8,6 +8,7 @@ import { ImprintComponent } from './components/imprint/imprint.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 import { ResetPasswordCardComponent } from './components/log-in/reset-password/reset-password-card/reset-password-card.component';
 import { SendEmailCardComponent } from './components/log-in/log-in/send-email-card/send-email-card.component';
+import { EmailVerifiedComponent } from './components/log-in/sign-in/email-verified/email-verified.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' }, // Umleitung zur Login-Seite
@@ -20,5 +21,6 @@ export const routes: Routes = [
     { path: 'choose-avatar', component: ChooseAvatarCardComponent },
     { path: 'imprint', component: ImprintComponent },
     { path: 'privacy-policy', component: PrivacyPolicyComponent },
+    { path: 'emailverified', component: EmailVerifiedComponent },
 ];
 

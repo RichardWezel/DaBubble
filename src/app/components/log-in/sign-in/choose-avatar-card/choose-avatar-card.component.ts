@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { SignInService } from '../../../../shared/services/sign-in.service';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
-import { Auth, createUserWithEmailAndPassword, getAuth } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, getAuth, sendEmailVerification } from '@angular/fire/auth';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 
 @Component({
@@ -24,6 +24,9 @@ export class ChooseAvatarCardComponent {
   navigationService: NavigationService = inject(NavigationService);
   @Output() generateAccount = new EventEmitter<boolean>();
 
+  isLoading: boolean = false; // Ladezustand
+  errorMessage: string = '';  // Fehlermeldung
+  successMessage: string = ''; // Erfolgsmeldung
 
   /**
    * This method navigates back to the sign-in-card component.
@@ -87,16 +90,63 @@ export class ChooseAvatarCardComponent {
    * When the authentication and the new user are created the signinData gets cleared and the user gets routed to the login.
    */
   async setNewUser(): Promise<void> {
+    const auth = getAuth();
+    this.isLoading = true; // Ladezustand aktivieren
+    this.errorMessage = ''; // Fehler zurücksetzen
+    this.successMessage = ''; // Erfolgsmeldung zurücksetzen
+
+    // Sicherheitsüberprüfung: Sind alle Felder ausgefüllt?
+    if (!this.signInService.signInData.name || !this.signInService.signInData.email || !this.signInService.signInData.password) {
+      this.errorMessage = 'Bitte füllen Sie alle erforderlichen Felder aus.';
+      this.isLoading = false;
+      return;
+    }
+
     try {
-      const authUid = await this.setUserInFirebaseAuthentication();
-      if (authUid) {
-        const userData = this.getSignInData();
-        this.storage.addUser(authUid, userData);
-        this.clearSignInServiceData();
-        this.goBackToLogin();
+      // Firebase-Benutzer erstellen
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        this.signInService.signInData.email,
+        this.signInService.signInData.password
+      );
+      const uid = userCredential.user.uid;
+
+      // Dokument in Firestore erstellen
+      // await this.firebaseStorageService.createUserDocument(uid, {
+      //   name: this.signInService.signInData.name,
+      //   email: this.signInService.signInData.email,
+      //   createdAt: new Date(),
+      //   emailVerified: false,
+      //   online: true,
+      // });
+
+      await this.storage.addUser(uid, { 
+        name: this.signInService.signInData.name, 
+        email: this.signInService.signInData.email, 
+        avatar: this.signInService.signInData.img, 
+      });
+
+      // Bestätigungs-E-Mail senden
+      try {
+        await sendEmailVerification(userCredential.user);
+      } catch (emailError) {
+        console.error('Fehler beim Senden der Bestätigungs-E-Mail:', emailError);
+        this.errorMessage = 'Die Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.';
+        return; // Abbrechen, wenn die E-Mail nicht gesendet werden konnte
       }
+
+      // Erfolgsmeldung setzen
+      this.successMessage = `Eine Bestätigungs-E-Mail wurde an ${this.signInService.signInData.email} gesendet. Bitte überprüfen Sie Ihren Posteingang.`;
+      // Automatische Weiterleitung deaktiviert (optional)
+      // setTimeout(() => {
+      //   this.navigationService.navigateTo('/login');
+      // }, 5000);
+
     } catch (error) {
-      console.error("Fehler beim Anlegen eines neuen Benutzers:", error);
+      console.error('Fehler beim Erstellen des Kontos:', error);
+      this.errorMessage = 'Fehler: ' + (error as any).message;
+    } finally {
+      this.isLoading = false; // Ladezustand deaktivieren
     }
   }
 
@@ -148,6 +198,29 @@ export class ChooseAvatarCardComponent {
       checkboxChecked: false,
       img: ""
     };
+  }
+
+  async confirmAvatarSelection() {
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (!user) {
+        throw new Error('Benutzer ist nicht eingeloggt.');
+      }
+
+      // Bestätigungs-E-Mail senden
+      await sendEmailVerification(user);
+
+      // Erfolgsmeldung anzeigen
+      this.successMessage = `Eine Bestätigungs-E-Mail wurde an ${user.email} gesendet. Bitte überprüfen Sie Ihren Posteingang.`;
+
+      // Optional: Weiterleitung oder andere Aktionen
+      console.log('Avatar-Auswahl abgeschlossen und Bestätigungs-E-Mail gesendet.');
+    } catch (error) {
+      console.error('Fehler beim Senden der Bestätigungs-E-Mail:', error);
+      this.errorMessage = 'Die Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.';
+    }
   }
 
 

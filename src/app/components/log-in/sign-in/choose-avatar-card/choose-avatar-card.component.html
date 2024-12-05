@@ -29,8 +29,18 @@
                 <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*"
                     [ngStyle]="{'display' : 'none'}">
             </div>
+
+            <div class="notification-container">
+                <!-- Erfolgsmeldung -->
+                <p *ngIf="successMessage" class="success-message">{{ successMessage }}</p>
+                <!-- Fehlermeldung -->
+                <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+            </div>
+
             <div class="button-container">
-                <button type="submit" class="mainButton buttonPrimary" [disabled]="!avatarSelected">Weiter</button>
+                <button type="submit" class="mainButton buttonPrimary" [disabled]="!avatarSelected || successMessage">
+                    {{ isLoading ? 'Wird geladen...' : 'Weiter' }}
+                </button>
             </div>
         </form>
     </app-card>
