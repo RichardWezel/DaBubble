@@ -244,6 +244,7 @@ main {
             display: flex;
             flex-direction: column;
             gap: 16px;
+
             .edit-name-section {
                 display: flex;
                 gap: 7px;
@@ -307,7 +308,46 @@ main {
                 }
             }
 
-            
+            .button-section {
+                @include dja();
+                gap: 32px;
+
+                button {
+                    padding: 12px 25px 12px;
+                    border-radius: 50px;
+                    border: 1px solid #797EF3;
+                    font-family: "Nunito";
+                    font-size: 18px;
+                    font-weight: 700;
+                    line-height: 24.55px;
+                    text-align: center;
+                    text-underline-position: from-font;
+                    text-decoration-skip-ink: none;
+                    background-color: unset;
+                }
+
+                .cancel-btn {
+                    color: #797EF3;
+
+                    &:hover {
+                        color: #FFFFFF;
+                        background-color: #797EF3;
+                        cursor: pointer;
+                    }
+                }
+
+                .save-btn {
+                    color: #FFFFFF;
+                    background-color: #797EF3;
+
+                    &:hover {
+                      
+                        background-color: #ADB0D9;
+                        cursor: pointer;
+                    }
+                }
+
+            }
 
         
         }
