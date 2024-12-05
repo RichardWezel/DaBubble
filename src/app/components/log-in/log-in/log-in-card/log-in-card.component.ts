@@ -15,7 +15,7 @@ import { ResetPasswordCardComponent } from '../../reset-password/reset-password-
 @Component({
   selector: 'app-log-in-card',
   standalone: true,
-  imports: [FormsModule, CardComponent, CommonModule],
+  imports: [FormsModule, CardComponent, CommonModule ],
   templateUrl: './log-in-card.component.html',
   styleUrls: ['./log-in-card.component.scss']
 })
@@ -29,8 +29,10 @@ export class LogInCardComponent {
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
   loginData = {
     email: '',
-    password: ''
+    password: '',
   };
+  
+  errorMessage: string = '';
 
   @Output() login = new EventEmitter<boolean>();
   @Output() newAccount = new EventEmitter<boolean>();
@@ -42,15 +44,19 @@ export class LogInCardComponent {
 
   checkLogin(ngForm: NgForm) {
     if (ngForm.invalid) {
-      // console.error("Formular ungültig. Bitte alle Felder ausfüllen.");
+      this.errorMessage = "Bitte füllen Sie alle Felder korrekt aus.";
       return;
     }
-    console.log("Login gestartet...");
+    this.errorMessage = ''; // Fehlermeldung zurücksetzen
 
     signInWithEmailAndPassword(this.auth, this.loginData.email, this.loginData.password)
       .then(async (userCredential) => {
         const user = userCredential.user;
         console.log("Benutzer eingeloggt:", user);
+
+        if (!user.emailVerified) {
+          throw new Error("Ihre E-Mail-Adresse ist noch nicht verifiziert. Bitte überprüfen Sie Ihren Posteingang.");
+        }
 
         sessionStorage.setItem("authUid", user.uid); // UID speichern
         this.storage.authUid = user.uid;
@@ -64,7 +70,7 @@ export class LogInCardComponent {
       })
       .catch((error) => {
         console.error("Fehler beim Einloggen:", error.message);
-        alert("Anmeldung fehlgeschlagen! Überprüfe die Anmeldedaten.");
+        this.errorMessage = error.message || "Anmeldung fehlgeschlagen! Überprüfen Sie Ihre Anmeldedaten.";
       });
   }
 

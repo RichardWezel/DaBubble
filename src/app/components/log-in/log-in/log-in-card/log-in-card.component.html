@@ -2,6 +2,11 @@
     <app-card>
         <h2>Anmeldung</h2>
         <p class="instruction">Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</p>
+
+        <div class="notification-container">
+            <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+        </div>
+
         <form (ngSubmit)="checkLogin(loginForm)" #loginForm="ngForm">
             <label class="login-label" for="email">
                 <input id="email" #email="ngModel" [(ngModel)]="loginData.email" name="email" class="input-login"

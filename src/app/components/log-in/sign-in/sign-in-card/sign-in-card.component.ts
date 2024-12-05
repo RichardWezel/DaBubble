@@ -22,7 +22,9 @@ export class SignInCardComponent {
 
   isLoading: boolean = false; // Ladezustand
   errorMessage: string = '';  // Fehlermeldung
-  
+  successMessage: string = ''; // Erfolgsmeldung (HIER HINZUGEFÜGT)
+
+
   /**
    * Erstellt ein Konto, sendet eine Bestätigungs-E-Mail und speichert die Benutzerdaten in Firestore.
    */
@@ -52,15 +54,27 @@ export class SignInCardComponent {
       );
       const uid = userCredential.user.uid;
 
-      // Firestore-Dokument erstellen
-      await this.firebaseStorageService.addUser(uid, {
-        name: this.signInService.signInData.name,
-        email: this.signInService.signInData.email,
-        avatar: this.signInService.signInData.img,
-      });
+      // Bestätigungs-E-Mail senden
+      await sendEmailVerification(userCredential.user);
+      this.successMessage = `Eine Bestätigungs-E-Mail wurde an ${this.signInService.signInData.email} gesendet. Bitte überprüfen Sie Ihren Posteingang.`;
 
-      // Benutzer zur Avatar-Auswahl navigieren
-      this.generateAccount.emit(false);
+      // Warte auf Verifizierung
+      const interval = setInterval(async () => {
+        await auth.currentUser?.reload(); // Aktualisiere Benutzerinformationen
+        if (auth.currentUser?.emailVerified) {
+          clearInterval(interval); // Stoppe den Überprüfungs-Loop
+
+          // Benutzer zu Firestore hinzufügen
+          await this.firebaseStorageService.addUser(uid, {
+            name: this.signInService.signInData.name,
+            email: this.signInService.signInData.email,
+            avatar: this.signInService.signInData.img,
+          });
+
+          // Benutzer zur Avatar-Auswahl navigieren
+          this.generateAccount.emit(false);
+        }
+      }, 3000); // Überprüfe alle 3 Sekunden
     } catch (error) {
       console.error('Fehler beim Erstellen des Kontos:', error);
       this.errorMessage = 'Fehler: ' + (error as any).message;
@@ -68,5 +82,6 @@ export class SignInCardComponent {
       this.isLoading = false;
     }
   }
+
 
 }
