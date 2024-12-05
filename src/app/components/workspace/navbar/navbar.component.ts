@@ -4,7 +4,6 @@ import { FirebaseStorageService } from '../../../shared/services/firebase-storag
 import { FirebaseAuthService } from '../../../shared/services/firebase-auth.service';
 import { OpenCloseDialogService } from '../../../shared/services/open-close-dialog.service';
 import { OpenUserProfileService } from '../../../shared/services/open-user-profile.service';
-import { NgIf } from '@angular/common';
 import { SettingsComponent } from "./settings/settings.component";
 
 
