@@ -39,8 +39,7 @@ export class TextFormatterDirective {
    */
   clearLineBreak(message: HTMLElement) {
     let messageContent = message.innerHTML;
-    let lastIndex = messageContent.lastIndexOf('<br>');
-    if (lastIndex !== -1) messageContent = messageContent.slice(0, lastIndex);
+    messageContent = messageContent.replaceAll('<br>', '');
     return messageContent;
   }
 

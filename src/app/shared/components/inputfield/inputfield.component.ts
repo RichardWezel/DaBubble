@@ -12,6 +12,7 @@ import { CloudStorageService } from '../../services/cloud-storage.service';
 import { SendMessageService } from './services/send-message.service';
 import { InputEventsService } from './services/input-events.service';
 import { UidService } from '../../services/uid.service';
+import { DOCUMENT } from '@angular/common';
 
 
 @Component({
@@ -28,7 +29,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   navigationService = inject(NavigationService);
   cloud = inject(CloudStorageService);
   sendMessageService = inject(SendMessageService);
-  inputEvent = inject(InputEventsService)
+  inputEvent = inject(InputEventsService);
 
   @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective
 
@@ -47,9 +48,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
 
   constructor() { }
 
-  @HostListener('document:keydown', ['$event'])
-  @HostListener('document:click', ['$event'])
-  @HostListener('document:keyup', ['$event'])
+
 
   ngOnInit() {
     this.subscription = this.navigationService.channelChanged.subscribe((channelId) => {
@@ -140,16 +139,19 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   }
 
 
+
+  @HostListener('document:click', ['$event'])
   /**
-     * Handles outside clicks on the emoji selector.
-     * If the target element is not the emoji selector or one of its children, hide the emoji selector.
-     * @param {MouseEvent} event The event object.
-     * @returns {void}
-     */
-  outsideClick(event: MouseEvent): void {
+   * Handles clicks outside of the emoji selector component.
+   * Stops the event from propagating and checks if the click target is outside the emoji selector.
+   * If the target is outside, hides the emoji selector by setting the showEmojiSelector flag to false.
+   * 
+   * @param {MouseEvent} event - The event object representing the click.
+   */
+  outsideClick(event: any): void {
     console.log(event);
     event.stopPropagation();
-    const path = (event.composedPath && event.composedPath());
+    const path = event.path || (event.composedPath && event.composedPath());
     console.log(path);
     if (!path.includes(this.elementRef.nativeElement.querySelector('.smileys, .smileys-container'))) {
       this.showEmojiSelector = false;
@@ -157,14 +159,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   }
 
 
-  /**
- * Handles keydown events for the input field.
- * Determines the context of the key press by checking whether the event target
- * is within the tag search input or the message content area, and delegates
- * handling to respective functions.
- * 
- * @param {KeyboardEvent} event - The keyboard event triggered by user input.
- */
+  @HostListener('document:keydown', ['$event'])
   checkKey(event: KeyboardEvent) {
     const targetElement = event.target as HTMLElement;
     if (this.inputEvent.isInsideTagSearch(targetElement)) this.handleTagSearch(event);
@@ -195,16 +190,19 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    */
   handleMessage(event: KeyboardEvent): void {
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
-    if (this.inputEvent.isSendButtonAndMessage(event) && message !== '') this.sendMessage();
+    if (this.inputEvent.isSendButtonAndMessage(event) && message !== '') {
+      event.preventDefault();
+      this.sendMessage();
+    }
     if (event.key === 'Backspace') this.inputEvent.isBackspaceAndMessage(event);
   }
 
 
   /**
- * Generates a new post from the current message content.
- * 
- * @returns {PostInterface} A new post object with the current message content.
- */
+  * Generates a new post from the current message content.
+  * 
+  * @returns {PostInterface} A new post object with the current message content.
+  */
   generateNewPost(): PostInterface {
     let newMessage = this.elementRef.nativeElement.querySelector('.message-content');
     return {
@@ -219,16 +217,12 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   }
 
 
-  /**
-   * Checks the input field's content and updates the startInput state.
-   * Determines if the input field is empty or contains only a line break,
-   * and sets startInput to true if there is content, otherwise false.
-   * 
-   * @param {KeyboardEvent} event - The keyboard event triggered by user input.
-   */
+  @HostListener('document:keyup', ['$event'])
   checkInput(event: KeyboardEvent) {
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
+    this.message = message.innerHTML;
     this.startInput = (message.innerHTML === '' || message.innerHTML === '<br>') ? false : true;
+    this.setFocus();
   }
 
 
@@ -257,10 +251,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   addEmoji(emoji: string) {
     let newMessage = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
     newMessage.innerHTML += emoji;
-    let messageContent = newMessage.innerHTML;
-    let lastIndex = messageContent.lastIndexOf('<br>');
-    if (lastIndex !== -1) messageContent = messageContent.slice(0, lastIndex);
-    newMessage.innerHTML = messageContent;
+    newMessage.innerHTML = newMessage.innerHTML.replaceAll('<br>', '');
     this.startInput = true;
     this.showEmojiSelector = false;
     this.setFocus();

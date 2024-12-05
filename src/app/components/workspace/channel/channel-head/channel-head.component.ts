@@ -11,19 +11,19 @@ import { UserInterface } from '../../../../shared/interfaces/user.interface';
   standalone: true,
   imports: [
     NgStyle,
-    FormsModule, 
-    NewMessageInputHeadComponent, 
+    FormsModule,
+    NewMessageInputHeadComponent,
     ChannelMemberDialogComponent,
-  CommonModule,
-NgFor,
-NgIf],
+    CommonModule,
+    NgFor,
+    NgIf],
   templateUrl: './channel-head.component.html',
   styleUrl: './channel-head.component.scss'
 })
 
-export class ChannelHeadComponent implements OnInit{
+export class ChannelHeadComponent implements OnInit {
   storage = inject(FirebaseStorageService);
-  channelUsers: string [] = [];
+  channelUsers: string[] = [];
 
   ngOnInit() {
     this.updateChannelUsers();
