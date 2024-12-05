@@ -25,8 +25,24 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
 
   unsubUsers: () => void = () => { };
   unsubChannels: () => void = () => { };
+  private unsubCurrentUser: () => void = () => {};
 
-
+  getCurrentUserDocument() {
+    if (!this.currentUser.id) {
+      console.warn('currentUser.id ist nicht gesetzt.');
+      return;
+    }
+    return onSnapshot(doc(this.firestore, "user", this.currentUser.id), (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const userData = docSnapshot.data() as UserInterface;
+        this.currentUser = { ...userData, id: docSnapshot.id };
+        console.log("currentUser aktualisiert:", this.currentUser);
+      } else {
+        console.warn('currentUser-Dokument existiert nicht.');
+      }
+    });
+  }
+  
   /**
    * Initializes the service by subscribing to channel and user collections
    * and fetching the current user.
@@ -190,20 +206,14 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
 
 
 
-  /**
+ /**
    * Updates an existing user's profile in the Firestore "user" collection after sending the edit user profile form.
    * @param userId - The ID of the user to update.
    * @param userData - An object containing the updated user data.
    */
-  async updateUser(userId: string, userData: UserInterface) {
-    await updateDoc(doc(this.firestore, "user", userId), {
-      name: userData.name,
-      email: userData.email,
-      avatar: userData.avatar,
-      online: userData.online,
-      dm: userData.dm
-    })
-  }
+ async updateUser(userId: string, userData: Partial<UserInterface>) {
+  await updateDoc(doc(this.firestore, "user", userId), userData);
+}
 
   /**
    * Updates an existing channel in the Firestore "channel" collection after sending the edit channel form.

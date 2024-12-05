@@ -5,12 +5,13 @@ import { OpenUserProfileService } from '../../../shared/services/open-user-profi
 import { UserInterface } from '../../../shared/interfaces/user.interface';
 import { Subscription } from 'rxjs';
 import { OpenCloseDialogService } from '../../../shared/services/open-close-dialog.service';
+import { NgForm, FormsModule } from '@angular/forms';
 
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [NgIf, NgClass],
+  imports: [NgIf, NgClass, FormsModule],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.scss'
 })
@@ -23,6 +24,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   userId: string = "";
   userObject: UserInterface | undefined = undefined;
   mode: string = "show";
+  email: string = '';
+  name: string = '';
 
   private subscriptions: Subscription = new Subscription();
 
@@ -48,6 +51,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       this.updateUser(this.userId)
       console.log('userId changed to:', value);
     });
+    if (userIdSub) this.subscriptions.add(userIdSub);
   }
 
   ngOnDestroy(): void {
@@ -66,9 +70,13 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.mode = "edit"
   }
 
-  updateUser(userId: string) {
+  updateUser(userId: string): void {
     let userData = this.storage.user.find(user => user.id === userId);
     this.userObject = userData;
+    if (this.userObject) {
+      this.email = this.userObject.email;
+      this.name = this.userObject.name;
+    }
     console.log('UserProfileComponent userObject is updated to: ', this.userObject)
   }
 
@@ -93,5 +101,29 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.closeDialog();
     this.openCloseDialogService.close('channelMember')
   }
+
+  async saveProfile(): Promise<void> {
+    if (!this.userObject) {
+      console.error('Kein Benutzerobjekt gefunden.');
+      return;
+    }
+  
+    const updatedUser: Partial<UserInterface> = {
+      name: this.name,
+      email: this.email
+    };
+  
+    await this.storage.updateUser(this.userId, updatedUser as UserInterface)
+      .then(() => {
+        console.log('Benutzerprofil erfolgreich aktualisiert.');
+        this.userObject!.name = this.name;
+        this.userObject!.email = this.email;
+        this.mode = 'show';
+      })
+      .catch(error => {
+        console.error('Fehler beim Aktualisieren des Benutzerprofils:', error);
+      });
+  }
+  
 
 }
