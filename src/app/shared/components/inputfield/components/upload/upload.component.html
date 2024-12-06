@@ -1,0 +1,15 @@
+<div class="upload" [class.active]="inputfield.showUpload" (click)="upload.click()"
+  (drop)="$event.stopPropagation(); $event.preventDefault(); handleDrop($event)" (dragover)="handleDragOver($event)"
+  (dragleave)="handleDragLeave($event)">
+  <label [class.d-none]="(getUploadedFiles(upload) || []).length > 0" for="fileUpload">Datei durch klicken
+    wählen</label>
+  <input class="d-none" id="fileUpload" type="file" multiple accept="image/*, document/pdf" #upload>
+  @if(upload) {
+    <div class="upload-container">
+      @for (file of getUploadedFiles(upload); track file) {
+        <p class="file-name" [class.error]="file.size > 2000000">{{ file.name }}</p>
+      }
+    </div>
+  }
+  <button (click)="$event.stopPropagation(); uploadFiles()" type="button" class="upload-button">Upload</button>
+</div>

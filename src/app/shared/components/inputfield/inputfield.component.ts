@@ -12,13 +12,13 @@ import { CloudStorageService } from '../../services/cloud-storage.service';
 import { SendMessageService } from './services/send-message.service';
 import { InputEventsService } from './services/input-events.service';
 import { UidService } from '../../services/uid.service';
-import { DOCUMENT } from '@angular/common';
+import { UploadComponent } from "./components/upload/upload.component";
 
 
 @Component({
   selector: 'app-inputfield',
   standalone: true,
-  imports: [FormsModule, PickerModule, EmojiSelectorComponent, TextFormatterDirective],
+  imports: [FormsModule, PickerModule, EmojiSelectorComponent, TextFormatterDirective, UploadComponent],
   templateUrl: './inputfield.component.html',
   styleUrl: './inputfield.component.scss'
 })
@@ -31,7 +31,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   sendMessageService = inject(SendMessageService);
   inputEvent = inject(InputEventsService);
 
-  @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective
+  @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective;
 
   @Input() thread: boolean = false;
 
@@ -96,8 +96,12 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * after the component has finished rendering.
    */
   setFocus() {
-    const focusElement = this.getFocusElement();
+    let focusElement = this.getFocusElement();
     if (!focusElement) return;
+
+    if (document.activeElement?.id.includes('messageContent')) {
+      focusElement = document.activeElement as HTMLElement;
+    }
 
     focusElement.focus();
 
@@ -149,10 +153,8 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * @param {MouseEvent} event - The event object representing the click.
    */
   outsideClick(event: any): void {
-    console.log(event);
     event.stopPropagation();
     const path = event.path || (event.composedPath && event.composedPath());
-    console.log(path);
     if (!path.includes(this.elementRef.nativeElement.querySelector('.smileys, .smileys-container'))) {
       this.showEmojiSelector = false;
     }
@@ -360,15 +362,6 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     this.showEmojiSelector = false;
     this.showUpload = false;
   }
-
-
-  getUploadedFiles(input: HTMLInputElement) {
-    if (!input.files || !input.files.length || !input) return
-    const files: FileList = input.files;
-    console.log(files);
-    return Array.from(files);
-  }
-
 
 }
 

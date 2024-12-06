@@ -6,19 +6,7 @@
       (keydown)="checkKey($event)" class="message-content" contentEditable="true" [innerHTML]="message"
       appTextFormatter>
     </div>
-    <div class="upload" [class.active]="showUpload" (click)="upload.click()">
-      <label [class.d-none]="(getUploadedFiles(upload) || []).length > 0" for="fileUpload">Datei durch klicken
-        wählen</label>
-      <input class="d-none" id="fileUpload" type="file" #upload>
-      @if(upload) {
-        <div class="upload-container">
-          @for (file of getUploadedFiles(upload); track file) {
-            <p class="file-name" [class.error]="file.size > 2000000">{{ file.name }}</p>
-          }
-        </div>
-      }
-      <button (click)="cloud.uploadFile(upload)">Upload</button>
-    </div>
+    <app-upload></app-upload>
   </div>
   <div class="inputfield-buttons">
     <div class="tags">
