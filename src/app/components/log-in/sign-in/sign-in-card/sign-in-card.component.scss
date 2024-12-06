@@ -63,9 +63,9 @@ form {
 }
 
 /* On mouse-over, add a grey background color */
-.checkbox-container:hover input{
+.checkbox-container:hover input {
 
-    ~ .customized-checkbox-button-container .customized-checkbox-button {
+    ~.customized-checkbox-button-container .customized-checkbox-button {
         background-color: none;
         border: 2px solid $primaryColor;
     }
@@ -123,22 +123,21 @@ form {
         font-weight: 700;
         background-color: $backgroundColor;
     }
-    
+
     // Verification // 
     .notification-container {
         margin-top: 20px;
-      
-        .error-message {
-          color: #ff4d4f;
-          font-size: 14px;
-          margin-bottom: 10px;
-        }
-      
-        .success-message {
-          color: #52c41a;
-          font-size: 14px;
-          margin-bottom: 10px;
-        }
-      }
 
+        .error-message {
+            color: #ff4d4f;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .success-message {
+            color: #52c41a;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+    }
 }

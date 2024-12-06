@@ -19,6 +19,7 @@
         box-sizing: content-box;
         object-fit: cover;
         object-position: top;
+
         &:hover {
             border: 8px solid $lightGrey;
         }

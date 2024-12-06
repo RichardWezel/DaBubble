@@ -111,19 +111,10 @@ export class ChooseAvatarCardComponent {
       );
       const uid = userCredential.user.uid;
 
-      // Dokument in Firestore erstellen
-      // await this.firebaseStorageService.createUserDocument(uid, {
-      //   name: this.signInService.signInData.name,
-      //   email: this.signInService.signInData.email,
-      //   createdAt: new Date(),
-      //   emailVerified: false,
-      //   online: true,
-      // });
-
-      await this.storage.addUser(uid, { 
-        name: this.signInService.signInData.name, 
-        email: this.signInService.signInData.email, 
-        avatar: this.signInService.signInData.img, 
+      await this.storage.addUser(uid, {
+        name: this.signInService.signInData.name,
+        email: this.signInService.signInData.email,
+        avatar: this.signInService.signInData.img,
       });
 
       // Bestätigungs-E-Mail senden
@@ -138,9 +129,9 @@ export class ChooseAvatarCardComponent {
       // Erfolgsmeldung setzen
       this.successMessage = `Eine Bestätigungs-E-Mail wurde an ${this.signInService.signInData.email} gesendet. Bitte überprüfen Sie Ihren Posteingang.`;
       // Automatische Weiterleitung deaktiviert (optional)
-      // setTimeout(() => {
-      //   this.navigationService.navigateTo('/login');
-      // }, 5000);
+      setTimeout(() => {
+        this.navigationService.navigateTo('/login');
+      }, 5000);
 
     } catch (error) {
       console.error('Fehler beim Erstellen des Kontos:', error);
@@ -150,7 +141,7 @@ export class ChooseAvatarCardComponent {
     }
   }
 
-  
+
   /**
    * This method creates a new user in the authentication from Firebase with the inserted email and password.
    * The user uid gets returned as authUid to create a new user document with this id.
@@ -222,7 +213,6 @@ export class ChooseAvatarCardComponent {
       this.errorMessage = 'Die Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.';
     }
   }
-
 
   /**
    * Routes the user to the login component.

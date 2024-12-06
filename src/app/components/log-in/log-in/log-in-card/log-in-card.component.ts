@@ -15,7 +15,7 @@ import { ResetPasswordCardComponent } from '../../reset-password/reset-password-
 @Component({
   selector: 'app-log-in-card',
   standalone: true,
-  imports: [FormsModule, CardComponent, CommonModule ],
+  imports: [FormsModule, CardComponent, CommonModule],
   templateUrl: './log-in-card.component.html',
   styleUrls: ['./log-in-card.component.scss']
 })
@@ -31,9 +31,10 @@ export class LogInCardComponent {
     email: '',
     password: '',
   };
-  
+
   passwordVisible: boolean = false;
   errorMessage: string = '';
+  isLoading: boolean = false;
 
   @Output() login = new EventEmitter<boolean>();
   @Output() newAccount = new EventEmitter<boolean>();
@@ -54,27 +55,34 @@ export class LogInCardComponent {
     }
     this.errorMessage = ''; // Fehlermeldung zurücksetzen
 
+    console.log("Login gestartet...");
     signInWithEmailAndPassword(this.auth, this.loginData.email, this.loginData.password)
       .then(async (userCredential) => {
         const user = userCredential.user;
-        console.log("Benutzer eingeloggt:", user);
 
+        // Überprüfen, ob die E-Mail-Adresse verifiziert ist
         if (!user.emailVerified) {
           throw new Error("Ihre E-Mail-Adresse ist noch nicht verifiziert. Bitte überprüfen Sie Ihren Posteingang.");
         }
 
-        sessionStorage.setItem("authUid", user.uid); // UID speichern
+        console.log("Benutzer eingeloggt:", user);
+
+        // Speichern der Auth-UID
+        sessionStorage.setItem("authUid", user.uid);
         this.storage.authUid = user.uid;
-        this.authService.getCurrentUser();  // Benutzerinformationen laden
-        this.storage.getCurrentUserChannelCollection(); // Benutzerkanäle laden
+
+        // Benutzerinformationen laden
+        this.authService.getCurrentUser();
+        this.storage.getCurrentUserChannelCollection();
+
         console.log("Benutzerkanäle geladen:", this.storage.CurrentUserChannel);
 
+        // Benutzerstatus auf "online" setzen
         await this.authService.setCurrentUserOnline(user.uid);
 
         this.router.navigate(['/workspace']);
       })
       .catch((error) => {
-        console.error("Fehler beim Einloggen:", error.message);
         this.errorMessage = error.message || "Anmeldung fehlgeschlagen! Überprüfen Sie Ihre Anmeldedaten.";
       });
   }
