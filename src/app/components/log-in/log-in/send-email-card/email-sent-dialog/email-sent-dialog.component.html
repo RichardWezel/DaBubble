@@ -1,6 +1,10 @@
-<div class="dialog-backdrop">
-  <div class="dialog-container">
-    <h2>Wir haben Ihnen eine E-Mail gesendet!</h2>
-    <p></p>
+<div class="dialog-overlay" *ngIf="showDialog">
+  <div class="dialog-box">
+    <h2>E-Mail versendet</h2>
+    <p>
+      Eine Bestätigungs-E-Mail wurde an {{ email }} gesendet.<br>
+      Bitte überprüfen Sie auch Ihren Spam-Ordner.
+    </p>
+    <button class="dialog-button" (click)="closeDialog()">OK</button>
   </div>
 </div>

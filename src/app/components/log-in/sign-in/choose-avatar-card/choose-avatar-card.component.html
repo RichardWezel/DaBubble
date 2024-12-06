@@ -43,5 +43,10 @@
                 </button>
             </div>
         </form>
+
+        <!-- Dialog-Komponente hinzufügen -->
+        <app-email-sent-dialog [email]="signInService.signInData.email" [showDialog]="showDialog"
+            (close)="handleDialogClose()">
+        </app-email-sent-dialog>
     </app-card>
 </div>

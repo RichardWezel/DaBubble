@@ -6,11 +6,13 @@ import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { Auth, createUserWithEmailAndPassword, getAuth, sendEmailVerification } from '@angular/fire/auth';
 import { NavigationService } from '../../../../shared/services/navigation.service';
+import { EmailSentDialogComponent } from '../../log-in/send-email-card/email-sent-dialog/email-sent-dialog.component';
+
 
 @Component({
   selector: 'app-choose-avatar-card',
   standalone: true,
-  imports: [CardComponent, CommonModule, FormsModule],
+  imports: [CardComponent, CommonModule, FormsModule, EmailSentDialogComponent],
   templateUrl: './choose-avatar-card.component.html',
   styleUrl: './choose-avatar-card.component.scss'
 })
@@ -27,7 +29,7 @@ export class ChooseAvatarCardComponent {
   isLoading: boolean = false; // Ladezustand
   errorMessage: string = '';  // Fehlermeldung
   successMessage: string = ''; // Erfolgsmeldung
-
+  showDialog: boolean = false; // Dialog-Steuerung
   /**
    * This method navigates back to the sign-in-card component.
    * For that, it emits an event to the sign-in component.
@@ -126,12 +128,8 @@ export class ChooseAvatarCardComponent {
         return; // Abbrechen, wenn die E-Mail nicht gesendet werden konnte
       }
 
-      // Erfolgsmeldung setzen
-      this.successMessage = `Eine Bestätigungs-E-Mail wurde an ${this.signInService.signInData.email} gesendet. Bitte überprüfen Sie Ihren Posteingang.`;
-      // Automatische Weiterleitung deaktiviert (optional)
-      setTimeout(() => {
-        this.navigationService.navigateTo('/login');
-      }, 5000);
+      // Dialog anzeigen
+      this.showDialog = true;
 
     } catch (error) {
       console.error('Fehler beim Erstellen des Kontos:', error);
@@ -141,6 +139,10 @@ export class ChooseAvatarCardComponent {
     }
   }
 
+  handleDialogClose() {
+    this.showDialog = false; // Dialog schließen
+    this.navigationService.navigateTo('/login'); // Weiterleitung zur Login-Seite
+  }
 
   /**
    * This method creates a new user in the authentication from Firebase with the inserted email and password.
