@@ -62,7 +62,8 @@ export class LogInCardComponent {
 
         // Überprüfen, ob die E-Mail-Adresse verifiziert ist
         if (!user.emailVerified) {
-          throw new Error("Ihre E-Mail-Adresse ist noch nicht verifiziert. Bitte überprüfen Sie Ihren Posteingang.");
+          this.errorMessage = "Ihre E-Mail-Adresse ist noch nicht verifiziert. Bitte überprüfen Sie Ihren Posteingang.";
+          return; // Stoppt die weitere Verarbeitung
         }
 
         console.log("Benutzer eingeloggt:", user);
@@ -82,9 +83,23 @@ export class LogInCardComponent {
 
         this.router.navigate(['/workspace']);
       })
+      
       .catch((error) => {
-        this.errorMessage = error.message || "Anmeldung fehlgeschlagen! Überprüfen Sie Ihre Anmeldedaten.";
+        switch (error.code) {
+          case 'auth/user-not-found':
+            this.errorMessage = "Anmeldung fehlgeschlagen! Überprüfen Sie Ihre Anmeldedaten.";
+            break;
+          case 'auth/wrong-password':
+            this.errorMessage = "Das eingegebene Passwort ist falsch. Bitte versuchen Sie es erneut.";
+            break;
+          case 'auth/too-many-requests':
+            this.errorMessage = "Zu viele Anmeldeversuche. Bitte versuchen Sie es später erneut.";
+            break;
+          default:
+            this.errorMessage = "Es gibt kein Konto mit dieser E-Mail-Adresse. Bitte registrieren Sie sich zuerst.";
+        }
       });
+      
   }
 
   getGoogleLoginErrorMessage(errorCode: string): string {
