@@ -1,5 +1,6 @@
 import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { InputfieldComponent } from '../../inputfield.component';
+import { htmlTemplatesImage, htmlTemplatesPdf, htmlTemplatesOther } from './templates/htmlTemplates';
 
 @Component({
   selector: 'app-upload',
@@ -10,6 +11,7 @@ import { InputfieldComponent } from '../../inputfield.component';
 })
 export class UploadComponent {
   inputfield: InputfieldComponent = inject(InputfieldComponent);
+
   @ViewChild('upload') uploadElement!: ElementRef<HTMLInputElement>;
 
   constructor() { }
@@ -92,24 +94,9 @@ export class UploadComponent {
             console.error('Ungültige Dateiendung:', url.name);
             return;
           }
-          if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
-            // Thumbnail für Bild
-            thumbnailHtml = `<div class="file-thumbnail image-thumbnail">
-                               <img src="${url.url}" alt="Image Thumbnail" class="thumbnail-image">
-                             </div>`;
-          } else if (fileExtension === 'pdf') {
-            // Thumbnail für PDF
-            thumbnailHtml = `<div class="file-thumbnail pdf-thumbnail">
-                               <img src="pdf-icon.png" alt="PDF Thumbnail" class="thumbnail-image">
-                               <a href="${url.url}" target="_blank" class="pdf-link">PDF anzeigen</a>
-                             </div>`;
-          } else {
-            // Default Thumbnail für andere Dateitypen
-            thumbnailHtml = `<div class="file-thumbnail other-thumbnail">
-                               <img src="default-icon.png" alt="File Thumbnail" class="thumbnail-image">
-                               <a href="${url.url}" target="_blank" class="file-link">Datei herunterladen</a>
-                             </div>`;
-          }
+          if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) thumbnailHtml = htmlTemplatesImage(url);
+          else if (fileExtension === 'pdf') thumbnailHtml = htmlTemplatesPdf(url);
+          else thumbnailHtml = htmlTemplatesOther(url);
           message.innerHTML += thumbnailHtml;
         });
       }
@@ -118,9 +105,31 @@ export class UploadComponent {
       this.inputfield.startInput = true;
       this.inputfield.showUpload = false;
       this.inputfield.sendMessage();
+      this.inputfield.setFocus();
     } catch (error) {
       console.error("Fehler beim Hochladen der Dateien:", error);
     }
+  }
+
+  removeFile(index: number) {
+    const inputElement = this.uploadElement.nativeElement;
+    if (inputElement.files && inputElement.files.length > index) {
+      const dataTransfer = new DataTransfer();
+      for (let i = 0; i < inputElement.files.length; i++) {
+        if (i !== index) {
+          dataTransfer.items.add(inputElement.files[i]);
+        }
+      }
+      inputElement.files = dataTransfer.files;
+    }
+  }
+
+  cancelUpload() {
+    const inputElement = this.uploadElement.nativeElement;
+    if (inputElement.files && inputElement.files.length > 0) {
+      inputElement.value = '';
+    }
+    this.inputfield.showUpload = false;
   }
 
 

@@ -344,46 +344,53 @@ main {
     }
 
     .file-thumbnail {
-        display: inline-block;
-        margin: 5px;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         position: relative;
+        padding: 0 4px;
+        cursor: pointer;
     }
 
     .thumbnail-image {
-        width: 100px;
-        height: 100px;
+        width: auto;
+        height: 48px;
         object-fit: cover;
         border-radius: 5px;
     }
 
-    .pdf-thumbnail img {
-        width: 100px;
-        height: 100px;
+    .pdf-thumbnail svg {
+        width: auto;
+        height: 48px;
     }
 
     .pdf-thumbnail .pdf-link {
-        position: absolute;
-        bottom: 5px;
-        left: 0;
-        right: 0;
         text-align: center;
         font-size: 12px;
-        color: #333;
+        color: $textBlack;
+        text-decoration: none;
     }
 
-    .image-thumbnail img {
+    .image-thumbnail svg {
         cursor: pointer;
     }
 
-    .other-thumbnail img {
-        width: 50px;
-        height: 50px;
+    .other-thumbnail svg {
+        width: auto;
+        height: 48px;
     }
 
-    .file-thumbnail a {
-        display: block;
+    .file-thumbnail .file-link {
+        display: flex;
+        flex: 1;
         text-align: center;
-        margin-top: 5px;
+        font-size: 12px;
+        color: $textBlack;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        max-width: 80px;
     }
 
 }
