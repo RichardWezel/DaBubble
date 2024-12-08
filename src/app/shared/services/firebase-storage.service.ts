@@ -34,6 +34,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
    constructor(private ngZone: NgZone) {
      this.unsubChannels = this.getChannelCollection()
      this.unsubUsers = this.getUserCollection();
+     this.unsubCurrentUser = this.getCurrentUserDocument();
 
     const authUid = this.authUid;
     if (authUid !== 't3O7pW0P7QrjD26Bd6DZ') {

@@ -27,11 +27,14 @@ export class NavbarComponent implements OnInit, OnDestroy{
     private openCloseDialogService: OpenCloseDialogService) {}
 
   ngOnInit(): void {
-    const sub = this.storage.currentUser$.subscribe(user => {
-      this.currentUserName = user.name;
-      console.log('NavbarComponent: currentUserName updated to:', this.currentUserName);
-    });
-    this.subscriptions.add(sub);
+    if (this.storage.currentUser$) {
+      const sub = this.storage.currentUser$.subscribe(user => {
+        this.currentUserName = user.name;
+        console.log('NavbarComponent: currentUserName updated to:', this.currentUserName);
+      });
+      this.subscriptions.add(sub);
+    }
+    
   }
   
   ngOnDestroy(): void {
