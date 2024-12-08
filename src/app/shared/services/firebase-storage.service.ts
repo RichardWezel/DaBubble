@@ -31,19 +31,25 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   * Initializes the service by subscribing to channel and user collections
   * and fetching the current user.
   */
-   constructor(private ngZone: NgZone) {
-     this.unsubChannels = this.getChannelCollection()
-     this.unsubUsers = this.getUserCollection();
-     this.unsubCurrentUser = this.getCurrentUserDocument();
+  constructor(private ngZone: NgZone) {
+    this.unsubChannels = this.getChannelCollection();
+    this.unsubUsers = this.getUserCollection();
 
     const authUid = this.authUid;
-    if (authUid !== 't3O7pW0P7QrjD26Bd6DZ') {
+    if (authUid && authUid !== 't3O7pW0P7QrjD26Bd6DZ') {
       this.currentUser.id = authUid;
       this.unsubCurrentUser = this.getCurrentUserDocument();
+    } else if (authUid === 't3O7pW0P7QrjD26Bd6DZ') {
+      // Gast-User behandeln
+      this.currentUser.id = authUid;
+      this.unsubCurrentUser = this.getCurrentUserDocument();
+      console.log('Gast-User eingeloggt:', this.currentUser.id);
     } else {
       console.warn('Kein gültiger authUid gefunden.');
     }
-   }
+
+    console.log('current User Observable:', this.currentUser$);
+  }
 
   getCurrentUserDocument() {
     if (!this.currentUser.id) {
@@ -79,8 +85,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   }
 
   ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
+   
   }
 
   /**
@@ -95,7 +100,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         channelData.id = doc.id;
         this.channel.push(channelData);
       });
-      console.log("Channel Collection: ", this.channel)
+      // console.log("Channel Collection: ", this.channel)
     });
   }
 
@@ -108,7 +113,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     this.CurrentUserChannel = this.channel.filter(channel =>
       this.checkCurrentUserIsMemberOfChannel(channel.user)
     );
-    console.log("Current User Channels: ", this.CurrentUserChannel);
+    // console.log("Current User Channels: ", this.CurrentUserChannel);
     this.doneLoading = true;
   }
 
@@ -128,7 +133,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         userData.id = doc.id;
         this.user.push(userData);
       });
-      console.log("User Collection: ", this.user);
+      // console.log("User Collection: ", this.user);
     });
   }
 
