@@ -1,4 +1,4 @@
-import { inject, Injectable, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
+import { inject, Injectable, OnChanges, OnDestroy, OnInit, SimpleChanges, NgZone } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
 import { collection, doc, addDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { UserInterface } from '../interfaces/user.interface';
@@ -6,6 +6,7 @@ import { ChannelInterface } from '../interfaces/channel.interface';
 import { PostInterface } from '../interfaces/post.interface';
 import { CurrentUserInterface } from '../interfaces/current-user-interface';
 import { UidService } from './uid.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,18 +14,35 @@ import { UidService } from './uid.service';
 export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   firestore: Firestore = inject(Firestore);
   uid = inject(UidService);
-
-
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
   CurrentUserChannel: ChannelInterface[] = [];
   currentUser: CurrentUserInterface = { name: '', email: '', avatar: '', online: false, dm: [], id: '' };
   authUid = sessionStorage.getItem("authUid") || 't3O7pW0P7QrjD26Bd6DZ';
   doneLoading: boolean = true;
+  private currentUserSubject = new BehaviorSubject<CurrentUserInterface>(this.currentUser);
+  currentUser$ = this.currentUserSubject.asObservable();
 
   unsubUsers: () => void = () => { };
   unsubChannels: () => void = () => { };
-  private unsubCurrentUser: () => void = () => {};
+  unsubCurrentUser?: () => void;
+
+  /**
+  * Initializes the service by subscribing to channel and user collections
+  * and fetching the current user.
+  */
+   constructor(private ngZone: NgZone) {
+     this.unsubChannels = this.getChannelCollection()
+     this.unsubUsers = this.getUserCollection();
+
+    const authUid = this.authUid;
+    if (authUid !== 't3O7pW0P7QrjD26Bd6DZ') {
+      this.currentUser.id = authUid;
+      this.unsubCurrentUser = this.getCurrentUserDocument();
+    } else {
+      console.warn('Kein gültiger authUid gefunden.');
+    }
+   }
 
   getCurrentUserDocument() {
     if (!this.currentUser.id) {
@@ -32,31 +50,28 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
       return;
     }
     return onSnapshot(doc(this.firestore, "user", this.currentUser.id), (docSnapshot) => {
-      if (docSnapshot.exists()) {
-        const userData = docSnapshot.data() as UserInterface;
-        this.currentUser = { ...userData, id: docSnapshot.id };
-        console.log("currentUser aktualisiert:", this.currentUser);
-      } else {
-        console.warn('currentUser-Dokument existiert nicht.');
-      }
+      this.ngZone.run(() => {
+        if (docSnapshot.exists()) {
+          const userData = docSnapshot.data() as UserInterface;
+          this.currentUser = { ...userData, id: docSnapshot.id };
+          console.log("currentUser aktualisiert:", this.currentUser);
+          this.currentUserSubject.next(this.currentUser); // Emit the new value
+        } else {
+          console.warn('currentUser-Dokument existiert nicht.');
+        }
+      });
     });
   }
   
-  /**
-   * Initializes the service by subscribing to channel and user collections
-   * and fetching the current user.
-  */
-  constructor() {
-    this.unsubChannels = this.getChannelCollection()
-    this.unsubUsers = this.getUserCollection();
-  }
-
   /**
  * Cleans up all active subscriptions when the service is destroyed.
  */
   async ngOnDestroy(): Promise<void> {
     this.unsubUsers();
     this.unsubChannels();
+    if (this.unsubCurrentUser) {
+      this.unsubCurrentUser();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {

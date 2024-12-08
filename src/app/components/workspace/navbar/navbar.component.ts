@@ -1,11 +1,11 @@
-import { Component, HostListener, ElementRef, inject } from '@angular/core';
+import { Component, HostListener, ElementRef, inject, OnInit, OnDestroy } from '@angular/core';
 import { SearchComponent } from "./search/search.component";
 import { FirebaseStorageService } from '../../../shared/services/firebase-storage.service';
 import { FirebaseAuthService } from '../../../shared/services/firebase-auth.service';
 import { OpenCloseDialogService } from '../../../shared/services/open-close-dialog.service';
 import { OpenUserProfileService } from '../../../shared/services/open-user-profile.service';
 import { SettingsComponent } from "./settings/settings.component";
-
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -14,16 +14,29 @@ import { SettingsComponent } from "./settings/settings.component";
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit, OnDestroy{
   elementRef: ElementRef = inject(ElementRef);
   storage = inject(FirebaseStorageService);
   authService = inject(FirebaseAuthService);
-
+  currentUserName: string = '';
   dropDownOpen: boolean = false;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private openUserProfileService: OpenUserProfileService,
     private openCloseDialogService: OpenCloseDialogService) {}
+
+  ngOnInit(): void {
+    const sub = this.storage.currentUser$.subscribe(user => {
+      this.currentUserName = user.name;
+      console.log('NavbarComponent: currentUserName updated to:', this.currentUserName);
+    });
+    this.subscriptions.add(sub);
+  }
+  
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
 
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {

@@ -4,7 +4,7 @@
   </div>
   <app-search></app-search>
   <div class="current-user" (click)="dropDownOpen = !dropDownOpen">
-    <h3>{{storage.currentUser.name}}</h3>
+    <h3>{{currentUserName}}</h3>
     <img class="user-avatar"
       [src]=" storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + storage.currentUser.avatar : storage.openImage(storage.currentUser.avatar)"
       alt="">
