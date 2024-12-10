@@ -52,7 +52,6 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
 
   ngOnInit() {
     this.subscription = this.navigationService.channelChanged.subscribe((channelId) => {
-      console.log('Kanal geändert:', channelId);
       this.reset();
     });
   }
@@ -98,29 +97,28 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   setFocus() {
     let focusElement = this.getFocusElement();
     if (!focusElement) return;
-
-    if (document.activeElement?.id.includes('messageContent')) {
+    if (document.activeElement?.id.includes('messageContent') || document.activeElement?.id.includes('newMessageInput')) {
       focusElement = document.activeElement as HTMLElement;
     }
-
     focusElement.focus();
+    if (focusElement.isContentEditable) this.setFocusContentEditable(focusElement);
+    else if ('selectionStart' in focusElement) this.setFocusInput(focusElement);
+  }
 
-    // Prüfen, ob das Element contentEditable ist
-    if (focusElement.isContentEditable) {
-      const range = document.createRange();
-      const selection = window.getSelection();
 
-      // Cursor ans Ende setzen
-      range.selectNodeContents(focusElement);
-      range.collapse(false);
+  setFocusContentEditable(focusElement: HTMLElement) {
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.selectNodeContents(focusElement);
+    range.collapse(false);
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+  }
 
-      selection?.removeAllRanges();
-      selection?.addRange(range);
-    } else if ('selectionStart' in focusElement) {
-      // Für Input- und Textarea-Felder
-      (focusElement as HTMLInputElement).selectionStart = (focusElement as HTMLInputElement).value.length;
-      (focusElement as HTMLInputElement).selectionEnd = (focusElement as HTMLInputElement).value.length;
-    }
+
+  setFocusInput(focusElement: HTMLElement) {
+    (focusElement as HTMLInputElement).selectionStart = (focusElement as HTMLInputElement).value.length;
+    (focusElement as HTMLInputElement).selectionEnd = (focusElement as HTMLInputElement).value.length;
   }
 
 

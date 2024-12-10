@@ -143,6 +143,10 @@
       height: 45%;
       padding: 0;
 
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
     }
   }
 

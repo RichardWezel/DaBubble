@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ref, Storage, uploadBytesResumable, getDownloadURL } from '@angular/fire/storage';
 import { FirebaseStorageService } from './firebase-storage.service';
+import { UserInterface } from '../interfaces/user.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -15,66 +16,61 @@ export class CloudStorageService {
   constructor() { }
 
 
-  async uploadAsAttachment(
-    input: HTMLInputElement,
-    channelId: string = this.storage.currentUser.currentChannel || ''
-  ): Promise<{ name: string; url: string }[]> {
+  async uploadAsAttachment(input: HTMLInputElement, channelId: string = this.storage.currentUser.currentChannel || ''): Promise<{ name: string; url: string }[]> {
     if (!input.files) return [];
-
     const files: FileList = input.files;
-    const uploadedUrls: { name: string; url: string }[] = [];
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files.item(i);
-      if (!file) continue;
-
-      // 1. Datei auf Größe prüfen
-      if (file.size > 1.91 * 1024 * 1024) {
-        console.error(`Datei ${file.name} überschreitet die maximal zulässige Größe.`);
-        continue;
-      }
-
-      // 2. Neuen Dateinamen generieren
-      const timestamp = new Date().toISOString().replace(/[-:.]/g, '');
-      const extension = file.name.split('.').pop();
-      const newFileName = `${timestamp}.${extension}`;
-
-      // 3. Referenz erstellen
-      const storageRef = ref(this.cloud, `appendix/${channelId}/${newFileName}`);
-
-      try {
-        // 4. Datei hochladen
-        const uploadTaskSnapshot = await uploadBytesResumable(storageRef, file);
-        console.log(`Datei ${newFileName} erfolgreich hochgeladen.`);
-
-        // 5. URL abrufen
-        const downloadURL = await getDownloadURL(uploadTaskSnapshot.ref);
-        console.log(`Download-URL: ${downloadURL}`);
-        uploadedUrls.push({ name: newFileName, url: downloadURL });
-      } catch (error) {
-        console.error(`Fehler beim Hochladen von ${file.name}:`, error);
-      }
-    }
-
-    console.log('Alle Dateien hochgeladen:', uploadedUrls);
+    const uploadedUrls: { name: string; url: string }[] = await this.getUploadUrls(files, channelId);
     return uploadedUrls;
   }
 
 
-
-
-  uploadFile(input: HTMLInputElement) {
-    if (!input.files) return
-
-    const files: FileList = input.files;
-
+  async getUploadUrls(files: FileList, channelId: string): Promise<{ name: string; url: string }[]> {
+    let uploadedUrls: { name: string; url: string }[] = [];
     for (let i = 0; i < files.length; i++) {
       const file = files.item(i);
-      if (file) {
-        const storageRef = ref(this.cloud, file.name);
-        uploadBytesResumable(storageRef, file);
+      if (!file) continue;
+      if (file.size > 1.91 * 1024 * 1024) {
+        console.error('Dateigröße überschritten');
+        continue;
       }
+      uploadedUrls = await this.generateAppendixNameAndUpload(file, channelId, uploadedUrls);
     }
+    return uploadedUrls;
+  }
+
+
+  async generateAppendixNameAndUpload(file: File, channelId: string, uploadedUrls: { name: string; url: string }[]) {
+    const newFileName = this.getAppendixNewFileName(file);
+    const storageRef = this.getAppendixStorageRef(newFileName, channelId);
+    uploadedUrls = await this.uploadAppendixFile(storageRef, file, uploadedUrls, newFileName);
+    return uploadedUrls;
+  }
+
+
+  async uploadAppendixFile(storageRef: any, file: File, uploadedUrls: { name: string; url: string }[], newFileName: string) {
+    try {
+      const uploadTaskSnapshot = await uploadBytesResumable(storageRef, file);
+      const downloadURL = await getDownloadURL(uploadTaskSnapshot.ref);
+      uploadedUrls.push({ name: newFileName, url: downloadURL });
+      return uploadedUrls;
+    } catch (error) {
+      console.error(`Fehler beim Hochladen von ${file.name}:`, error);
+      return uploadedUrls;
+    }
+  }
+
+
+  getAppendixStorageRef(newFileName: string, channelId: string) {
+    const storageRef = ref(this.cloud, `appendix/${channelId}/${newFileName}`);
+    return storageRef;
+  }
+
+
+  getAppendixNewFileName(file: File) {
+    const timestamp = new Date().toISOString().replace(/[-:.]/g, '');
+    const extension = file.name.split('.').pop();
+    const newFileName = `${timestamp}.${extension}`;
+    return newFileName;
   }
 
 
@@ -83,12 +79,7 @@ export class CloudStorageService {
     if (url.includes('googleusercontent')) {
       if (!this.uploadLine.includes(url)) {
         this.uploadLine.push(url);
-        console.log(this.uploadLine);
-
-        // updateUrl nur starten, wenn es nicht bereits läuft
-        if (!this.isUpdating) {
-          this.updateUrl();
-        }
+        if (!this.isUpdating) this.updateUrl();
       }
     }
     img.src = url;
@@ -97,56 +88,49 @@ export class CloudStorageService {
 
 
   async updateUrl() {
-    this.isUpdating = true; // Update wird gestartet
+    this.isUpdating = true;
     while (this.uploadLine.length > 0) {
-      const url = this.uploadLine[0]; // Aktuelle URL holen
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          console.error(`Failed to fetch image: ${url}`);
-          this.uploadLine.shift(); // URL aus der Warteschlange entfernen
-          continue;
-        }
-        const blob = await response.blob();
-        const user = this.storage.user.find(u => u.avatar === url);
-
-        if (user) {
-          try {
-            // Den MIME-Typ des Bildes analysieren
-            const contentType = blob.type;
-            const extension = contentType.split('/')[1];
-
-            // Speicherreferenz erstellen (Cloud Storage Pfad)
-            const fileName = `${user.id}.${extension}`;
-            const storageRef = ref(this.cloud, `profilePic/${user.id}/${fileName}`);
-
-            // Hochladen des Blob in den Cloud Storage
-            const uploadTaskSnapshot = await uploadBytesResumable(storageRef, blob, {
-              contentType,
-            });
-
-            console.log(`Image uploaded successfully: ${fileName}`);
-
-            // URL für die heruntergeladene Datei abrufen
-            const downloadURL = await getDownloadURL(uploadTaskSnapshot.ref);
-
-            // Avatar-URL im User-Objekt aktualisieren
-            user.avatar = downloadURL;
-
-            await this.storage.updateUser(user.id!, user);
-
-            console.log('Updated user avatar URL:', downloadURL);
-          } catch (error) {
-            console.error('Error uploading image:', error);
-          }
-        }
-      } catch (error) {
-        console.error(`Error fetching or processing image: ${url}`, error);
-      } finally {
-        this.uploadLine.shift(); // URL aus der Warteschlange entfernen
-      }
+      await this.getGoogleImage();
     }
-    this.isUpdating = false; // Update abgeschlossen
+    this.isUpdating = false;
   }
 
+
+  async getGoogleImage() {
+    const url = this.uploadLine[0];
+    try {
+      const response = await fetch(url);
+      if (!response.ok) return;
+      const blob = await response.blob();
+      const user = this.storage.user.find(u => u.avatar === url);
+      if (user) await this.copyGoogleImageToStorage(blob, user);
+      this.uploadLine.shift();
+    } catch (error) {
+      return;
+    }
+  }
+
+
+  async copyGoogleImageToStorage(blob: Blob, user: UserInterface) {
+    try {
+      const contentType = blob.type;
+      const storageRef = this.getProfilePicStorageRef(user, contentType);
+      const uploadTaskSnapshot = await uploadBytesResumable(storageRef, blob, {
+        contentType,
+      });
+      const downloadURL = await getDownloadURL(uploadTaskSnapshot.ref);
+      user.avatar = downloadURL;
+      await this.storage.updateUser(user.id!, user);
+    } catch (error) {
+      return;
+    }
+  }
+
+
+  getProfilePicStorageRef(user: UserInterface, contentType: string) {
+    const extension = contentType.split('/')[1];
+    const fileName = `${user.id}.${extension}`;
+    const storageRef = ref(this.cloud, `profilePic/${user.id}/${fileName}`);
+    return storageRef;
+  }
 }
