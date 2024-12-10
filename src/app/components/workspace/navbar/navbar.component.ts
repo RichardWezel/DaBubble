@@ -2,6 +2,7 @@ import { Component, HostListener, ElementRef, inject, OnInit, OnDestroy } from '
 import { SearchComponent } from "./search/search.component";
 import { FirebaseStorageService } from '../../../shared/services/firebase-storage.service';
 import { FirebaseAuthService } from '../../../shared/services/firebase-auth.service';
+import { CloudStorageService } from '../../../shared/services/cloud-storage.service';
 import { OpenCloseDialogService } from '../../../shared/services/open-close-dialog.service';
 import { OpenUserProfileService } from '../../../shared/services/open-user-profile.service';
 import { SettingsComponent } from "./settings/settings.component";
@@ -18,6 +19,8 @@ export class NavbarComponent implements OnInit, OnDestroy{
   elementRef: ElementRef = inject(ElementRef);
   storage = inject(FirebaseStorageService);
   authService = inject(FirebaseAuthService);
+  cloud = inject(CloudStorageService);
+
   currentUserName: string = '';
   dropDownOpen: boolean = false;
   private subscriptions: Subscription = new Subscription();

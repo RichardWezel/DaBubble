@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Auth, GoogleAuthProvider, signInWithPopup, signOut } from '@angular/fire/auth';
 import { FirebaseStorageService } from './firebase-storage.service';
-import { doc, getDoc, onSnapshot, updateDoc } from '@angular/fire/firestore';
+import { doc, getDoc, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { CurrentUserInterface } from '../interfaces/current-user-interface';
 

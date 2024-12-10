@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { NgFor, NgIf, NgClass } from '@angular/common';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { NavigationService } from '../../../../shared/services/navigation.service';
+import { CloudStorageService } from '../../../../shared/services/cloud-storage.service';
 
 @Component({
   selector: 'app-dm-section',
@@ -13,6 +14,7 @@ import { NavigationService } from '../../../../shared/services/navigation.servic
 export class DmSectionComponent {
   storage = inject(FirebaseStorageService);
   navigationService = inject(NavigationService);
+  cloud = inject(CloudStorageService);
 
   constructor() { }
 
@@ -32,7 +34,7 @@ export class DmSectionComponent {
 
   getDmAvatar(dm: { contact: string, id: string, posts: any[] }) {
     let avatar: string = this.storage.user[this.storage.user.findIndex(user => user.id === dm.contact)]?.avatar;
-    avatar = avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + avatar : this.storage.openImage(avatar);
+    avatar = avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + avatar : this.cloud.openImage(avatar);
     return avatar;
   }
 

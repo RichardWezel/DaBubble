@@ -5,25 +5,27 @@ import { FormsModule } from '@angular/forms';
 import { NewMessageInputHeadComponent } from "./new-message-input-head/new-message-input-head.component"; // Importiere FormsModule
 import { ChannelMemberDialogComponent } from './channel-member-dialog/channel-member-dialog.component';
 import { UserInterface } from '../../../../shared/interfaces/user.interface';
+import { CloudStorageService } from '../../../../shared/services/cloud-storage.service';
 
 @Component({
   selector: 'app-channel-head',
   standalone: true,
   imports: [
     NgStyle,
-    FormsModule, 
-    NewMessageInputHeadComponent, 
+    FormsModule,
+    NewMessageInputHeadComponent,
     ChannelMemberDialogComponent,
-  CommonModule,
-NgFor,
-NgIf],
+    CommonModule,
+    NgFor,
+    NgIf],
   templateUrl: './channel-head.component.html',
   styleUrl: './channel-head.component.scss'
 })
 
-export class ChannelHeadComponent implements OnInit{
+export class ChannelHeadComponent implements OnInit {
   storage = inject(FirebaseStorageService);
-  channelUsers: string [] = [];
+  cloud = inject(CloudStorageService);
+  channelUsers: string[] = [];
 
   ngOnInit() {
     this.updateChannelUsers();

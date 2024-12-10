@@ -31,6 +31,9 @@ export class WorkspaceComponent {
 
   @HostListener('document:mousemove', ['$event'])
   @HostListener('document:keydown', ['$event'])
+  @HostListener('document:click', ['$event'])
+  @HostListener('document:keyup', ['$event'])
+
 
 
   onMouseMove(event: MouseEvent) {

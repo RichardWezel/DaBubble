@@ -1,6 +1,5 @@
 <section class="inputfield">
-  <div [class.op]="showTagSearch" [id]="thread ? 'inputfieldThread' : 'inputfield'" class="inputfield-textarea"
-    class="inputfield-textarea">
+  <div [class.op]="showTagSearch" [id]="thread ? 'inputfieldThread' : 'inputfield'" class="inputfield-textarea">
     <span [class.op]="showTagSearch" class="placeholder" [class.disabled]="startInput"
       [innerHTML]="thread ? 'Antworten...' : 'Schreibe an ' + storage.currentUser.currentChannelName"></span>
     <div [id]="thread ? 'messageContentThread' : 'messageContent'" (keyup)="checkInput($event)"
@@ -8,9 +7,10 @@
       appTextFormatter>
     </div>
   </div>
+  <app-upload></app-upload>
   <div class="inputfield-buttons">
     <div class="tags">
-      <div class="icon appendix">
+      <div class="icon appendix" (click)="toggleAppendix()">
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_813_12245)">
             <mask id="mask0_813_12245" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="3" y="3" width="24"

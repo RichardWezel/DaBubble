@@ -4,9 +4,9 @@ import { FirebaseStorageService } from '../../../shared/services/firebase-storag
 import { OpenUserProfileService } from '../../../shared/services/open-user-profile.service';
 import { UserInterface } from '../../../shared/interfaces/user.interface';
 import { Subscription } from 'rxjs';
+import { CloudStorageService } from '../../../shared/services/cloud-storage.service';
 import { OpenCloseDialogService } from '../../../shared/services/open-close-dialog.service';
 import { NgForm, FormsModule } from '@angular/forms';
-
 
 @Component({
   selector: 'app-user-profile',
@@ -16,6 +16,8 @@ import { NgForm, FormsModule } from '@angular/forms';
   styleUrl: './user-profile.component.scss'
 })
 export class UserProfileComponent implements OnInit, OnDestroy {
+  cloud = inject(CloudStorageService);
+
 
   @Input() channelUsers: string[] = [];
 
@@ -89,14 +91,14 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     return user ? (user.id === this.storage.currentUser.id ? `${user.name} (Du)` : user.name) : 'Unbekannt';
   }
 
-  findAvatar(userId: string): string {
+  async findAvatar(userId: string): Promise<string> {
     const avatar = this.storage.user.find(u => u.id === userId)?.avatar || '';
     return avatar.startsWith('profile-')
       ? `assets/img/profile-pictures/${avatar}`
-      : this.storage.openImage(avatar);
+      : await this.cloud.openImage(avatar);
   }
 
-  writeMessageToUser (userName: string) {
+  writeMessageToUser(userName: string) {
     this.openUserProfileService.showSubmittedDirectMessage(userName);
     this.closeDialog();
     this.openCloseDialogService.close('channelMember')

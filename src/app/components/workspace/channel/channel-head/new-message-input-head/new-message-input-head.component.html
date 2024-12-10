@@ -1,14 +1,8 @@
 <div class="newMessage">
-    <p>Neue Nachricht</p>
-    <div class="autocomplete-container">
-      <div class="suggestion" [innerHTML]="displayText"></div>
-      <input 
-        #inputField 
-        type="text" 
-        [(ngModel)]="userInput"
-        (input)="onInput()"
-        (keydown)="onKeyDown($event)"
-        autocomplete="off"
-        placeholder="An: #channel, oder @jemand oder E-Mail Adresse">
-    </div>
+  <p>Neue Nachricht</p>
+  <div class="autocomplete-container">
+    <div class="suggestion" [innerHTML]="displayText"></div>
+    <input id="newMessageInput" #inputField type="text" [(ngModel)]="userInput" (input)="onInput()"
+      (keydown)="onKeyDown($event)" autocomplete="off" placeholder="An: #channel, oder @jemand oder E-Mail Adresse">
   </div>
+</div>

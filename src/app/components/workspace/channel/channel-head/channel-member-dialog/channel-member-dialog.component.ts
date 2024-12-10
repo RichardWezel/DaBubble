@@ -2,6 +2,7 @@ import { NgFor, NgIf } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
 import { OpenUserProfileService } from '../../../../../shared/services/open-user-profile.service';
+import { CloudStorageService } from '../../../../../shared/services/cloud-storage.service';
 import { OpenCloseDialogService } from '../../../../../shared/services/open-close-dialog.service';
 import { Subscription } from 'rxjs';
 
@@ -15,7 +16,8 @@ import { Subscription } from 'rxjs';
 export class ChannelMemberDialogComponent {
 
   @Input() channelUsers: string[] = []; 
-  storage = inject(FirebaseStorageService)
+  storage = inject(FirebaseStorageService);
+  cloud = inject(CloudStorageService);
   isOpen: boolean = false;
 
   private subscriptions: Subscription = new Subscription();
@@ -37,7 +39,7 @@ export class ChannelMemberDialogComponent {
       this.subscriptions.unsubscribe();
     }
 
-
+  
   /**
    * The user ID of the user clicked on is transferred via the open-user-service
    *  and saved in a property in the service called userIDSource. 
@@ -51,7 +53,6 @@ export class ChannelMemberDialogComponent {
       this.openCloseDialogService.open('userProfile');
       console.log('User ', userID, ' is clicked to open the respective dialogue!');
     }
-   
   }
 
   public openDialog() {
@@ -69,9 +70,9 @@ export class ChannelMemberDialogComponent {
 
   findAvatar(userId: string): string {
     const avatar = this.storage.user.find(u => u.id === userId)?.avatar || '';
-    return avatar.startsWith('profile-') 
-      ? `assets/img/profile-pictures/${avatar}` 
-      : this.storage.openImage(avatar);
+    return avatar.startsWith('profile-')
+      ? `assets/img/profile-pictures/${avatar}`
+      : this.cloud.openImage(avatar);
   }
 
 }

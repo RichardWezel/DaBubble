@@ -30,7 +30,6 @@ export class EmojiSelectorComponent {
   constructor() { }
 
   addEmojiToMessage(event: any) {
-    this.message += event.emoji.native;
     this.inputField?.addEmoji(event.emoji.native);
   }
 

@@ -27,6 +27,7 @@ export class TextFormatterDirective {
     message.innerHTML += formattedText + '';
     message.innerHTML = this.clearLineBreak(message);
     this.closeSearch();
+    this.inputElement.setFocus();
   }
 
 
@@ -38,8 +39,7 @@ export class TextFormatterDirective {
    */
   clearLineBreak(message: HTMLElement) {
     let messageContent = message.innerHTML;
-    let lastIndex = messageContent.lastIndexOf('<br>');
-    if (lastIndex !== -1) messageContent = messageContent.slice(0, lastIndex);
+    messageContent = messageContent.replaceAll('<br>', '');
     return messageContent;
   }
 
