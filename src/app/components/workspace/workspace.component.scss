@@ -1,4 +1,5 @@
 @import 'variables';
+@import 'mixins';
 
 main {
     height: 100%;
@@ -14,6 +15,21 @@ main {
         height: calc(100% - 94px);
         overflow-x: hidden;
 
+        app-workspace-menu {
+            transform-origin: center;
+            position: absolute;
+            top: 0;
+            left: -24px;
+            transform: translateX(-100%);
+            transition: all 125ms ease-in-out;
+
+            &.openWorkspaceMenu {
+                position: relative;
+                left: 0;
+                transform: translateX(0);
+            }
+        }
+
         app-channel {
             flex: 1;
             transition: all 125ms ease-in-out;
@@ -21,7 +37,6 @@ main {
 
         app-thread {
             transform-origin: center;
-            width: 480px;
             position: absolute;
             top: 0;
             right: -24px;
@@ -107,5 +122,55 @@ main {
     100% {
         background-color: $secondaryColor;
         box-shadow: 20px 0 $primaryColor, -20px 0 $secondaryColor;
+    }
+}
+
+aside {
+    @include dja;
+    flex-direction: column-reverse;
+    gap: 10px;
+    position: absolute;
+    left: 0;
+    top: 581px;
+    z-index: 9;
+    background-color: #fff;                  
+    padding: 23px 14px 23px 14px;
+    border-radius: 0px 30px 30px 0px;
+    box-shadow: 4px 4px 7px 0px #00000033;
+
+    &:hover {
+        cursor: pointer;
+        color: $thirdColor;
+        .label {
+            font-weight: 700;
+        }
+        .icon {
+            svg {
+                path {
+                    stroke: $thirdColor;
+                }
+                rect {
+                    stroke: $thirdColor;
+                }
+            }
+        }
+    }
+
+
+    .label {
+        writing-mode: vertical-lr;
+        font-family: "Nunito";
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 24px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+    }
+
+    .icon {
+        @include dja;
+        width: 32px;
+        height: 32px;
     }
 }

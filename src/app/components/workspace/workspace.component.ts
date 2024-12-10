@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, OnInit } from '@angular/core';
+import { Component, HostListener, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ChannelComponent } from './channel/channel.component';
@@ -8,6 +8,8 @@ import { FirebaseStorageService } from '../../shared/services/firebase-storage.s
 import { AddChannelDialogComponent } from "./workspace-menu/channel-section/add-channel-dialog/add-channel-dialog.component";
 import { UserProfileComponent } from "./user-profile/user-profile.component";
 import { FirebaseAuthService } from '../../shared/services/firebase-auth.service';
+import { OpenCloseDialogService } from '../../shared/services/open-close-dialog.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-workspace',
@@ -26,23 +28,41 @@ import { FirebaseAuthService } from '../../shared/services/firebase-auth.service
 export class WorkspaceComponent {
   storage = inject(FirebaseStorageService);
   authService = inject(FirebaseAuthService);
+  wsmOpen: boolean = false;
+  private subscriptions: Subscription = new Subscription();
 
-  constructor() { }
+  constructor( public openCloseDialogService: OpenCloseDialogService) { }
+
+  ngOnInit(): void {
+    const sub = this.openCloseDialogService
+      .isDialogOpen('workspaceMenu')
+      ?.subscribe((status) => {
+        this.wsmOpen = status;
+      });
+    if (sub) this.subscriptions.add(sub);
+ 
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
 
   @HostListener('document:mousemove', ['$event'])
   @HostListener('document:keydown', ['$event'])
   @HostListener('document:click', ['$event'])
   @HostListener('document:keyup', ['$event'])
 
-
-
   onMouseMove(event: MouseEvent) {
     this.authService.onlineStatusTimer(true);
   }
 
-
   onKeydown(event: KeyboardEvent) {
     this.authService.onlineStatusTimer(true);
+  }
+
+  toggleMenu(): void {
+    this.wsmOpen = !this.wsmOpen;
+
   }
 
 }

@@ -11,6 +11,7 @@ export class OpenCloseDialogService {
   private dialogs: { [key: string]: BehaviorSubject<boolean> } = {
     userProfile: new BehaviorSubject<boolean>(false),
     channelMember: new BehaviorSubject<boolean>(false),
+    workspaceMenu: new BehaviorSubject<boolean>(true)
     // Fügen Sie hier weitere Dialoge hinzu
   };
 
