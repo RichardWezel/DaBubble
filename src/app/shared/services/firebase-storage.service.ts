@@ -15,7 +15,6 @@ import { BehaviorSubject } from 'rxjs';
 export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   firestore: Firestore = inject(Firestore);
   uid = inject(UidService);
-
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
   CurrentUserChannel: ChannelInterface[] = [];
