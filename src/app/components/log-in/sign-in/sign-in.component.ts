@@ -11,5 +11,10 @@ import { ChooseAvatarCardComponent } from "./choose-avatar-card/choose-avatar-ca
   styleUrl: './sign-in.component.scss'
 })
 export class SignInComponent {
-  generateAccount: boolean = true;
+  generateAccount: boolean = true; // Initialzustand: Konto erstellen
+
+  updateAccountState(event: boolean) {
+    console.log('updateAccountState wurde aufgerufen mit:', event);
+    this.generateAccount = event;
+  }
 }

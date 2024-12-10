@@ -1,69 +1,61 @@
-.dialog-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Hintergrund unscharf gemacht */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: fadeIn 0.3s ease-in-out;
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center; 
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out; 
+}
+
+.dialog-box {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 400px;
+  transform: translateY(100%); 
+  animation: slideUpToCenter 0.5s ease-out forwards; 
+}
+
+.dialog-button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dialog-button:hover {
+  background-color: #0056b3;
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  .dialog-container {
-    background-color: white;
-    border-radius: 8px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    animation: scaleIn 0.3s ease-in-out;
+  to {
+    opacity: 1;
   }
-  
-  .dialog-button {
-    background-color: #444DF2; 
-    color: white; 
-    border: none; 
-    border-radius: 24px; 
-    padding: 12px 24px; 
-    font-size: 16px; 
-    font-weight: 600; 
-    cursor: pointer; 
-    transition: background-color 0.3s ease, transform 0.2s ease; 
-  
-    &:hover {
-      background-color: #3a43e2; 
-      transform: scale(1.05); 
-    }
-  
-    &:active {
-      background-color: #2e35c2; 
-      transform: scale(1); 
-    }
-  
-    &:disabled {
-      background-color: #b2b2f0; 
-      cursor: not-allowed; 
-      opacity: 0.6; 
-    }
+}
+
+
+@keyframes slideUpToCenter {
+  from {
+    transform: translateY(100%); 
+    opacity: 0;
   }
-  
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+  to {
+    transform: translateY(0); 
+    opacity: 1;
   }
-  
-  @keyframes scaleIn {
-    from {
-      transform: scale(0.8);
-    }
-    to {
-      transform: scale(1);
-    }
-  }
-  
+}

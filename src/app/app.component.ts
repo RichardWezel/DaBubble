@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    console.log('AppComponent ngOnInit aufgerufen');
+    // console.log('AppComponent ngOnInit aufgerufen');
     (window as any).status = this.status.bind(this);
   }
 

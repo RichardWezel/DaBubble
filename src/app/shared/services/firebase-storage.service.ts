@@ -1,4 +1,4 @@
-import { inject, Injectable, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
+import { inject, Injectable, OnChanges, OnDestroy, OnInit, SimpleChanges, NgZone } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
 import { collection, doc, addDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { UserInterface } from '../interfaces/user.interface';
@@ -7,7 +7,7 @@ import { PostInterface } from '../interfaces/post.interface';
 import { CurrentUserInterface } from '../interfaces/current-user-interface';
 import { UidService } from './uid.service';
 import { CloudStorageService } from './cloud-storage.service';
-
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -16,43 +16,78 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   firestore: Firestore = inject(Firestore);
   uid = inject(UidService);
 
-
-
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
   CurrentUserChannel: ChannelInterface[] = [];
   currentUser: CurrentUserInterface = { name: '', email: '', avatar: '', online: false, dm: [], id: '' };
-  authUid = sessionStorage.getItem("authUid") || 'oYhCXFUTy11sm1uKLK4l';
+  authUid = sessionStorage.getItem("authUid") || 't3O7pW0P7QrjD26Bd6DZ';
   doneLoading: boolean = true;
+  private currentUserSubject = new BehaviorSubject<CurrentUserInterface>(this.currentUser);
+  currentUser$ = this.currentUserSubject.asObservable();
 
   unsubUsers: () => void = () => { };
   unsubChannels: () => void = () => { };
-
+  unsubCurrentUser?: () => void;
 
   /**
-   * Initializes the service by subscribing to channel and user collections
-   * and fetching the current user.
+  * Initializes the service by subscribing to channel and user collections
+  * and fetching the current user.
   */
-  constructor() {
-    this.unsubChannels = this.getChannelCollection()
+  constructor(private ngZone: NgZone) {
+    this.unsubChannels = this.getChannelCollection();
     this.unsubUsers = this.getUserCollection();
+
+    const authUid = this.authUid;
+    if (authUid && authUid !== 't3O7pW0P7QrjD26Bd6DZ') {
+      this.currentUser.id = authUid;
+      this.unsubCurrentUser = this.getCurrentUserDocument();
+    } else if (authUid === 't3O7pW0P7QrjD26Bd6DZ') {
+      // Gast-User behandeln
+      this.currentUser.id = authUid;
+      this.unsubCurrentUser = this.getCurrentUserDocument();
+      console.log('Gast-User eingeloggt:', this.currentUser.id);
+    } else {
+      console.warn('Kein gültiger authUid gefunden.');
+    }
+
+    console.log('current User Observable:', this.currentUser$);
   }
 
-
+  getCurrentUserDocument() {
+    if (!this.currentUser.id) {
+      console.warn('currentUser.id ist nicht gesetzt.');
+      return;
+    }
+    return onSnapshot(doc(this.firestore, "user", this.currentUser.id), (docSnapshot) => {
+      this.ngZone.run(() => {
+        if (docSnapshot.exists()) {
+          const userData = docSnapshot.data() as UserInterface;
+          this.currentUser = { ...userData, id: docSnapshot.id };
+          console.log("currentUser aktualisiert:", this.currentUser);
+          this.currentUserSubject.next(this.currentUser); // Emit the new value
+        } else {
+          console.warn('currentUser-Dokument existiert nicht.');
+        }
+      });
+    });
+  }
+  
   /**
  * Cleans up all active subscriptions when the service is destroyed.
  */
   async ngOnDestroy(): Promise<void> {
     this.unsubUsers();
     this.unsubChannels();
+    if (this.unsubCurrentUser) {
+      this.unsubCurrentUser();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
   }
 
   ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
+   
   }
 
   /**
@@ -67,7 +102,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         channelData.id = doc.id;
         this.channel.push(channelData);
       });
-      console.log("Channel Collection: ", this.channel)
+      // console.log("Channel Collection: ", this.channel)
     });
   }
 
@@ -80,7 +115,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     this.CurrentUserChannel = this.channel.filter(channel =>
       this.checkCurrentUserIsMemberOfChannel(channel.user)
     );
-    console.log("Current User Channels: ", this.CurrentUserChannel);
+    // console.log("Current User Channels: ", this.CurrentUserChannel);
     this.doneLoading = true;
   }
 
@@ -100,10 +135,9 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         userData.id = doc.id;
         this.user.push(userData);
       });
-      console.log("User Collection: ", this.user);
+      // console.log("User Collection: ", this.user);
     });
   }
-
 
   /**
   * Determines the current channel for the user based on session storage, channels, or DMs.
@@ -144,7 +178,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     const dm = userData.dm.find(dm => dm.contact === userData.id);
     return dm?.id;
   }
-
 
   /**
    * Adds a new user to the Firestore "user" collection after Firebase Auth registration.
@@ -189,23 +222,14 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     }
   }
 
-
-
-
-  /**
+ /**
    * Updates an existing user's profile in the Firestore "user" collection after sending the edit user profile form.
    * @param userId - The ID of the user to update.
    * @param userData - An object containing the updated user data.
    */
-  async updateUser(userId: string, userData: UserInterface) {
-    await updateDoc(doc(this.firestore, "user", userId), {
-      name: userData.name,
-      email: userData.email,
-      avatar: userData.avatar,
-      online: userData.online,
-      dm: userData.dm
-    })
-  }
+ async updateUser(userId: string, userData: Partial<UserInterface>) {
+  await updateDoc(doc(this.firestore, "user", userId), userData);
+}
 
   /**
    * Updates an existing channel in the Firestore "channel" collection after sending the edit channel form.
@@ -320,7 +344,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     };
   }
 
-
   async updateDmPost(userId: string, contact: string, postId: string, newPost: PostInterface) {
     let sendUser = this.user[this.user.findIndex(user => user.id === userId)];
     let newDm = sendUser.dm ? sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)] : null;
@@ -338,5 +361,3 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     }
   }
 
-
-}

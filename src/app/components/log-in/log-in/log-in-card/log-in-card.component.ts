@@ -29,8 +29,12 @@ export class LogInCardComponent {
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
   loginData = {
     email: '',
-    password: ''
+    password: '',
   };
+
+  passwordVisible: boolean = false;
+  errorMessage: string = '';
+  isLoading: boolean = false;
 
   @Output() login = new EventEmitter<boolean>();
   @Output() newAccount = new EventEmitter<boolean>();
@@ -40,32 +44,62 @@ export class LogInCardComponent {
     this.newAccount.emit(false);
   }
 
+  togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
+  }
+
   checkLogin(ngForm: NgForm) {
     if (ngForm.invalid) {
-      // console.error("Formular ungültig. Bitte alle Felder ausfüllen.");
+      this.errorMessage = "Bitte füllen Sie alle Felder korrekt aus.";
       return;
     }
-    console.log("Login gestartet...");
+    this.errorMessage = ''; // Fehlermeldung zurücksetzen
 
+    console.log("Login gestartet...");
     signInWithEmailAndPassword(this.auth, this.loginData.email, this.loginData.password)
       .then(async (userCredential) => {
         const user = userCredential.user;
+
+        // Überprüfen, ob die E-Mail-Adresse verifiziert ist
+        if (!user.emailVerified) {
+          this.errorMessage = "Ihre E-Mail-Adresse ist noch nicht verifiziert. Bitte überprüfen Sie Ihren Posteingang.";
+          return; // Stoppt die weitere Verarbeitung
+        }
+
         console.log("Benutzer eingeloggt:", user);
 
-        sessionStorage.setItem("authUid", user.uid); // UID speichern
+        // Speichern der Auth-UID
+        sessionStorage.setItem("authUid", user.uid);
         this.storage.authUid = user.uid;
-        this.authService.getCurrentUser();  // Benutzerinformationen laden
-        this.storage.getCurrentUserChannelCollection(); // Benutzerkanäle laden
+
+        // Benutzerinformationen laden
+        this.authService.getCurrentUser();
+        this.storage.getCurrentUserChannelCollection();
+
         console.log("Benutzerkanäle geladen:", this.storage.CurrentUserChannel);
 
+        // Benutzerstatus auf "online" setzen
         await this.authService.setCurrentUserOnline(user.uid);
 
         this.router.navigate(['/workspace']);
       })
+      
       .catch((error) => {
-        console.error("Fehler beim Einloggen:", error.message);
-        alert("Anmeldung fehlgeschlagen! Überprüfe die Anmeldedaten.");
+        switch (error.code) {
+          case 'auth/user-not-found':
+            this.errorMessage = "Anmeldung fehlgeschlagen! Überprüfen Sie Ihre Anmeldedaten.";
+            break;
+          case 'auth/wrong-password':
+            this.errorMessage = "Das eingegebene Passwort ist falsch. Bitte versuchen Sie es erneut.";
+            break;
+          case 'auth/too-many-requests':
+            this.errorMessage = "Zu viele Anmeldeversuche. Bitte versuchen Sie es später erneut.";
+            break;
+          default:
+            this.errorMessage = "Es gibt kein Konto mit dieser E-Mail-Adresse. Bitte registrieren Sie sich zuerst.";
+        }
       });
+      
   }
 
   getGoogleLoginErrorMessage(errorCode: string): string {

@@ -32,5 +32,4 @@ export class LogInComponent {
       this.showLoading = false;
     }, 3000);
   }
-
 }

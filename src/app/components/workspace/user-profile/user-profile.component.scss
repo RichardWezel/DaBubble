@@ -7,11 +7,13 @@ main {
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: rgba($color: #000000, $alpha: 0.2);
+    background-color: rgba($color: #000000, $alpha: 0.4);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+
+    
 
     .dialog {
         padding: 40px;
@@ -21,10 +23,16 @@ main {
         z-index: 1000;
         display: flex;
         justify-content: flex-start;
-        
         flex-direction: column;
         gap: 45px;
         width: 500px;
+
+        &.currentUserPosition {
+        position: fixed;
+        right: 20px;
+        top: 119px;
+        border-radius: 30px 0 30px 30px;
+        }
 
         .head {
             display: flex;
@@ -68,6 +76,7 @@ main {
             height: 200px;
             width: 100%;
             @include dja;
+
             img {
                 border-radius: 100%;
                 height: 100%;
@@ -76,128 +85,290 @@ main {
             
         }
 
-        .user-name {
+        .show {
+            gap: 38px;
             display: flex;
-            gap: 15px;
             flex-direction: column;
-
-            .name {
-                font-family: "Nunito";
-                font-size: 32px;
-                font-weight: 700;
-                line-height: 43.65px;
-                text-align: left;
-                text-underline-position: from-font;
-                text-decoration-skip-ink: none;
-            }
-
-            .online {
+            .user-name {
                 display: flex;
-                align-items: center;
                 gap: 15px;
-
-                .offline-status {
-                    color: $textGrey !important;
+                flex-direction: column;
+    
+                .nameAndEdit {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+    
+                    .name {
+                        font-family: "Nunito";
+                        font-size: 32px;
+                        font-weight: 700;
+                        line-height: 43.65px;
+                        text-align: left;
+                        text-underline-position: from-font;
+                        text-decoration-skip-ink: none;
+                    }
+    
+                    .edit {
+                        font-family: "Nunito";
+                        font-size: 18px;
+                        font-weight: 600;
+                        line-height: 24.55px;
+                        text-align: left;
+                        text-underline-position: from-font;
+                        text-decoration-skip-ink: none;
+                        color: $thirdColor;
+                        background: unset;
+                        border: unset;
+    
+                        &:hover {
+                            font-weight: 700;
+                            cursor: pointer;
+                        }
+                    }
                 }
-
-                .offline-dott {
-                    background-color: $textGrey !important;
-                }
-
-                .dott {
-                    width: 16px;
-                    height: 16px;
-                    border-radius: 100%;
-                    background-color: $successColor;
-                }
-
-                .status {
-                    color: $successColor;
-                    font-family: "Nunito";
-                    font-size: 20px;
-                    font-weight: 400;
-                    line-height: 27.28px;
-                    text-align: left;
-                    text-underline-position: from-font;
-                    text-decoration-skip-ink: none;
-
+            
+                
+    
+                .online {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+    
+                    .offline-status {
+                        color: $textGrey !important;
+                    }
+    
+                    .offline-dott {
+                        background-color: $textGrey !important;
+                    }
+    
+                    .dott {
+                        width: 16px;
+                        height: 16px;
+                        border-radius: 100%;
+                        background-color: $successColor;
+                    }
+    
+                    .status {
+                        color: $successColor;
+                        font-family: "Nunito";
+                        font-size: 20px;
+                        font-weight: 400;
+                        line-height: 27.28px;
+                        text-align: left;
+                        text-underline-position: from-font;
+                        text-decoration-skip-ink: none;
+    
+                    }
                 }
             }
-        }
-
-        .user-email {
-            display: flex;
-            gap: 15px;
-            flex-direction: column;
-
-            .label {
+    
+            .user-email {
                 display: flex;
-                gap: 20px;
+                gap: 15px;
+                flex-direction: column;
 
-                .icon {
-                    width: 30px;
-                    height: 30px;
-                    @include dja();
+                .label {
+                    display: flex;
+                    gap: 20px;
+    
+                    .icon {
+                        width: 30px;
+                        height: 30px;
+                        @include dja();
+                    }
+    
+                    .label-name {
+                        font-family: "Nunito";
+                        font-size: 20px;
+                        font-weight: 700;
+                        line-height: 27.28px;
+                        text-align: left;
+                        text-underline-position: from-font;
+                        text-decoration-skip-ink: none;
+                    }
                 }
-
-                .label-name {
-                    font-family: "Nunito";
-                    font-size: 20px;
-                    font-weight: 700;
-                    line-height: 27.28px;
-                    text-align: left;
-                    text-underline-position: from-font;
-                    text-decoration-skip-ink: none;
-                }
-            }
-
-            .email {
-                font-family: "Nunito";
-                font-size: 18px;
-                font-weight: 400;
-                line-height: 24.55px;
-                text-align: left;
-                text-underline-position: from-font;
-                text-decoration-skip-ink: none;
-                color: #1381FF;
-                padding-left: 50px;
-            }
-        }
-
-        .newMessage-btn {
-            display: flex;
-            justify-content: center;
-
-            button {
-                @include dja();
-                background-color: $primaryColor;
-                padding: 12px 25px 12px;
-                gap: 10px;
-                border-radius: 50px;
-                color: #FFFFFF;
-                border: unset;
-
-                &:hover {
-                    cursor: pointer;
-                    background-color: $secondaryColor;
-                }
-
-                .message-icon {
-                    width: 24px;
-                    height: 24px;
-                }
-
-                .message {
+    
+                .email {
                     font-family: "Nunito";
                     font-size: 18px;
-                    font-weight: 700;
+                    font-weight: 400;
                     line-height: 24.55px;
                     text-align: left;
                     text-underline-position: from-font;
                     text-decoration-skip-ink: none;
-
+                    color: #1381FF;
+                    padding-left: 50px;
+                }
+            }
+    
+            .newMessage-btn {
+                display: flex;
+                justify-content: center;
+    
+                button {
+                    @include dja();
+                    background-color: $primaryColor;
+                    padding: 12px 25px 12px;
+                    gap: 10px;
+                    border-radius: 50px;
+                    color: #FFFFFF;
+                    border: unset;
+    
+                    &:hover {
+                        cursor: pointer;
+                        background-color: $secondaryColor;
+                    }
+    
+                    .message-icon {
+                        width: 24px;
+                        height: 24px;
+                    }
+    
+                    .message {
+                        font-family: "Nunito";
+                        font-size: 18px;
+                        font-weight: 700;
+                        line-height: 24.55px;
+                        text-align: left;
+                        text-underline-position: from-font;
+                        text-decoration-skip-ink: none;
+    
+                    }
                 }
             }
         }
+        
+        .edit {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+
+            .edit-name-section {
+                display: flex;
+                gap: 7px;
+                flex-direction: column;
+                .edit-name-label {
+                    display: flex;
+                    gap: 20px;
+                    .icon-person {
+                        width: 30px;
+                        height: 30px;
+                        @include dja();
+                    }
+                    .label {
+                        font-family: "Nunito";
+                        font-size: 20px;
+                        font-weight: 700;
+                        line-height: 27.28px;
+                        text-align: left;
+                        text-underline-position: from-font;
+                        text-decoration-skip-ink: none;
+                    }
+                }
+
+                .edit-name-input {
+                    display: flex;
+                    padding: 15px 20px 15px;
+                    gap: 10px;
+                    border-radius: 30px;
+                    border: 1px solid #ADB0D9;
+                    color: #1381FF;
+                    font-family: "Nunito";
+                    font-size: 18px;
+                    font-weight: 500;
+                    line-height: 21.6px;
+                    text-align: left;
+                    text-underline-position: from-font;
+                    text-decoration-skip-ink: none;
+
+                }
+            }
+
+            .edit-email-section {
+                display: flex;
+                gap: 7px;
+                flex-direction: column;
+                .edit-name-label{
+                    display: flex;
+                    gap: 20px;
+                    .icon-person {
+                        width: 30px;
+                        height: 30px;
+                        @include dja();
+                    }
+                    .label-name {
+                        font-family: "Nunito";
+                        font-size: 20px;
+                        font-weight: 700;
+                        line-height: 27.28px;
+                        text-align: left;
+                        text-underline-position: from-font;
+                        text-decoration-skip-ink: none;
+                    }
+                }
+                .edit-name-input {
+                    display: flex;
+                    padding: 15px 20px 15px;
+                    gap: 10px;
+                    border-radius: 30px;
+                    border: 1px solid #ADB0D9;
+                    color: #1381FF;
+                    font-family: "Nunito";
+                    font-size: 18px;
+                    font-weight: 500;
+                    line-height: 21.6px;
+                    text-align: left;
+                    text-underline-position: from-font;
+                    text-decoration-skip-ink: none;
+
+                }
+            }
+
+            .button-section {
+                @include dja();
+                gap: 32px;
+
+                button {
+                    padding: 12px 25px 12px;
+                    border-radius: 50px;
+                    border: 1px solid #797EF3;
+                    font-family: "Nunito";
+                    font-size: 18px;
+                    font-weight: 700;
+                    line-height: 24.55px;
+                    text-align: center;
+                    text-underline-position: from-font;
+                    text-decoration-skip-ink: none;
+                    background-color: unset;
+                }
+
+                .cancel-btn {
+                    color: #797EF3;
+
+                    &:hover {
+                        color: #FFFFFF;
+                        background-color: #797EF3;
+                        cursor: pointer;
+                    }
+                }
+
+                .save-btn {
+                    color: #FFFFFF;
+                    background-color: #797EF3;
+
+                    &:hover {
+                      
+                        background-color: #ADB0D9;
+                        cursor: pointer;
+                    }
+                }
+
+            }
+
+        
+        }
+        
     }
 }

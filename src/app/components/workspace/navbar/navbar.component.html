@@ -4,7 +4,7 @@
   </div>
   <app-search></app-search>
   <div class="current-user" (click)="dropDownOpen = !dropDownOpen">
-    <h3>{{storage.currentUser.name}}</h3>
+    <h3>{{currentUserName}}</h3>
     <img class="user-avatar"
       [src]=" storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + storage.currentUser.avatar : cloud.openImage(storage.currentUser.avatar)"
       alt="">
@@ -20,9 +20,6 @@
         </g>
       </svg>
     </div>
-    <div [class.open]="dropDownOpen" class="user-dropdown-menu">
-      <p>Profil</p>
-      <p (click)="authService.logout()">Logout</p>
-    </div>
+    <app-settings [class.open]="dropDownOpen"></app-settings>
   </div>
 </section>

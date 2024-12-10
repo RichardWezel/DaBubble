@@ -4,13 +4,15 @@ import { CommonModule } from '@angular/common';
 import { SignInService } from '../../../../shared/services/sign-in.service';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
-import { Auth, createUserWithEmailAndPassword, getAuth } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, getAuth, sendEmailVerification } from '@angular/fire/auth';
 import { NavigationService } from '../../../../shared/services/navigation.service';
+import { EmailSentDialogComponent } from '../../log-in/send-email-card/email-sent-dialog/email-sent-dialog.component';
+
 
 @Component({
   selector: 'app-choose-avatar-card',
   standalone: true,
-  imports: [CardComponent, CommonModule, FormsModule],
+  imports: [CardComponent, CommonModule, FormsModule, EmailSentDialogComponent],
   templateUrl: './choose-avatar-card.component.html',
   styleUrl: './choose-avatar-card.component.scss'
 })
@@ -24,7 +26,10 @@ export class ChooseAvatarCardComponent {
   navigationService: NavigationService = inject(NavigationService);
   @Output() generateAccount = new EventEmitter<boolean>();
 
-
+  isLoading: boolean = false; // Ladezustand
+  errorMessage: string = '';  // Fehlermeldung
+  successMessage: string = ''; // Erfolgsmeldung
+  showDialog: boolean = false; // Dialog-Steuerung
   /**
    * This method navigates back to the sign-in-card component.
    * For that, it emits an event to the sign-in component.
@@ -87,20 +92,58 @@ export class ChooseAvatarCardComponent {
    * When the authentication and the new user are created the signinData gets cleared and the user gets routed to the login.
    */
   async setNewUser(): Promise<void> {
+    const auth = getAuth();
+    this.isLoading = true; // Ladezustand aktivieren
+    this.errorMessage = ''; // Fehler zurücksetzen
+    this.successMessage = ''; // Erfolgsmeldung zurücksetzen
+
+    // Sicherheitsüberprüfung: Sind alle Felder ausgefüllt?
+    if (!this.signInService.signInData.name || !this.signInService.signInData.email || !this.signInService.signInData.password) {
+      this.errorMessage = 'Bitte füllen Sie alle erforderlichen Felder aus.';
+      this.isLoading = false;
+      return;
+    }
+
     try {
-      const authUid = await this.setUserInFirebaseAuthentication();
-      if (authUid) {
-        const userData = this.getSignInData();
-        this.storage.addUser(authUid, userData);
-        this.clearSignInServiceData();
-        this.goBackToLogin();
+      // Firebase-Benutzer erstellen
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        this.signInService.signInData.email,
+        this.signInService.signInData.password
+      );
+      const uid = userCredential.user.uid;
+
+      await this.storage.addUser(uid, {
+        name: this.signInService.signInData.name,
+        email: this.signInService.signInData.email,
+        avatar: this.signInService.signInData.img,
+      });
+
+      // Bestätigungs-E-Mail senden
+      try {
+        await sendEmailVerification(userCredential.user);
+      } catch (emailError) {
+        console.error('Fehler beim Senden der Bestätigungs-E-Mail:', emailError);
+        this.errorMessage = 'Die Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.';
+        return; // Abbrechen, wenn die E-Mail nicht gesendet werden konnte
       }
+
+      // Dialog anzeigen
+      this.showDialog = true;
+
     } catch (error) {
-      console.error("Fehler beim Anlegen eines neuen Benutzers:", error);
+      console.error('Fehler beim Erstellen des Kontos:', error);
+      this.errorMessage = 'Fehler: ' + (error as any).message;
+    } finally {
+      this.isLoading = false; // Ladezustand deaktivieren
     }
   }
 
-  
+  handleDialogClose() {
+    this.showDialog = false; // Dialog schließen
+    this.navigationService.navigateTo('/login'); // Weiterleitung zur Login-Seite
+  }
+
   /**
    * This method creates a new user in the authentication from Firebase with the inserted email and password.
    * The user uid gets returned as authUid to create a new user document with this id.
@@ -150,6 +193,28 @@ export class ChooseAvatarCardComponent {
     };
   }
 
+  async confirmAvatarSelection() {
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      if (!user) {
+        throw new Error('Benutzer ist nicht eingeloggt.');
+      }
+
+      // Bestätigungs-E-Mail senden
+      await sendEmailVerification(user);
+
+      // Erfolgsmeldung anzeigen
+      this.successMessage = `Eine Bestätigungs-E-Mail wurde an ${user.email} gesendet. Bitte überprüfen Sie Ihren Posteingang.`;
+
+      // Optional: Weiterleitung oder andere Aktionen
+      console.log('Avatar-Auswahl abgeschlossen und Bestätigungs-E-Mail gesendet.');
+    } catch (error) {
+      console.error('Fehler beim Senden der Bestätigungs-E-Mail:', error);
+      this.errorMessage = 'Die Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.';
+    }
+  }
 
   /**
    * Routes the user to the login component.
