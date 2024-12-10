@@ -12,7 +12,7 @@
 
         <section class="user-avatar">
             <img class="user-avatar"
-            [src]=" storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + storage.currentUser.avatar : storage.openImage(storage.currentUser.avatar)"
+            [src]=" storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + storage.currentUser.avatar : cloud.openImage(storage.currentUser.avatar)"
             alt="">
         </section>
 
