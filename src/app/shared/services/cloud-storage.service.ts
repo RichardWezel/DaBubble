@@ -133,4 +133,15 @@ export class CloudStorageService {
     const storageRef = ref(this.cloud, `profilePic/${user.id}/${fileName}`);
     return storageRef;
   }
+
+
+  async uploadProfilePicture(uid: string, file: File) {
+    const contentType = file.type;
+    const extension = contentType.split('/')[1];
+    const fileName = `${uid}.${extension}`;
+    const storageRef = ref(this.cloud, `profilePic/${uid}/${fileName}`);
+    const uploadTaskSnapshot = await uploadBytesResumable(storageRef, file);
+    const downloadURL = await getDownloadURL(uploadTaskSnapshot.ref);
+    return downloadURL;
+  }
 }

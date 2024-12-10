@@ -71,7 +71,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
       });
     });
   }
-  
+
   /**
  * Cleans up all active subscriptions when the service is destroyed.
  */
@@ -87,7 +87,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   }
 
   ngOnInit(): void {
-   
+
   }
 
   /**
@@ -222,14 +222,14 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     }
   }
 
- /**
-   * Updates an existing user's profile in the Firestore "user" collection after sending the edit user profile form.
-   * @param userId - The ID of the user to update.
-   * @param userData - An object containing the updated user data.
-   */
- async updateUser(userId: string, userData: Partial<UserInterface>) {
-  await updateDoc(doc(this.firestore, "user", userId), userData);
-}
+  /**
+    * Updates an existing user's profile in the Firestore "user" collection after sending the edit user profile form.
+    * @param userId - The ID of the user to update.
+    * @param userData - An object containing the updated user data.
+    */
+  async updateUser(userId: string, userData: Partial<UserInterface>) {
+    await updateDoc(doc(this.firestore, "user", userId), userData);
+  }
 
   /**
    * Updates an existing channel in the Firestore "channel" collection after sending the edit channel form.
@@ -361,3 +361,4 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     }
   }
 
+}

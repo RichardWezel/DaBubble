@@ -7,6 +7,7 @@ import { FirebaseStorageService } from '../../../../shared/services/firebase-sto
 import { Auth, createUserWithEmailAndPassword, getAuth, sendEmailVerification } from '@angular/fire/auth';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 import { EmailSentDialogComponent } from '../../log-in/send-email-card/email-sent-dialog/email-sent-dialog.component';
+import { CloudStorageService } from '../../../../shared/services/cloud-storage.service';
 
 
 @Component({
@@ -19,6 +20,7 @@ import { EmailSentDialogComponent } from '../../log-in/send-email-card/email-sen
 export class ChooseAvatarCardComponent {
   pictures = ['assets/img/profile-pictures/profile-1.png', 'assets/img/profile-pictures/profile-2.png', 'assets/img/profile-pictures/profile-3.png', 'assets/img/profile-pictures/profile-4.png', 'assets/img/profile-pictures/profile-5.png', 'assets/img/profile-pictures/profile-6.png'];
   signInService: SignInService = inject(SignInService);
+  cloud: CloudStorageService = inject(CloudStorageService);
   currentProfilePicture = this.signInService.signInData.img || 'assets/img/profile-basic.png';
   avatarSelected = this.signInService.signInData.img != '';
   storage: FirebaseStorageService = inject(FirebaseStorageService);
@@ -30,6 +32,9 @@ export class ChooseAvatarCardComponent {
   errorMessage: string = '';  // Fehlermeldung
   successMessage: string = ''; // Erfolgsmeldung
   showDialog: boolean = false; // Dialog-Steuerung
+  uploadFile: File | null = null;
+
+
   /**
    * This method navigates back to the sign-in-card component.
    * For that, it emits an event to the sign-in component.
@@ -68,20 +73,9 @@ export class ChooseAvatarCardComponent {
     if (input.files && input.files.length) {
       const file = input.files[0];
       const reader = new FileReader();
-
-      reader.onload = () => {
-        if (reader.result) {
-          this.currentProfilePicture = reader.result as string;
-          this.signInService.signInData.img = reader.result as string;
-          this.avatarSelected = true;
-        }
-      };
-
-      reader.onerror = () => {
-        console.error('Fehler beim Lesen der Datei');
-      };
-
+      reader.onload = () => this.chosePicture(reader.result as string);
       reader.readAsDataURL(file);
+      this.uploadFile = file;
     }
   }
 
@@ -112,6 +106,8 @@ export class ChooseAvatarCardComponent {
         this.signInService.signInData.password
       );
       const uid = userCredential.user.uid;
+
+      this.signInService.signInData.img = await this.cloud.uploadProfilePicture(uid, this.uploadFile!);
 
       await this.storage.addUser(uid, {
         name: this.signInService.signInData.name,
