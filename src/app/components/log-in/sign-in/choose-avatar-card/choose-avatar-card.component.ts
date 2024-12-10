@@ -72,6 +72,7 @@ export class ChooseAvatarCardComponent {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length) {
       const file = input.files[0];
+
       const reader = new FileReader();
       reader.onload = () => this.chosePicture(reader.result as string);
       reader.readAsDataURL(file);

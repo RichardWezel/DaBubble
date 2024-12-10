@@ -13,13 +13,16 @@
         <form (ngSubmit)="setNewUser()" #avatarForm="ngForm">
             <div class="chosen-picture-container">
                 <img src="{{ currentProfilePicture }}">
+                @if (uploadFile && uploadFile.size > 2000000) {
+                    <div class="overlay">Bild zu groß</div>
+                }
             </div>
 
             <h3>{{ signInService.signInData.name }}</h3>
             <p class="instruction left">Aus der Liste wählen</p>
             <div class="profile-picture-container">
                 @for (picture of pictures; track picture) {
-                <img (click)="chosePicture(picture)" src="{{ picture }}">
+                    <img (click)="chosePicture(picture)" src="{{ picture }}">
                 }
             </div>
             <div class="own-picture-container">
@@ -38,7 +41,8 @@
             </div>
 
             <div class="button-container">
-                <button type="submit" class="mainButton buttonPrimary" [disabled]="!avatarSelected || successMessage">
+                <button type="submit" class="mainButton buttonPrimary"
+                    [disabled]="!avatarSelected || successMessage || (uploadFile && uploadFile.size > 2000000)">
                     {{ isLoading ? 'Wird geladen...' : 'Weiter' }}
                 </button>
             </div>

@@ -24,6 +24,20 @@
             border: 8px solid $lightGrey;
         }
     }
+
+    .overlay {
+        background-color: rgba($color: $errorColor, $alpha: 0.5);
+        color: $textBlack;
+        font-size: 24px;
+        font-weight: 700;
+        width: 168px;
+        height: 168px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        border-radius: 100%;
+    }
 }
 
 h3 {
