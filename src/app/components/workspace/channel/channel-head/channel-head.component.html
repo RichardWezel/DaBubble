@@ -38,7 +38,7 @@
       <ng-container *ngFor="let user of channelUser(); let i = index">
         <ng-container *ngIf="i < 6">
           <img class="user-avatar"
-            [src]="findAvatar(user).startsWith('profile-') ? 'assets/img/profile-pictures/' + findAvatar(user) : storage.openImage(findAvatar(user))"
+            [src]="findAvatar(user).startsWith('profile-') ? 'assets/img/profile-pictures/' + findAvatar(user) : cloud.openImage(findAvatar(user))"
             alt="user-avatar" [ngStyle]="{'margin-right': channelUser().length === i + 1 ? '0px' : '-24px' }">
         </ng-container>
       </ng-container>
@@ -68,7 +68,7 @@
   @if (findChannel() === 'dm') {
     <div class="dm-name">
       <img class="user-avatar"
-        [src]="userAvatar().startsWith('profile-') ? 'assets/img/profile-pictures/' + userAvatar() : storage.openImage(userAvatar())"
+        [src]="userAvatar().startsWith('profile-') ? 'assets/img/profile-pictures/' + userAvatar() : cloud.openImage(userAvatar())"
         alt="user">
       <p>{{ userName() }}</p>
     </div>

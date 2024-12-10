@@ -6,7 +6,7 @@
   <div class="current-user" (click)="dropDownOpen = !dropDownOpen">
     <h3>{{storage.currentUser.name}}</h3>
     <img class="user-avatar"
-      [src]=" storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + storage.currentUser.avatar : storage.openImage(storage.currentUser.avatar)"
+      [src]=" storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + storage.currentUser.avatar : cloud.openImage(storage.currentUser.avatar)"
       alt="">
     <div class="dropdown-arrow" [class.rotate]="dropDownOpen">
       <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">

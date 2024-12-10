@@ -2,6 +2,7 @@ import { NgFor, NgIf } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
 import { OpenUserProfileService } from '../../../../../shared/services/open-user-profile.service';
+import { CloudStorageService } from '../../../../../shared/services/cloud-storage.service';
 
 @Component({
   selector: 'app-channel-member-dialog',
@@ -12,11 +13,12 @@ import { OpenUserProfileService } from '../../../../../shared/services/open-user
 })
 export class ChannelMemberDialogComponent {
 
-  @Input() channelUsers: string[] = []; 
-  storage = inject(FirebaseStorageService)
+  @Input() channelUsers: string[] = [];
+  storage = inject(FirebaseStorageService);
+  cloud = inject(CloudStorageService);
   isChannelMemberDialogVisible = false;
 
-  constructor(private openUserProfileService: OpenUserProfileService) {}
+  constructor(private openUserProfileService: OpenUserProfileService) { }
 
   /**
    * The user ID of the user clicked on is transferred via the open-user-service
@@ -26,7 +28,7 @@ export class ChannelMemberDialogComponent {
    * @param {string} userID - ID of clicked User
    */
   async openUserProfile(userID: string) {
-    await  this.openUserProfileService.updateUserId(userID)
+    await this.openUserProfileService.updateUserId(userID)
     this.openUserProfileService.updateToggle(true);
     this.closeDialog();
     console.log('User ', userID, ' is clicked to open the respective dialogue!');
@@ -47,9 +49,9 @@ export class ChannelMemberDialogComponent {
 
   findAvatar(userId: string): string {
     const avatar = this.storage.user.find(u => u.id === userId)?.avatar || '';
-    return avatar.startsWith('profile-') 
-      ? `assets/img/profile-pictures/${avatar}` 
-      : this.storage.openImage(avatar);
+    return avatar.startsWith('profile-')
+      ? `assets/img/profile-pictures/${avatar}`
+      : this.cloud.openImage(avatar);
   }
 
 }

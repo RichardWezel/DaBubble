@@ -6,6 +6,7 @@ import { ChannelInterface } from '../interfaces/channel.interface';
 import { PostInterface } from '../interfaces/post.interface';
 import { CurrentUserInterface } from '../interfaces/current-user-interface';
 import { UidService } from './uid.service';
+import { CloudStorageService } from './cloud-storage.service';
 
 
 @Injectable({
@@ -14,6 +15,7 @@ import { UidService } from './uid.service';
 export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   firestore: Firestore = inject(Firestore);
   uid = inject(UidService);
+
 
 
   user: UserInterface[] = [];
@@ -334,13 +336,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         })
       }
     }
-  }
-
-
-  openImage(url: string) {
-    const img = new Image();
-    img.src = url;
-    return img.src;
   }
 
 

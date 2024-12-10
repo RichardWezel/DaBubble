@@ -2,6 +2,7 @@ import { Component, HostListener, ElementRef, inject } from '@angular/core';
 import { SearchComponent } from "./search/search.component";
 import { FirebaseStorageService } from '../../../shared/services/firebase-storage.service';
 import { FirebaseAuthService } from '../../../shared/services/firebase-auth.service';
+import { CloudStorageService } from '../../../shared/services/cloud-storage.service';
 
 
 @Component({
@@ -15,6 +16,8 @@ export class NavbarComponent {
   elementRef: ElementRef = inject(ElementRef);
   storage = inject(FirebaseStorageService);
   authService = inject(FirebaseAuthService);
+  cloud = inject(CloudStorageService);
+
 
   dropDownOpen: boolean = false;
 

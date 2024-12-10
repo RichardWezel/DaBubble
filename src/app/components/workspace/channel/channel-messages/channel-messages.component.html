@@ -45,7 +45,7 @@
         <div class="empty">
           <div class="header">
             <img class="user-avatar"
-              [src]="userAvatar().startsWith('profile-') ? 'assets/img/profile-pictures/' + userAvatar() : storage.openImage(userAvatar())"
+              [src]="userAvatar().startsWith('profile-') ? 'assets/img/profile-pictures/' + userAvatar() : cloud.openImage(userAvatar())"
               alt="user">
             <p>{{ userName() }}</p>
           </div>

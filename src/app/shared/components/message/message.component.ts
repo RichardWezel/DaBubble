@@ -7,6 +7,7 @@ import { NgStyle } from '@angular/common';
 import { EmojiSelectorComponent } from '../emoji-selector/emoji-selector.component';
 import { EmojiService } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { DomSanitizer } from '@angular/platform-browser';
+import { CloudStorageService } from '../../services/cloud-storage.service';
 
 
 @Component({
@@ -22,6 +23,7 @@ export class MessageComponent implements OnInit, OnChanges {
   emojiSelector = inject(EmojiSelectorComponent);
   emoji = inject(EmojiService);
   sanitizer = inject(DomSanitizer);
+  cloud = inject(CloudStorageService);
 
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
   @Input() threadHead: boolean = false;

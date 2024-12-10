@@ -51,7 +51,7 @@
 
   <section class="avatar">
     <img
-      [src]="authorAvatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + authorAvatar : storage.openImage(authorAvatar)"
+      [src]="authorAvatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + authorAvatar : cloud.openImage(authorAvatar)"
       alt="avatar">
   </section>
 
