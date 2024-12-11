@@ -4,6 +4,10 @@
 
 .width-container {
     width: 606px;
+
+    @media (max-width: 790px) {
+        width: 100%;
+    }
 }
 
 form {
@@ -28,6 +32,11 @@ form {
     color: $secondaryColor;
     border: none;
 
+    @media (max-width: 510px) {
+        font-size: 14px;
+        line-height: 17.6px;
+    }
+
     &:hover {
         background-color: $backgroundColor;
         font-weight: 600;
@@ -50,6 +59,10 @@ form {
     .or {
         padding: 5px 15px;
         box-sizing: border-box;
+
+        @media (max-width: 510px) {
+            font-size: 14px;
+        }
     }
 }
 
@@ -62,25 +75,19 @@ form {
     line-height: 21.6px;
     color: $primaryColor;
 
+    @media (max-width: 510px) {
+        font-size: 14px;
+        line-height: 17.6px;
+    }
+
     &:hover {
-        font-size: 18px;
         font-weight: 700;
-        line-height: 21.6px;
         border: 1px solid $primaryColor;
     }
 
     &:focus {
         border: 1px solid $textGrey;
-        font-size: 18px;
-        font-weight: 400;
-        line-height: 21.6px;
     }
-}
-
-.hovering-google-input {
-    font-size: 18px;
-    font-weight: 700 !important;
-    line-height: 21.6px;
 }
 
 .btns-container {
@@ -88,18 +95,18 @@ form {
     justify-content: center;
     gap: 30px;
 
-    button:first-child {
-        width: 137px;
-        height: 49px;
-        font-size: 18px;
-        font-weight: 700;
+    @media (max-width: 510px) {
+        gap: 10px;
     }
 
-    button:nth-child(2) {
-
+    button {
         height: 49px;
         font-size: 18px;
         font-weight: 700;
+
+        @media (max-width: 510px) {
+            font-size: 14px;
+        }
     }
 }
 

@@ -12,6 +12,14 @@
     display: flex;
     flex-direction: column;
     gap: 30px;
+
+    @media (max-width: 650px) {
+      padding: 50px 15px;
+    }
+
+    @media (max-width: 510px) {
+      gap: 15px;
+    }
 }
 
 h2 {
@@ -21,6 +29,10 @@ h2 {
   color: $primaryColor;
   margin-top: 0;
   text-align: center;
+
+  @media (max-width: 510px) {
+    font-size: 30px;
+  }
 }
 
 .arrow-back {
@@ -32,6 +44,11 @@ h2 {
   font-weight: 400;
   line-height: 24px;
   text-align: center;
+
+  @media (max-width: 510px) {
+    font-size: 16px;
+    line-height: 20px;
+  }
 }
 
 .input-login {
@@ -47,6 +64,13 @@ h2 {
     font-size: 18px;
     font-weight: 500;
     line-height: 21.6px;
+
+    @media (max-width: 510px) {
+      height: 48px;
+      padding: 15px 16px 15px 60px;
+      font-size: 14px;
+      line-height: 17px;
+    }
   
     &::placeholder {
       color: $textGrey;
@@ -71,6 +95,10 @@ h2 {
 .login-label {
   position: relative;
   height: 60px;
+
+  @media (max-width: 510px) {
+    height: 48px;
+  }
   
   svg {
     width: 24px;
@@ -79,6 +107,10 @@ h2 {
     top: calc(50% - 12px);
     left: 32px;
     cursor: pointer;
+
+    @media (max-width: 510px) {
+      left: 16px;
+    }
   }
 
   .error-text-input {
@@ -88,6 +120,12 @@ h2 {
     color: $errorColor;
     position: absolute;
     top: 60px;
+
+    @media (max-width: 510px) {
+      top: 48px;
+      font-size: 10px;
+      line-height: 15px;
+    }
   }
 }
 

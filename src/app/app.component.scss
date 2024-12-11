@@ -6,4 +6,8 @@ main {
     flex-direction: column;
     background-color: $backgroundColor;
     padding: 25px 20px 25px;
+
+    @media (max-width: 510px) {
+        padding: 25px 10px;
+    }
 }
