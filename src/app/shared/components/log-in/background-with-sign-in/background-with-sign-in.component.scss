@@ -48,6 +48,11 @@ header {
 .main-content {
     display: flex;
     justify-content: center;
+
+    @media (max-width: 1200px) {
+        padding-top: 10px;
+        box-sizing: border-box;
+    }
 }
 
 footer {
