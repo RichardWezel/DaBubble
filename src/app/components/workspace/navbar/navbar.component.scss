@@ -1,9 +1,11 @@
 @import 'variables';
 
 .navbar {
-  display: grid;
-  grid-template-columns: 366px 1fr 480px;
-  align-items: center;
+  // display: grid;
+  // grid-template-columns: 366px 1fr 480px;
+  // align-items: center;
+  display: flex;
+  justify-content: space-between;
   padding: 0 24px 24px;
   width: 100%;
 }
