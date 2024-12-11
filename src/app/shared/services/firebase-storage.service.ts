@@ -52,6 +52,37 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     console.log('current User Observable:', this.currentUser$);
   }
 
+  getAllThreads(): { thread: PostInterface, parent: ChannelInterface | UserInterface }[] {
+    const threads: { thread: PostInterface, parent: ChannelInterface | UserInterface }[] = [];
+  
+    // Durch alle Channels und deren Posts iterieren
+    this.channel.forEach(channel => {
+      channel.posts?.forEach(post => {
+        if (post.thread && post.threadMsg) {
+          post.threadMsg.forEach(threadPost => {
+            threads.push({ thread: threadPost, parent: channel });
+          });
+        }
+      });
+    });
+  
+    // Durch alle DMs und deren Posts iterieren
+    this.user.forEach(user => {
+      user.dm.forEach(dm => {
+        dm.posts.forEach(post => {
+          if (post.thread && post.threadMsg) {
+            post.threadMsg.forEach(threadPost => {
+              threads.push({ thread: threadPost, parent: user });
+            });
+          }
+        });
+      });
+    });
+  
+    return threads;
+  }
+
+
   getCurrentUserDocument() {
     if (!this.currentUser.id) {
       console.warn('currentUser.id ist nicht gesetzt.');
