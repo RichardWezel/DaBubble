@@ -9,15 +9,20 @@ import { PasswordChangedDialogComponent } from '../password-changed-dialog/passw
 import { DialogService } from '../../../../shared/services/dialog-service.service';
 import { ValidatorService } from '../../../../shared/services/validator-service.service';
 import { NavigationService } from '../../../../shared/services/navigation.service';
+import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
+import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
+import { EmailVerifiedComponent } from '../../sign-in/email-verified/email-verified.component';
 
 @Component({
   selector: 'app-reset-password-card',
   standalone: true,
-  imports: [CardComponent, FormsModule, CommonModule ],
+  imports: [CardComponent, FormsModule, CommonModule],
   templateUrl: './reset-password-card.component.html',
   styleUrl: './reset-password-card.component.scss',
 })
 export class ResetPasswordCardComponent implements OnInit {
+  storage = inject(FirebaseStorageService);
+  authService = inject(FirebaseAuthService);
   navigationService: NavigationService = inject(NavigationService);
   route = inject(ActivatedRoute);
   auth = getAuth();
@@ -29,6 +34,7 @@ export class ResetPasswordCardComponent implements OnInit {
 
   @Output() login = new EventEmitter<boolean>();
 
+  passwordVisible = false;
   mailData: string = '';
   passwordData: string = '';
   confirmPasswordData: string = '';
@@ -37,9 +43,17 @@ export class ResetPasswordCardComponent implements OnInit {
   isLoading: boolean = true;
   errorMessage: string = '';
 
+  constructor() {
+    console.log('Current User:', this.storage.currentUser);
+    console.log('Auth UID:', this.storage.authUid);
+  }
+
+  
+
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
       this.oobCode = params['oobCode'];
+      console.log('oobCode received:', this.oobCode); // Debugging
       if (!this.oobCode) {
         this.errorMessage = 'Ungültiger oder abgelaufener Link.';
         this.isLoading = false;
@@ -47,13 +61,22 @@ export class ResetPasswordCardComponent implements OnInit {
       }
 
       verifyPasswordResetCode(this.auth, this.oobCode)
-        .then(() => (this.isLoading = false))
-        .catch(() => {
+        .then(() => {
+          console.log('oobCode verified successfully'); // Debugging
+          this.isLoading = false;
+        })
+        .catch((error) => {
+          console.error('Verification error:', error); // Debugging
           this.errorMessage = 'Ungültiger oder abgelaufener Link.';
           this.isLoading = false;
         });
     });
   }
+
+  togglePasswordVisibility() {
+    this.passwordVisible = !this.passwordVisible;
+  }
+
 
   comparePasswords() {
     this.samePasswords = this.passwordData === this.confirmPasswordData;

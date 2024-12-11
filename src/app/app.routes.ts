@@ -10,6 +10,7 @@ import { ResetPasswordCardComponent } from './components/log-in/reset-password/r
 import { SendEmailCardComponent } from './components/log-in/log-in/send-email-card/send-email-card.component';
 import { EmailVerifiedComponent } from './components/log-in/sign-in/email-verified/email-verified.component';
 
+
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' }, // Umleitung zur Login-Seite
     { path: 'login', component: LogInComponent },
