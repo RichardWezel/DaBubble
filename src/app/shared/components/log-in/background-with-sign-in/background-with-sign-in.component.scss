@@ -1,7 +1,7 @@
 @import 'variables';
 
 .background-container {
-    padding: 28px;
+    padding: 28px 0;
     box-sizing: border-box;
     font-weight: 400;
 }
@@ -27,6 +27,12 @@ button {
 header {
     display: flex;
     justify-content: space-between;
+    padding: 0px 28px;
+    box-sizing: border-box;
+
+    @media (max-width: 790px) {
+        padding: 0;
+    }
 
     img {
         width: 242.11px;
@@ -49,7 +55,7 @@ header {
     display: flex;
     justify-content: center;
 
-    @media (max-width: 1200px) {
+        @media (max-width: 1200px) {
         padding-top: 10px;
         box-sizing: border-box;
     }
