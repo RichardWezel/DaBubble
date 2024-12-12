@@ -14,10 +14,6 @@ import { SearchComponent } from '../navbar/search/search.component';
 })
 export class ChannelComponent {
   storage = inject(FirebaseStorageService);
-
-
+  
   constructor() { }
-
-
-
 }

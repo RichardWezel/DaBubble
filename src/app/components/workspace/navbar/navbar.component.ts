@@ -1,5 +1,4 @@
 import { Component, HostListener, ElementRef, inject, OnInit, OnDestroy } from '@angular/core';
-import { SearchComponent } from "./search/search.component";
 import { FirebaseStorageService } from '../../../shared/services/firebase-storage.service';
 import { FirebaseAuthService } from '../../../shared/services/firebase-auth.service';
 import { CloudStorageService } from '../../../shared/services/cloud-storage.service';
@@ -11,7 +10,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [SearchComponent, SettingsComponent],
+  imports: [SettingsComponent],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })

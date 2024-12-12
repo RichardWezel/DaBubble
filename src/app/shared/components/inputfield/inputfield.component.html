@@ -2,10 +2,17 @@
   <div [class.op]="showTagSearch" [id]="thread ? 'inputfieldThread' : 'inputfield'" class="inputfield-textarea">
     <span [class.op]="showTagSearch" class="placeholder" [class.disabled]="startInput"
       [innerHTML]="thread ? 'Antworten...' : 'Schreibe an ' + storage.currentUser.currentChannelName"></span>
-    <div [id]="thread ? 'messageContentThread' : 'messageContent'" (keyup)="checkInput($event)"
-      (keydown)="checkKey($event)" class="message-content" contentEditable="true" [innerHTML]="message"
+      <div 
+      #messageContent
+      [id]="thread ? 'messageContentThread' : 'messageContent'" 
+      (keyup)="onKeyUp($event)"
+      (keydown)="onKeyDown($event)" 
+      class="message-content" 
+      contentEditable="true" 
       appTextFormatter>
     </div>
+    
+    
   </div>
   <app-upload></app-upload>
   <div class="inputfield-buttons">
