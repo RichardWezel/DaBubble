@@ -32,7 +32,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   inputEvent = inject(InputEventsService);
 
   @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective;
-  @ViewChild('messageContent', { static: false }) messageContent!: ElementRef<HTMLDivElement>;
+  // @ViewChild('messageContent', { static: false }) messageContent!: ElementRef<HTMLDivElement>;
 
 
   @Input() thread: boolean = false;
@@ -99,7 +99,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   setFocus() {
     let focusElement = this.getFocusElement();
     if (!focusElement) return;
-    if (document.activeElement?.id.includes('messageContent') || document.activeElement?.id.includes('newMessageInput')) {
+    if (document.activeElement?.id.includes('messageContent') || document.activeElement?.id.includes('newMessageInput') || document.activeElement?.id.includes('searchbar')) {
       focusElement = document.activeElement as HTMLElement;
     }
     focusElement.focus();
@@ -123,22 +123,22 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     (focusElement as HTMLInputElement).selectionEnd = (focusElement as HTMLInputElement).value.length;
   }
 
-  onKeyUp(event: KeyboardEvent) {
-    const content = this.messageContent.nativeElement.innerHTML;
-    this.message = content;
-    this.startInput = content.trim() !== '' && content !== '<br>';
-    // Entferne den setFocus-Aufruf hier, um den Cursor nicht zu stören
-  }
-  
-  onKeyDown(event: KeyboardEvent) {
-    const targetElement = event.target as HTMLElement;
-    if (this.inputEvent.isInsideTagSearch(targetElement)) {
-      this.handleTagSearch(event);
-    }
-    if (this.inputEvent.isInsideMessageContent(targetElement)) {
-      this.handleMessage(event);
-    }
-  }
+  // onKeyUp(event: KeyboardEvent) {
+  //   const content = this.messageContent.nativeElement.innerHTML;
+  //   this.message = content;
+  //   this.startInput = content.trim() !== '' && content !== '<br>';
+  //   // Entferne den setFocus-Aufruf hier, um den Cursor nicht zu stören
+  // }
+
+  // onKeyDown(event: KeyboardEvent) {
+  //   const targetElement = event.target as HTMLElement;
+  //   if (this.inputEvent.isInsideTagSearch(targetElement)) {
+  //     this.handleTagSearch(event);
+  //   }
+  //   if (this.inputEvent.isInsideMessageContent(targetElement)) {
+  //     this.handleMessage(event);
+  //   }
+  // }
 
   /**
    * Retrieves the HTML element that should receive focus based on the current state.
@@ -177,25 +177,25 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   }
 
 
-  // @HostListener('document:keydown', ['$event'])
+  @HostListener('document:keydown', ['$event'])
+  checkKey(event: KeyboardEvent) {
+    const targetElement = event.target as HTMLElement;
+    if (this.inputEvent.isInsideTagSearch(targetElement)) this.handleTagSearch(event);
+    if (this.inputEvent.isInsideMessageContent(targetElement)) this.handleMessage(event);
+  }
+
   // checkKey(event: KeyboardEvent) {
   //   const targetElement = event.target as HTMLElement;
   //   if (this.inputEvent.isInsideTagSearch(targetElement)) this.handleTagSearch(event);
   //   if (this.inputEvent.isInsideMessageContent(targetElement)) this.handleMessage(event);
   // }
 
-  checkKey(event: KeyboardEvent) {
-    const targetElement = event.target as HTMLElement;
-    if (this.inputEvent.isInsideTagSearch(targetElement)) this.handleTagSearch(event);
-    if (this.inputEvent.isInsideMessageContent(targetElement)) this.handleMessage(event);
-  }
-  
-  checkInput(event: KeyboardEvent) {
-    let message = this.elementRef.nativeElement.querySelector('.message-content');
-    this.message = message.innerHTML;
-    this.startInput = (message.innerHTML === '' || message.innerHTML === '<br>') ? false : true;
-    // this.setFocus();
-  }
+  // // checkInput(event: KeyboardEvent) {
+  // //   let message = this.elementRef.nativeElement.querySelector('.message-content');
+  // //   this.message = message.innerHTML;
+  // //   this.startInput = (message.innerHTML === '' || message.innerHTML === '<br>') ? false : true;
+  // //   // this.setFocus();
+  // // }
 
 
   /**
@@ -248,13 +248,13 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   }
 
 
-  // @HostListener('document:keyup', ['$event'])
-  // checkInput(event: KeyboardEvent) {
-  //   let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
-  //   this.message = message.innerHTML;
-  //   this.startInput = (message.innerHTML === '' || message.innerHTML === '<br>') ? false : true;
-  //   this.setFocus();
-  // }
+  @HostListener('document:keyup', ['$event'])
+  checkInput(event: KeyboardEvent) {
+    let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
+    this.message = message.innerHTML;
+    this.startInput = (message.innerHTML === '' || message.innerHTML === '<br>') ? false : true;
+    this.setFocus();
+  }
 
 
   /**
@@ -390,6 +390,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     this.showTagSearch = false;
     this.showEmojiSelector = false;
     this.showUpload = false;
+    this.setFocus();
   }
 
 }

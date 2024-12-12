@@ -3,7 +3,7 @@
     <img src="assets/img/dabubble-logo.png" alt="">
   </div>
   <div class="current-user" (click)="dropDownOpen = !dropDownOpen">
-    <h3>{{currentUserName}}</h3>
+    <h3>{{storage.currentUser.name}}</h3>
     <img class="user-avatar"
       [src]=" storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + storage.currentUser.avatar : cloud.openImage(storage.currentUser.avatar)"
       alt="">
