@@ -57,6 +57,13 @@ header {
     button {
         width: 153px;
         height: 42px;
+
+        @media (max-width: 510px) {
+            font-size: 14px;
+            padding: 8px 12px;
+            height: 40px;
+            width: 100%;
+        }
     }
 }
 
@@ -75,6 +82,10 @@ footer {
     justify-content: center;
     gap: 16px;
     margin-top: 40px;
+
+    @media (max-width: 510px) {
+        font-size: 14px;
+    }
 
     button:first-child {
         width: 121px;
