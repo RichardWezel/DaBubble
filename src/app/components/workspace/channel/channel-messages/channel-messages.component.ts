@@ -21,7 +21,6 @@ export class ChannelMessagesComponent extends ChannelHeadComponent {
     super();
   }
 
-
   /**
    * Vergleicht die Channel-IDs im Storage mit der ID in currentUser.currentChannel und 
    * speichert das posts-Array des zuerst gefundenen Channels in die Variable getPosts.

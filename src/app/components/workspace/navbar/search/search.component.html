@@ -1,6 +1,6 @@
 <main class="searchbar">
   <section class="input">
-    <input id="searchbar" type="search" placeholder="Devspace durchsuchen" [(ngModel)]="inputContent">
+    <input id="searchbar" type="search" placeholder="Devspace durchsuchen" [(ngModel)]="userInput" (input)="onInput()">
     <div class="search">
       <svg width="35" height="36" viewBox="0 0 35 36" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -9,11 +9,11 @@
       </svg>
     </div>
   </section>
-  <section class="result-container">
-    <ul *ngIf="inputContent.length >= 2">
-      <li>
-        <div class="origin">{{inputContent}} </div>
-        <!-- <div class="text">Ich habe schon enmal mit dem <span class="searchTerm">style</span> angefangen!</div> -->
+  <section class="result-container" *ngIf="userInput.length >= 2">
+    <ul>
+      <li *ngFor="let result of searchResults">
+        <div class="origin">{{ result }}</div>
+        <!-- Weitere Inhalte -->
       </li>
     </ul>
   </section>
