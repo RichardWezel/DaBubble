@@ -108,7 +108,10 @@ export class ChooseAvatarCardComponent {
       );
       const uid = userCredential.user.uid;
 
-      this.signInService.signInData.img = await this.cloud.uploadProfilePicture(uid, this.uploadFile!);
+      if (this.uploadFile) {
+        this.signInService.signInData.img = await this.cloud.uploadProfilePicture(uid, this.uploadFile);
+        this.uploadFile = null;
+      }
 
       await this.storage.addUser(uid, {
         name: this.signInService.signInData.name,
