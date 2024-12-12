@@ -37,6 +37,11 @@ header {
     img {
         width: 242.11px;
         height: 70px;
+
+        @media (max-width: 510px) {
+            width: 100px;
+            height: calc(70px / 242.11 * 100);
+        }
     }
 }
 
@@ -59,11 +64,19 @@ footer {
     button:first-child {
         width: 121px;
         height: 42px;
+
+        @media (max-width: 510px) {
+            font-size: 14px;
+        }
     }
 
     button:nth-child(2) {
         width: 133px;
         height: 42px;
+
+        @media (max-width: 510px) {
+            font-size: 14px;
+        }
     }
 }
 

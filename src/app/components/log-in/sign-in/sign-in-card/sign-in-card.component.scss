@@ -3,6 +3,10 @@
 
 .width-container {
     width: 606px;
+
+    @media (max-width: 790px) {
+        width: 100%;
+    }
 }
 
 form {
@@ -108,6 +112,10 @@ form {
 .text-privacy-policy {
     display: flex;
     align-items: center;
+
+    @media (max-width: 510px) {
+        font-size: 12px;
+    }
 }
 
 .privacy-policy-btn {
@@ -139,5 +147,13 @@ form {
             font-size: 14px;
             margin-bottom: 10px;
         }
+    }
+}
+
+.next-button {
+    @media (max-width: 510px) {
+        font-size: 14px;
+        padding: 0px 20px;
+        height: 40px;
     }
 }

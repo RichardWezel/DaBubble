@@ -13,6 +13,10 @@
     flex-direction: column;
     gap: 30px;
 
+    @media (max-width: 790px) {
+      position: relative;
+    }
+
     @media (max-width: 650px) {
       padding: 50px 15px;
     }
@@ -32,11 +36,8 @@ h2 {
 
   @media (max-width: 510px) {
     font-size: 30px;
+    line-height: 40px;
   }
-}
-
-.arrow-back {
-  @include icon-style;
 }
 
 .instruction {
@@ -130,7 +131,11 @@ h2 {
 }
 
 .title-container {
-  position: relative;;
+  position: relative;
+
+  @media (max-width: 790px) {
+    position: unset;
+  }
 }
 
 .arrow-back {
@@ -138,6 +143,7 @@ h2 {
   width: 40px;
   border-radius: 50%;
   @include dja;
+  @include icon-style;
   &:hover {
     background-color: $backgroundColor;
     cursor: pointer;
@@ -151,4 +157,9 @@ h2 {
   position: absolute;
   top: calc(50% - 20px);
   left: -24px;
+
+  @media (max-width: 790px) {
+    top: 12px;
+    left: 12px;
+  }
 }

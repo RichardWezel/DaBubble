@@ -3,6 +3,10 @@
 
 .width-container {
     width: 698px;
+
+    @media (max-width: 790px) {
+        width: 100%;
+    }
 }
 
 .form-container {
@@ -22,6 +26,14 @@
         width: 100%;
         display: flex;
         justify-content: end;
+
+        button {
+            @media (max-width: 510px) {
+                font-size: 14px;
+                padding: 0px 20px;
+                height: 40px;
+            }
+        }
     }
 
 }
