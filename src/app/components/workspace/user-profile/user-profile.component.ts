@@ -17,29 +17,34 @@ import { NgForm, FormsModule } from '@angular/forms';
 })
 export class UserProfileComponent implements OnInit, OnDestroy {
   cloud = inject(CloudStorageService);
+  storage = inject(FirebaseStorageService);
 
 
   @Input() channelUsers: string[] = [];
 
-  storage = inject(FirebaseStorageService)
   isOpen: boolean = false;
   userId: string = "";
   userObject: UserInterface | undefined = undefined;
   mode: string = "show";
   email: string = '';
   name: string = '';
+  avatar: string = '';
+  currentProfilePicture: string = '';
+  uploadFile: File | null = null;
+  avatarChanged: boolean = false;
 
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     public openCloseDialogService: OpenCloseDialogService,
-    public openUserProfileService: OpenUserProfileService) {}
+    public openUserProfileService: OpenUserProfileService) {
+  }
 
-    isCurrentUser(user: string) {
-      return user === this.storage.currentUser.name
+  isCurrentUser(user: string) {
+    return user === this.storage.currentUser.name
 
-    }
-  
+  }
+
   ngOnInit(): void {
     const sub = this.openCloseDialogService
       .isDialogOpen('userProfile')
@@ -69,6 +74,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   }
 
   changeToEditMode() {
+    this.currentProfilePicture = this.storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + this.storage.currentUser.avatar : this.cloud.openImage(this.storage.currentUser.avatar);
     this.mode = "edit"
   }
 
@@ -109,12 +115,20 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       console.error('Kein Benutzerobjekt gefunden.');
       return;
     }
-  
+
+    if (this.avatarChanged && this.uploadFile && this.storage.currentUser.id) {
+      this.avatar = await this.cloud.uploadProfilePicture(this.storage.currentUser.id, this.uploadFile);
+      this.uploadFile = null;
+    } else {
+      this.avatar = this.storage.currentUser.avatar;
+    }
+
     const updatedUser: Partial<UserInterface> = {
       name: this.name,
-      email: this.email
+      email: this.email,
+      avatar: this.avatar
     };
-  
+
     await this.storage.updateUser(this.userId, updatedUser as UserInterface)
       .then(() => {
         console.log('Benutzerprofil erfolgreich aktualisiert.');
@@ -125,5 +139,42 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       .catch(error => {
         console.error('Fehler beim Aktualisieren des Benutzerprofils:', error);
       });
+  }
+
+
+  /**
+ * This method selects a picture from the file explorer.
+ * @param event - The file input change event that contains the selected file.
+ */
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length) {
+      const file = input.files[0];
+
+      const reader = new FileReader();
+      reader.onload = () => this.chosePicture(reader.result as string);
+      reader.readAsDataURL(file);
+      this.uploadFile = file;
+    }
+  }
+
+
+  /**
+ * The chosen picture from the selection gets saved as the currentProfilePicture and in the signInService.
+ * @param path 
+ */
+  chosePicture(path: string) {
+    this.currentProfilePicture = path;
+    this.avatarChanged = true;
+    this.avatar = path
+  }
+
+
+  /**
+   * Triggers a click event on the provided file input element to open the file explorer.
+   * @param fileInput 
+   */
+  openFileExplorer(fileInput: HTMLInputElement) {
+    fileInput.click();
   }
 }

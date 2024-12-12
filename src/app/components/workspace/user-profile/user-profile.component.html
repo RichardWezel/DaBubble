@@ -13,9 +13,18 @@
         </section>
 
         <section class="user-avatar">
-            <img class="user-avatar"
-                [src]=" storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + storage.currentUser.avatar : cloud.openImage(storage.currentUser.avatar)"
-                alt="">
+            <div *ngIf="mode === 'show'" class="user-avatar">
+                <img class="user-avatar"
+                    [src]=" storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + storage.currentUser.avatar : cloud.openImage(storage.currentUser.avatar)"
+                    alt="">
+            </div>
+            <div *ngIf="mode === 'edit'" class="edit-avatar" (click)="openFileExplorer(fileInput)">
+                <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*">
+                <img [src]="currentProfilePicture">
+                @if (uploadFile && uploadFile.size > 2000000) {
+                    <div class="overlay">Bild zu groß</div>
+                }
+            </div>
         </section>
 
         <div *ngIf="mode === 'show'" class="show">
@@ -110,7 +119,8 @@
 
             <section class="button-section">
                 <button type="button" class="cancel-btn" (click)="mode = 'show'">Abbrechen</button>
-                <button type="submit" class="save-btn">Speichern</button>
+                <button [disabled]="( uploadFile && uploadFile.size > 2000000)" type="submit"
+                    class="save-btn">Speichern</button>
             </section>
         </form>
 
