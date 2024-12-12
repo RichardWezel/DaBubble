@@ -64,6 +64,10 @@ app-password-main {
     align-items: center;
     gap: 16px;
 
+    @media (max-width: 510px) {
+        gap: 0;
+    }
+
     img {
         width: auto;
         height: 184px;
@@ -147,12 +151,22 @@ app-password-main {
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 510px) {
     .logo img {
         height: 90px;
     }
 
     .logo p {
         font-size: 36px;
+    }
+}
+
+@media (max-width: 390px) {
+    .logo img {
+        height: 60px;
+    }
+
+    .logo p {
+        font-size: 28px;
     }
 }
