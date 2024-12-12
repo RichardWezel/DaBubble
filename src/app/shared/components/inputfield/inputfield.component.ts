@@ -31,6 +31,8 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   sendMessageService = inject(SendMessageService);
   inputEvent = inject(InputEventsService);
 
+  excludedTags: string[] = ['messageContent', 'newMessageInput', 'searchbar', 'channel-name', 'profile-name', 'profile-email'];
+
   @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective;
   // @ViewChild('messageContent', { static: false }) messageContent!: ElementRef<HTMLDivElement>;
 
@@ -99,12 +101,17 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   setFocus() {
     let focusElement = this.getFocusElement();
     if (!focusElement) return;
-    if (document.activeElement?.id.includes('messageContent') || document.activeElement?.id.includes('newMessageInput') || document.activeElement?.id.includes('searchbar')) {
+    if (this.isExcludedId()) {
       focusElement = document.activeElement as HTMLElement;
     }
     focusElement.focus();
     if (focusElement.isContentEditable) this.setFocusContentEditable(focusElement);
     else if ('selectionStart' in focusElement) this.setFocusInput(focusElement);
+  }
+
+
+  isExcludedId(): boolean {
+    return this.excludedTags.some(id => document.activeElement?.id.includes(id));
   }
 
 
