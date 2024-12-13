@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { BackgroundComponent } from "../../../shared/components/log-in/background/background.component";
 import { SignInCardComponent } from "./sign-in-card/sign-in-card.component";
 import { ChooseAvatarCardComponent } from "./choose-avatar-card/choose-avatar-card.component";
@@ -11,10 +11,11 @@ import { ChooseAvatarCardComponent } from "./choose-avatar-card/choose-avatar-ca
   styleUrl: './sign-in.component.scss'
 })
 export class SignInComponent {
-  generateAccount: boolean = true; // Initialzustand: Konto erstellen
+  generateAccount: boolean = true; // Initial state: Create account, sign-in-card
 
-  updateAccountState(event: boolean) {
+
+/*   updateAccountState(event: boolean) {
     console.log('updateAccountState wurde aufgerufen mit:', event);
     this.generateAccount = event;
-  }
+  } */
 }
