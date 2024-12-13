@@ -18,27 +18,31 @@ export class SignInCardComponent {
   signInService: SignInService = inject(SignInService);
   navigationService: NavigationService = inject(NavigationService);
   firebaseStorageService: FirebaseStorageService = inject(FirebaseStorageService);
-  @Output() generateAccount = new EventEmitter<boolean>();
 
-  isLoading: boolean = false; // Ladezustand
-  errorMessage: string = '';  // Fehlermeldung
-  successMessage: string = ''; // Erfolgsmeldung (HIER HINZUGEFÜGT)
-
+  isLoading: boolean = false; // Loading level
+  errorMessage: string = '';  // Error message
+  successMessage: string = ''; // Success message (HIER HINZUGEFÜGT)
   passwordVisible: boolean = false;
 
+  @Output() generateAccount = new EventEmitter<boolean>();
+
   /**
-   * Erstellt ein Konto, sendet eine Bestätigungs-E-Mail und speichert die Benutzerdaten in Firestore.
+   * Navigates the user to the choose avatar card.
    */
-  async goToChooseAvatar() {
+  goToChooseAvatar() {
     console.log('goToChooseAvatar wurde aufgerufen');
     this.generateAccount.emit(false);
   }
 
+
+  /**
+   * When you click on the lock image you can show or hide the password.
+   */
   togglePasswordVisibility(): void {
     this.passwordVisible = !this.passwordVisible;
   }
 
-  async goToGenerateAccount() {
+/*   async goToGenerateAccount() {
     const auth = getAuth();
     this.isLoading = true;
     this.errorMessage = '';
@@ -86,7 +90,7 @@ export class SignInCardComponent {
     } finally {
       this.isLoading = false;
     }
-  }
+  } */
 
 
 }
