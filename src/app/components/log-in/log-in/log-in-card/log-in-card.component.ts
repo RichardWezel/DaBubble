@@ -36,6 +36,7 @@ export class LogInCardComponent {
 
   // @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
   @Output() login = new EventEmitter<boolean>();
+  // @Output() newAccount = new EventEmitter<boolean>();
 
 
   /**
@@ -43,6 +44,7 @@ export class LogInCardComponent {
    */
   goToSendMail() {
     this.login.emit(false);
+    // this.newAccount.emit(false);
   }
 
 
@@ -59,11 +61,22 @@ export class LogInCardComponent {
    * @param ngForm 
    */
   checkLogin(ngForm: NgForm) {
-    this.errorMessage = ''; // Reset error message
+    if (ngForm.invalid) {
+      this.errorMessage = "Bitte füllen Sie alle Felder korrekt aus.";
+      return;
+    }
+    this.errorMessage = ''; // Reset error messagee
     console.log("Login gestartet...");
     signInWithEmailAndPassword(this.auth, this.loginData.email, this.loginData.password)
       .then(async (userCredential) => {
         const user = userCredential.user;
+
+        // Überprüfen, ob die E-Mail-Adresse verifiziert ist
+        if (!user.emailVerified) {
+          this.errorMessage = "Ihre E-Mail-Adresse ist noch nicht verifiziert. Bitte überprüfen Sie Ihren Posteingang.";
+          return; // Stoppt die weitere Verarbeitung
+        }
+
         console.log("Benutzer eingeloggt:", user);
 
         // Saving the Auth-UID
@@ -84,19 +97,26 @@ export class LogInCardComponent {
       .catch((error) => {
         console.log('Error code', error.code);
         switch (error.code) {
+          // Added error code auth/invalid-credential
           case 'auth/invalid-credential':
             this.errorMessage = "Die Anmeldeinformationen sind ungültig. Überprüfen Sie Ihre Anmeldedaten.";
             break;
           case 'auth/too-many-requests':
             this.errorMessage = "Zu viele Anmeldeversuche. Bitte versuchen Sie es später erneut.";
             break;
+          case 'auth/user-not-found':
+            this.errorMessage = "Anmeldung fehlgeschlagen! Überprüfen Sie Ihre Anmeldedaten.";
+            break;
+          case 'auth/wrong-password':
+            this.errorMessage = "Das eingegebene Passwort ist falsch. Bitte versuchen Sie es erneut.";
+            break;
           default:
-            this.errorMessage = "Es gibt ein Problem bei der Anmeldung. Bitte versuchen Sie es erneut.";
+            this.errorMessage = "Es gibt kein Konto mit dieser E-Mail-Adresse. Bitte registrieren Sie sich zuerst.";
         }
       });
   }
 
-/*   getGoogleLoginErrorMessage(errorCode: string): string {
+  getGoogleLoginErrorMessage(errorCode: string): string {
     switch (errorCode) {
       case 'auth/popup-closed-by-user':
         return 'Das Anmelde-Popup wurde geschlossen, bevor die Anmeldung abgeschlossen werden konnte.';
@@ -105,9 +125,9 @@ export class LogInCardComponent {
       default:
         return 'Fehler bei der Anmeldung mit Google. Bitte versuche es später erneut.';
     }
-  } */
+  }
 
-/*   resetPassword() {
+  resetPassword() {
     if (!this.loginData.email) {
       alert('Bitte geben Sie Ihre E-Mail-Adresse ein, um das Passwort zurückzusetzen.');
       return;
@@ -126,6 +146,6 @@ export class LogInCardComponent {
   validateEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-  } */
+  }
 
 }
