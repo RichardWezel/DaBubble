@@ -67,7 +67,7 @@ export class EmailVerifiedComponent implements OnInit {
       case 'auth/expired-action-code':
         return 'Der Bestätigungslink ist abgelaufen. Bitte fordere eine neue E-Mail an.';
       case 'auth/invalid-action-code':
-        return 'Der Bestätigungslink ist ungültig. Bitte überprüfe die URL oder fordere eine neue E-Mail an.';
+        return 'Der Bestätigungslink ist ungültig, da Ihre E-Mail bereits verifiziert wurde!'; 
       case 'auth/user-disabled':
         return 'Dein Konto wurde deaktiviert. Bitte kontaktiere den Support.';
       default:

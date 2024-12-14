@@ -14,7 +14,7 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./log-in.component.scss']
 })
 export class LogInComponent {
-
+ 
   login: boolean = true;
   showLoading: boolean = true;
   password: boolean = false;

@@ -1,4 +1,5 @@
 @import 'variables';
+@import 'styles';
 @import './../../../../shared/components/log-in/card/card.component.scss';
 
 .width-container {
@@ -148,6 +149,11 @@ form {
             margin-bottom: 10px;
         }
     }
+}
+
+.nextBtnContainer {
+    display: flex;
+    justify-content: end;
 }
 
 .next-button {

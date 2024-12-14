@@ -10,6 +10,7 @@ import { FirebaseStorageService } from '../../../../shared/services/firebase-sto
 // import { PostInterface } from '../../../../shared/interfaces/post.interface';
 import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
 import { NavigationService } from '../../../../shared/services/navigation.service';
+import { Firestore } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-log-in-card',
@@ -21,7 +22,7 @@ import { NavigationService } from '../../../../shared/services/navigation.servic
 export class LogInCardComponent {
   private auth = inject(Auth);
   private router = inject(Router);
-  // private firestore = inject(Firestore);
+  private firestore = inject(Firestore);
   protected storage = inject(FirebaseStorageService);
   navigationService: NavigationService = inject(NavigationService);
   authService = inject(FirebaseAuthService);
@@ -44,7 +45,7 @@ export class LogInCardComponent {
    */
   goToSendMail() {
     this.login.emit(false);
-    // this.newAccount.emit(false);
+    this.router.navigate(['/sendemail']);
   }
 
 
@@ -62,9 +63,12 @@ export class LogInCardComponent {
    */
   checkLogin(ngForm: NgForm) {
     if (ngForm.invalid) {
-      this.errorMessage = "Bitte füllen Sie alle Felder korrekt aus.";
+      // this.errorMessage = "Bitte füllen Sie alle Felder korrekt aus.";
       return;
     }
+
+   
+
     this.errorMessage = ''; // Reset error messagee
     console.log("Login gestartet...");
     signInWithEmailAndPassword(this.auth, this.loginData.email, this.loginData.password)
@@ -99,16 +103,7 @@ export class LogInCardComponent {
         switch (error.code) {
           // Added error code auth/invalid-credential
           case 'auth/invalid-credential':
-            this.errorMessage = "Die Anmeldeinformationen sind ungültig. Überprüfen Sie Ihre Anmeldedaten.";
-            break;
-          case 'auth/too-many-requests':
-            this.errorMessage = "Zu viele Anmeldeversuche. Bitte versuchen Sie es später erneut.";
-            break;
-          case 'auth/user-not-found':
-            this.errorMessage = "Anmeldung fehlgeschlagen! Überprüfen Sie Ihre Anmeldedaten.";
-            break;
-          case 'auth/wrong-password':
-            this.errorMessage = "Das eingegebene Passwort ist falsch. Bitte versuchen Sie es erneut.";
+            this.errorMessage = "E-Mail-Adresse oder Passwort ist falsch. Bitte überprüfen Sie Ihre Eingabe.";
             break;
           default:
             this.errorMessage = "Es gibt kein Konto mit dieser E-Mail-Adresse. Bitte registrieren Sie sich zuerst.";
