@@ -6,6 +6,7 @@ import { NewMessageInputHeadComponent } from "./new-message-input-head/new-messa
 import { ChannelMemberDialogComponent } from './channel-member-dialog/channel-member-dialog.component';
 import { UserInterface } from '../../../../shared/interfaces/user.interface';
 import { CloudStorageService } from '../../../../shared/services/cloud-storage.service';
+import { ChannelEditComponent } from '../../../../shared/components/dialog/channel-edit/channel-edit.component';
 
 @Component({
   selector: 'app-channel-head',
@@ -15,6 +16,7 @@ import { CloudStorageService } from '../../../../shared/services/cloud-storage.s
     FormsModule,
     NewMessageInputHeadComponent,
     ChannelMemberDialogComponent,
+    ChannelEditComponent,
     CommonModule,
     NgFor,
     NgIf],
@@ -26,6 +28,7 @@ export class ChannelHeadComponent implements OnInit {
   storage = inject(FirebaseStorageService);
   cloud = inject(CloudStorageService);
   channelUsers: string[] = [];
+  isChannelEditVisible: boolean = false; // Steuerung für ChannelEdit
 
   ngOnInit() {
     this.updateChannelUsers();
@@ -34,6 +37,29 @@ export class ChannelHeadComponent implements OnInit {
   updateChannelUsers() {
     const users = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.user;
     this.channelUsers = users ? users : [];
+  }
+
+  openChannelEdit() {
+    console.log('ChannelEdit geöffnet');
+    this.isChannelEditVisible = true;
+  }
+
+  // Schließt ChannelEditComponent
+  closeChannelEdit() {
+    this.isChannelEditVisible = false;
+  }
+
+  channelCreator(): string {
+    const currentChannel = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
+    if (!currentChannel) {
+      return 'Unbekannt'; // Fallback, falls der Channel nicht gefunden wird
+    }
+    const owner = this.storage.user.find(user => user.id === currentChannel.owner);
+    return owner?.name || ''; 
+  }
+
+  channelDescription(): string {
+    return this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.description || '';
   }
 
   @ViewChild('channelMemberDialog') channelMemberDialog!: ChannelMemberDialogComponent;
@@ -71,10 +97,11 @@ export class ChannelHeadComponent implements OnInit {
       return '';
   }
 
-  channelName() {
-    return this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.name;
+  channelName(): string {
+    return (
+      this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.name || ''
+    );
   }
-
 
   channelUser() {
     let users = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.user;

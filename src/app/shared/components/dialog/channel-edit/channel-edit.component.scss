@@ -1,0 +1,179 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+
+    .modal {
+        background: #fff;
+        width: 872px;
+        height: 616px;
+        padding: 20px;
+        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+        position: relative;
+        border-top-right-radius: 30px;
+        border-bottom-right-radius: 30px;
+        border-bottom-left-radius: 30px;
+
+        @media (max-width: 900px) {
+            width: 90%;
+            height: auto;
+            padding: 15px;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            width: 792px;
+            height: 40px;
+
+            h1 {
+                font-size: 18px;
+                font-weight: bold;
+                color: #333;
+                margin: 0;
+
+            }
+
+            .close-button {
+                background: none;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                color: #888;
+
+                &:hover {
+                    color: #000;
+                    transform: scale(1.1);
+                    transition: all 0.2s ease;
+                }
+            }
+        }
+
+        .modal-content {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            width: 821px;
+            gap: 20px;
+
+            &::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            &::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 10px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 10px;
+            }
+
+            &::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+
+
+            .field {
+                display: flex;
+                flex-direction: column;
+                border: 1px solid #adb0d9;
+                border-radius: 20px;
+                padding: 30px;
+                gap: 10px;
+                position: relative;
+
+
+
+                label {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: black;
+                    flex: 1;
+                    margin-bottom: 10px;
+
+                }
+
+                .value {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 10px;
+                    font-size: 14px;
+                    color: #333;
+
+                    span {
+                        font-size: 16px;
+                        font-weight: bold;
+                    }
+
+                    .edit-button {
+                        position: absolute;
+                        top: 32px;
+                        right: 20px;
+                        background: none;
+                        border: none;
+                        padding: 0;
+                        font-size: 14px;
+                        color: #007bff;
+                        cursor: pointer;
+                        text-decoration: none;
+
+                        &:hover {
+                            color: #444df2;
+                            transform: scale(1.1);
+                            transition: all 0.2s ease;
+                        }
+                    }
+                }
+            }
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+
+            .leave-button {
+                background: #444df2;
+                color: white;
+                border: none;
+                border-radius: 25px;
+                padding: 12px 25px 12px 25px;
+                font-size: 16px;
+                cursor: pointer;
+
+
+                &:hover {
+                    background: #0056b3;
+                }
+            }
+        }
+
+
+        .created-by {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+
+            .creator-name {
+                font-size: 16px;
+                font-weight: bold;
+                color: #007bff;
+            }
+        }
+    }
+}
