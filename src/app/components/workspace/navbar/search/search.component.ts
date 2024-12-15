@@ -97,29 +97,29 @@ export class SearchComponent {
   
 
   async findIdOfDM(result: UserInterface): Promise<string | undefined> {
-    const match = this.storage.user.find(user => user.name.toLowerCase().startsWith(result.name.toLowerCase()));
-    if (match && this.findUserInDms(match)) {
-      return this.getDmContact(match?.id!);
-    } else if (match && !this.findUserInDms(match)) {
-      return await this.showNewDm(match);
+    const UserMatch = this.storage.user.find(user => user.name.toLowerCase().startsWith(result.name.toLowerCase()));
+    if (UserMatch && this.findUserInDms(UserMatch)) {
+      return this.getDmContact(UserMatch?.id!);
+    } else if (UserMatch && !this.findUserInDms(UserMatch)) {
+      return await this.showNewDm(UserMatch);
     } else {
       return this.storage.currentUser.currentChannel;
     }
   }
   
 
-  findUserInDms(match: UserInterface): boolean {
-    return this.storage.currentUser.dm.some(dm => dm.contact === match.id);
+  findUserInDms(UserMatch: UserInterface): boolean {
+    return this.storage.currentUser.dm.some(dm => dm.contact === UserMatch.id);
   }
 
-  getDmContact(matchId: string): string | undefined {
-    const dm = this.storage.currentUser.dm.find(dm => dm.contact === matchId);
+  getDmContact(IdOfUser: string): string | undefined {
+    const dm = this.storage.currentUser.dm.find(dm => dm.contact === IdOfUser);
     return dm ? dm.contact : undefined;
   }
 
-  async showNewDm(match: UserInterface) {
-    await this.createEmptyDms(match);
-    let dmWithNewUser = this.storage.currentUser.dm.find(dm => dm.contact === match.id);
+  async showNewDm(UserMatch: UserInterface) {
+    await this.createEmptyDms(UserMatch);
+    let dmWithNewUser = this.storage.currentUser.dm.find(dm => dm.contact === UserMatch.id);
     if (dmWithNewUser) {
       return dmWithNewUser!.id
     } else {
