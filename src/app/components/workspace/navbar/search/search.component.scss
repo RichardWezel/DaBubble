@@ -9,14 +9,17 @@ main {
   background-color: #fff;
   z-index: 999;
   box-shadow:  0px 4px 5px -3px rgba(0,0,0,0.17);
+  position: relative; // Hinzugefügt für die absolute Positionierung der Suchsymbole
+
   .input {
+    position: relative; // Hinzugefügt für die absolute Positionierung der Suchsymbole
 
     input[type="search"] {
       width: 100%;
       font-size: 24px;
       border: none;
       outline: none;
-    
+      padding-right: 50px; // Platz für das Suchsymbol
       background-position: right 32px center;
     
       &::placeholder {
@@ -48,12 +51,17 @@ main {
     ul {
       gap: 10px;
       margin-top: 18.5px;
+      padding: 0; // Entfernt Standard-Padding von ul
+      max-height: 300px; // Optional: Begrenzung der Höhe bei vielen Ergebnissen
+      overflow-y: auto; // Scrollen bei vielen Ergebnissen
       li {
         display: flex;
         align-items: center;
         list-style: none; /* Entfernt die Aufzählungszeichen */
         margin-bottom: 8px; 
-        padding: 4px 0px 4px 8px;
+        padding: 8px 16px;
+        border-radius: 32px;
+        cursor: pointer;
 
         .origin {
           font-family: "Nunito";
@@ -66,16 +74,20 @@ main {
           color: $thirdColor;
         }
 
-        .text {
-          .searchTerm {
+        .text{
+          .searchTerm{
             color: $thirdColor;
           }
         }
 
-        &:hover {
+        &:hover,
+        &.selected{
           background-color: $backgroundColor;
-          cursor: pointer;
           border-radius: 32px;
+        }
+
+        &.selected{
+          background-color: lighten($thirdColor, 40%); // Beispiel: Helle Hintergrundfarbe für ausgewählte Elemente
         }
       }
       li:last-child {
