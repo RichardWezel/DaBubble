@@ -13,21 +13,27 @@ main {
 
   .input {
     position: relative; // Hinzugefügt für die absolute Positionierung der Suchsymbole
-
-    input[type="search"] {
+    display: flex;
+    input[type="search"]{
       width: 100%;
       font-size: 24px;
       border: none;
       outline: none;
       padding-right: 50px; // Platz für das Suchsymbol
       background-position: right 32px center;
+      display: flex;
+      &::-webkit-search-cancel-button,
+      &::-webkit-search-decoration{
+        -webkit-appearance: none;
+        appearance: none;
+      }
     
-      &::placeholder {
+      &::placeholder{
         color: $textGrey;
         font-size: 24px;
       }
     
-      &:focus+.search {
+      &:focus+.search{
         svg {
     
           path {
@@ -38,9 +44,6 @@ main {
     }
 
     .search {
-      position: absolute;
-      top: 17.5px;
-      right: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -63,7 +66,7 @@ main {
         border-radius: 32px;
         cursor: pointer;
 
-        .origin {
+        .origin{
           font-family: "Nunito";
           font-size: 18px;
           font-weight: 700;
