@@ -12,6 +12,7 @@
       placeholder="Devspace durchsuchen" 
       [(ngModel)]="userInput" 
       (input)="onInput()"
+      (keydown)="handleKeyboardEvent($event)"
       aria-autocomplete="list"
       aria-controls="search-results"
       [attr.aria-activedescendant]="selectedIndex >= 0 ? 'result-' + selectedIndex : ''"
@@ -34,7 +35,7 @@
         role="option"
         [attr.aria-selected]="i === selectedIndex"
         tabindex="-1"
-      >{{result.name}}
+      >  {{ "# " + result.name }}
       </li>
     </ul>
   </section>
