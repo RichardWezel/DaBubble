@@ -1,9 +1,10 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, inject, HostListener } from '@angular/core';
+import { Component, inject, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { ChannelInterface } from '../../../../shared/interfaces/channel.interface';
 import { NavigationService } from '../../../../shared/services/navigation.service';
+import { UserInterface } from '../../../../shared/interfaces/user.interface';
 
 @Component({
   selector: 'app-search',
@@ -16,28 +17,34 @@ export class SearchComponent {
   protected storage = inject(FirebaseStorageService);
   navigation = inject(NavigationService);
 
-  searchResults: ChannelInterface[] = [];
+  searchResults: (ChannelInterface | UserInterface)[] = [];
   userInput: string = "";
   selectedIndex: number = -1;
 
+  @ViewChildren('resultItem') resultItems!: QueryList<ElementRef>;
+
   onInput(): void {
+    this.searchResults = [];
     this.updateSearchResults();
     this.selectedIndex = -1;
   }
 
   updateSearchResults() {
     if (this.userInput.length >= 2) {
-      this.updateFoundedChannels();
+      this.updateFoundedChannelsAndUsers();
     } else {
       this.searchResults = [];
       this.selectedIndex = -1;
     }
   }
 
-  updateFoundedChannels() {
+  updateFoundedChannelsAndUsers() {
     if (this.userInput) {
-      const matches = this.findChannels(this.userInput);
-      this.searchResults = matches;
+      const channelMatches: ChannelInterface[] = this.findChannels(this.userInput);
+      const userMatches: UserInterface[] = this.findUser(this.userInput);
+      this.searchResults = [...channelMatches, ...userMatches];
+      console.log("gefundene Kanäle: ", channelMatches);
+      console.log("gefundene Benutzer: ", userMatches);
     } else {
       this.searchResults = [];
       this.selectedIndex = -1;
@@ -49,17 +56,87 @@ export class SearchComponent {
     const matches = channels.filter(channel =>
       channel.name.toLowerCase().startsWith(userInput.toLowerCase())
     );
+    console.log("channels matches: ", matches);
     return matches;
   }
 
-  setChannel(channelId: string) {
-    this.navigation.setChannel(channelId);
+  findUser(userInput: string): UserInterface[] {
+    const users: UserInterface[] = this.storage.user;
+    const matches = users.filter(user =>
+      user.name.toLowerCase().startsWith(userInput.toLowerCase())
+    );
+    console.log("user matches: ", matches);
+    return matches;
+  }
+
+  async setChannel(result: ChannelInterface | UserInterface): Promise<void> {
+    if (result.type === "channel") {
+      if (result.id) {
+        this.navigation.setChannel(result.id);
+        console.log("this.navigation.setChannel(", result.id, ")")
+      } else {
+        console.error('Channel id is undefined.');
+        return;
+      }
+    }
+    
+    if (result.type === "user") {
+      let dmId = await this.findIdOfDM(result);
+      if (dmId) {
+        this.navigation.setChannel(dmId);
+      } else {
+        console.error('DM id is undefined.');
+        return;
+      }
+    }
+    
     this.userInput = "";
     this.searchResults = [];
     this.selectedIndex = -1;
   }
+  
 
-  handleKeyboardEvent(event: KeyboardEvent) {
+  async findIdOfDM(result: UserInterface): Promise<string | undefined> {
+    const match = this.storage.user.find(user => user.name.toLowerCase().startsWith(result.name.toLowerCase()));
+    if (match && this.findUserInDms(match)) {
+      return this.getDmContact(match?.id!);
+    } else if (match && !this.findUserInDms(match)) {
+      return await this.showNewDm(match);
+    } else {
+      return this.storage.currentUser.currentChannel;
+    }
+  }
+  
+
+  findUserInDms(match: UserInterface): boolean {
+    return this.storage.currentUser.dm.some(dm => dm.contact === match.id);
+  }
+
+  getDmContact(matchId: string): string | undefined {
+    const dm = this.storage.currentUser.dm.find(dm => dm.contact === matchId);
+    return dm ? dm.contact : undefined;
+  }
+
+  async showNewDm(match: UserInterface) {
+    await this.createEmptyDms(match);
+    let dmWithNewUser = this.storage.currentUser.dm.find(dm => dm.contact === match.id);
+    if (dmWithNewUser) {
+      return dmWithNewUser!.id
+    } else {
+      return this.storage.currentUser.currentChannel
+    };
+  }
+
+  async createEmptyDms(match: UserInterface) {
+    let currentUserId = this.storage.currentUser.id;
+    let NewUserId = match.id;
+    if (currentUserId && NewUserId) {
+      await this.storage.createNewEmptyDm(currentUserId, NewUserId);
+      await this.storage.createNewEmptyDm(NewUserId, currentUserId);
+    }
+  }
+
+  async handleKeyboardEvent(event: KeyboardEvent): Promise<void> {
     if (this.searchResults.length > 0) {
       if (event.key === 'ArrowDown') {
         event.preventDefault(); 
@@ -72,11 +149,16 @@ export class SearchComponent {
       } else if (event.key === 'Enter') {
         event.preventDefault();
         if (this.selectedIndex >= 0 && this.selectedIndex < this.searchResults.length) {
-          this.setChannel(this.searchResults[this.selectedIndex].id!);
+          try {
+            await this.setChannel(this.searchResults[this.selectedIndex]);
+          } catch (error) {
+            console.error('Error setting channel:', error);
+          }
         }
       }
     }
   }
+  
   
   scrollToSelected() {
     const listItems = document.querySelectorAll('.result-container ul li');
@@ -84,6 +166,18 @@ export class SearchComponent {
       const selectedItem = listItems[this.selectedIndex] as HTMLElement;
       selectedItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
+  }
+
+  // Typ-Guard für ChannelInterface
+  isChannel(result: ChannelInterface | UserInterface): result is ChannelInterface {
+    const isChan = result.type === 'channel';
+    return isChan;
+  }
+
+  // Typ-Guard für UserInterface
+  isUser(result: ChannelInterface | UserInterface): result is UserInterface {
+    const isUsr = result.type === 'user';
+    return isUsr;
   }
 
 }

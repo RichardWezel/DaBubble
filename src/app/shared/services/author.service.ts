@@ -29,7 +29,7 @@ export class AuthorService {
     } else {
       // Optional: Fallback-Mechanismus, falls der Benutzer noch nicht geladen wurde
       // Hier kannst du auch eine Echtzeit-Abfrage an Firestore durchführen
-      return of({ name: 'Unbekannter Autor', id: authorId, avatar: '', email: '', online: false, dm: [] });
+      return of({ type: 'user', name: 'Unbekannter Autor', id: authorId, avatar: '', email: '', online: false, dm: [] });
     }
   }
 }

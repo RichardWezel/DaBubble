@@ -31,11 +31,17 @@
         *ngFor="let result of searchResults; let i = index"
         [id]="'result-' + i"
         [class.selected]="i === selectedIndex"
-        (click)="setChannel(result.id!)"
+        (click)="setChannel(result)"
         role="option"
         [attr.aria-selected]="i === selectedIndex"
         tabindex="-1"
-      >  {{ "# " + result.name }}
+      >  
+      <ng-container *ngIf="isChannel(result); else userTemplate">
+        # {{ result.name }}
+      </ng-container>
+      <ng-template #userTemplate>
+        &#x40; {{ result.name }}
+      </ng-template>
       </li>
     </ul>
   </section>

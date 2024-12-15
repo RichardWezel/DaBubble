@@ -1,6 +1,7 @@
 import { PostInterface } from "./post.interface";
 
 export interface UserInterface {
+  type: 'user'; // Typen-Discriminator
   name: string,
   email: string,
   avatar: string,
