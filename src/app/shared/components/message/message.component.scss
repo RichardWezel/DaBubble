@@ -37,7 +37,8 @@ main {
         transform: translateX(0); // Ausgangsposition
         display: flex;
         background-color: #fff;
-        transition: opacity 100ms ease-out, visibility 100ms ease-out, transform 100ms ease-out; // Hinzufügen von transform zur Transition
+        transition: opacity 100ms ease-out, visibility 100ms ease-out, transform 100ms ease-out;
+        z-index: 1; // Hinzufügen von transform zur Transition
 
         .reaction-bar-icon {
             width: 40px;
@@ -67,7 +68,7 @@ main {
         .reaction-bar-icon-special {
             position: relative;
 
-            div:not(.smileys-container) {
+            div:not(.smileys-container, .special-container) {
                 width: 24px;
                 height: 24px;
                 @include dja;
@@ -93,6 +94,39 @@ main {
             div {
                 justify-content: center;
                 align-items: center;
+            }
+
+            .special-container {
+                position: absolute;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: max-content;
+                top: 100%;
+                left: 100%;
+                background-color: #fff;
+                border: 1px solid $dividerColor;
+                border-radius: 0px 25px 25px 25px;
+                padding: 8px 16px;
+                transform-origin: top right;
+                transform: scale(0);
+                transition: transform 125ms ease-out;
+                z-index: 1;
+
+                &.active {
+                    transform: scale(1);
+                }
+
+                p {
+
+                    padding: 4px 8px;
+
+                    &:hover {
+                        cursor: pointer;
+                        background-color: $backgroundColor;
+                        border-radius: 16px;
+                    }
+                }
             }
         }
 

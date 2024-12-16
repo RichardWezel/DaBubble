@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
-export class NavbarComponent implements OnInit, OnDestroy{
+export class NavbarComponent implements OnInit, OnDestroy {
   elementRef: ElementRef = inject(ElementRef);
   storage = inject(FirebaseStorageService);
   authService = inject(FirebaseAuthService);
@@ -26,7 +26,7 @@ export class NavbarComponent implements OnInit, OnDestroy{
 
   constructor(
     private openUserProfileService: OpenUserProfileService,
-    private openCloseDialogService: OpenCloseDialogService) {}
+    private openCloseDialogService: OpenCloseDialogService) { }
 
   ngOnInit(): void {
     if (this.storage.currentUser$) {
@@ -36,9 +36,9 @@ export class NavbarComponent implements OnInit, OnDestroy{
       });
       this.subscriptions.add(sub);
     }
-    
+
   }
-  
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
@@ -52,7 +52,7 @@ export class NavbarComponent implements OnInit, OnDestroy{
 
   async openUserProfile() {
     const currentUserId = this.storage.currentUser.id;
-    await  this.openUserProfileService.updateUserId(currentUserId!)
+    await this.openUserProfileService.updateUserId(currentUserId!)
     this.openCloseDialogService.open('userProfile');
   }
 

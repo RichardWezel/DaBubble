@@ -54,7 +54,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
 
   getAllThreads(): { thread: PostInterface, parent: ChannelInterface | UserInterface }[] {
     const threads: { thread: PostInterface, parent: ChannelInterface | UserInterface }[] = [];
-  
+
     // Durch alle Channels und deren Posts iterieren
     this.channel.forEach(channel => {
       channel.posts?.forEach(post => {
@@ -65,7 +65,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         }
       });
     });
-  
+
     // Durch alle DMs und deren Posts iterieren
     this.user.forEach(user => {
       user.dm.forEach(dm => {
@@ -78,7 +78,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         });
       });
     });
-  
+
     return threads;
   }
 
@@ -92,7 +92,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
       this.ngZone.run(() => {
         if (docSnapshot.exists()) {
           const userData = docSnapshot.data() as UserInterface;
-          this.currentUser = { ...userData, id: docSnapshot.id };
+          this.currentUser = { ...userData, id: docSnapshot.id, currentChannel: this.determineCurrentChannel(this.currentUser), threadOpen: this.currentUser.threadOpen || false, postId: this.currentUser.postId || '' };
           console.log("currentUser aktualisiert:", this.currentUser);
           this.currentUserSubject.next(this.currentUser); // Emit the new value
         } else {

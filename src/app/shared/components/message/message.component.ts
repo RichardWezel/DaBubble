@@ -33,7 +33,8 @@ export class MessageComponent implements OnInit, OnChanges {
   authorAvatar: string = '';
   showEmojiSelector: boolean = false;
   reactSelf: boolean = false;
-
+  postEdit: boolean = false;
+  isSpecialMenuOpen: boolean = false;
 
   isAuthorCurrentUser: boolean = false;
 
@@ -50,8 +51,12 @@ export class MessageComponent implements OnInit, OnChanges {
   outsideClick(event: any) {
     event.stopPropagation();
     const path = event.path || (event.composedPath && event.composedPath());
+    console.log(path);
     if (!path.includes(this.elementRef.nativeElement.querySelector('app-emoji-selector'))) {
       this.showEmojiSelector = false;
+    }
+    if (!path.includes(this.elementRef.nativeElement.querySelector('special-container'))) {
+      this.isSpecialMenuOpen = false;
     }
   }
 
@@ -232,6 +237,11 @@ export class MessageComponent implements OnInit, OnChanges {
         'isInput': false
       }
     }
+  }
+
+
+  editPost() {
+    this.postEdit = true;
   }
 }
 
