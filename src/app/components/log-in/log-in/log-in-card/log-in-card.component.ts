@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
-import { sendPasswordResetEmail, signInWithEmailAndPassword } from '@firebase/auth';
+import { sendPasswordResetEmail, signInWithEmailAndPassword, User, UserCredential } from '@firebase/auth';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -11,6 +11,8 @@ import { FirebaseStorageService } from '../../../../shared/services/firebase-sto
 import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 import { Firestore } from '@angular/fire/firestore';
+import { UserInterface } from '../../../../shared/interfaces/user.interface';
+import { FirebaseError } from '@angular/fire/app';
 
 @Component({
   selector: 'app-log-in-card',
@@ -26,7 +28,6 @@ export class LogInCardComponent {
   protected storage = inject(FirebaseStorageService);
   navigationService: NavigationService = inject(NavigationService);
   authService = inject(FirebaseAuthService);
-
   loginData: { email: string; password: string } = {
     email: '',
     password: '',
@@ -58,58 +59,73 @@ export class LogInCardComponent {
 
 
   /**
-   * 
-   * @param ngForm 
+   * Attempts to log in the user using the provided login form.
+   * If the login is successful, the user is logged in; otherwise, an appropriate error message is displayed.
+   * @param ngForm - The Angular form object to validate.
    */
   checkLogin(ngForm: NgForm) {
+    this.checkIfFormValid(ngForm);
+    this.errorMessage = ''; // Reset error messagee
+    signInWithEmailAndPassword(this.auth, this.loginData.email, this.loginData.password)
+      .then(async (userCredential) => {
+        await this.loginAsUser(userCredential);
+      })
+      .catch((error) => {
+        this.showCorrectErrorMessage(error);
+      });
+  }
+
+
+  /**
+   * Validates wheter the login form is correctly filled out.
+   * If the form is invalid, the method stops further execution.
+   * @param ngForm - The Angular form object to validate.
+   * @returns - No return value; exits if the form is invalid.
+   */
+  checkIfFormValid(ngForm: NgForm): void {
     if (ngForm.invalid) {
       // this.errorMessage = "Bitte füllen Sie alle Felder korrekt aus.";
       return;
     }
-
-   
-
-    this.errorMessage = ''; // Reset error messagee
-    console.log("Login gestartet...");
-    signInWithEmailAndPassword(this.auth, this.loginData.email, this.loginData.password)
-      .then(async (userCredential) => {
-        const user = userCredential.user;
-
-        // Überprüfen, ob die E-Mail-Adresse verifiziert ist
-        if (!user.emailVerified) {
-          this.errorMessage = "Ihre E-Mail-Adresse ist noch nicht verifiziert. Bitte überprüfen Sie Ihren Posteingang.";
-          return; // Stoppt die weitere Verarbeitung
-        }
-
-        console.log("Benutzer eingeloggt:", user);
-
-        // Saving the Auth-UID
-        sessionStorage.setItem("authUid", user.uid);
-        this.storage.authUid = user.uid;
-
-        // Loading the user information
-        this.authService.getCurrentUser();
-        this.storage.getCurrentUserChannelCollection();
-
-        console.log("Benutzerkanäle geladen:", this.storage.CurrentUserChannel);
-
-        // Set user status to "online"
-        await this.authService.setCurrentUserOnline(user.uid);
-
-        this.router.navigate(['/workspace']);
-      })
-      .catch((error) => {
-        console.log('Error code', error.code);
-        switch (error.code) {
-          // Added error code auth/invalid-credential
-          case 'auth/invalid-credential':
-            this.errorMessage = "E-Mail-Adresse oder Passwort ist falsch. Bitte überprüfen Sie Ihre Eingabe.";
-            break;
-          default:
-            this.errorMessage = "Es gibt kein Konto mit dieser E-Mail-Adresse. Bitte registrieren Sie sich zuerst.";
-        }
-      });
   }
+
+
+  async loginAsUser(userCredential: UserCredential): Promise<void> {
+    const user = userCredential.user;
+    // Überprüfen, ob die E-Mail-Adresse verifiziert ist
+    if (!user.emailVerified) {
+      this.errorMessage = "Ihre E-Mail-Adresse ist noch nicht verifiziert. Bitte überprüfen Sie Ihren Posteingang.";
+      return; // Stoppt die weitere Verarbeitung
+    }
+    console.log("Benutzer eingeloggt:", user);
+    // Saving the Auth-UID
+    sessionStorage.setItem("authUid", user.uid);
+    this.storage.authUid = user.uid;
+    // Loading the user information
+    this.authService.getCurrentUser();
+    this.storage.getCurrentUserChannelCollection();
+    console.log("Benutzerkanäle geladen:", this.storage.CurrentUserChannel);
+    // Set user status to "online"
+    await this.authService.setCurrentUserOnline(user.uid);
+    this.router.navigate(['/workspace']);
+  }
+
+
+  /**
+   * Displays the appropriate error message based on the Firebase error.
+   * @param error - The Firebase error object containing details about the login failure.
+   */
+  showCorrectErrorMessage(error: FirebaseError) {
+    console.log('Error code', error.code);
+    switch (error.code) {
+      case 'auth/invalid-credential':
+        this.errorMessage = "E-Mail-Adresse oder Passwort ist falsch. Bitte überprüfen Sie Ihre Eingabe.";
+        break;
+      default:
+        this.errorMessage = "Es gibt kein Konto mit dieser E-Mail-Adresse. Bitte registrieren Sie sich zuerst.";
+    }
+  }
+
 
   getGoogleLoginErrorMessage(errorCode: string): string {
     switch (errorCode) {
@@ -121,6 +137,7 @@ export class LogInCardComponent {
         return 'Fehler bei der Anmeldung mit Google. Bitte versuche es später erneut.';
     }
   }
+
 
   resetPassword() {
     if (!this.loginData.email) {
@@ -137,6 +154,7 @@ export class LogInCardComponent {
         alert('Es gab ein Problem beim Zurücksetzen des Passworts. Bitte überprüfe deine Eingaben.');
       });
   }
+
 
   validateEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
