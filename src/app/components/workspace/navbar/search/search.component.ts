@@ -114,7 +114,7 @@ export class SearchComponent {
 
   getDmContact(IdOfUser: string): string | undefined {
     const dm = this.storage.currentUser.dm.find(dm => dm.contact === IdOfUser);
-    return dm ? dm.contact : undefined;
+    return dm ? dm.id : undefined;
   }
 
   async showNewDm(UserMatch: UserInterface) {

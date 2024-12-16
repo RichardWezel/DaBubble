@@ -99,6 +99,8 @@ main {
         display: flex;
         flex-direction: column;
         gap: 13px;
+        overflow-y: auto;
+        max-height: 200px;
 
         .ws-member {
             .ws-member-content {
