@@ -2,7 +2,6 @@
 
   <app-new-message-input-head *ngIf="findChannel() === 'newMessage'"></app-new-message-input-head>
 
-<<<<<<< HEAD
   <div class="channel-name" *ngIf="findChannel() === 'channel'" (click)="openChannelEdit()">
 
     <div class="icon tag">
@@ -39,8 +38,6 @@
     [channelDescription]="channelDescription()" [creatorName]="channelCreator()" (close)="closeChannelEdit()">
   </app-channel-edit>
 
-=======
->>>>>>> cb0e1e6 (changes)
   <div class=" channel-member-container" *ngIf="findChannel() === 'channel'">
     <div class="channel-member" (click)="callOpenDialog($event)">
       <ng-container *ngFor="let user of channelUser(); let i = index">
