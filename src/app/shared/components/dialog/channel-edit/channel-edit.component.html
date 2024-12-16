@@ -16,7 +16,10 @@
                     <span class="edit-button" (click)="editChannelName()">Bearbeiten</span>
                 </div>
                 <div *ngIf="isEditingChannelName" class="edit-container">
-                    <input [(ngModel)]="channelName" placeholder="Neuer Channel-Name" />
+                    <div class="input-group">
+                        <span>#</span>
+                        <input [(ngModel)]="channelName" placeholder="Neuer Channel-Name" />
+                    </div>
                     <button class="save-button" (click)="saveChannelName()">Speichern</button>
                 </div>
             </div>
@@ -28,16 +31,22 @@
                     <span>{{ channelDescription }}</span>
                     <span class="edit-button" (click)="editDescription()">Bearbeiten</span>
                 </div>
-                <div *ngIf="isEditingDescription">
-                    <input [(ngModel)]="channelDescription" />
-                    <button (click)="saveDescription()">Speichern</button>
+                <div class="edit-container" *ngIf="isEditingDescription">
+                    <div class="input-group">
+                        <input [(ngModel)]="channelDescription" placeholder="Beschreibung eingeben..." />
+                        <button class="save-button" (click)="saveDescription()">Speichern</button>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+                <!-- Created By -->
+                <div class="created-by">
+                    <span>Erstellt von</span>
+                    <span class="creator-name">{{ creatorName }}</span>
                 </div>
             </div>
 
-            <!-- Created By -->
-            <div class="created-by">
-                Erstellt von <span class="creator-name">{{ creatorName }}</span>
-            </div>
+
         </div>
 
         <!-- Footer -->
