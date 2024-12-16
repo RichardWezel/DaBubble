@@ -5,10 +5,10 @@
     <div #messageContent [id]="thread ? 'messageContentThread' : 'messageContent'" (keyup)="checkInput($event)"
       (keydown)="checkKey($event)" class="message-content" contentEditable="true" appTextFormatter>
     </div>
-
-
   </div>
+
   <app-upload></app-upload>
+
   <div class="inputfield-buttons">
     <div class="tags">
       <div class="icon appendix" (click)="toggleAppendix()">
@@ -97,7 +97,6 @@
             fill="#444DF2" />
         </g>
       </svg>
-
     </button>
   </div>
 </section>

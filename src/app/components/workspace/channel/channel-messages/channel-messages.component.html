@@ -1,10 +1,9 @@
 <main>
   <section class="channel-message">
 
-    <!-- findChannel() in channel-head.component.ts -->
-    <!-- Wenn die Methode findChannel() die ID eines Channels in currentUser.currentChannel findet, dann true -->
     @if(findChannel() === 'channel') {
 
+      <!-- Case there is no content in the channel -->
       @if (getPostOfChannel().length === 0) {
         <div class="empty">
           <div class="header">
@@ -30,6 +29,7 @@
         </div>
       }
 
+      
       @for (post of getPostOfChannel(); track $index) {
         @if (currentDate(post.timestamp) > compareTimestamp) {
           <app-date-separator [date]="trackByDate(post)"></app-date-separator>
