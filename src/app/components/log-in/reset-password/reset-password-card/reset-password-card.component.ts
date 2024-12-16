@@ -6,17 +6,17 @@ import { CardComponent } from '../../../../shared/components/log-in/card/card.co
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { PasswordChangedDialogComponent } from '../password-changed-dialog/password-changed-dialog.component';
-import { DialogService } from '../../../../shared/services/dialog-service.service';
-import { ValidatorService } from '../../../../shared/services/validator-service.service';
+import { DialogService } from '../../../../shared/services/dialog-service';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { EmailVerifiedComponent } from '../../sign-in/email-verified/email-verified.component';
+import { ValidatorService } from '../../../../shared/services/validator-service';
 
 @Component({
   selector: 'app-reset-password-card',
   standalone: true,
-  imports: [CardComponent, FormsModule, CommonModule],
+  imports: [CardComponent, FormsModule, CommonModule ],
   templateUrl: './reset-password-card.component.html',
   styleUrl: './reset-password-card.component.scss',
 })
@@ -48,7 +48,6 @@ export class ResetPasswordCardComponent implements OnInit {
     console.log('Auth UID:', this.storage.authUid);
   }
 
-  
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {

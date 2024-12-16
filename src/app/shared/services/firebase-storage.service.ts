@@ -18,7 +18,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
   CurrentUserChannel: ChannelInterface[] = [];
-  currentUser: CurrentUserInterface = { name: '', email: '', avatar: '', online: false, dm: [], id: '' };
+  currentUser: CurrentUserInterface = {  type: 'user', name: '', email: '', avatar: '', online: false, dm: [], id: '' };
   authUid = sessionStorage.getItem("authUid") || 't3O7pW0P7QrjD26Bd6DZ';
   doneLoading: boolean = true;
   private currentUserSubject = new BehaviorSubject<CurrentUserInterface>(this.currentUser);
@@ -216,6 +216,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
    */
   async addUser(authUid: string, userData: { name: string, email: string, avatar: string }) {
     await setDoc(doc(this.firestore, "user", authUid), {
+      type: 'user',
       name: userData.name,
       email: userData.email,
       avatar: userData.avatar,
@@ -238,6 +239,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     try {
       const channelsCollection = collection(this.firestore, "channel");
       const docRef = await addDoc(channelsCollection, {
+        type: 'channel',
         name: channelData.name,
         description: channelData.description,
         owner: channelData.owner,

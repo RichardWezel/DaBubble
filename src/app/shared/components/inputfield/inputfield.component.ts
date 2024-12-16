@@ -380,7 +380,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * - dm: []
    */
   generateChannelTag(): UserInterface {
-    return { name: 'Channel', id: 'channel', email: '', online: false, avatar: '', dm: [] };
+    return { type: 'user', name: 'Channel', id: 'channel', email: '', online: false, avatar: '', dm: [] };
   }
 
 

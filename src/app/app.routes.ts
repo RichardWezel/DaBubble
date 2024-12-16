@@ -9,6 +9,7 @@ import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-poli
 import { ResetPasswordCardComponent } from './components/log-in/reset-password/reset-password-card/reset-password-card.component';
 import { SendEmailCardComponent } from './components/log-in/log-in/send-email-card/send-email-card.component';
 import { EmailVerifiedComponent } from './components/log-in/sign-in/email-verified/email-verified.component';
+import { ChannelEditComponent } from './shared/components/dialog/channel-edit/channel-edit.component';
 
 
 export const routes: Routes = [
@@ -17,12 +18,13 @@ export const routes: Routes = [
     { path: 'signin', component: SignInComponent },
     { path: 'auth/action', component: ResetPasswordCardComponent }, // Firebase-Link-Route
     /* { path: 'resetpassword', component: ResetPasswordCardComponent }, */
-    { path: 'resetpassword', component: ResetPasswordComponent },
+    { path: 'resetpassword', component: ResetPasswordCardComponent },
     { path: 'sendemail', component: SendEmailCardComponent },
     { path: 'workspace', component: WorkspaceComponent },
     { path: 'choose-avatar', component: ChooseAvatarCardComponent },
     { path: 'imprint', component: ImprintComponent },
     { path: 'privacy-policy', component: PrivacyPolicyComponent },
     { path: 'emailverified', component: EmailVerifiedComponent },
+    {path: 'channel-edit', component: ChannelEditComponent },
 ];
 

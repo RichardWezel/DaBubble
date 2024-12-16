@@ -1,6 +1,22 @@
-<main class="searchbar">
+<main 
+  class="searchbar" 
+  tabindex="0" 
+  aria-haspopup="listbox"
+  aria-owns="search-results"
+  [attr.aria-expanded]="searchResults.length > 0"
+>
   <section class="input">
-    <input id="searchbar" type="search" placeholder="Devspace durchsuchen" [(ngModel)]="userInput" (input)="onInput()">
+    <input 
+      id="searchbar" 
+      type="search" 
+      placeholder="Devspace durchsuchen" 
+      [(ngModel)]="userInput" 
+      (input)="onInput()"
+      (keydown)="handleKeyboardEvent($event)"
+      aria-autocomplete="list"
+      aria-controls="search-results"
+      [attr.aria-activedescendant]="selectedIndex >= 0 ? 'result-' + selectedIndex : ''"
+      >
     <div class="search">
       <svg width="35" height="36" viewBox="0 0 35 36" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -9,11 +25,23 @@
       </svg>
     </div>
   </section>
-  <section class="result-container" *ngIf="userInput.length >= 2">
+  <section class="result-container" *ngIf="userInput.length >= 2 && searchResults.length > 0" id="search-results" role="listbox">
     <ul>
-      <li *ngFor="let result of searchResults">
-        <div class="origin">{{ result }}</div>
-        <!-- Weitere Inhalte -->
+      <li 
+        *ngFor="let result of searchResults; let i = index"
+        [id]="'result-' + i"
+        [class.selected]="i === selectedIndex"
+        (click)="setChannel(result)"
+        role="option"
+        [attr.aria-selected]="i === selectedIndex"
+        tabindex="-1"
+      >  
+      <ng-container *ngIf="isChannel(result); else userTemplate">
+        # {{ result.name }}
+      </ng-container>
+      <ng-template #userTemplate>
+        &#x40; {{ result.name }}
+      </ng-template>
       </li>
     </ul>
   </section>
