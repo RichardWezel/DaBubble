@@ -52,7 +52,7 @@ export class SearchComponent {
   findChannels(userInput: string): ChannelInterface[] {
     const channels: ChannelInterface[] = this.storage.CurrentUserChannel;
     const matches = channels.filter(channel =>
-      channel.name.toLowerCase().startsWith(userInput.toLowerCase())
+      channel.name.toLowerCase().includes(userInput.toLowerCase())
     );
     return matches;
   }
@@ -60,7 +60,7 @@ export class SearchComponent {
   findUser(userInput: string): UserInterface[] {
     const users: UserInterface[] = this.storage.user;
     const matches = users.filter(user =>
-      user.name.toLowerCase().startsWith(userInput.toLowerCase())
+      user.name.toLowerCase().includes(userInput.toLowerCase())
     );
     return matches;
   }
