@@ -44,12 +44,9 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
       // Gast-User behandeln
       this.currentUser.id = authUid;
       this.unsubCurrentUser = this.getCurrentUserDocument();
-      console.log('Gast-User eingeloggt:', this.currentUser.id);
     } else {
       console.warn('Kein gültiger authUid gefunden.');
     }
-
-    console.log('current User Observable:', this.currentUser$);
   }
 
   getAllThreads(): { thread: PostInterface, parent: ChannelInterface | UserInterface }[] {
@@ -93,7 +90,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         if (docSnapshot.exists()) {
           const userData = docSnapshot.data() as UserInterface;
           this.currentUser = { ...userData, id: docSnapshot.id, currentChannel: this.determineCurrentChannel(this.currentUser), threadOpen: this.currentUser.threadOpen || false, postId: this.currentUser.postId || '' };
-          console.log("currentUser aktualisiert:", this.currentUser);
           this.currentUserSubject.next(this.currentUser); // Emit the new value
         } else {
           console.warn('currentUser-Dokument existiert nicht.');

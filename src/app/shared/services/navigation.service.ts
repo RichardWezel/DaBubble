@@ -26,7 +26,6 @@ export class NavigationService {
     this.storage.currentUser.currentChannel = channelId;
     this.storage.currentUser.threadOpen = false;
     sessionStorage.setItem('currentChannel', channelId);
-    console.log('Channel gewechselt zu:', channelId);
     this.channelChanged.emit(channelId);
   }
 

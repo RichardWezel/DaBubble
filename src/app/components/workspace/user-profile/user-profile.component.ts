@@ -56,7 +56,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     const userIdSub = this.openUserProfileService.userID$.subscribe(value => {
       this.userId = value;
       this.updateUser(this.userId)
-      console.log('userId changed to:', value);
     });
     if (userIdSub) this.subscriptions.add(userIdSub);
   }
@@ -85,7 +84,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       this.email = this.userObject.email;
       this.name = this.userObject.name;
     }
-    console.log('UserProfileComponent userObject is updated to: ', this.userObject)
   }
 
   public openDialog() {
@@ -131,7 +129,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
     await this.storage.updateUser(this.userId, updatedUser as UserInterface)
       .then(() => {
-        console.log('Benutzerprofil erfolgreich aktualisiert.');
         this.userObject!.name = this.name;
         this.userObject!.email = this.email;
         this.mode = 'show';

@@ -32,7 +32,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (this.storage.currentUser$) {
       const sub = this.storage.currentUser$.subscribe(user => {
         this.currentUserName = user.name;
-        console.log('NavbarComponent: currentUserName updated to:', this.currentUserName);
       });
       this.subscriptions.add(sub);
     }

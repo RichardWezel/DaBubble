@@ -43,8 +43,6 @@ export class SearchComponent {
       const channelMatches: ChannelInterface[] = this.findChannels(this.userInput);
       const userMatches: UserInterface[] = this.findUser(this.userInput);
       this.searchResults = [...channelMatches, ...userMatches];
-      console.log("gefundene Kanäle: ", channelMatches);
-      console.log("gefundene Benutzer: ", userMatches);
     } else {
       this.searchResults = [];
       this.selectedIndex = -1;
@@ -56,7 +54,6 @@ export class SearchComponent {
     const matches = channels.filter(channel =>
       channel.name.toLowerCase().startsWith(userInput.toLowerCase())
     );
-    console.log("channels matches: ", matches);
     return matches;
   }
 
@@ -65,7 +62,6 @@ export class SearchComponent {
     const matches = users.filter(user =>
       user.name.toLowerCase().startsWith(userInput.toLowerCase())
     );
-    console.log("user matches: ", matches);
     return matches;
   }
 
@@ -73,7 +69,6 @@ export class SearchComponent {
     if (result.type === "channel") {
       if (result.id) {
         this.navigation.setChannel(result.id);
-        console.log("this.navigation.setChannel(", result.id, ")")
       } else {
         console.error('Channel id is undefined.');
         return;

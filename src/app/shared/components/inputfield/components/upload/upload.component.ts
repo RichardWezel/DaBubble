@@ -25,7 +25,6 @@ export class UploadComponent implements OnChanges, OnInit {
 
   ngOnInit() {
     this.subscription = this.navigationService.channelChanged.subscribe((channelId) => {
-      console.log('Kanal geändert:', channelId);
       this.cancelUpload();
     });
   }
