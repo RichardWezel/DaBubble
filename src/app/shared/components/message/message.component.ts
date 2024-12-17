@@ -129,9 +129,6 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy  {
   }
 
 
- 
-
-
   /**
    * Opens or closes the thread of the given post ID.
    * If the thread is currently open, it will be closed, and vice versa.

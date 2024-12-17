@@ -60,13 +60,20 @@ main {
 
       li {
         display: flex;
-        align-items: center;
+        align-items: start;
         list-style: none; 
         margin-bottom: 8px; 
         padding: 8px 16px;
         border-radius: 32px;
         cursor: pointer;
         transition: background-color 0.3s;
+
+       
+        
+           
+          
+        
+        
 
         .origin{
           font-family: "Nunito";
@@ -99,3 +106,6 @@ main {
 }
 
 
+.test{
+  color: red;
+}

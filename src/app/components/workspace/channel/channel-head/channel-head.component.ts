@@ -74,10 +74,11 @@ export class ChannelHeadComponent implements OnInit {
   }
 
   /**
-   * Gleicht ab, ob ein Channel oder eine DM als ID in currentChannel des currentUsers enthalten ist 
-   * und gibt je nach Ergebnis 'channel' || 'dm' || '' zurück.
+   * Matches the string property currentChannel of the currentUser to determine whether a channel or a user ID is present and returns ‘channel’ or ‘dm’ accordingly. 
+   * If the value ‘newMessage’ is assigned in the sessionStorage under the key ‘currentChannel’, ‘newMessage’ is returned. 
+   * Otherwise ‘ ’ is returned.
    *
-   * @returns {string} 
+   * @returns {string} "channel" | "dm" | "newMessage" | ""
    */
   findChannel(): "channel" | "dm" | "newMessage" | "" {
     // findet den ersten Channel, deren id mit der currentChannel des currentUser übereinstimmt.

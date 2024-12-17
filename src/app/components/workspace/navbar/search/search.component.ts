@@ -5,6 +5,8 @@ import { FirebaseStorageService } from '../../../../shared/services/firebase-sto
 import { ChannelInterface } from '../../../../shared/interfaces/channel.interface';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 import { UserInterface } from '../../../../shared/interfaces/user.interface';
+import { SearchResult, SearchResultChannel, SearchResultChannelPost, SearchResultUser } from '../../../../shared/interfaces/search-result.interface';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-search',
@@ -16,10 +18,13 @@ import { UserInterface } from '../../../../shared/interfaces/user.interface';
 export class SearchComponent {
   protected storage = inject(FirebaseStorageService);
   navigation = inject(NavigationService);
-
-  searchResults: (ChannelInterface | UserInterface)[] = [];
+  searchResults: SearchResult[] = [];
   userInput: string = "";
   selectedIndex: number = -1;
+  
+  constructor(
+    private sanitizer: DomSanitizer
+  ) {}
 
   @ViewChildren('resultItem') resultItems!: QueryList<ElementRef>;
 
@@ -40,59 +45,102 @@ export class SearchComponent {
 
   updateFoundedChannelsAndUsers() {
     if (this.userInput) {
-      const channelMatches: ChannelInterface[] = this.findChannels(this.userInput);
-      const userMatches: UserInterface[] = this.findUser(this.userInput);
-      this.searchResults = [...channelMatches, ...userMatches];
+      const channelMatches: SearchResultChannel[] = this.findChannels(this.userInput);
+      const userMatches: SearchResultUser[] = this.findUser(this.userInput);
+      const channelPostMatches: SearchResultChannelPost[] = this.findChannelsByPost(this.userInput);
+      this.searchResults = [...channelMatches, ...userMatches, ...channelPostMatches];
     } else {
       this.searchResults = [];
       this.selectedIndex = -1;
     }
   }
 
-  findChannels(userInput: string): ChannelInterface[] {
+  findChannels(userInput: string): SearchResultChannel[] {
     const channels: ChannelInterface[] = this.storage.CurrentUserChannel;
     const matches = channels.filter(channel =>
       channel.name.toLowerCase().includes(userInput.toLowerCase())
-    );
+    ).map(channel => ({ type: 'channel', channel } as SearchResultChannel));
     return matches;
   }
 
-  findUser(userInput: string): UserInterface[] {
+  findUser(userInput: string): SearchResultUser[] {
     const users: UserInterface[] = this.storage.user;
     const matches = users.filter(user =>
       user.name.toLowerCase().includes(userInput.toLowerCase())
-    );
+    ).map(user => ({ type: 'user', user } as SearchResultUser));
     return matches;
   }
 
-  async setChannel(result: ChannelInterface | UserInterface): Promise<void> {
-    if (result.type === "channel") {
-      if (result.id) {
-        this.navigation.setChannel(result.id);
-      } else {
-        console.error('Channel id is undefined.');
-        return;
+  findChannelsByPost(userInput: string): SearchResultChannelPost[] {
+    const channels: ChannelInterface[] = this.storage.CurrentUserChannel;
+    const inputLower = userInput.toLowerCase();
+    const matches: SearchResultChannelPost[] = [];
+  
+    channels.forEach(channel => {
+      if (channel.posts) {
+        channel.posts.forEach(post => {
+          if (post.text.toLowerCase().includes(inputLower)) {
+            matches.push({
+              type: 'channel-post',
+              channel,
+              post
+            });
+          }
+        });
       }
-    }
-    
-    if (result.type === "user") {
-      let dmId = await this.findIdOfDM(result);
-      if (dmId) {
-        this.navigation.setChannel(dmId);
-      } else {
-        console.error('DM id is undefined.');
-        return;
-      }
-    }
-    
-    this.userInput = "";
-    this.searchResults = [];
-    this.selectedIndex = -1;
+    });
+  
+    return matches;
   }
+
+  // search.component.ts
+
+async setChannel(result: SearchResult): Promise<void> {
+  if (result.type === 'channel') {
+    const channel = result.channel;
+    if (channel.id) {
+      this.navigation.setChannel(channel.id);
+    } else {
+      console.error('Channel id is undefined.');
+      return;
+    }
+  }
+  
+  if (result.type === 'user') {
+    const user = result.user;
+    let dmId = await this.findIdOfDM(user);
+    if (dmId) {
+      this.navigation.setChannel(dmId);
+    } else {
+      console.error('DM id is undefined.');
+      return;
+    }
+  }
+
+  if (result.type === 'channel-post') {
+    const channel = result.channel;
+    const post = result.post;
+    if (channel.id) {
+      this.navigation.setChannel(channel.id);
+      // Optional: Navigieren Sie zu dem spezifischen Post, falls Ihr Navigationssystem dies unterstützt
+      // Beispielsweise:
+      // this.navigation.navigateToPost(channel.id, post.id);
+    } else {
+      console.error('Channel id is undefined.');
+      return;
+    }
+  }
+  
+  this.userInput = "";
+  this.searchResults = [];
+  this.selectedIndex = -1;
+}
+
   
 
   async findIdOfDM(result: UserInterface): Promise<string | undefined> {
-    const UserMatch = this.storage.user.find(user => user.name.toLowerCase().startsWith(result.name.toLowerCase()));
+    const UserMatch = this.storage.user.find(user => 
+      user.name.toLowerCase().startsWith(result.name.toLowerCase()));
     if (UserMatch && this.findUserInDms(UserMatch)) {
       return this.getDmContact(UserMatch?.id!);
     } else if (UserMatch && !this.findUserInDms(UserMatch)) {
@@ -173,6 +221,38 @@ export class SearchComponent {
   isUser(result: ChannelInterface | UserInterface): result is UserInterface {
     const isUsr = result.type === 'user';
     return isUsr;
+  }
+
+  /**
+   * Opens or closes the thread of the given post ID.
+   * If the thread is currently open, it will be closed, and vice versa.
+   * The post ID is stored in the currentUser object in the storage.
+   * @param {string} postId - The ID of the post to open or close the thread of.
+   */
+  openThread(postId: string) {
+    this.storage.currentUser.postId = postId;
+    this.storage.currentUser.threadOpen = !this.storage.currentUser.threadOpen;
+  }
+
+  /**
+   * Hebt den Suchbegriff im Text hervor.
+   * @param {string} text - Der Text, in dem der Suchbegriff hervorgehoben werden soll.
+   * @returns {SafeHtml} - Der hervorgehobene Text als sicherer HTML-Inhalt.
+   */
+  highlightMatch(text: string): SafeHtml {
+    if (!this.userInput) return text;
+    const regex = new RegExp(`(${this.escapeRegExp(this.userInput)})`, 'gi');
+    const highlighted = text.replace(regex, '<span class="test">$1</span>');
+    return this.sanitizer.bypassSecurityTrustHtml(highlighted);
+  }
+
+  /**
+   * Escaped spezielle Zeichen in einem regulären Ausdruck.
+   * @param {string} text - Der Text, der escaped werden soll.
+   * @returns {string} - Der escapete Text.
+   */
+  private escapeRegExp(text: string): string {
+    return text.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
   }
 
 }

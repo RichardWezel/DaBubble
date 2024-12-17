@@ -36,12 +36,18 @@
         [attr.aria-selected]="i === selectedIndex"
         tabindex="-1"
       >  
-      <ng-container *ngIf="isChannel(result); else userTemplate">
-        # {{ result.name }}
-      </ng-container>
-      <ng-template #userTemplate>
-        &#x40; {{ result.name }}
-      </ng-template>
+     <!-- Kanal -->
+        <ng-container *ngIf="result.type === 'channel'">
+          # <span [innerHTML]="highlightMatch(result.channel.name)"></span>
+        </ng-container>
+        <!-- Benutzer -->
+        <ng-container *ngIf="result.type === 'user'">
+          &#x40; <span [innerHTML]="highlightMatch(result.user.name)"></span>
+        </ng-container>
+        <!-- Kanal mit gefundener Post -->
+        <ng-container *ngIf="result.type === 'channel-post'">
+          # <span [innerHTML]="highlightMatch(result.channel.name)"></span>: <span [innerHTML]="highlightMatch(result.post.text)"></span>
+        </ng-container>
       </li>
     </ul>
   </section>
