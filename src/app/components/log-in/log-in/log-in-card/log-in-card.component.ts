@@ -101,6 +101,7 @@ export class LogInCardComponent {
     // Saving the Auth-UID
     sessionStorage.setItem("authUid", user.uid);
     this.storage.authUid = user.uid;
+    this.storage.getCurrentUserDocument();
     // Loading the user information
     this.authService.getCurrentUser();
     this.storage.getCurrentUserChannelCollection();

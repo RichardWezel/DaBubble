@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, inject, Input, OnChanges, OnInit, OnDestroy, SimpleChanges } from '@angular/core';
 import { PostInterface } from '../../interfaces/post.interface';
 import { AuthorService } from '../../services/author.service';
 import { UserInterface } from '../../interfaces/user.interface';
@@ -8,6 +8,7 @@ import { EmojiSelectorComponent } from '../emoji-selector/emoji-selector.compone
 import { EmojiService } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CloudStorageService } from '../../services/cloud-storage.service';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -17,7 +18,7 @@ import { CloudStorageService } from '../../services/cloud-storage.service';
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'
 })
-export class MessageComponent implements OnInit, OnChanges {
+export class MessageComponent implements OnInit, OnChanges, OnDestroy  {
   storage = inject(FirebaseStorageService);
   elementRef: ElementRef = inject(ElementRef);
   emojiSelector = inject(EmojiSelectorComponent);
@@ -38,28 +39,10 @@ export class MessageComponent implements OnInit, OnChanges {
 
   isAuthorCurrentUser: boolean = false;
 
+  // Neue Property zur Verwaltung der Subscription
+  private currentUserSubscription: Subscription | undefined;
+
   constructor(private authorService: AuthorService) { }
-
-
-  /**
-   * Handles clicks outside of the emoji selector component.
-   * Stops the event from propagating and checks if the click target is outside the emoji selector.
-   * If the target is outside, hides the emoji selector by setting the showEmojiSelector flag to false.
-   * 
-   * @param {MouseEvent} event - The event object representing the click.
-   */
-  outsideClick(event: any) {
-    event.stopPropagation();
-    const path = event.path || (event.composedPath && event.composedPath());
-    console.log(path);
-    if (!path.includes(this.elementRef.nativeElement.querySelector('app-emoji-selector'))) {
-      this.showEmojiSelector = false;
-    }
-    if (!path.includes(this.elementRef.nativeElement.querySelector('special-container'))) {
-      this.isSpecialMenuOpen = false;
-    }
-  }
-
 
   /**
    * Lifecycle hook that is called after the component is initialized.
@@ -68,6 +51,11 @@ export class MessageComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.resolveAuthor();
     this.updateAuthorStatus();
+    
+    // Abonniere das currentUser$ Observable
+    this.currentUserSubscription = this.storage.currentUser$.subscribe((currentUser) => {
+      this.isAuthorCurrentUser = this.post.author === currentUser?.id;
+    });
   }
 
 
@@ -83,6 +71,13 @@ export class MessageComponent implements OnInit, OnChanges {
     }
   }
 
+  ngOnDestroy(): void {
+    // Stelle sicher, dass die Subscription abgemeldet wird
+    if (this.currentUserSubscription) {
+      this.currentUserSubscription.unsubscribe();
+    }
+  }
+
 
   /**
    * Resolves the author information from the post's author ID.
@@ -94,6 +89,15 @@ export class MessageComponent implements OnInit, OnChanges {
       this.authorName = user.name;
       this.authorAvatar = user.avatar;
     });
+  }
+
+   /**
+   * Updates the isAuthorCurrentUser property by comparing the post's author ID with the
+   * current user's ID from the storage. This is used to determine if the author of the
+   * post is the current user.
+   */
+   private updateAuthorStatus() {
+    this.isAuthorCurrentUser = this.post.author === this.storage.currentUser?.id;
   }
 
 
@@ -125,14 +129,7 @@ export class MessageComponent implements OnInit, OnChanges {
   }
 
 
-  /**
-   * Updates the isAuthorCurrentUser property by comparing the post's author ID with the
-   * current user's ID from the storage. This is used to determine if the author of the
-   * post is the current user.
-   */
-  private updateAuthorStatus() {
-    this.isAuthorCurrentUser = this.post.author === this.storage.currentUser?.id;
-  }
+ 
 
 
   /**
@@ -243,5 +240,24 @@ export class MessageComponent implements OnInit, OnChanges {
   editPost() {
     this.postEdit = true;
   }
+
+    /**
+   * Handles clicks outside of the emoji selector component.
+   * Stops the event from propagating and checks if the click target is outside the emoji selector.
+   * If the target is outside, hides the emoji selector by setting the showEmojiSelector flag to false.
+   * 
+   * @param {MouseEvent} event - The event object representing the click.
+   */
+    outsideClick(event: any) {
+      event.stopPropagation();
+      const path = event.path || (event.composedPath && event.composedPath());
+      console.log(path);
+      if (!path.includes(this.elementRef.nativeElement.querySelector('app-emoji-selector'))) {
+        this.showEmojiSelector = false;
+      }
+      if (!path.includes(this.elementRef.nativeElement.querySelector('special-container'))) {
+        this.isSpecialMenuOpen = false;
+      }
+    }
 }
 
