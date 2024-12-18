@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'
 })
-export class MessageComponent implements OnInit, OnChanges, OnDestroy  {
+export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   storage = inject(FirebaseStorageService);
   elementRef: ElementRef = inject(ElementRef);
   emojiSelector = inject(EmojiSelectorComponent);
@@ -51,11 +51,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy  {
   ngOnInit() {
     this.resolveAuthor();
     this.updateAuthorStatus();
-    
-    // Abonniere das currentUser$ Observable
-    this.currentUserSubscription = this.storage.currentUser$.subscribe((currentUser) => {
-      this.isAuthorCurrentUser = this.post.author === currentUser?.id;
-    });
+
   }
 
 
@@ -71,12 +67,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy  {
     }
   }
 
-  ngOnDestroy(): void {
-    // Stelle sicher, dass die Subscription abgemeldet wird
-    if (this.currentUserSubscription) {
-      this.currentUserSubscription.unsubscribe();
-    }
-  }
+  ngOnDestroy(): void { }
 
 
   /**
@@ -91,12 +82,12 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy  {
     });
   }
 
-   /**
-   * Updates the isAuthorCurrentUser property by comparing the post's author ID with the
-   * current user's ID from the storage. This is used to determine if the author of the
-   * post is the current user.
-   */
-   private updateAuthorStatus() {
+  /**
+  * Updates the isAuthorCurrentUser property by comparing the post's author ID with the
+  * current user's ID from the storage. This is used to determine if the author of the
+  * post is the current user.
+  */
+  private updateAuthorStatus() {
     this.isAuthorCurrentUser = this.post.author === this.storage.currentUser?.id;
   }
 
@@ -238,23 +229,23 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy  {
     this.postEdit = true;
   }
 
-    /**
-   * Handles clicks outside of the emoji selector component.
-   * Stops the event from propagating and checks if the click target is outside the emoji selector.
-   * If the target is outside, hides the emoji selector by setting the showEmojiSelector flag to false.
-   * 
-   * @param {MouseEvent} event - The event object representing the click.
-   */
-    outsideClick(event: any) {
-      event.stopPropagation();
-      const path = event.path || (event.composedPath && event.composedPath());
-      console.log(path);
-      if (!path.includes(this.elementRef.nativeElement.querySelector('app-emoji-selector'))) {
-        this.showEmojiSelector = false;
-      }
-      if (!path.includes(this.elementRef.nativeElement.querySelector('special-container'))) {
-        this.isSpecialMenuOpen = false;
-      }
+  /**
+ * Handles clicks outside of the emoji selector component.
+ * Stops the event from propagating and checks if the click target is outside the emoji selector.
+ * If the target is outside, hides the emoji selector by setting the showEmojiSelector flag to false.
+ * 
+ * @param {MouseEvent} event - The event object representing the click.
+ */
+  outsideClick(event: any) {
+    event.stopPropagation();
+    const path = event.path || (event.composedPath && event.composedPath());
+    console.log(path);
+    if (!path.includes(this.elementRef.nativeElement.querySelector('app-emoji-selector'))) {
+      this.showEmojiSelector = false;
     }
+    if (!path.includes(this.elementRef.nativeElement.querySelector('special-container'))) {
+      this.isSpecialMenuOpen = false;
+    }
+  }
 }
 

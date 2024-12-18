@@ -18,7 +18,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
   CurrentUserChannel: ChannelInterface[] = [];
-  currentUser: CurrentUserInterface = {  type: 'user', name: '', email: '', avatar: '', online: false, dm: [], id: '' };
+  currentUser: CurrentUserInterface = { type: 'user', name: '', email: '', avatar: '', online: false, dm: [], id: '' };
   authUid = sessionStorage.getItem("authUid") || 't3O7pW0P7QrjD26Bd6DZ';
   doneLoading: boolean = true;
   private currentUserSubject = new BehaviorSubject<CurrentUserInterface>(this.currentUser);
@@ -36,17 +36,17 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     this.unsubChannels = this.getChannelCollection();
     this.unsubUsers = this.getUserCollection();
 
-    const authUid = this.authUid;
-    if (authUid && authUid !== 't3O7pW0P7QrjD26Bd6DZ') {
-      this.currentUser.id = authUid;
-      this.unsubCurrentUser = this.getCurrentUserDocument();
-    } else if (authUid === 't3O7pW0P7QrjD26Bd6DZ') {
-      // Gast-User behandeln
-      this.currentUser.id = authUid;
-      this.unsubCurrentUser = this.getCurrentUserDocument();
-    } else {
-      console.warn('Kein gültiger authUid gefunden.');
-    }
+    // const authUid = this.authUid;
+    // if (authUid && authUid !== 't3O7pW0P7QrjD26Bd6DZ') {
+    //   this.currentUser.id = authUid;
+    //   this.unsubCurrentUser = this.getCurrentUserDocument();
+    // } else if (authUid === 't3O7pW0P7QrjD26Bd6DZ') {
+    //   // Gast-User behandeln
+    //   this.currentUser.id = authUid;
+    //   this.unsubCurrentUser = this.getCurrentUserDocument();
+    // } else {
+    //   console.warn('Kein gültiger authUid gefunden.');
+    // }
   }
 
   getAllThreads(): { thread: PostInterface, parent: ChannelInterface | UserInterface }[] {

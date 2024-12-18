@@ -17,7 +17,7 @@ export class FirebaseAuthService {
   onlineTimer: any = null;
 
   constructor() {
-    this.getCurrentUser();
+    // this.getCurrentUser();
   }
 
 
