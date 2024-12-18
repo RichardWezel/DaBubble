@@ -37,17 +37,17 @@
         tabindex="-1"
       >  
      <!-- Kanal -->
-        <ng-container *ngIf="result.type === 'channel'">
-          # <span [innerHTML]="highlightMatch(result.channel.name)"></span>
-        </ng-container>
-        <!-- Benutzer -->
-        <ng-container *ngIf="result.type === 'user'">
-          &#x40; <span [innerHTML]="highlightMatch(result.user.name)"></span>
-        </ng-container>
-        <!-- Kanal mit gefundener Post -->
-        <ng-container *ngIf="result.type === 'channel-post'">
-          # <span [innerHTML]="highlightMatch(result.channel.name)"></span>: <span [innerHTML]="highlightMatch(result.post.text)"></span>
-        </ng-container>
+     <ng-container *ngIf="result.type === 'channel'">
+      #&nbsp;<span [innerHTML]="highlightMatch(result.channel.name)"></span>
+    </ng-container>
+    <!-- Benutzer -->
+    <ng-container *ngIf="result.type === 'user'">
+      &#x40;&nbsp;<span [innerHTML]="highlightMatch(result.user.name)"></span>
+    </ng-container>
+    <!-- Kanal mit gefundener Post -->
+    <ng-container *ngIf="result.type === 'channel-post'">
+      #&nbsp;<span [innerHTML]="highlightMatch(result.channel.name)"></span>:&nbsp;<span [innerHTML]="highlightMatch(result.post.text)"></span>
+    </ng-container>
       </li>
     </ul>
   </section>

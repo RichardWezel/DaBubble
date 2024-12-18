@@ -68,13 +68,6 @@ main {
         cursor: pointer;
         transition: background-color 0.3s;
 
-       
-        
-           
-          
-        
-        
-
         .origin{
           font-family: "Nunito";
           font-size: 18px;
@@ -97,6 +90,12 @@ main {
           background-color: $backgroundColor;
           border-radius: 32px;
         }
+
+        /* Erhöhte Spezifität für .highlight */
+        .highlight {
+          color: red !important; /* Verwenden von !important als kurzfristige Lösung */
+          font-weight: bold;
+        }
       }
       li:last-child {
         margin-bottom: 0;
@@ -105,7 +104,3 @@ main {
   }
 }
 
-
-.test{
-  color: red;
-}

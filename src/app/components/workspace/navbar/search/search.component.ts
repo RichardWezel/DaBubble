@@ -7,6 +7,8 @@ import { NavigationService } from '../../../../shared/services/navigation.servic
 import { UserInterface } from '../../../../shared/interfaces/user.interface';
 import { SearchResult, SearchResultChannel, SearchResultChannelPost, SearchResultUser } from '../../../../shared/interfaces/search-result.interface';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-search',
@@ -21,14 +23,28 @@ export class SearchComponent {
   searchResults: SearchResult[] = [];
   userInput: string = "";
   selectedIndex: number = -1;
+
+  private searchSubject = new Subject<string>();
   
   constructor(
     private sanitizer: DomSanitizer
-  ) {}
+  ) {
+    this.searchSubject.pipe(
+      debounceTime(300)
+    ).subscribe(searchTerm => {
+      this.userInput = searchTerm;
+      this.onInputSearch();
+    });
+  }
 
   @ViewChildren('resultItem') resultItems!: QueryList<ElementRef>;
 
   onInput(): void {
+    this.searchSubject.next(this.userInput);
+    this.selectedIndex = -1;
+  }
+
+  onInputSearch(): void {
     this.searchResults = [];
     this.updateSearchResults();
     this.selectedIndex = -1;
@@ -93,54 +109,62 @@ export class SearchComponent {
     return matches;
   }
 
-  // search.component.ts
 
-async setChannel(result: SearchResult): Promise<void> {
-  if (result.type === 'channel') {
-    const channel = result.channel;
-    if (channel.id) {
-      this.navigation.setChannel(channel.id);
-    } else {
-      console.error('Channel id is undefined.');
-      return;
-    }
-  }
-  
-  if (result.type === 'user') {
-    const user = result.user;
-    let dmId = await this.findIdOfDM(user);
-    if (dmId) {
-      this.navigation.setChannel(dmId);
-    } else {
-      console.error('DM id is undefined.');
-      return;
-    }
+  async setChannel(result: SearchResult): Promise<void> {
+    this.setTypeChannel(result);
+    this.setTypeUser(result);
+    this.setTypeChannelPost(result);
+
+    this.userInput = "";
+    this.searchResults = [];
+    this.selectedIndex = -1;
   }
 
-  if (result.type === 'channel-post') {
-    const channel = result.channel;
-    const post = result.post;
-    if (channel.id) {
-      this.navigation.setChannel(channel.id);
-      // Optional: Navigieren Sie zu dem spezifischen Post, falls Ihr Navigationssystem dies unterstützt
-      // Beispielsweise:
-      // this.navigation.navigateToPost(channel.id, post.id);
-    } else {
-      console.error('Channel id is undefined.');
-      return;
+  setTypeChannel(result: SearchResult) {
+    if (result.type === 'channel') {
+      const channel = result.channel;
+      if (channel.id) {
+        this.navigation.setChannel(channel.id);
+      } else {
+        console.error('Channel id is undefined.');
+        return;
+      }
     }
   }
-  
-  this.userInput = "";
-  this.searchResults = [];
-  this.selectedIndex = -1;
-}
 
-  
+  async setTypeUser(result: SearchResult) {
+    if (result.type === 'user') {
+      const user = result.user;
+      let dmId = await this.findIdOfDM(user);
+      if (dmId) {
+        this.navigation.setChannel(dmId);
+      } else {
+        console.error('DM id is undefined.');
+        return;
+      }
+    }
+  }
+
+  setTypeChannelPost(result: SearchResult) {
+    if (result.type === 'channel-post') {
+      const channel = result.channel;
+      const post = result.post;
+      if (channel.id) {
+        this.navigation.setChannel(channel.id);
+        // Optional: Navigieren Sie zu dem spezifischen Post, falls Ihr Navigationssystem dies unterstützt
+        // Beispielsweise:
+        // this.navigation.navigateToPost(channel.id, post.id);
+      } else {
+        console.error('Channel id is undefined.');
+        return;
+      }
+    }
+  }
 
   async findIdOfDM(result: UserInterface): Promise<string | undefined> {
     const UserMatch = this.storage.user.find(user => 
-      user.name.toLowerCase().startsWith(result.name.toLowerCase()));
+      user.name.toLowerCase().includes(result.name.toLowerCase())
+    );
     if (UserMatch && this.findUserInDms(UserMatch)) {
       return this.getDmContact(UserMatch?.id!);
     } else if (UserMatch && !this.findUserInDms(UserMatch)) {
@@ -149,7 +173,6 @@ async setChannel(result: SearchResult): Promise<void> {
       return this.storage.currentUser.currentChannel;
     }
   }
-  
 
   findUserInDms(UserMatch: UserInterface): boolean {
     return this.storage.currentUser.dm.some(dm => dm.contact === UserMatch.id);
@@ -182,22 +205,34 @@ async setChannel(result: SearchResult): Promise<void> {
   async handleKeyboardEvent(event: KeyboardEvent): Promise<void> {
     if (this.searchResults.length > 0) {
       if (event.key === 'ArrowDown') {
-        event.preventDefault(); 
-        this.selectedIndex = (this.selectedIndex + 1) % this.searchResults.length;
-        this.scrollToSelected();
+        this.handleArrowDown(event)
       } else if (event.key === 'ArrowUp') {
-        event.preventDefault();
-        this.selectedIndex = (this.selectedIndex > 0 ? this.selectedIndex - 1 : this.searchResults.length - 1);
-        this.scrollToSelected();
+        this.handleArrowUp(event)
       } else if (event.key === 'Enter') {
-        event.preventDefault();
-        if (this.selectedIndex >= 0 && this.selectedIndex < this.searchResults.length) {
-          try {
-            await this.setChannel(this.searchResults[this.selectedIndex]);
-          } catch (error) {
-            console.error('Error setting channel:', error);
-          }
-        }
+        await this.handleEnter(event)
+      }
+    }
+  }
+
+  handleArrowDown(event: KeyboardEvent) {
+    event.preventDefault(); 
+    this.selectedIndex = (this.selectedIndex + 1) % this.searchResults.length;
+    this.scrollToSelected();
+  }
+
+  handleArrowUp(event: KeyboardEvent) {
+    event.preventDefault();
+    this.selectedIndex = (this.selectedIndex > 0 ? this.selectedIndex - 1 : this.searchResults.length - 1);
+    this.scrollToSelected();
+  }
+
+  async handleEnter(event: KeyboardEvent) {
+    event.preventDefault();
+    if (this.selectedIndex >= 0 && this.selectedIndex < this.searchResults.length) {
+      try {
+        await this.setChannel(this.searchResults[this.selectedIndex]);
+      } catch (error) {
+        console.error('Error setting channel:', error);
       }
     }
   }
@@ -242,9 +277,10 @@ async setChannel(result: SearchResult): Promise<void> {
   highlightMatch(text: string): SafeHtml {
     if (!this.userInput) return text;
     const regex = new RegExp(`(${this.escapeRegExp(this.userInput)})`, 'gi');
-    const highlighted = text.replace(regex, '<span class="test">$1</span>');
+    const highlighted = text.replace(regex, '<span class="highlight" style="color: #797EF3;; font-weight: 400;">$1</span>');
     return this.sanitizer.bypassSecurityTrustHtml(highlighted);
   }
+  
 
   /**
    * Escaped spezielle Zeichen in einem regulären Ausdruck.
