@@ -68,16 +68,28 @@ main {
         cursor: pointer;
         transition: background-color 0.3s;
 
-        .origin{
-          font-family: "Nunito";
+        .prefix-channel,
+        .prefix-user,
+        .prefix-channel-post {
+          font-family: "Nunito", sans-serif;
           font-size: 18px;
           font-weight: 700;
           line-height: 24.55px;
           text-align: left;
-          text-underline-position: from-font;
-          text-decoration-skip-ink: none;
-          color: $thirdColor;
+          color: #444DF2;
         }
+
+        // .prefix-channel {
+      
+        // }
+
+        // .prefix-user {
+   
+        // }
+
+        // .prefix-channel-post {
+        
+        // }
 
         .text{
           .searchTerm{
@@ -91,11 +103,6 @@ main {
           border-radius: 32px;
         }
 
-        /* Erhöhte Spezifität für .highlight */
-        .highlight {
-          color: red !important; /* Verwenden von !important als kurzfristige Lösung */
-          font-weight: bold;
-        }
       }
       li:last-child {
         margin-bottom: 0;

@@ -38,15 +38,15 @@
       >  
      <!-- Kanal -->
      <ng-container *ngIf="result.type === 'channel'">
-      #&nbsp;<span [innerHTML]="highlightMatch(result.channel.name)"></span>
+      <span class="prefix-channel">#&nbsp;<span [innerHTML]="highlightMatch(result.channel.name)"></span>:</span>
     </ng-container>
     <!-- Benutzer -->
     <ng-container *ngIf="result.type === 'user'">
-      &#x40;&nbsp;<span [innerHTML]="highlightMatch(result.user.name)"></span>
+      <span class="prefix-user">&#x40;&nbsp;<span [innerHTML]="highlightMatch(result.user.name)"></span>:</span>
     </ng-container>
     <!-- Kanal mit gefundener Post -->
     <ng-container *ngIf="result.type === 'channel-post'">
-      #&nbsp;<span [innerHTML]="highlightMatch(result.channel.name)"></span>:&nbsp;<span [innerHTML]="highlightMatch(result.post.text)"></span>
+      <span class="prefix-channel-post">#&nbsp;<span [innerHTML]="highlightMatch(result.channel.name)"></span>:</span>&nbsp;<span [innerHTML]="highlightMatch(result.post.text)"></span>
     </ng-container>
       </li>
     </ul>

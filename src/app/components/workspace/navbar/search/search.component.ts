@@ -46,7 +46,6 @@ export class SearchComponent {
       this.onInputSearch();
     });
   }
-
  
   /**
    * Handles the input event from the search bar by emitting the current user input.
@@ -384,11 +383,10 @@ export class SearchComponent {
   highlightMatch(text: string): SafeHtml {
     if (!this.userInput) return text;
     const regex = new RegExp(`(${this.escapeRegExp(this.userInput)})`, 'gi');
-    const highlighted = text.replace(regex, '<span class="highlight" style="color: #797EF3;; font-weight: 400;">$1</span>');
+    const highlighted = text.replace(regex, '<span class="highlight" style="color: #797EF3;; font-weight: 100;">$1</span>');
     return this.sanitizer.bypassSecurityTrustHtml(highlighted);
   }
   
-
   /**
    * Escapes special characters in a string to safely use it within a regular expression.
    * @param text - The text to escape.
@@ -397,5 +395,4 @@ export class SearchComponent {
   private escapeRegExp(text: string): string {
     return text.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
   }
-
 }
