@@ -7,7 +7,13 @@ import { NavigationService } from '../../../../shared/services/navigation.servic
 import { UserInterface } from '../../../../shared/interfaces/user.interface';
 import { SearchResult, SearchResultChannel, SearchResultChannelPost, SearchResultUser } from '../../../../shared/interfaces/search-result.interface';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
+/**
+ * SearchComponent handles the search functionality within the application,
+ * including searching for channels, users, and posts, and navigating to selected results.
+ */
 @Component({
   selector: 'app-search',
   standalone: true,
@@ -21,20 +27,48 @@ export class SearchComponent {
   searchResults: SearchResult[] = [];
   userInput: string = "";
   selectedIndex: number = -1;
-  
-  constructor(
-    private sanitizer: DomSanitizer
-  ) {}
+
+  private searchSubject = new Subject<string>();
 
   @ViewChildren('resultItem') resultItems!: QueryList<ElementRef>;
-
+  
+   /**
+   * Creates an instance of SearchComponent and sets up the search debouncing.
+   * @param sanitizer - The DomSanitizer service to safely bind HTML content.
+   */
+  constructor(
+    private sanitizer: DomSanitizer
+  ) {
+    this.searchSubject.pipe(
+      debounceTime(300)
+    ).subscribe(searchTerm => {
+      this.userInput = searchTerm;
+      this.onInputSearch();
+    });
+  }
+ 
+  /**
+   * Handles the input event from the search bar by emitting the current user input.
+   */
   onInput(): void {
+    this.searchSubject.next(this.userInput);
+    this.selectedIndex = -1;
+  }
+
+  /**
+   * Initiates the search process by resetting search results and updating them based on user input.
+   */
+  onInputSearch(): void {
     this.searchResults = [];
     this.updateSearchResults();
     this.selectedIndex = -1;
   }
 
-  updateSearchResults() {
+  /**
+   * Updates the search results based on the current user input.
+   * Searches for channels, users, and channel posts if the input length is sufficient.
+   */
+  updateSearchResults(): void  {
     if (this.userInput.length >= 2) {
       this.updateFoundedChannelsAndUsers();
     } else {
@@ -43,7 +77,10 @@ export class SearchComponent {
     }
   }
 
-  updateFoundedChannelsAndUsers() {
+  /**
+   * Aggregates search results by finding matching channels, users, and channel posts.
+   */
+  updateFoundedChannelsAndUsers(): void  {
     if (this.userInput) {
       const channelMatches: SearchResultChannel[] = this.findChannels(this.userInput);
       const userMatches: SearchResultUser[] = this.findUser(this.userInput);
@@ -55,6 +92,11 @@ export class SearchComponent {
     }
   }
 
+  /**
+   * Searches for channels that include the user input in their names.
+   * @param userInput - The search term entered by the user.
+   * @returns An array of SearchResultChannel objects matching the search term.
+   */
   findChannels(userInput: string): SearchResultChannel[] {
     const channels: ChannelInterface[] = this.storage.CurrentUserChannel;
     const matches = channels.filter(channel =>
@@ -63,6 +105,11 @@ export class SearchComponent {
     return matches;
   }
 
+  /**
+   * Searches for users that include the user input in their names.
+   * @param userInput - The search term entered by the user.
+   * @returns An array of SearchResultUser objects matching the search term.
+   */
   findUser(userInput: string): SearchResultUser[] {
     const users: UserInterface[] = this.storage.user;
     const matches = users.filter(user =>
@@ -71,6 +118,11 @@ export class SearchComponent {
     return matches;
   }
 
+  /**
+   * Searches for channel posts that include the user input in their text.
+   * @param userInput - The search term entered by the user.
+   * @returns An array of SearchResultChannelPost objects matching the search term.
+   */
   findChannelsByPost(userInput: string): SearchResultChannelPost[] {
     const channels: ChannelInterface[] = this.storage.CurrentUserChannel;
     const inputLower = userInput.toLowerCase();
@@ -93,54 +145,86 @@ export class SearchComponent {
     return matches;
   }
 
-  // search.component.ts
+  /**
+   * Sets the channel, user, or channel post based on the selected search result.
+   * Navigates to the appropriate channel or direct message.
+   * @param result - The selected SearchResult object.
+   */
+  async setChannel(result: SearchResult): Promise<void> {
+    this.setTypeChannel(result);
+    this.setTypeUser(result);
+    this.setTypeChannelPost(result);
 
-async setChannel(result: SearchResult): Promise<void> {
-  if (result.type === 'channel') {
-    const channel = result.channel;
-    if (channel.id) {
-      this.navigation.setChannel(channel.id);
-    } else {
-      console.error('Channel id is undefined.');
-      return;
-    }
-  }
-  
-  if (result.type === 'user') {
-    const user = result.user;
-    let dmId = await this.findIdOfDM(user);
-    if (dmId) {
-      this.navigation.setChannel(dmId);
-    } else {
-      console.error('DM id is undefined.');
-      return;
-    }
+    this.userInput = "";
+    this.searchResults = [];
+    this.selectedIndex = -1;
   }
 
-  if (result.type === 'channel-post') {
-    const channel = result.channel;
-    const post = result.post;
-    if (channel.id) {
-      this.navigation.setChannel(channel.id);
-      // Optional: Navigieren Sie zu dem spezifischen Post, falls Ihr Navigationssystem dies unterstützt
-      // Beispielsweise:
-      // this.navigation.navigateToPost(channel.id, post.id);
-    } else {
-      console.error('Channel id is undefined.');
-      return;
+  /**
+   * Handles navigation when a channel is selected from the search results.
+   * @param result - The selected SearchResultChannel object.
+   */
+  setTypeChannel(result: SearchResult): void {
+    if (result.type === 'channel') {
+      const channel = result.channel;
+      if (channel.id) {
+        this.navigation.setChannel(channel.id);
+      } else {
+        console.error('Channel id is undefined.');
+        return;
+      }
     }
   }
-  
-  this.userInput = "";
-  this.searchResults = [];
-  this.selectedIndex = -1;
-}
 
-  
+  /**
+   * Handles navigation when a user is selected from the search results.
+   * Initiates or navigates to a direct message channel with the user.
+   * @param result - The selected SearchResultUser object.
+   */
+  async setTypeUser(result: SearchResult): Promise<void> {
+    if (result.type === 'user') {
+      const user = result.user;
+      let dmId = await this.findIdOfDM(user);
+      if (dmId) {
+        this.navigation.setChannel(dmId);
+      } else {
+        console.error('DM id is undefined.');
+        return;
+      }
+    }
+  }
 
+  /**
+   * Handles navigation when a channel post is selected from the search results.
+   * Navigates to the specific channel and optionally to the specific post.
+   * @param result - The selected SearchResultChannelPost object.
+   */
+  setTypeChannelPost(result: SearchResult): void {
+    if (result.type === 'channel-post') {
+      const channel = result.channel;
+      const post = result.post;
+      if (channel.id) {
+        this.navigation.setChannel(channel.id);
+        // Optional: Navigieren Sie zu dem spezifischen Post, falls Ihr Navigationssystem dies unterstützt
+        // Beispielsweise:
+        // this.navigation.navigateToPost(channel.id, post.id);
+      } else {
+        console.error('Channel id is undefined.');
+        return;
+      }
+    }
+  }
+
+  /**
+   * Finds the ID of the direct message (DM) channel for a given user.
+   * Creates a new DM channel if one does not already exist.
+   * @param result - The UserInterface object representing the selected user.
+   * @returns A promise that resolves to the DM channel ID or undefined.
+   */
   async findIdOfDM(result: UserInterface): Promise<string | undefined> {
     const UserMatch = this.storage.user.find(user => 
-      user.name.toLowerCase().startsWith(result.name.toLowerCase()));
+      user.name.toLowerCase().includes(result.name.toLowerCase())
+    );
     if (UserMatch && this.findUserInDms(UserMatch)) {
       return this.getDmContact(UserMatch?.id!);
     } else if (UserMatch && !this.findUserInDms(UserMatch)) {
@@ -149,17 +233,31 @@ async setChannel(result: SearchResult): Promise<void> {
       return this.storage.currentUser.currentChannel;
     }
   }
-  
 
+  /**
+   * Checks if a user is already in the current user's direct messages.
+   * @param UserMatch - The UserInterface object to check.
+   * @returns True if the user is in DMs, false otherwise.
+   */
   findUserInDms(UserMatch: UserInterface): boolean {
     return this.storage.currentUser.dm.some(dm => dm.contact === UserMatch.id);
   }
 
+  /**
+   * Retrieves the DM channel ID for a given user ID.
+   * @param IdOfUser - The ID of the user.
+   * @returns The DM channel ID or undefined if not found.
+   */
   getDmContact(IdOfUser: string): string | undefined {
     const dm = this.storage.currentUser.dm.find(dm => dm.contact === IdOfUser);
     return dm ? dm.id : undefined;
   }
 
+  /**
+   * Creates a new direct message channel with the specified user.
+   * @param UserMatch - The UserInterface object representing the user to message.
+   * @returns A promise that resolves to the new DM channel ID or undefined.
+   */
   async showNewDm(UserMatch: UserInterface) {
     await this.createEmptyDms(UserMatch);
     let dmWithNewUser = this.storage.currentUser.dm.find(dm => dm.contact === UserMatch.id);
@@ -170,6 +268,10 @@ async setChannel(result: SearchResult): Promise<void> {
     };
   }
 
+  /**
+   * Creates empty DM channels between the current user and the specified user.
+   * @param match - The UserInterface object representing the user to message.
+   */
   async createEmptyDms(match: UserInterface) {
     let currentUserId = this.storage.currentUser.id;
     let NewUserId = match.id;
@@ -179,30 +281,61 @@ async setChannel(result: SearchResult): Promise<void> {
     }
   }
 
+  /**
+   * Handles keyboard events for navigating through search results.
+   * Supports ArrowUp, ArrowDown, and Enter keys.
+   * @param event - The KeyboardEvent object.
+   */
   async handleKeyboardEvent(event: KeyboardEvent): Promise<void> {
     if (this.searchResults.length > 0) {
       if (event.key === 'ArrowDown') {
-        event.preventDefault(); 
-        this.selectedIndex = (this.selectedIndex + 1) % this.searchResults.length;
-        this.scrollToSelected();
+        this.handleArrowDown(event)
       } else if (event.key === 'ArrowUp') {
-        event.preventDefault();
-        this.selectedIndex = (this.selectedIndex > 0 ? this.selectedIndex - 1 : this.searchResults.length - 1);
-        this.scrollToSelected();
+        this.handleArrowUp(event)
       } else if (event.key === 'Enter') {
-        event.preventDefault();
-        if (this.selectedIndex >= 0 && this.selectedIndex < this.searchResults.length) {
-          try {
-            await this.setChannel(this.searchResults[this.selectedIndex]);
-          } catch (error) {
-            console.error('Error setting channel:', error);
-          }
-        }
+        await this.handleEnter(event)
+      }
+    }
+  }
+
+  /**
+   * Handles the ArrowDown key press to move the selection down in the search results.
+   * @param event - The KeyboardEvent object.
+   */
+  handleArrowDown(event: KeyboardEvent): void {
+    event.preventDefault(); 
+    this.selectedIndex = (this.selectedIndex + 1) % this.searchResults.length;
+    this.scrollToSelected();
+  }
+
+  /**
+   * Handles the ArrowUp key press to move the selection up in the search results.
+   * @param event - The KeyboardEvent object.
+   */
+  handleArrowUp(event: KeyboardEvent): void {
+    event.preventDefault();
+    this.selectedIndex = (this.selectedIndex > 0 ? this.selectedIndex - 1 : this.searchResults.length - 1);
+    this.scrollToSelected();
+  }
+
+  /**
+   * Handles the Enter key press to select the currently highlighted search result.
+   * @param event - The KeyboardEvent object.
+   */
+  async handleEnter(event: KeyboardEvent): Promise<void> {
+    event.preventDefault();
+    if (this.selectedIndex >= 0 && this.selectedIndex < this.searchResults.length) {
+      try {
+        await this.setChannel(this.searchResults[this.selectedIndex]);
+      } catch (error) {
+        console.error('Error setting channel:', error);
       }
     }
   }
   
-  
+  /**
+   * Scrolls the view to the currently selected search result.
+   */
   scrollToSelected() {
     const listItems = document.querySelectorAll('.result-container ul li');
     if (this.selectedIndex >= 0 && this.selectedIndex < listItems.length) {
@@ -211,13 +344,21 @@ async setChannel(result: SearchResult): Promise<void> {
     }
   }
 
-  // Typ-Guard für ChannelInterface
+  /**
+   * Type guard to determine if a SearchResult is a ChannelInterface.
+   * @param result - The SearchResult object to check.
+   * @returns True if the result is a SearchResultChannel, false otherwise.
+   */
   isChannel(result: ChannelInterface | UserInterface): result is ChannelInterface {
     const isChan = result.type === 'channel';
     return isChan;
   }
 
-  // Typ-Guard für UserInterface
+  /**
+   * Type guard to determine if a SearchResult is a UserInterface.
+   * @param result - The SearchResult object to check.
+   * @returns True if the result is a SearchResultUser, false otherwise.
+   */
   isUser(result: ChannelInterface | UserInterface): result is UserInterface {
     const isUsr = result.type === 'user';
     return isUsr;
@@ -227,7 +368,7 @@ async setChannel(result: SearchResult): Promise<void> {
    * Opens or closes the thread of the given post ID.
    * If the thread is currently open, it will be closed, and vice versa.
    * The post ID is stored in the currentUser object in the storage.
-   * @param {string} postId - The ID of the post to open or close the thread of.
+   * @param postId - The ID of the post to open or close the thread of.
    */
   openThread(postId: string) {
     this.storage.currentUser.postId = postId;
@@ -235,24 +376,23 @@ async setChannel(result: SearchResult): Promise<void> {
   }
 
   /**
-   * Hebt den Suchbegriff im Text hervor.
-   * @param {string} text - Der Text, in dem der Suchbegriff hervorgehoben werden soll.
-   * @returns {SafeHtml} - Der hervorgehobene Text als sicherer HTML-Inhalt.
+   * Highlights the search term within the given text by wrapping it in a span with the "highlight" class.
+   * @param text - The text in which the search term should be highlighted.
+   * @returns The highlighted text as SafeHtml.
    */
   highlightMatch(text: string): SafeHtml {
     if (!this.userInput) return text;
     const regex = new RegExp(`(${this.escapeRegExp(this.userInput)})`, 'gi');
-    const highlighted = text.replace(regex, '<span class="test">$1</span>');
+    const highlighted = text.replace(regex, '<span class="highlight" style="color: #797EF3;; font-weight: 100;">$1</span>');
     return this.sanitizer.bypassSecurityTrustHtml(highlighted);
   }
-
+  
   /**
-   * Escaped spezielle Zeichen in einem regulären Ausdruck.
-   * @param {string} text - Der Text, der escaped werden soll.
-   * @returns {string} - Der escapete Text.
+   * Escapes special characters in a string to safely use it within a regular expression.
+   * @param text - The text to escape.
+   * @returns The escaped text.
    */
   private escapeRegExp(text: string): string {
     return text.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
   }
-
 }

@@ -90,24 +90,60 @@ export class LogInCardComponent {
   }
 
 
+  /**
+   * Logs in a user using the provided credentials from the Firebase Authentication.
+   * For that it performs following tasks:
+   * - Verifies that the user's email address is confirmed.
+   * - Saves the user's UID to session storage and updates the authUid in the Firebase Storage Service.
+   * - Loads the user information from the according user document.
+   * - Sets the user status as "online".
+   * - Navigates the user to the workspace page after successful login.
+   * @param userCredential - The user credential object containing the authenticated user's data.
+   * @returns - A primice that resolves once the user is logged in. If the email is not verifeid, the process stops.
+   */
   async loginAsUser(userCredential: UserCredential): Promise<void> {
     const user = userCredential.user;
-    // Überprüfen, ob die E-Mail-Adresse verifiziert ist
     if (!user.emailVerified) {
       this.errorMessage = "Ihre E-Mail-Adresse ist noch nicht verifiziert. Bitte überprüfen Sie Ihren Posteingang.";
-      return; // Stoppt die weitere Verarbeitung
+      return; // Stops further execution
     }
     console.log("Benutzer eingeloggt:", user);
+
     // Saving the Auth-UID
     sessionStorage.setItem("authUid", user.uid);
     this.storage.authUid = user.uid;
     this.storage.getCurrentUserDocument();
-    // Loading the user information
+
+    this.loadingUserInformation();
+    await this.setUserStatusOnline(user);
+    this.navigateToWorkspace();
+  }
+
+
+  /**
+   * Loads the information from the logged in user.
+   * This are the user informations as well as the channels in which the user is included.
+   */
+  loadingUserInformation() {
     this.authService.getCurrentUser();
     this.storage.getCurrentUserChannelCollection();
     console.log("Benutzerkanäle geladen:", this.storage.CurrentUserChannel);
-    // Set user status to "online"
+  }
+
+
+  /**
+   * Sets the status of the user to online.
+   * @param user - A Firebase 'User' object, which rpresents the currently authenticated user.
+   */
+  async setUserStatusOnline(user: User) {
     await this.authService.setCurrentUserOnline(user.uid);
+  }
+
+
+  /**
+   * Navigates to the workspace.
+   */
+  navigateToWorkspace() {
     this.router.navigate(['/workspace']);
   }
 
