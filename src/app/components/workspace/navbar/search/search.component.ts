@@ -1,23 +1,23 @@
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
 import { Component, inject, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { ChannelInterface } from '../../../../shared/interfaces/channel.interface';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 import { UserInterface } from '../../../../shared/interfaces/user.interface';
-import { SearchResult, SearchResultChannel, SearchResultChannelPost, SearchResultUser } from '../../../../shared/interfaces/search-result.interface';
+import { SearchResult, SearchResultChannel, SearchResultChannelPost, SearchResultUser, SearchResultThread } from '../../../../shared/interfaces/search-result.interface';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 /**
  * SearchComponent handles the search functionality within the application,
- * including searching for channels, users, and posts, and navigating to selected results.
+ * including searching for channels, users, posts, and threads, and navigating to selected results.
  */
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [FormsModule, NgIf, NgFor],
+  imports: [FormsModule, NgIf, NgFor, NgSwitch, NgSwitchCase],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })
@@ -32,7 +32,7 @@ export class SearchComponent {
 
   @ViewChildren('resultItem') resultItems!: QueryList<ElementRef>;
   
-   /**
+  /**
    * Creates an instance of SearchComponent and sets up the search debouncing.
    * @param sanitizer - The DomSanitizer service to safely bind HTML content.
    */
@@ -66,11 +66,12 @@ export class SearchComponent {
 
   /**
    * Updates the search results based on the current user input.
-   * Searches for channels, users, and channel posts if the input length is sufficient.
+   * Searches for channels, users, channel posts, and threads if the input length is sufficient.
    */
   updateSearchResults(): void  {
     if (this.userInput.length >= 2) {
       this.updateFoundedChannelsAndUsers();
+      this.updateFoundedThreads();
     } else {
       this.searchResults = [];
       this.selectedIndex = -1;
@@ -90,6 +91,23 @@ export class SearchComponent {
       this.searchResults = [];
       this.selectedIndex = -1;
     }
+  }
+
+  /**
+   * Aggregates search results by finding matching threads.
+   */
+  updateFoundedThreads(): void {
+    const threads = this.storage.getAllThreads();
+    const threadMatches: SearchResultThread[] = threads.filter(({ thread }) => 
+      thread.text.toLowerCase().includes(this.userInput.toLowerCase())
+    ).map(({ thread, parent }) => ({
+      type: 'thread',
+      parentType: parent.type === 'channel' ? 'channel' : 'user',
+      parentId: parent.id || '',
+      thread
+    }) as SearchResultThread);
+    
+    this.searchResults = [...this.searchResults, ...threadMatches];
   }
 
   /**
@@ -136,7 +154,7 @@ export class SearchComponent {
               type: 'channel-post',
               channel,
               post
-            });
+            } as SearchResultChannelPost);
           }
         });
       }
@@ -146,14 +164,15 @@ export class SearchComponent {
   }
 
   /**
-   * Sets the channel, user, or channel post based on the selected search result.
-   * Navigates to the appropriate channel or direct message.
+   * Sets the channel, user, channel post, or thread based on the selected search result.
+   * Navigates to the appropriate channel or direct message and opens the thread if applicable.
    * @param result - The selected SearchResult object.
    */
   async setChannel(result: SearchResult): Promise<void> {
     this.setTypeChannel(result);
     this.setTypeUser(result);
     this.setTypeChannelPost(result);
+    this.setTypeThread(result);
 
     this.userInput = "";
     this.searchResults = [];
@@ -170,7 +189,7 @@ export class SearchComponent {
       if (channel.id) {
         this.navigation.setChannel(channel.id);
       } else {
-        console.error('Channel id is undefined.');
+        console.error('Channel id ist undefiniert.');
         return;
       }
     }
@@ -188,7 +207,7 @@ export class SearchComponent {
       if (dmId) {
         this.navigation.setChannel(dmId);
       } else {
-        console.error('DM id is undefined.');
+        console.error('DM id ist undefiniert.');
         return;
       }
     }
@@ -209,7 +228,25 @@ export class SearchComponent {
         // Beispielsweise:
         // this.navigation.navigateToPost(channel.id, post.id);
       } else {
-        console.error('Channel id is undefined.');
+        console.error('Channel id ist undefiniert.');
+        return;
+      }
+    }
+  }
+
+  /**
+   * Handles navigation when a thread is selected from the search results.
+   * Navigates to the specific channel or DM and opens the associated thread.
+   * @param result - The selected SearchResultThread object.
+   */
+  async setTypeThread(result: SearchResult): Promise<void> {
+    if (result.type === 'thread') {
+      const threadResult = result as SearchResultThread;
+      if (threadResult.parentId) {
+        this.navigation.setChannel(threadResult.parentId);
+        this.openThread(threadResult.thread.id);
+      } else {
+        console.error('Parent ID des Threads ist undefiniert.');
         return;
       }
     }
@@ -258,21 +295,21 @@ export class SearchComponent {
    * @param UserMatch - The UserInterface object representing the user to message.
    * @returns A promise that resolves to the new DM channel ID or undefined.
    */
-  async showNewDm(UserMatch: UserInterface) {
+  async showNewDm(UserMatch: UserInterface): Promise<string | undefined> {
     await this.createEmptyDms(UserMatch);
     let dmWithNewUser = this.storage.currentUser.dm.find(dm => dm.contact === UserMatch.id);
     if (dmWithNewUser) {
-      return dmWithNewUser!.id
+      return dmWithNewUser!.id;
     } else {
-      return this.storage.currentUser.currentChannel
-    };
+      return this.storage.currentUser.currentChannel;
+    }
   }
 
   /**
    * Creates empty DM channels between the current user and the specified user.
    * @param match - The UserInterface object representing the user to message.
    */
-  async createEmptyDms(match: UserInterface) {
+  async createEmptyDms(match: UserInterface): Promise<void> {
     let currentUserId = this.storage.currentUser.id;
     let NewUserId = match.id;
     if (currentUserId && NewUserId) {
@@ -336,7 +373,7 @@ export class SearchComponent {
   /**
    * Scrolls the view to the currently selected search result.
    */
-  scrollToSelected() {
+  scrollToSelected(): void {
     const listItems = document.querySelectorAll('.result-container ul li');
     if (this.selectedIndex >= 0 && this.selectedIndex < listItems.length) {
       const selectedItem = listItems[this.selectedIndex] as HTMLElement;
@@ -370,9 +407,10 @@ export class SearchComponent {
    * The post ID is stored in the currentUser object in the storage.
    * @param postId - The ID of the post to open or close the thread of.
    */
-  openThread(postId: string) {
+  openThread(postId: string): void {
     this.storage.currentUser.postId = postId;
     this.storage.currentUser.threadOpen = !this.storage.currentUser.threadOpen;
+    // Optional: Emit an event or trigger UI update if necessary
   }
 
   /**
@@ -386,7 +424,7 @@ export class SearchComponent {
     const highlighted = text.replace(regex, '<span class="highlight" style="color: #797EF3;; font-weight: 100;">$1</span>');
     return this.sanitizer.bypassSecurityTrustHtml(highlighted);
   }
-  
+
   /**
    * Escapes special characters in a string to safely use it within a regular expression.
    * @param text - The text to escape.
@@ -395,4 +433,25 @@ export class SearchComponent {
   private escapeRegExp(text: string): string {
     return text.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
   }
+
+    /**
+   * Retrieves the channel name based on the channel ID.
+   * @param channelId - The ID of the channel.
+   * @returns The name of the channel or an empty string if not found.
+   */
+  getChannelName(channelId: string): string {
+    const channel = this.storage.channel.find(ch => ch.id === channelId);
+    return channel ? channel.name : '';
+  }
+
+  /**
+   * Retrieves the user name based on the user ID.
+   * @param userId - The ID of the user.
+   * @returns The name of the user or an empty string if not found.
+   */
+  getUserName(userId: string): string {
+    const user = this.storage.user.find(u => u.id === userId);
+    return user ? user.name : '';
+  }
+
 }
