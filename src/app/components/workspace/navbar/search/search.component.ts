@@ -245,6 +245,7 @@ export class SearchComponent {
       if (threadResult.parentId) {
         this.navigation.setChannel(threadResult.parentId);
         this.openThread(threadResult.thread.id);
+        console.log('postId: ',this.storage.currentUser.postId);
       } else {
         console.error('Parent ID des Threads ist undefiniert.');
         return;
@@ -364,6 +365,7 @@ export class SearchComponent {
     if (this.selectedIndex >= 0 && this.selectedIndex < this.searchResults.length) {
       try {
         await this.setChannel(this.searchResults[this.selectedIndex]);
+        console.log('Channel is set with ', this.searchResults[this.selectedIndex])
       } catch (error) {
         console.error('Error setting channel:', error);
       }
@@ -409,7 +411,9 @@ export class SearchComponent {
    */
   openThread(postId: string): void {
     this.storage.currentUser.postId = postId;
+    console.log('postId of CurrentUser is set to ', postId)
     this.storage.currentUser.threadOpen = !this.storage.currentUser.threadOpen;
+    console.log('threadOpen of CurrentUser is set to ', !this.storage.currentUser.threadOpen)
     // Optional: Emit an event or trigger UI update if necessary
   }
 

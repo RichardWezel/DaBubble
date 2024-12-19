@@ -36,28 +36,33 @@
         [attr.aria-selected]="i === selectedIndex"
         tabindex="-1"
       >  
-     <!-- Kanal -->
-     <ng-container *ngIf="result.type === 'channel'">
-      <span class="prefix-channel">#&nbsp;<span [innerHTML]="highlightMatch(result.channel.name)"></span>:</span>
-    </ng-container>
-    <!-- Benutzer -->
-    <ng-container *ngIf="result.type === 'user'">
-      <span class="prefix-user">&#x40;&nbsp;<span [innerHTML]="highlightMatch(result.user.name)"></span>:</span>
-    </ng-container>
-    <!-- Kanal mit gefundener Post -->
-    <ng-container *ngIf="result.type === 'channel-post'">
-      <span class="prefix-channel-post">#&nbsp;<span [innerHTML]="highlightMatch(result.channel.name)"></span>:</span>&nbsp;<span [innerHTML]="highlightMatch(result.post.text)"></span>
-    </ng-container>
-     <!-- Thread -->
-     <ng-container *ngIf="result.type === 'thread'">
-      <span class="prefix-thread">
-        <ng-container [ngSwitch]="result.parentType">
-          <span *ngSwitchCase="'channel'">#&nbsp;</span>
-          <span *ngSwitchCase="'user'">&#x40;&nbsp;</span>
+        <!-- Kanal -->
+        <ng-container *ngIf="result.type === 'channel'">
+          <span class="prefix-channel">#&nbsp;<span [innerHTML]="highlightMatch(result.channel.name)"></span>:</span>
         </ng-container>
-        <span [innerHTML]="result.parentType === 'channel' ? highlightMatch(getChannelName(result.parentId)) : highlightMatch(getUserName(result.parentId))"></span>:
-      </span>&nbsp;<span [innerHTML]="highlightMatch(result.thread.text)"></span>
-    </ng-container>
+
+        <!-- Benutzer -->
+        <ng-container *ngIf="result.type === 'user'">
+          <span class="prefix-user">&#x40;&nbsp;<span [innerHTML]="highlightMatch(result.user.name)"></span>:</span>
+        </ng-container>
+
+        <!-- Kanal mit gefundener Post -->
+        <ng-container *ngIf="result.type === 'channel-post'">
+          <span class="prefix-channel-post">#&nbsp;<span [innerHTML]="highlightMatch(result.channel.name)"></span>:</span>&nbsp;<span [innerHTML]="highlightMatch(result.post.text)"></span>
+        </ng-container>
+
+        <!-- Thread -->
+        <ng-container *ngIf="result.type === 'thread'">
+          <span class="prefix-thread">
+            <ng-container [ngSwitch]="result.parentType">
+              <span *ngSwitchCase="'channel'">#&nbsp;</span>
+              <span *ngSwitchCase="'user'">&#x40; &nbsp;</span>
+            </ng-container>
+            <span [innerHTML]="result.parentType === 'channel' ? highlightMatch(getChannelName(result.parentId)) : highlightMatch(getUserName(result.parentId))"></span>:
+          </span>
+          &nbsp;
+          <span [innerHTML]="highlightMatch(result.thread.text)"></span>
+        </ng-container>
       </li>
     </ul>
   </section>
