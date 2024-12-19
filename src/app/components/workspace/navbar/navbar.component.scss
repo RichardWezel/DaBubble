@@ -1,79 +1,92 @@
 @import 'variables';
 
 .navbar {
-  // display: grid;
-  // grid-template-columns: 366px 1fr 480px;
-  // align-items: center;
   display: flex;
-  justify-content: space-between;
-  padding: 0 24px 24px;
+  justify-content: flex-start;
+  // padding: 0 24px 24px;
   width: 100%;
-}
 
-.logo {
-  height: 70px;
-}
-
-.current-user {
-  position: relative;
-  height: 70px;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 20px;
-  cursor: pointer;
-
-  h3 {
-    font-size: 32px;
-    font-weight: bold;
-  }
-
-  &:hover {
-    h3 {
-      color: $secondaryColor;
+  .left-group {
+    display: flex;
+    width: 100%;
+    padding-right: 24px;
+    .logo {
+      height: 70px;
     }
 
-    .dropdown-arrow {
-      svg {
-        path {
-          fill: $primaryColor;
+    app-search {
+      margin-left: 147px;
+      width: 100%;
+    }
+  }
+
+  .current-user {
+    position: relative;
+    height: 70px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+    min-width: fit-content;
+    max-width: 394.34px;
+    width: 100%;
+    cursor: pointer;
+  
+    h3 {
+      font-size: 32px;
+      font-weight: bold;
+    }
+  
+    &:hover{
+      h3 {
+        color: $secondaryColor;
+      }
+  
+      .dropdown-arrow {
+        svg {
+          path {
+            fill: $primaryColor;
+          }
         }
       }
     }
-  }
-
-  .user-avatar {
-    height: 70px;
-    border-radius: 50%;
-  }
-
-
-  .dropdown-arrow {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transform-origin: center center;
-    transform: rotate(0deg);
-    transition: transform 125ms ease-in-out;
-
-    &.rotate {
-      transform: rotate(180deg);
+  
+    .user-avatar {
+      height: 70px;
+      border-radius: 50%;
     }
-  }
-
-  app-settings {
-    display: none;
-    z-index: 10;
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-color: rgba(0,0,0,0.2);
-
-    &.open {
+  
+  
+    .dropdown-arrow {
       display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transform-origin: center center;
+      transform: rotate(0deg);
+      transition: transform 125ms ease-in-out;
+  
+      &.rotate {
+        transform: rotate(180deg);
+      }
+    }
+  
+    app-settings {
+      display: none;
+      z-index: 10;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-color: rgba(0,0,0,0.2);
+  
+      &.open {
+        display: flex;
+      }
     }
   }
 }
+
+
+

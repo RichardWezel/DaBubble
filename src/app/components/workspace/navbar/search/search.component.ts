@@ -242,9 +242,12 @@ export class SearchComponent {
   async setTypeThread(result: SearchResult): Promise<void> {
     if (result.type === 'thread') {
       const threadResult = result as SearchResultThread;
+      console.log('setTypeThread in search.c: ', threadResult)
       if (threadResult.parentId) {
         this.navigation.setChannel(threadResult.parentId);
-        this.openThread(threadResult.thread.id);
+        let postId = this.storage.findParentPostId(threadResult.parentId, threadResult.thread.id)
+        this.openThread(postId!);
+        console.log('postId: ',this.storage.currentUser.postId);
       } else {
         console.error('Parent ID des Threads ist undefiniert.');
         return;
@@ -364,6 +367,7 @@ export class SearchComponent {
     if (this.selectedIndex >= 0 && this.selectedIndex < this.searchResults.length) {
       try {
         await this.setChannel(this.searchResults[this.selectedIndex]);
+        console.log('Channel is set with ', this.searchResults[this.selectedIndex])
       } catch (error) {
         console.error('Error setting channel:', error);
       }
@@ -408,6 +412,7 @@ export class SearchComponent {
    * @param postId - The ID of the post to open or close the thread of.
    */
   openThread(postId: string): void {
+    console.log('openThread() in search.c: ', postId);
     this.storage.currentUser.postId = postId;
     this.storage.currentUser.threadOpen = !this.storage.currentUser.threadOpen;
     // Optional: Emit an event or trigger UI update if necessary

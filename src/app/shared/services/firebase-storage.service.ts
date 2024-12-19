@@ -63,6 +63,35 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     return threads;
   }
 
+  /**
+   * Funktion, um die Parent-Post-ID für einen gegebenen Channel und Thread zu finden.
+   * @param channelId - Die ID des Channels.
+   * @param threadId - Die ID des Threads.
+   * @returns Die ID des übergeordneten Posts oder undefined, wenn nicht gefunden.
+   */
+  findParentPostId(channelId: string, threadId: string): string | undefined {
+    // Channel finden
+    const targetChannel = this.CurrentUserChannel.find(channel => channel.id === channelId);
+    if (!targetChannel) {
+      console.error(`Channel mit ID ${channelId} nicht gefunden.`);
+      return undefined;
+    }
+
+    // Durch alle Posts im Channel iterieren
+    for (const post of targetChannel?.posts!) {
+      if (post.threadMsg && post.threadMsg.length > 0) {
+        // Überprüfen, ob einer der Thread-Posts die gesuchte Thread-ID hat
+        const foundThread = post.threadMsg.find(threadPost => threadPost.id === threadId);
+        if (foundThread) {
+          return post.id; // Parent Post ID gefunden
+        }
+      }
+    }
+
+    console.warn(`Thread mit ID ${threadId} im Channel ${channelId} nicht gefunden.`);
+    return undefined;
+  }
+
 
   /**
  * Cleans up all active subscriptions when the service is destroyed.

@@ -127,6 +127,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    * @param {string} postId - The ID of the post to open or close the thread of.
    */
   openThread(postId: string) {
+    console.log('openThread() in message.c: ', postId);
     this.storage.currentUser.postId = postId;
     this.storage.currentUser.threadOpen = !this.storage.currentUser.threadOpen;
   }
