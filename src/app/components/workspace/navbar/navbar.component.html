@@ -1,7 +1,11 @@
 <section class="navbar">
-  <div class="logo">
-    <img src="assets/img/dabubble-logo.png" alt="">
+  <div class="left-group">
+    <div class="logo">
+      <img src="assets/img/dabubble-logo.png" alt="">
+    </div>
+    <app-search></app-search> 
   </div>
+  
   <div class="current-user" (click)="dropDownOpen = !dropDownOpen">
     <h3>{{storage.currentUser.name}}</h3>
     <img class="user-avatar"
