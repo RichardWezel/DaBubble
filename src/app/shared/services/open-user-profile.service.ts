@@ -21,26 +21,25 @@ export class OpenUserProfileService {
  * 
  * @param {string} searchTerm - user name as submitted
  */
-  showSubmittedDirectMessage(searchTerm: string) {
+  async showSubmittedDirectMessage(searchTerm: string) {
+    console.log(searchTerm);
     const userOfSuggestion = this.storage.user.find(user => user.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
-
-    if (userOfSuggestion && this.findUserInDms(userOfSuggestion)) {
-      this.showExistingDm(userOfSuggestion)
-    } else if (userOfSuggestion && !this.findUserInDms(userOfSuggestion)) {
-      this.showNewDm(userOfSuggestion)
-    }
+    console.log(userOfSuggestion);
+    console.log(this.findUserInDms(userOfSuggestion!));
+    if (!userOfSuggestion) return;
+    if (this.findUserInDms(userOfSuggestion)) this.showExistingDm(userOfSuggestion)
+    else await this.showNewDm(userOfSuggestion);
   }
 
   showExistingDm(userOfSuggestion: UserInterface) {
-    let dmsOfCurrentUser = this.storage.currentUser.dm;
+    let dmsOfCurrentUser = this.storage.user.find(user => user.id === this.storage.currentUser.id)!.dm;
     let dmWithUserOfSuggestion = dmsOfCurrentUser.find(dm => dm.contact === userOfSuggestion.id);
     this.navigationService.setChannel(dmWithUserOfSuggestion!.id);
   }
 
   async showNewDm(userOfSuggestion: UserInterface) {
     await this.createEmptyDms(userOfSuggestion);
-    let dmWithUserOfSuggestion = this.storage.currentUser.dm.find(dm => dm.contact === userOfSuggestion.id);
-    if (dmWithUserOfSuggestion) this.navigationService.setChannel(dmWithUserOfSuggestion!.id);
+    this.showExistingDm(userOfSuggestion);
   }
 
   findUserInDms(userOfSuggestion: UserInterface): boolean {

@@ -4,7 +4,6 @@ import { NgStyle, CommonModule, NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NewMessageInputHeadComponent } from "./new-message-input-head/new-message-input-head.component"; // Importiere FormsModule
 import { ChannelMemberDialogComponent } from './channel-member-dialog/channel-member-dialog.component';
-import { UserInterface } from '../../../../shared/interfaces/user.interface';
 import { CloudStorageService } from '../../../../shared/services/cloud-storage.service';
 import { ChannelEditComponent } from '../../../../shared/components/dialog/channel-edit/channel-edit.component';
 
@@ -55,7 +54,7 @@ export class ChannelHeadComponent implements OnInit {
       return 'Unbekannt'; // Fallback, falls der Channel nicht gefunden wird
     }
     const owner = this.storage.user.find(user => user.id === currentChannel.owner);
-    return owner?.name || ''; 
+    return owner?.name || '';
   }
 
   channelDescription(): string {
@@ -83,7 +82,8 @@ export class ChannelHeadComponent implements OnInit {
   findChannel(): "channel" | "dm" | "newMessage" | "" {
     // findet den ersten Channel, deren id mit der currentChannel des currentUser übereinstimmt.
     let foundChannel = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
-    let foundDM = this.storage.currentUser.dm.find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel);
+    let foundDM = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm
+      .find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel);
     // console.log('foundDM: ', foundDM)
     if (foundChannel) {
       this.storage.currentUser.currentChannelName = '#' + foundChannel.name;
@@ -119,7 +119,8 @@ export class ChannelHeadComponent implements OnInit {
 
 
   userAvatar() {
-    let foundUser = this.storage.currentUser.dm.find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel)?.contact;
+    let foundUser = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm
+      .find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel)?.contact;
     let avatar: string = this.storage.user.find(user => user.id === foundUser)!.avatar;
     if (avatar) return avatar;
     else return '';
@@ -127,7 +128,8 @@ export class ChannelHeadComponent implements OnInit {
 
 
   userName() {
-    let foundUser = this.storage.currentUser.dm.find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel)?.contact;
+    let foundUser = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm
+      .find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel)?.contact;
     if (foundUser === this.storage.currentUser.id) return this.storage.currentUser.name + ' (Du)';
     else return this.storage.user.find(user => user.id === foundUser)?.name;
   }

@@ -259,14 +259,14 @@ export class NewMessageInputHeadComponent {
   }
 
   showExistingDm(userOfSuggestion: UserInterface) {
-    let dmsOfCurrentUser = this.storage.currentUser.dm;
-    let dmWithUserOfSuggestion = dmsOfCurrentUser.find(dm => dm.contact === userOfSuggestion.id);
+    let dmsOfCurrentUser = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm;
+    let dmWithUserOfSuggestion = dmsOfCurrentUser?.find(dm => dm.contact === userOfSuggestion.id);
     this.navigationService.setChannel(dmWithUserOfSuggestion!.id);
   }
 
   async showNewDm(userOfSuggestion: UserInterface) {
     await this.createEmptyDms(userOfSuggestion);
-    let dmWithUserOfSuggestion = this.storage.currentUser.dm.find(dm => dm.contact === userOfSuggestion.id);
+    let dmWithUserOfSuggestion = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm.find(dm => dm.contact === userOfSuggestion.id);
     if (dmWithUserOfSuggestion) this.navigationService.setChannel(dmWithUserOfSuggestion!.id);
   }
 
@@ -281,15 +281,15 @@ export class NewMessageInputHeadComponent {
   }
 
   showExistingDmEmail(userOfSuggestion: UserInterface) {
-    let dmsOfCurrentUser = this.storage.currentUser.dm;
-    let dmWithUserOfSuggestion = dmsOfCurrentUser.find(dm => dm.contact === userOfSuggestion.id);
+    let dmsOfCurrentUser = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm;
+    let dmWithUserOfSuggestion = dmsOfCurrentUser?.find(dm => dm.contact === userOfSuggestion.id);
     this.navigationService.setChannel(dmWithUserOfSuggestion!.id);
   }
 
   async showNewDmEmail(userOfSuggestion: UserInterface) {
     console.log('showNewDmEmail(userOfSuggestion: UserInterface): ', userOfSuggestion)
     await this.createEmptyDms(userOfSuggestion);
-    let dmWithUserOfSuggestion = this.storage.currentUser.dm.find(dm => dm.contact === userOfSuggestion.id);
+    let dmWithUserOfSuggestion = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm.find(dm => dm.contact === userOfSuggestion.id);
     if (dmWithUserOfSuggestion) this.navigationService.setChannel(dmWithUserOfSuggestion!.id);
   }
 
@@ -303,11 +303,13 @@ export class NewMessageInputHeadComponent {
   }
 
   findUserInDms(userOfSuggestion: UserInterface): boolean {
-    return this.storage.currentUser.dm.some(dm => dm.contact === userOfSuggestion.id);
+    let match = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm.some(dm => dm.contact === userOfSuggestion.id);
+    if (match) return true;
+    else return false;
   }
 
   findUserInCurrentUserDms(foundUser: UserInterface) {
-    let match = this.storage.currentUser.dm.find(user => user.id === foundUser.id);
+    let match = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm.find(user => user.id === foundUser.id);
     return match
   }
 
