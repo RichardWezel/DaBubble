@@ -1,5 +1,4 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 import { FirebaseStorageService } from './firebase-storage.service';
 import { UserInterface } from '../interfaces/user.interface';
 import { NavigationService } from './navigation.service';
@@ -12,13 +11,6 @@ export class OpenUserProfileService {
   protected storage = inject(FirebaseStorageService);
   protected navigationService = inject(NavigationService);
 
-  private userIDSource = new BehaviorSubject<string>('');
-  userID$ = this.userIDSource.asObservable();
-
-  updateUserId(user: string) {
-    this.userIDSource.next(user);
-    console.log('OpenUserProfileService: userName: ', this.userID$)
-  }
 
   constructor() { }
 

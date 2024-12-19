@@ -1,17 +1,13 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { sendPasswordResetEmail, signInWithEmailAndPassword, User, UserCredential } from '@firebase/auth';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Auth } from '@angular/fire/auth';
-// import { Firestore, doc } from '@angular/fire/firestore';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
-// import { PostInterface } from '../../../../shared/interfaces/post.interface';
 import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
 import { NavigationService } from '../../../../shared/services/navigation.service';
-import { Firestore } from '@angular/fire/firestore';
-import { UserInterface } from '../../../../shared/interfaces/user.interface';
 import { FirebaseError } from '@angular/fire/app';
 
 @Component({
@@ -24,7 +20,6 @@ import { FirebaseError } from '@angular/fire/app';
 export class LogInCardComponent {
   private auth = inject(Auth);
   private router = inject(Router);
-  private firestore = inject(Firestore);
   protected storage = inject(FirebaseStorageService);
   navigationService: NavigationService = inject(NavigationService);
   authService = inject(FirebaseAuthService);
@@ -36,9 +31,10 @@ export class LogInCardComponent {
   errorMessage: string = '';
   isLoading: boolean = false;
 
-  // @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
   @Output() login = new EventEmitter<boolean>();
-  // @Output() newAccount = new EventEmitter<boolean>();
+
+
+  constructor() { }
 
 
   /**
@@ -112,7 +108,6 @@ export class LogInCardComponent {
     // Saving the Auth-UID
     sessionStorage.setItem("authUid", user.uid);
     this.storage.authUid = user.uid;
-    this.storage.getCurrentUserDocument();
 
     this.loadingUserInformation();
     await this.setUserStatusOnline(user);

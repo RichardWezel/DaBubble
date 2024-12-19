@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
@@ -15,7 +15,9 @@ export class OpenCloseDialogService {
     // Fügen Sie hier weitere Dialoge hinzu
   };
 
-  constructor() {}
+  profileId = new EventEmitter<string>();
+
+  constructor() { }
 
   // Methode zum Öffnen eines Dialogs
   open(dialogName: string): void {
@@ -47,4 +49,12 @@ export class OpenCloseDialogService {
     return null;
   }
 
+
+  /**
+   * Emits the new profile ID to the profileId EventEmitter.
+   * @param userID The new profile ID to emit.
+   */
+  changeProfileId(userID: string) {
+    this.profileId.emit(userID);
+  }
 }

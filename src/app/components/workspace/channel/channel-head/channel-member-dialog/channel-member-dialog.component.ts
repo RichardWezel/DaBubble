@@ -1,7 +1,6 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
-import { OpenUserProfileService } from '../../../../../shared/services/open-user-profile.service';
 import { CloudStorageService } from '../../../../../shared/services/cloud-storage.service';
 import { OpenCloseDialogService } from '../../../../../shared/services/open-close-dialog.service';
 import { Subscription } from 'rxjs';
@@ -15,31 +14,29 @@ import { Subscription } from 'rxjs';
 })
 export class ChannelMemberDialogComponent {
 
-  @Input() channelUsers: string[] = []; 
+  @Input() channelUsers: string[] = [];
   storage = inject(FirebaseStorageService);
   cloud = inject(CloudStorageService);
+  openCloseDialogService = inject(OpenCloseDialogService);
   isOpen: boolean = false;
-
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private openUserProfileService: OpenUserProfileService,
-    private openCloseDialogService: OpenCloseDialogService) {}
+  constructor() { }
 
-    ngOnInit(): void {
-      const sub = this.openCloseDialogService
-        .isDialogOpen('channelMember')
-        ?.subscribe((status) => {
-          this.isOpen = status;
-        });
-      if (sub) this.subscriptions.add(sub);
-    }
-  
-    ngOnDestroy(): void {
-      this.subscriptions.unsubscribe();
-    }
+  ngOnInit(): void {
+    const sub = this.openCloseDialogService
+      .isDialogOpen('channelMember')
+      ?.subscribe((status) => {
+        this.isOpen = status;
+      });
+    if (sub) this.subscriptions.add(sub);
+  }
 
-  
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+
   /**
    * The user ID of the user clicked on is transferred via the open-user-service
    *  and saved in a property in the service called userIDSource. 
@@ -48,8 +45,8 @@ export class ChannelMemberDialogComponent {
    * @param {string} userID - ID of clicked User
    */
   async openUserProfile(userID: string) {
-    await  this.openUserProfileService.updateUserId(userID)
     if (userID !== this.storage.currentUser.id) {
+      this.openCloseDialogService.changeProfileId(userID);
       this.openCloseDialogService.open('userProfile');
       console.log('User ', userID, ' is clicked to open the respective dialogue!');
     }

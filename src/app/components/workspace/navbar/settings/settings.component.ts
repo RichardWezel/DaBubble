@@ -2,8 +2,6 @@ import { Component, inject } from '@angular/core';
 import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { OpenCloseDialogService } from '../../../../shared/services/open-close-dialog.service';
-import { OpenUserProfileService } from '../../../../shared/services/open-user-profile.service';
-
 
 @Component({
   selector: 'app-settings',
@@ -16,14 +14,12 @@ export class SettingsComponent {
 
   storage = inject(FirebaseStorageService);
   authService = inject(FirebaseAuthService);
+  openCloseDialogService = inject(OpenCloseDialogService);
 
-  constructor(
-    private openUserProfileService: OpenUserProfileService,
-    private openCloseDialogService: OpenCloseDialogService) {}
+  constructor() { }
 
-  async openUserProfile() {
-    const currentUserId = this.storage.currentUser.id;
-    await  this.openUserProfileService.updateUserId(currentUserId!)
+  openUserProfile() {
+    this.openCloseDialogService.changeProfileId(this.storage.currentUser.id!);
     this.openCloseDialogService.open('userProfile');
   }
 

@@ -17,7 +17,10 @@ export class FirebaseAuthService {
   onlineTimer: any = null;
 
   constructor() {
-    // this.getCurrentUser();
+    if (sessionStorage.getItem("authUid")) {
+      this.storage.authUid = sessionStorage.getItem("authUid") || '';
+      this.getCurrentUser();
+    }
   }
 
 

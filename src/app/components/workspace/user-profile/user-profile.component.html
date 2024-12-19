@@ -1,5 +1,5 @@
 <main *ngIf="isOpen">
-    <div class="dialog" [class.currentUserPosition]="userIsCurrentUser()">
+    <div class="dialog" [class.currentUserPosition]="userIsCurrentUser(user?.id!)">
 
         <section class="head">
             <div>Profil</div>
@@ -15,7 +15,7 @@
         <section class="user-avatar">
             <div *ngIf="mode === 'show'" class="user-avatar">
                 <img class="user-avatar"
-                    [src]=" storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + storage.currentUser.avatar : cloud.openImage(storage.currentUser.avatar)"
+                    [src]=" user?.avatar!.startsWith('profile-') ? 'assets/img/profile-pictures/' + user?.avatar : cloud.openImage(user?.avatar!)"
                     alt="">
             </div>
             <div *ngIf="mode === 'edit'" class="edit-avatar" (click)="openFileExplorer(fileInput)">
@@ -30,15 +30,15 @@
         <div *ngIf="mode === 'show'" class="show">
             <section class="user-name">
                 <div class="nameAndEdit">
-                    <div class="name">{{ userObject?.name }}</div>
+                    <div class="name">{{ user?.name }}</div>
                     <button (click)="changeToEditMode()" class="edit"
-                        *ngIf="isCurrentUser(userObject?.name!)">Bearbeiten</button>
+                        *ngIf="isCurrentUser(user?.name!)">Bearbeiten</button>
 
                 </div>
 
                 <div class="online">
-                    <div class="dott" [ngClass]="{'offline-dott': userObject?.online === false}"></div>
-                    <div class="status" [ngClass]="{'offline-status': userObject?.online === false}">{{ userObject?.online === false ? 'Abwesend' : 'Aktiv' }}
+                    <div class="dott" [ngClass]="{'offline-dott': user?.online === false}"></div>
+                    <div class="status" [ngClass]="{'offline-status': user?.online === false}">{{ user?.online === false ? 'Abwesend' : 'Aktiv' }}
                     </div>
                 </div>
             </section>
@@ -60,11 +60,11 @@
                     </div>
                     <div class="label-name">E-Mail-Adresse</div>
                 </div>
-                <div class="email">{{ userObject?.email }}</div>
+                <div class="email">{{ user?.email }}</div>
             </section>
 
-            <section class="newMessage-btn" *ngIf="!userIsCurrentUser()">
-                <button (click)="writeMessageToUser(userObject?.name!)">
+            <section class="newMessage-btn" *ngIf="!userIsCurrentUser(user?.id!)">
+                <button (click)="writeMessageToUser(user?.name!)">
                     <div class="message-icon">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path

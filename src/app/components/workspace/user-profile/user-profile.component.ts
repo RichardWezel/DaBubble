@@ -1,12 +1,14 @@
-import { NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { NgClass, NgIf } from '@angular/common';
+import { Component, inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { FirebaseStorageService } from '../../../shared/services/firebase-storage.service';
 import { OpenUserProfileService } from '../../../shared/services/open-user-profile.service';
 import { UserInterface } from '../../../shared/interfaces/user.interface';
 import { Subscription } from 'rxjs';
 import { CloudStorageService } from '../../../shared/services/cloud-storage.service';
 import { OpenCloseDialogService } from '../../../shared/services/open-close-dialog.service';
-import { NgForm, FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { FirebaseAuthService } from '../../../shared/services/firebase-auth.service';
+
 
 @Component({
   selector: 'app-user-profile',
@@ -15,16 +17,17 @@ import { NgForm, FormsModule } from '@angular/forms';
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.scss'
 })
-export class UserProfileComponent implements OnInit, OnDestroy {
+export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   cloud = inject(CloudStorageService);
   storage = inject(FirebaseStorageService);
+  auth = inject(FirebaseAuthService);
 
 
   @Input() channelUsers: string[] = [];
 
   isOpen: boolean = false;
   userId: string = "";
-  userObject: UserInterface | undefined = undefined;
+  user: UserInterface | undefined = undefined;
   mode: string = "show";
   email: string = '';
   name: string = '';
@@ -40,9 +43,16 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     public openUserProfileService: OpenUserProfileService) {
   }
 
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.openCloseDialogService.profileId.subscribe((userId) => {
+      this.userId = userId;
+      this.user = this.storage.user.find(u => u.id === this.userId);
+    });
+  }
+
   isCurrentUser(user: string) {
     return user === this.storage.currentUser.name
-
   }
 
   ngOnInit(): void {
@@ -51,14 +61,15 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       ?.subscribe((status) => {
         this.isOpen = status;
       });
-    if (sub) this.subscriptions.add(sub);
-
-    const userIdSub = this.openUserProfileService.userID$.subscribe(value => {
-      this.userId = value;
-      this.updateUser(this.userId)
+    const subscription = this.openCloseDialogService.profileId.subscribe((userId) => {
+      this.userId = userId;
+      this.user = this.storage.user.find(u => u.id === this.userId);
     });
-    if (userIdSub) this.subscriptions.add(userIdSub);
+    if (sub) this.subscriptions.add(sub);
+    if (subscription) this.subscriptions.add(subscription);
   }
+
+
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
@@ -68,25 +79,26 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.openCloseDialogService.close('userProfile');
   }
 
-  userIsCurrentUser() {
-    return this.userId === this.storage.currentUser.id
+  userIsCurrentUser(userId: string): boolean {
+    return userId === this.storage.currentUser.id
   }
 
   changeToEditMode() {
     this.currentProfilePicture = this.storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + this.storage.currentUser.avatar : this.cloud.openImage(this.storage.currentUser.avatar);
+    this.updateUser();
     this.mode = "edit"
   }
 
-  updateUser(userId: string): void {
-    let userData = this.storage.user.find(user => user.id === userId);
-    this.userObject = userData;
-    if (this.userObject) {
-      this.email = this.userObject.email;
-      this.name = this.userObject.name;
+  updateUser(): void {
+    if (this.storage.currentUser) {
+      this.email = this.storage.currentUser.email;
+      this.name = this.storage.currentUser.name;
     }
   }
 
   public openDialog() {
+    this.userId = this.storage.profileId || '';
+    this.user = this.storage.user.find(u => u.id === this.userId);
     this.isOpen = true;
   }
 
@@ -99,7 +111,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     const avatar = this.storage.user.find(u => u.id === userId)?.avatar || '';
     return avatar.startsWith('profile-')
       ? `assets/img/profile-pictures/${avatar}`
-      : await this.cloud.openImage(avatar);
+      : this.cloud.openImage(avatar);
   }
 
   writeMessageToUser(userName: string) {
@@ -109,10 +121,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   }
 
   async saveProfile(): Promise<void> {
-    if (!this.userObject) {
-      console.error('Kein Benutzerobjekt gefunden.');
-      return;
-    }
 
     if (this.avatarChanged && this.uploadFile && this.storage.currentUser.id) {
       this.avatar = await this.cloud.uploadProfilePicture(this.storage.currentUser.id, this.uploadFile);
@@ -127,15 +135,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       avatar: this.avatar
     };
 
-    await this.storage.updateUser(this.userId, updatedUser as UserInterface)
-      .then(() => {
-        this.userObject!.name = this.name;
-        this.userObject!.email = this.email;
-        this.mode = 'show';
-      })
-      .catch(error => {
-        console.error('Fehler beim Aktualisieren des Benutzerprofils:', error);
-      });
+    await this.storage.updateUser(this.userId, updatedUser as UserInterface);
+    this.auth.getCurrentUser();
   }
 
 
