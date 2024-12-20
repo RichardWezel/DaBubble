@@ -35,9 +35,11 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
 
   getAllThreads(): { thread: PostInterface, parent: ChannelInterface | UserInterface }[] {
     const threads: { thread: PostInterface, parent: ChannelInterface | UserInterface }[] = [];
+    const userChannel = this.channel.filter(channel => channel.user.includes(this.authUid));
+    const user = this.user.find(user => user.id === this.authUid);
 
     // Durch alle Channels und deren Posts iterieren
-    this.CurrentUserChannel.forEach(channel => {
+    userChannel.forEach(channel => {
       channel.posts?.forEach(post => {
         if (post.thread && post.threadMsg) {
           post.threadMsg.forEach(threadPost => {
@@ -49,7 +51,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
 
     // Durch alle DMs und deren Posts iterieren
 
-    this.currentUser.dm.forEach(dm => {
+    user?.dm.forEach(dm => {
       dm.posts.forEach(post => {
         if (post.thread && post.threadMsg) {
           post.threadMsg.forEach(threadPost => {
