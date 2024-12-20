@@ -30,19 +30,33 @@ export class SendEmailCardComponent {
   private injector = inject(EnvironmentInjector);
   private router = inject(Router);
   private auth = inject(Auth);
-  
-constructor(public navigationService: NavigationService) {}
 
+
+  /**
+   * Initializes the component an injects the rquired services.
+   * @param navigationService - Service used to handle navigation within the application.
+   */
+  constructor(public navigationService: NavigationService) { }
+
+
+  /**
+   * Navigates the user to the login card.
+   */
   goToLogin() {
     this.login.emit(false);
   }
 
-  async sendMail() {
+
+  /**
+   * Sends a mail with the link to reset the password if the mail matches the mail regex.
+   * @returns - Resolves when the password reset email is successfully sent.
+   *            If the email is invalid, it returns early with no value.
+   */
+  async sendMail(): Promise<void> {
     if (!this.mailData || !this.validator.validateEmail(this.mailData)) {
       alert('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
       return;
     }
-
     try {
       await sendPasswordResetEmail(this.auth, this.mailData);
       this.showDialog = true;
@@ -52,9 +66,13 @@ constructor(public navigationService: NavigationService) {}
     }
   }
 
+
+  /**
+   * If the confirmation dialog gets closed, the user gets navigated to the login.
+   */
   closeDialog() {
-    this.showDialog = false; 
+    this.showDialog = false;
     this.router.navigate(['/login']);
   }
-  
+
 }
