@@ -1,14 +1,14 @@
 <div class="modal-overlay">
     <div class="modal">
-        <!-- Header -->
+        
         <div class="modal-header">
             <h1># {{ channelName }}</h1>
             <button class="close-button" (click)="cancel()">×</button>
         </div>
 
-        <!-- Content -->
+        
         <div class="modal-content">
-            <!-- Channel Name -->
+           
             <div class="field">
                 <label>Channel-Name</label>
                 <div *ngIf="!isEditingChannelName" class="value">
@@ -24,7 +24,7 @@
                 </div>
             </div>
 
-            <!-- Beschreibung -->
+           
             <div class="field description">
                 <label>Beschreibung</label>
                 <div class="value" *ngIf="!isEditingDescription">
@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="divider"></div>
-                <!-- Created By -->
+                
                 <div class="created-by">
                     <span>Erstellt von</span>
                     <span class="creator-name">{{ creatorName }}</span>
@@ -49,7 +49,7 @@
 
         </div>
 
-        <!-- Footer -->
+     
         <div class="modal-footer">
             <button class="leave-button" (click)="leaveChannel()">Channel verlassen</button>
         </div>

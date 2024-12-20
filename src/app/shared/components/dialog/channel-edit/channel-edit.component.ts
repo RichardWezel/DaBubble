@@ -16,8 +16,7 @@ export class ChannelEditComponent {
   @Output() close = new EventEmitter<void>(); 
 
   isEditingDescription: boolean = false;
-  isEditingChannelName: boolean = false; // Zustand für den Bearbeitungsmodus
-
+  isEditingChannelName: boolean = false; 
   save(): void {
     console.log('Channel gespeichert:', this.channelName, this.channelDescription);
     this.close.emit(); 
@@ -29,20 +28,20 @@ export class ChannelEditComponent {
   }
 
   editDescription(): void {
-    this.isEditingDescription = true; // Umschalten in Editiermodus
+    this.isEditingDescription = true; 
   }
   
   saveDescription(): void {
-    this.isEditingDescription = false; // Zurück zum Anzeigenmodus
+    this.isEditingDescription = false; 
     console.log('Neue Beschreibung gespeichert:', this.channelDescription);
   }
 
   editChannelName(): void {
-    this.isEditingChannelName = true; // Aktiviert den Bearbeitungsmodus
+    this.isEditingChannelName = true; 
   }
   
   saveChannelName(): void {
-    this.isEditingChannelName = false; // Beendet den Bearbeitungsmodus
+    this.isEditingChannelName = false; 
     console.log('Neuer Channel-Name gespeichert:', this.channelName);
   }
 

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-privacy-policy',
@@ -8,13 +8,11 @@ import { Location } from '@angular/common';
   templateUrl: './privacy-policy.component.html',
   styleUrl: './privacy-policy.component.scss'
 })
+
 export class PrivacyPolicyComponent {
+  constructor(private router: Router) { }
 
-  constructor(
-    private location: Location) {}
-
-  goBack() {
-    this.location.back();
+  getBack() {
+    this.router.navigate(['/login']);
   }
-
 }
