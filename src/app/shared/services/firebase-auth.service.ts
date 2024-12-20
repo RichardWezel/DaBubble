@@ -4,6 +4,7 @@ import { FirebaseStorageService } from './firebase-storage.service';
 import { doc, getDoc, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { CurrentUserInterface } from '../interfaces/current-user-interface';
+import { FirebaseError } from '@angular/fire/app';
 
 
 @Injectable({
@@ -13,6 +14,7 @@ export class FirebaseAuthService {
   storage = inject(FirebaseStorageService);
   auth = inject(Auth);
   router = inject(Router);
+  errorMessage: string = '';
 
   onlineTimer: any = null;
 
@@ -52,10 +54,34 @@ export class FirebaseAuthService {
       if (!docSnapshot.exists()) await this.loginWithGoogleNewUser(user);
       else this.loginWithGoogleExistingUser(user);
       this.router.navigate(['/workspace']);
+      this.errorMessage = '';
     } catch (error) {
-      throw error;
+      if (error instanceof FirebaseError) {
+        this.getGoogleLoginErrorMessage(error);
+      } else {
+        console.error('Unexpected error:', error);
+      }
     }
   }
+
+
+  /**
+   * 
+   * @param error 
+   */
+  getGoogleLoginErrorMessage(error: FirebaseError) {
+    switch (error.code) {
+      case 'auth/popup-closed-by-user':
+        this.errorMessage = 'Das Anmelde-Popup wurde geschlossen, bevor die Anmeldung abgeschlossen werden konnte.';
+        break;
+      case 'auth/network-request-failed':
+        this.errorMessage = 'Netzwerkproblem! Bitte überprüfe deine Internetverbindung.';
+        break;
+      default:
+        this.errorMessage = 'Fehler bei der Anmeldung mit Google. Bitte versuche es später erneut.';
+    }
+  }
+
 
 
   /**

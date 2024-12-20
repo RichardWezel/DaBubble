@@ -28,7 +28,6 @@ export class LogInCardComponent {
     password: '',
   };
   passwordVisible: boolean = false;
-  errorMessage: string = '';
   isLoading: boolean = false;
 
   @Output() login = new EventEmitter<boolean>();
@@ -61,7 +60,7 @@ export class LogInCardComponent {
    */
   checkLogin(ngForm: NgForm) {
     this.checkIfFormValid(ngForm);
-    this.errorMessage = ''; // Reset error messagee
+    this.authService.errorMessage = ''; // Reset error messagee
     signInWithEmailAndPassword(this.auth, this.loginData.email, this.loginData.password)
       .then(async (userCredential) => {
         await this.loginAsUser(userCredential);
@@ -100,18 +99,25 @@ export class LogInCardComponent {
   async loginAsUser(userCredential: UserCredential): Promise<void> {
     const user = userCredential.user;
     if (!user.emailVerified) {
-      this.errorMessage = "Ihre E-Mail-Adresse ist noch nicht verifiziert. Bitte überprüfen Sie Ihren Posteingang.";
+      this.authService.errorMessage = "Ihre E-Mail-Adresse ist noch nicht verifiziert. Bitte überprüfen Sie Ihren Posteingang.";
       return; // Stops further execution
     }
     console.log("Benutzer eingeloggt:", user);
-
-    // Saving the Auth-UID
-    sessionStorage.setItem("authUid", user.uid);
-    this.storage.authUid = user.uid;
-
+    this.savingAuthUid(user);
     this.loadingUserInformation();
     await this.setUserStatusOnline(user);
     this.navigateToWorkspace();
+  }
+
+
+  /**
+   * Saves the uid from the userCredential user in the session storage.
+   * Updates the authUid in Firebase storage service with the uid of the userCredential user.
+   * @param user - A Firebase 'User' object, which represents the currently authenticated user.
+   */
+  savingAuthUid(user: User) {
+    sessionStorage.setItem("authUid", user.uid);
+    this.storage.authUid = user.uid;
   }
 
 
@@ -151,24 +157,14 @@ export class LogInCardComponent {
     console.log('Error code', error.code);
     switch (error.code) {
       case 'auth/invalid-credential':
-        this.errorMessage = "E-Mail-Adresse oder Passwort ist falsch. Bitte überprüfen Sie Ihre Eingabe.";
+        this.authService.errorMessage = "E-Mail-Adresse oder Passwort ist falsch. Bitte überprüfen Sie Ihre Eingabe.";
         break;
       default:
-        this.errorMessage = "Es gibt kein Konto mit dieser E-Mail-Adresse. Bitte registrieren Sie sich zuerst.";
+        this.authService.errorMessage = "Es gibt kein Konto mit dieser E-Mail-Adresse. Bitte registrieren Sie sich zuerst.";
     }
   }
 
 
-  getGoogleLoginErrorMessage(errorCode: string): string {
-    switch (errorCode) {
-      case 'auth/popup-closed-by-user':
-        return 'Das Anmelde-Popup wurde geschlossen, bevor die Anmeldung abgeschlossen werden konnte.';
-      case 'auth/network-request-failed':
-        return 'Netzwerkproblem! Bitte überprüfe deine Internetverbindung.';
-      default:
-        return 'Fehler bei der Anmeldung mit Google. Bitte versuche es später erneut.';
-    }
-  }
 
 
   resetPassword() {
