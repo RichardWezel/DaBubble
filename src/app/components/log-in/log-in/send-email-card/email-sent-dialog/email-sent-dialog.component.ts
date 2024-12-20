@@ -9,12 +9,16 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./email-sent-dialog.component.scss'],
 })
 export class EmailSentDialogComponent {
-  @Input() email: string = ''; // E-Mail-Adresse anzeigen
-  @Input() showDialog: boolean = false; // Dialog steuern
-  @Output() close = new EventEmitter<void>(); // Event auslösen, um zu schließen
+  @Input() email: string = ''; // Show email address
+  @Input() showDialog: boolean = false; // Control the dialog
+  @Output() close = new EventEmitter<void>(); // Emit closing event
 
+
+  /**
+   * Closes the confirmation dialog for sending the link to the email address.
+   */
   closeDialog() {
     this.showDialog = false;
-    this.close.emit(); // Event auslösen
+    this.close.emit(); // Trigger event
   }
 }
