@@ -16,7 +16,7 @@ import { ValidatorService } from '../../../../shared/services/validator-service'
 @Component({
   selector: 'app-reset-password-card',
   standalone: true,
-  imports: [CardComponent, FormsModule, CommonModule ],
+  imports: [CardComponent, FormsModule, CommonModule],
   templateUrl: './reset-password-card.component.html',
   styleUrl: './reset-password-card.component.scss',
 })
@@ -43,53 +43,107 @@ export class ResetPasswordCardComponent implements OnInit {
   isLoading: boolean = true;
   errorMessage: string = '';
 
+
   constructor() {
     console.log('Current User:', this.storage.currentUser);
     console.log('Auth UID:', this.storage.authUid);
   }
 
 
+  /**
+   * When the component is intialized the component subscribes to the query parameters from the current route.
+   * Extracts the 'oobCode' from the URL and reacts accordingly.
+   */
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
       this.oobCode = params['oobCode'];
       console.log('oobCode received:', this.oobCode); // Debugging
       if (!this.oobCode) {
-        this.errorMessage = 'Ungültiger oder abgelaufener Link.';
-        this.isLoading = false;
-        return;
+        this.handleLinkError();
+      } else {
+        this.verifyOobCode();
       }
-
-      verifyPasswordResetCode(this.auth, this.oobCode)
-        .then(() => {
-          console.log('oobCode verified successfully'); // Debugging
-          this.isLoading = false;
-        })
-        .catch((error) => {
-          console.error('Verification error:', error); // Debugging
-          this.errorMessage = 'Ungültiger oder abgelaufener Link.';
-          this.isLoading = false;
-        });
     });
   }
 
+
+  /**
+   * Handles an error with a message if the link is invalid or expired.
+   */
+  handleLinkError() {
+    this.errorMessage = 'Ungültiger oder abgelaufener Link.';
+    this.isLoading = false;
+  }
+
+
+  /**
+   * Verifies the OobCode from the acitvated route.
+   */
+  verifyOobCode() {
+    verifyPasswordResetCode(this.auth, this.oobCode)
+      .then(() => {
+        console.log('oobCode verified successfully'); // Debugging
+        this.isLoading = false;
+      })
+      .catch((error) => {
+        console.error('Verification error:', error); // Debugging
+        this.handleLinkError();
+      });
+  }
+
+
+  /**
+   * Toggles the visiblitiy of the inserted password.
+   */
   togglePasswordVisibility() {
     this.passwordVisible = !this.passwordVisible;
   }
 
 
+  /**
+   * Compares the inserted passwords. If the passwords aren't the same, a message is shown.
+   */
   comparePasswords() {
     this.samePasswords = this.passwordData === this.confirmPasswordData;
   }
 
+
+  /**
+   * Resets the Password when there is an OobCode and a valid passsword.
+   */
   resetPassword() {
     if (!this.oobCode) {
-      this.errorMessage = 'Kein gültiger Reset-Code gefunden.';
-      return;
+      this.errorMessageNoOobCode();
+    } else if (!this.validator.validatePassword(this.passwordData)) {
+      this.errorMessageInvalidPassword();
+    } else {
+      this.tryResetingPassword();
     }
-    if (!this.validator.validatePassword(this.passwordData)) {
-      this.errorMessage = 'Das Passwort erfüllt nicht die Anforderungen.';
-      return;
-    }
+  }
+
+
+  /**
+   * Error message when there is no OobCode.
+   */
+  errorMessageNoOobCode() {
+    this.errorMessage = 'Kein gültiger Reset-Code gefunden.';
+  }
+
+
+  /**
+   * Error message when the password is invalid.
+   */
+  errorMessageInvalidPassword() {
+    this.errorMessage = 'Das Passwort erfüllt nicht die Anforderungen.';
+  }
+
+
+  /**
+   * Attempts to reset the user's passwordusing the provided reset code and new password.
+   * If the password reset is successfull, a confirmation dialog is shown.
+   * If an error occurs, an appropriate error message is displayed.
+   */
+  tryResetingPassword() {
     this.isLoading = true;
     confirmPasswordReset(this.auth, this.oobCode, this.passwordData)
       .then(() => {
