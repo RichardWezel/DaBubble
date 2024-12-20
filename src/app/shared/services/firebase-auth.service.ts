@@ -56,18 +56,28 @@ export class FirebaseAuthService {
       this.router.navigate(['/workspace']);
       this.errorMessage = '';
     } catch (error) {
-      if (error instanceof FirebaseError) {
-        this.getGoogleLoginErrorMessage(error);
-      } else {
-        console.error('Unexpected error:', error);
-      }
+      this.processGoogleLoginError(error);
     }
   }
 
 
   /**
-   * 
-   * @param error 
+   * Processes the Google Login errors.
+   * It differs between the Firebase errors and other errors.
+   * @param error - The error object that occured during the Google Login process.
+   */
+  processGoogleLoginError(error: any) {
+    if (error instanceof FirebaseError) {
+      this.getGoogleLoginErrorMessage(error);
+    } else {
+      console.error('Unexpected error:', error);
+    }
+  }
+
+
+  /**
+   * Displays the appropriate error message for the Google Login based on the Firebase error.
+   * @param error - The Firebase error object containing details about the login failure.
    */
   getGoogleLoginErrorMessage(error: FirebaseError) {
     switch (error.code) {
