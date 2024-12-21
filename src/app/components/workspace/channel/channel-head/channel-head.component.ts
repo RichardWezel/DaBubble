@@ -6,6 +6,7 @@ import { NewMessageInputHeadComponent } from "./new-message-input-head/new-messa
 import { ChannelMemberDialogComponent } from './channel-member-dialog/channel-member-dialog.component';
 import { CloudStorageService } from '../../../../shared/services/cloud-storage.service';
 import { ChannelEditComponent } from '../../../../shared/components/dialog/channel-edit/channel-edit.component';
+import { AddChannelMemberDialogComponent } from './add-channel-member-dialog/add-channel-member-dialog.component';
 
 @Component({
   selector: 'app-channel-head',
@@ -18,7 +19,9 @@ import { ChannelEditComponent } from '../../../../shared/components/dialog/chann
     ChannelEditComponent,
     CommonModule,
     NgFor,
-    NgIf],
+    NgIf,
+    AddChannelMemberDialogComponent
+  ],
   templateUrl: './channel-head.component.html',
   styleUrl: './channel-head.component.scss'
 })
@@ -134,5 +137,14 @@ export class ChannelHeadComponent implements OnInit {
     else return this.storage.user.find(user => user.id === foundUser)?.name;
   }
 
+  @ViewChild('addChannelMemberDialog') addChannelMemberDialog!: AddChannelMemberDialogComponent;
 
-}
+  openAddChannelMemberDialog(event: Event) {
+    event.stopPropagation();
+    if (this.addChannelMemberDialog) {
+      this.addChannelMemberDialog.openDialog();
+    } else {
+      console.log("Error of call channelMemberDialog.openDialog()")
+    }
+  }
+  }

@@ -7,12 +7,11 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 export class OpenCloseDialogService {
 
-  // Beispiel: Verwaltung von zwei Dialogen
   private dialogs: { [key: string]: BehaviorSubject<boolean> } = {
     userProfile: new BehaviorSubject<boolean>(false),
     channelMember: new BehaviorSubject<boolean>(false),
-    workspaceMenu: new BehaviorSubject<boolean>(true)
-    // Fügen Sie hier weitere Dialoge hinzu
+    workspaceMenu: new BehaviorSubject<boolean>(true),
+    addChannelMember: new BehaviorSubject<boolean>(false),
   };
 
   profileId = new EventEmitter<string>();
