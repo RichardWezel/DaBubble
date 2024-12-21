@@ -26,6 +26,21 @@ export class SignInCardComponent {
 
   @Output() generateAccount = new EventEmitter<boolean>();
 
+
+  /**
+   * Resets the signInData when the user gets back to the login.
+   * Otherwise the data stays for a better UX.
+   */
+  resetSignInData() {
+    this.signInService.signInData = {
+      name: "",
+      email: "",
+      password: "",
+      checkboxChecked: false,
+      img: ""
+    }
+  }
+
   /**
    * Navigates the user to the choose avatar card.
    */
