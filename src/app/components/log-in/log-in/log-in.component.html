@@ -1,10 +1,10 @@
 <app-background-with-sign-in [newAccount]="login">
-    <ng-container *ngIf="login; else sendEmail">
+    <ng-container *ngIf="login">
         <app-log-in-card (login)="login = $event"></app-log-in-card>
     </ng-container>
-    <ng-template #sendEmail>
+    <ng-container *ngIf="!login">
         <app-send-email-card (login)="login = $event"></app-send-email-card>
-    </ng-template>
+    </ng-container>
 </app-background-with-sign-in>
 
 <div class="loading-container" *ngIf="showLoading">

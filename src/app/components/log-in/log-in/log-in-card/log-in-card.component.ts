@@ -41,7 +41,6 @@ export class LogInCardComponent {
    */
   goToSendMail() {
     this.login.emit(false);
-    this.router.navigate(['/sendemail']);
   }
 
 

@@ -43,7 +43,7 @@ export class SendEmailCardComponent {
    * Navigates the user to the login card.
    */
   goToLogin() {
-    this.login.emit(false);
+    this.login.emit(true);
   }
 
 

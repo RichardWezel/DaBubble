@@ -19,7 +19,7 @@ export const routes: Routes = [
     { path: 'auth/action', component: ResetPasswordCardComponent }, // Firebase-Link-Route
     /* { path: 'resetpassword', component: ResetPasswordCardComponent }, */
     { path: 'resetpassword', component: ResetPasswordCardComponent },
-    { path: 'sendemail', component: SendEmailCardComponent },
+/*     { path: 'sendemail', component: SendEmailCardComponent }, */
     { path: 'workspace', component: WorkspaceComponent },
     { path: 'choose-avatar', component: ChooseAvatarCardComponent },
     { path: 'imprint', component: ImprintComponent },
