@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-privacy-policy',
@@ -10,9 +10,18 @@ import { Router } from '@angular/router';
 })
 
 export class PrivacyPolicyComponent {
-  constructor(private router: Router) { }
 
+  /**
+   * Constructor for the ResetPasswordComponent, injects the necessary dependencies.
+   * @param location - The Angular Location service used for interacting with the browser's URL.
+   */
+  constructor(private location: Location) { }
+
+
+  /**
+   * Navigates the user to the previous page in the browser's history.
+   */
   getBack() {
-    this.router.navigate(['/login']);
+    this.location.back();
   }
 }

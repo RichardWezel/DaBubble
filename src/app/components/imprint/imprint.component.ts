@@ -10,9 +10,15 @@ import { Location } from '@angular/common';
 })
 export class ImprintComponent {
 
-  constructor(
-    private location: Location) {}
+  /**
+   * Constructor for the ResetPasswordComponent, injects the necessary dependencies.
+   * @param location - The Angular Location service used for interacting with the browser's URL.
+   */
+  constructor(private location: Location) {}
 
+  /**
+   * Navigates the user to the previous page in the browser's history.
+   */
   goBack() {
     this.location.back();
   }
