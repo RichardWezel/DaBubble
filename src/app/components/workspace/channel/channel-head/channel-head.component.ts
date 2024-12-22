@@ -60,6 +60,11 @@ export class ChannelHeadComponent implements OnInit {
     return owner?.name || '';
   }
 
+  get currentChannelId(): string {
+    return this.storage.currentUser.currentChannel || '';
+  }
+  
+
   channelDescription(): string {
     return this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.description || '';
   }
