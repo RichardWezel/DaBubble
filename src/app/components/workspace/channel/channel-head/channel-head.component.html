@@ -79,4 +79,13 @@
     </div>
   }
 
+  <app-channel-edit
+    *ngIf="isChannelEditVisible"
+    [channelId]="currentChannelId"
+    [channelName]="channelName()"
+    [channelDescription]="channelDescription()"
+    [creatorName]="channelCreator()"
+    (close)="closeChannelEdit()">
+  </app-channel-edit>
+
 </section>

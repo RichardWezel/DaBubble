@@ -260,14 +260,19 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
    * @param channelId - The ID of the channel to update.
    * @param channelData - An object containing the updated channel data.
    */
-  async updateChannel(channelId: string, channelData: ChannelInterface) {
-    await updateDoc(doc(this.firestore, "channel", channelId), {
-      name: channelData.name,
-      description: channelData.description,
-      owner: channelData.owner,
-      user: channelData.user,
-      posts: channelData.posts,
-    })
+  async updateChannel(channelId: string, channelData: Partial<ChannelInterface>) {
+    try {
+      // Entferne Felder mit undefined-Werten
+      const validData = Object.fromEntries(
+        Object.entries(channelData).filter(([_, value]) => value !== undefined)
+      );
+  
+      await updateDoc(doc(this.firestore, "channel", channelId), validData);
+      console.log("Channel erfolgreich aktualisiert:", validData);
+    } catch (error) {
+      console.error("Fehler beim Aktualisieren des Channels:", error);
+      throw error;
+    }
   }
 
   /**
