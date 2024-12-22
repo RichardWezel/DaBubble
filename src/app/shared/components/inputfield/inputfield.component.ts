@@ -67,7 +67,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * is initialized, so setting the focus immediately does not work.
    */
   ngAfterViewInit() {
-    setTimeout(() => this.setFocus(), 250);
+    // setTimeout(() => this.setFocus(), 250);
   }
 
 
@@ -78,7 +78,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * is initialized, so setting the focus immediately does not work.
    */
   ngOnChanges(): void {
-    setTimeout(() => this.setFocus(), 250);
+    // setTimeout(() => this.setFocus(), 250);
   }
 
 
@@ -260,7 +260,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
     this.message = message.innerHTML;
     this.startInput = (message.innerHTML === '' || message.innerHTML === '<br>') ? false : true;
-    this.setFocus();
+    // this.setFocus();
   }
 
 
@@ -292,7 +292,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     newMessage.innerHTML = newMessage.innerHTML.replaceAll('<br>', '');
     this.startInput = true;
     this.showEmojiSelector = false;
-    this.setFocus();
+    // this.setFocus();
   }
 
 
@@ -309,7 +309,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     this.showTagSearch = !this.showTagSearch;
     this.showEmojiSelector = false;
     this.showUpload = false;
-    this.setFocus();
+    // this.setFocus();
   }
 
 
@@ -323,7 +323,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     this.showEmojiSelector = !this.showEmojiSelector;
     this.showTagSearch = false;
     this.showUpload = false;
-    this.setFocus();
+    // this.setFocus();
   }
 
 
@@ -335,7 +335,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   toggleAppendix() {
     this.showUpload = !this.showUpload;
     this.showEmojiSelector = false;
-    this.setFocus();
+    // this.setFocus();
   }
 
 
@@ -397,7 +397,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     this.showTagSearch = false;
     this.showEmojiSelector = false;
     this.showUpload = false;
-    this.setFocus();
+    // this.setFocus();
   }
 
 }

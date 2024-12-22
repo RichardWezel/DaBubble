@@ -4,22 +4,27 @@ import { FirebaseStorageService } from '../../../../../shared/services/firebase-
 import { CloudStorageService } from '../../../../../shared/services/cloud-storage.service';
 import { OpenCloseDialogService } from '../../../../../shared/services/open-close-dialog.service';
 import { Subscription } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+import { UserInterface } from '../../../../../shared/interfaces/user.interface';
 
 @Component({
   selector: 'app-add-channel-member-dialog',
   standalone: true,
-  imports: [NgFor, NgIf],
+  imports: [NgFor, NgIf, FormsModule],
   templateUrl: './add-channel-member-dialog.component.html',
   styleUrl: './add-channel-member-dialog.component.scss'
 })
 export class AddChannelMemberDialogComponent {
 
   @Input() channelUsers: string[] = [];
+  searchResult: UserInterface[] = [];
+  userInput: string = "";
   storage = inject(FirebaseStorageService);
   cloud = inject(CloudStorageService);
   openCloseDialogService = inject(OpenCloseDialogService);
-  isOpen: boolean = false;
+  isOpen: boolean = true;
   private subscriptions: Subscription = new Subscription();
+  addedUser: UserInterface[] = [];
 
   constructor() { }
 
@@ -44,16 +49,51 @@ export class AddChannelMemberDialogComponent {
     this.isOpen = false;
   }
 
-  getUserName(userId: string): string {
-    const user = this.storage.user.find(u => u.id === userId);
-    return user ? (user.id === this.storage.currentUser.id ? `${user.name} (Du)` : user.name) : 'Unbekannt';
+   /**
+   * During input in the input field, the function “updateSuggestion” is called, which updates the suggested text in the background of input field.
+   */
+   onInput(): void {
+    this.searchResult = [];
+    this.updateSearchResult();
   }
 
-  findAvatar(userId: string): string {
-    const avatar = this.storage.user.find(u => u.id === userId)?.avatar || '';
+  getUserName(user: UserInterface): string {
+    const foundUser = this.storage.user.find(u => u.id === user.id);
+    return foundUser ? (foundUser.id === this.storage.currentUser.id ? `${foundUser.name} (Du)` : foundUser.name) : 'Unbekannt';
+  }
+
+  findAvatar(user: UserInterface): string {
+    const avatar = this.storage.user.find(u => u.id === user.id)?.avatar || '';
     return avatar.startsWith('profile-')
       ? `assets/img/profile-pictures/${avatar}`
       : this.cloud.openImage(avatar);
   }
+  
 
+  channelName(): string {
+    return (
+      this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.name || ''
+    );
+  }
+
+  updateSearchResult() {
+    const trimmedInput = this.userInput.trim();
+    
+    if (!trimmedInput) {
+      this.searchResult = [];
+      return;
+    }
+  
+    const searchTerm = trimmedInput.toLowerCase();
+    this.searchResult = this.storage.user.filter(user => {
+      return (
+        user.name.toLowerCase().includes(searchTerm) ||
+        user.email.toLowerCase().includes(searchTerm)
+      );
+    });
+  }
+
+  markUser(user: UserInterface) {
+    this.addedUser.push(user);
+  }
 }
