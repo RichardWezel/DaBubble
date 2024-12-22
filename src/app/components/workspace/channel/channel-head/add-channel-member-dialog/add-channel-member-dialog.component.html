@@ -30,8 +30,11 @@
 
       <section class="searchbar">
   
-        <input placeholder="Namen eingeben" type="search" id="newChannelMemberInput" #inputFieldChannelMember type="text" [(ngModel)]="userInput" (input)="onInput()"
-         autocomplete="off">
+        <div class="Inputfield">
+          <input *ngIf="!addedUser.length" placeholder="Namen eingeben" type="search" id="newChannelMemberInput" #inputFieldChannelMember type="text" [(ngModel)]="userInput" (input)="onInput()"
+          autocomplete="off">
+        </div>
+       
         <div>
           <button >Hinzufügen</button>
         </div>

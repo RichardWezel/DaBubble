@@ -110,22 +110,14 @@ main {
             flex-direction: column;
             gap: 20px;
 
-            input {
-                width: 100%;
+            .Inputfield {
                 padding: 15px 20px 15px 20px;
                 border-radius: 30px;
                 border: 1px solid #686868;
-                font-family: "Nunito";
-                font-size: 18px;
-                font-weight: 400;
-                line-height: 24.55px;
-                text-align: left;
-                text-underline-position: from-font;
-                text-decoration-skip-ink: none;
-                position: relative;
+                width: 100%;
 
-
-                &::placeholder{
+                input {
+                    width: 100%;
                     font-family: "Nunito";
                     font-size: 18px;
                     font-weight: 400;
@@ -133,11 +125,38 @@ main {
                     text-align: left;
                     text-underline-position: from-font;
                     text-decoration-skip-ink: none;
-                    color: #686868;
-                }
+                    position: relative;
+                    border: unset;
+    
+                    &::placeholder{
+                        font-family: "Nunito";
+                        font-size: 18px;
+                        font-weight: 400;
+                        line-height: 24.55px;
+                        text-align: left;
+                        text-underline-position: from-font;
+                        text-decoration-skip-ink: none;
+                        color: #686868;
+                    }
 
-                &:focus{
-                    border: #444DF2 1px solid;
+                    &:focus {
+                        border: none;
+                        outline: none;
+                        box-shadow: none;
+                    }
+
+                    &:focus-visible {
+                        border: none;
+                        outline: none;
+                        box-shadow: none;
+                    }
+
+                    &:active {
+                        border: none;
+                        outline: none;
+                        box-shadow: none;
+                    }
+                   
                 }
             }
 
