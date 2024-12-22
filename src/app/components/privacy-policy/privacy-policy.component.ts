@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { Location } from '@angular/common';
+import { CardComponent } from '../../shared/components/log-in/card/card.component';
 
 @Component({
   selector: 'app-privacy-policy',
   standalone: true,
-  imports: [],
+  imports: [CardComponent],
   templateUrl: './privacy-policy.component.html',
   styleUrl: './privacy-policy.component.scss'
 })
@@ -21,7 +22,7 @@ export class PrivacyPolicyComponent {
   /**
    * Navigates the user to the previous page in the browser's history.
    */
-  getBack() {
+  goBack() {
     this.location.back();
   }
 }

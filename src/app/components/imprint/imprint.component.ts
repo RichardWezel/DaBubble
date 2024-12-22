@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { Location } from '@angular/common';
+import { CardComponent } from '../../shared/components/log-in/card/card.component';
 
 @Component({
   selector: 'app-imprint',
   standalone: true,
-  imports: [],
+  imports: [CardComponent],
   templateUrl: './imprint.component.html',
   styleUrls: ['./imprint.component.scss']
 })

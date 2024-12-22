@@ -1,78 +1,15 @@
 @import 'mixins';
 @import 'variables';
+@import './../../shared/components/log-in/card/card.component.scss';
 
-body {
-    min-height: 100vh;
-    margin: 0;
-    overflow: hidden;
+:host {
+    height: calc(100vh - 50px);
 }
 
-.login-header {
-    width: 100%;
-    height: 100px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 30px;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding-left: 70px;
-
-    >img {
-        width: 70px;
-    }
-
-    >p {
-        font-family: 'Nunito';
-        font-weight: 700;
-        font-size: 32px;
-        padding-top: 10px;
-    }
-}
-
-.imprint-content {
-    width: 100vw;
-    height: 60vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.imprint-container {
-    width: 100%;
-    max-width: 670px;
-    height: 469px;
-    padding: 48px 56px 48px 56px;
-    border-radius: 30px;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.08);
+.privacy-policy-container {
+    height: 100%;
     overflow: scroll;
-    scrollbar-width: none;
-
-    img {
-        height: 40px;
-        width: 40px;
-        border-radius: 50%;
-        @include dja;
-        @include icon-style;
-
-        &:hover {
-            background-color: $backgroundColor;
-            cursor: pointer;
-
-            svg path {
-                fill: $primaryColor;
-            }
-        }
-    }
-
-    padding-bottom: 40px;
 }
-
 
 h1,
 h2,
@@ -80,47 +17,22 @@ h3 {
     color: rgba(68, 77, 242, 1);
     font-weight: 700;
     font-family: 'Nunito', sans-serif;
-
 }
 
-@media (max-width: 768px) {
-    .imprint-container {
-        padding: 24px;
-        width: auto;
-        margin: 10px;
-    }
+h2 {
+    font-size: 24px;
+    line-height: 30px;
+    text-align: left;
+    margin-top: 4px;
+}
 
-    .logo>p {
-        font-size: 24px;
-    }
-
-    a {
-        font-size: 16px;
-    }
-
-    .login-header {
-        width: 100%;
-        margin: 0px;
-    }
-
-    .logo {
-        gap: 16px;
-        padding-left: 20px;
-
-        >img {
-            width: 40px;
-        }
-
-        >p {
-            font-size: 18px;
-        }
-    }
-
-    .imprint-content {
-        margin-top: 30px;
-    }
-
-    .imprint-container {
-        height: 100%;
+p {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 24px;
+  
+    @media (max-width: 510px) {
+      font-size: 16px;
+      line-height: 20px;
     }
 }
