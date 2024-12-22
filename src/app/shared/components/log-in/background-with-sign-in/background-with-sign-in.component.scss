@@ -4,6 +4,9 @@
     padding: 28px 0;
     box-sizing: border-box;
     font-weight: 400;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .create-new-profile-container {
@@ -68,6 +71,7 @@ header {
 }
 
 .main-content {
+    flex: 1;
     display: flex;
     justify-content: center;
 

@@ -4,12 +4,9 @@
     padding: 28px 0;
     box-sizing: border-box;
     font-weight: 400;
-}
-
-.create-new-profile-container {
+    min-height: 100%;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
 }
 
 button {
@@ -46,6 +43,7 @@ header {
 }
 
 .main-content {
+    flex: 1;
     display: flex;
     justify-content: center;
 
