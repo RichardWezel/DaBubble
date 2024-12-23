@@ -13,4 +13,19 @@ export class SignInService {
   }
   
   constructor() { }
+
+
+  /**
+   * Resets the signInData.
+   */
+  resetSignInData() {
+    this.signInData = {
+      name: "",
+      email: "",
+      password: "",
+      checkboxChecked: false,
+      img: ""
+    }
+  }
+
 }

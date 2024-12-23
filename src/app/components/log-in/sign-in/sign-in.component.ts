@@ -12,10 +12,4 @@ import { ChooseAvatarCardComponent } from "./choose-avatar-card/choose-avatar-ca
 })
 export class SignInComponent {
   generateAccount: boolean = true; // Initial state: Create account, sign-in-card
-
-
-/*   updateAccountState(event: boolean) {
-    console.log('updateAccountState wurde aufgerufen mit:', event);
-    this.generateAccount = event;
-  } */
 }

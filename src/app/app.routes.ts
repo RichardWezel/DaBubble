@@ -16,7 +16,7 @@ export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' }, // Umleitung zur Login-Seite
     { path: 'login', component: LogInComponent },
     { path: 'signin', component: SignInComponent },
-    { path: 'auth/action', component: ResetPasswordCardComponent }, // Firebase-Link-Route
+    /* { path: 'auth/action', component: ResetPasswordCardComponent }, // Firebase-Link-Route */
     /* { path: 'resetpassword', component: ResetPasswordCardComponent }, */
     { path: 'resetpassword', component: ResetPasswordComponent },
 /*     { path: 'sendemail', component: SendEmailCardComponent }, */

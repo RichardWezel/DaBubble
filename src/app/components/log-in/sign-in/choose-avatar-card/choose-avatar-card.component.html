@@ -34,9 +34,9 @@
             </div>
 
             <div class="notification-container">
-                <!-- Erfolgsmeldung -->
+                <!-- Success message -->
                 <p *ngIf="successMessage" class="success-message">{{ successMessage }}</p>
-                <!-- Fehlermeldung -->
+                <!-- Error message -->
                 <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
             </div>
 
@@ -48,7 +48,7 @@
             </div>
         </form>
 
-        <!-- Dialog-Komponente hinzufügen -->
+        <!-- Adding dialog component -->
         <app-email-sent-dialog [email]="signInService.signInData.email" [showDialog]="showDialog"
             (close)="handleDialogClose()">
         </app-email-sent-dialog>

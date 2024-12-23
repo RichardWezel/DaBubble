@@ -13,6 +13,11 @@ export class NavigationService {
 
   constructor() { }
 
+
+  /**
+   * Navigates the user to a specific route.
+   * @param route - The route where the user gets navigated.
+   */
   navigateTo(route: string) {
     this.router.navigate([route]);
   }

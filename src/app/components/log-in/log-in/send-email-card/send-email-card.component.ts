@@ -72,7 +72,7 @@ export class SendEmailCardComponent {
    */
   closeDialog() {
     this.showDialog = false;
-    this.router.navigate(['/login']);
+    this.login.emit(true);
   }
 
 }

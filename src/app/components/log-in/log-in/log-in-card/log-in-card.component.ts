@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
-import { sendPasswordResetEmail, signInWithEmailAndPassword, User, UserCredential } from '@firebase/auth';
+import { signInWithEmailAndPassword, User, UserCredential } from '@firebase/auth';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';

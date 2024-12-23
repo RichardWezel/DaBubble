@@ -17,7 +17,6 @@ export class LogInComponent {
  
   login: boolean = true;
   showLoading: boolean = true;
-  password: boolean = false;
 
 
   /**
@@ -28,24 +27,11 @@ export class LogInComponent {
 
   
   /**
-   * When the component gets initialized, the passthe start overlay is shown for 3 seconds.
+   * When the component gets initialized, the overlay is shown for 3 seconds.
    */
   ngOnInit() {
-    this.isPasswordResetRoute();
     setTimeout(() => {
       this.showLoading = false;
     }, 3000);
-  }
-
-
-  /**
-   * Checks if the current route URL contains sepcific segments.
-   * If both segments are prsent, the 'password' property is set to true.
-   */
-  isPasswordResetRoute() {
-    const urlSegments = this.route.snapshot.url.map(segment => segment.path);
-    if (urlSegments.includes('password-main') && urlSegments.includes('reset-password')) {
-      this.password = true;
-    }
   }
 }

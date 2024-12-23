@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { SignInService } from '../../../../shared/services/sign-in.service';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
-import { Auth, createUserWithEmailAndPassword, getAuth, sendEmailVerification } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, getAuth, sendEmailVerification, User, UserCredential } from '@angular/fire/auth';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 import { EmailSentDialogComponent } from '../../log-in/send-email-card/email-sent-dialog/email-sent-dialog.component';
 import { CloudStorageService } from '../../../../shared/services/cloud-storage.service';
@@ -82,67 +82,147 @@ export class ChooseAvatarCardComponent {
 
 
   /**
-   * Adds a new user in the Firebase Authentication and saves the uid from the authentication as authUid.
-   * A new user gets crated in the Firestore Database with the authUid and the insereted user data.
-   * When the authentication and the new user are created the signinData gets cleared and the user gets routed to the login.
+   * Adds a new user in the Firebase Authentication.
+   * A new user gets crated in the Firestore Database with the auth data.
    */
   async setNewUser(): Promise<void> {
     const auth = getAuth();
-    this.isLoading = true; // Ladezustand aktivieren
-    this.errorMessage = ''; // Fehler zurücksetzen
-    this.successMessage = ''; // Erfolgsmeldung zurücksetzen
-
-    // Sicherheitsüberprüfung: Sind alle Felder ausgefüllt?
-    if (!this.signInService.signInData.name || !this.signInService.signInData.email || !this.signInService.signInData.password) {
+    this.resetVariables();
+  
+    if (this.inputFieldsNotFilledIn()) {
       this.errorMessage = 'Bitte füllen Sie alle erforderlichen Felder aus.';
-      this.isLoading = false;
       return;
     }
+  
+    // Handle user creation and verification email
+    const userCreatedSuccessfully = await this.createUserAndSendVerification(auth);
+    if (!userCreatedSuccessfully) {
+      return; // Abort further execution if user creation or email failed
+    }
+  
+    // If everything is successful, show the dialog
+    this.showSuccessDialog();
+  }
 
+
+  /**
+   * The email-send-dialog gets closed and the user gets navigated to the login.
+   */
+  handleDialogClose() {
+    this.showDialog = false;
+    this.navigationService.navigateTo('/login');
+  }
+
+
+  /**
+   * Resets the state variables to their default values.
+   */
+  resetVariables() {
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+  }
+
+
+  /**
+   * Checks if all input fields are filled in.
+   * @returns - Returns true if any input fields are emtpy; otherwise, false.
+   */
+  inputFieldsNotFilledIn(): boolean {
+    return !this.signInService.signInData.name || !this.signInService.signInData.email || !this.signInService.signInData.password;
+  }
+
+
+  /**
+   * Handles the creation of a new user in the authentication as well as in the userCollection.
+   * Handles the upload of the profile picture.
+   * @param auth - The Firebase authentication object.
+   * @returns - Returns true if everything is successful, otherwise false.
+   */
+  async createUserAndSendVerification(auth: Auth): Promise<boolean> {
     try {
-      // Firebase-Benutzer erstellen
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        this.signInService.signInData.email,
-        this.signInService.signInData.password
-      );
+      const userCredential = await this.createFirebaseAuthenticationUser(auth);
       const uid = userCredential.user.uid;
-
-      if (this.uploadFile) {
-        this.signInService.signInData.img = await this.cloud.uploadProfilePicture(uid, this.uploadFile);
-        this.uploadFile = null;
-      }
-
-      await this.storage.addUser(uid, {
-        name: this.signInService.signInData.name,
-        email: this.signInService.signInData.email,
-        avatar: this.signInService.signInData.img,
-      });
-
-      // Bestätigungs-E-Mail senden
-      try {
-        await sendEmailVerification(userCredential.user);
-      } catch (emailError) {
-        console.error('Fehler beim Senden der Bestätigungs-E-Mail:', emailError);
-        this.errorMessage = 'Die Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.';
-        return; // Abbrechen, wenn die E-Mail nicht gesendet werden konnte
-      }
-
-      // Dialog anzeigen
-      this.showDialog = true;
-
+  
+      await this.handleProfilePictureUpload(uid);
+  
+      await this.addNewUserToUserCollection(uid);
+  
+      const emailSent = await this.sendVerificationEmail(userCredential.user);
+      if (!emailSent) return false; // Abort if email failed to send
+  
+      return true; // Return true if everything succeeded
     } catch (error) {
-      console.error('Fehler beim Erstellen des Kontos:', error);
-      this.errorMessage = 'Fehler: ' + (error as any).message;
-    } finally {
-      this.isLoading = false; // Ladezustand deaktivieren
+      this.errorMessage = 'Fehler beim Erstellen des Kontos.';
+      return false; // Return false if something failed
     }
   }
 
-  handleDialogClose() {
-    this.showDialog = false; // Dialog schließen
-    this.navigationService.navigateTo('/login'); // Weiterleitung zur Login-Seite
+
+  /**
+   * The dialog that a verification email is sent, gets shown.
+   */
+  showSuccessDialog() {
+    this.showDialog = true;
+    this.isLoading = false;
   }
+
+
+  /**
+   * Creates a Firebase authentication user using email and password.
+   * @param auth - The Firebase authentication object.
+   * @returns - The user credential object returned by Firebase.
+   */
+  async createFirebaseAuthenticationUser(auth: Auth): Promise<UserCredential> {
+    return await createUserWithEmailAndPassword(
+      auth,
+      this.signInService.signInData.email,
+      this.signInService.signInData.password
+    );
+  }
+
+
+  /**
+   * Handles uploading the profile picture if a file is provided.
+   * @param uid - The authenticated user's UID.
+   */
+  async handleProfilePictureUpload(uid: string): Promise<void> {
+    if (this.uploadFile) {
+      this.signInService.signInData.img = await this.cloud.uploadProfilePicture(uid, this.uploadFile);
+      this.uploadFile = null;
+    }
+  }
+
+
+  /**
+   * Adds a new user to the Firestore "user" collection.
+   * @param uid - The authenticated user's UID.
+   */
+  async addNewUserToUserCollection(uid: string): Promise<void> {
+    await this.storage.addUser(uid, {
+      name: this.signInService.signInData.name,
+      email: this.signInService.signInData.email,
+      avatar: this.signInService.signInData.img,
+    });
+  }
+
+
+  /**
+   * Sends a verification email to the proviced user.
+   * @param user - The user object to whom the verification email should be sent.
+   * @returns - Returns true if the email was sent successfully, otherwise false.
+   */
+  async sendVerificationEmail(user: User): Promise<boolean> {
+    try {
+      await sendEmailVerification(user);
+      return true;
+    } catch (emailError) {
+      console.error('Fehler beim Senden der Bestätigungs-E-Mail:', emailError);
+      this.errorMessage = 'Die Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.';
+      return false;
+    }
+  }
+
 
   /**
    * This method creates a new user in the authentication from Firebase with the inserted email and password.
@@ -184,37 +264,9 @@ export class ChooseAvatarCardComponent {
    * Clears the variables in the signInData object.
    */
   clearSignInServiceData(): void {
-    this.signInService.signInData = {
-      name: "",
-      email: "",
-      password: "",
-      checkboxChecked: false,
-      img: ""
-    };
+    this.signInService.resetSignInData();
   }
 
-  async confirmAvatarSelection() {
-    try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-
-      if (!user) {
-        throw new Error('Benutzer ist nicht eingeloggt.');
-      }
-
-      // Bestätigungs-E-Mail senden
-      await sendEmailVerification(user);
-
-      // Erfolgsmeldung anzeigen
-      this.successMessage = `Eine Bestätigungs-E-Mail wurde an ${user.email} gesendet. Bitte überprüfen Sie Ihren Posteingang.`;
-
-      // Optional: Weiterleitung oder andere Aktionen
-      console.log('Avatar-Auswahl abgeschlossen und Bestätigungs-E-Mail gesendet.');
-    } catch (error) {
-      console.error('Fehler beim Senden der Bestätigungs-E-Mail:', error);
-      this.errorMessage = 'Die Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.';
-    }
-  }
 
   /**
    * Routes the user to the login component.
