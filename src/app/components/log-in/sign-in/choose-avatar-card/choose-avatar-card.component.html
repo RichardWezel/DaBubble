@@ -47,10 +47,12 @@
                 </button>
             </div>
         </form>
-
-        <!-- Adding dialog component -->
-        <app-email-sent-dialog [email]="signInService.signInData.email" [showDialog]="showDialog"
-            (close)="handleDialogClose()">
-        </app-email-sent-dialog>
+        <app-confirmation-modal *ngIf="showDialog" (close)="closeDialog($event)">
+            <h2>E-Mail versendet</h2>
+            <p>
+              Eine Bestätigungs-E-Mail wurde an <strong>{{ signInService.signInData.email }}</strong> gesendet.<br>
+              Bitte überprüfen Sie auch Ihren Spam-Ordner.
+            </p>
+        </app-confirmation-modal>
     </app-card>
 </div>

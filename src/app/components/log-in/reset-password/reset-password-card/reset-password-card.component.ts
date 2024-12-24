@@ -1,7 +1,6 @@
-// src/app/components/log-in/reset-password/reset-password-card/reset-password-card.component.ts
 import { Component, EnvironmentInjector, EventEmitter, inject, OnInit, Output, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { confirmPasswordReset, getAuth, sendEmailVerification, signInWithEmailAndPassword, verifyPasswordResetCode } from '@angular/fire/auth';
+import { confirmPasswordReset, getAuth, verifyPasswordResetCode } from '@angular/fire/auth';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -10,7 +9,6 @@ import { DialogService } from '../../../../shared/services/dialog-service';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
-import { EmailVerifiedComponent } from '../../sign-in/email-verified/email-verified.component';
 import { ValidatorService } from '../../../../shared/services/validator-service';
 
 @Component({

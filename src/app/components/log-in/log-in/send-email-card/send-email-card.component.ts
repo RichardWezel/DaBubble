@@ -1,21 +1,17 @@
-// src/app/components/log-in/log-in/send-email-card/send-email-card.component.ts
 import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
 import { FormsModule } from '@angular/forms';
 import { Auth, sendPasswordResetEmail } from '@angular/fire/auth';
-import { ViewContainerRef, EnvironmentInjector } from '@angular/core';
-import { Router } from '@angular/router';
-import { DialogService } from '../../../../shared/services/dialog-service';
 import { CommonModule } from '@angular/common';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 import { ValidatorService } from '../../../../shared/services/validator-service';
-import { BackgroundComponent } from "../../../../shared/components/log-in/background/background.component";
+import { ConfirmationModalComponent } from "../../../../shared/components/confirmation-modal/confirmation-modal.component";
 
 
 @Component({
   selector: 'app-send-email-card',
   standalone: true,
-  imports: [CardComponent, FormsModule, CommonModule],
+  imports: [CardComponent, FormsModule, CommonModule, ConfirmationModalComponent],
   templateUrl: './send-email-card.component.html',
   styleUrl: './send-email-card.component.scss',
 })
@@ -24,11 +20,7 @@ export class SendEmailCardComponent {
   showDialog: boolean = false;
   @Output() login = new EventEmitter<boolean>();
 
-  private dialogService = inject(DialogService);
   private validator = inject(ValidatorService);
-  private viewContainerRef = inject(ViewContainerRef);
-  private injector = inject(EnvironmentInjector);
-  private router = inject(Router);
   private auth = inject(Auth);
 
 
@@ -70,8 +62,8 @@ export class SendEmailCardComponent {
   /**
    * If the confirmation dialog gets closed, the user gets navigated to the login.
    */
-  closeDialog() {
-    this.showDialog = false;
+  closeDialog(event: boolean) {
+    this.showDialog = event;
     this.login.emit(true);
   }
 

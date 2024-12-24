@@ -78,7 +78,7 @@ export class LogInCardComponent {
    */
   checkIfFormValid(ngForm: NgForm): void {
     if (ngForm.invalid) {
-      // this.errorMessage = "Bitte füllen Sie alle Felder korrekt aus.";
+      this.authService.errorMessage = "Bitte füllen Sie alle Felder korrekt aus.";
       return;
     }
   }

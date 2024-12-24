@@ -6,14 +6,14 @@ import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { Auth, createUserWithEmailAndPassword, getAuth, sendEmailVerification, User, UserCredential } from '@angular/fire/auth';
 import { NavigationService } from '../../../../shared/services/navigation.service';
-import { EmailSentDialogComponent } from '../../log-in/send-email-card/email-sent-dialog/email-sent-dialog.component';
 import { CloudStorageService } from '../../../../shared/services/cloud-storage.service';
+import { ConfirmationModalComponent } from "../../../../shared/components/confirmation-modal/confirmation-modal.component";
 
 
 @Component({
   selector: 'app-choose-avatar-card',
   standalone: true,
-  imports: [CardComponent, CommonModule, FormsModule, EmailSentDialogComponent],
+  imports: [CardComponent, CommonModule, FormsModule, ConfirmationModalComponent],
   templateUrl: './choose-avatar-card.component.html',
   styleUrl: './choose-avatar-card.component.scss'
 })
@@ -106,10 +106,10 @@ export class ChooseAvatarCardComponent {
 
 
   /**
-   * The email-send-dialog gets closed and the user gets navigated to the login.
+   * If the confirmation dialog gets closed, the user gets navigated to the login.
    */
-  handleDialogClose() {
-    this.showDialog = false;
+  closeDialog(event: boolean) {
+    this.showDialog = event;
     this.navigationService.navigateTo('/login');
   }
 

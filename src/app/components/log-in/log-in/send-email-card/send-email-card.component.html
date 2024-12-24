@@ -37,11 +37,8 @@
         </div>
 
     </app-card>
-    <div class="modal" *ngIf="showDialog">
-        <div class="modal-content">
-            <p>Eine E-Mail für das Zurücksetzen Ihres Passworts wurde an <strong>{{ mailData }}</strong> gesendet.</p>
-            <p>Bitte überprüfen Sie auch Ihren Spam-Ordner.</p>
-            <button type="button" class="btnSendEmailDialog" (click)="closeDialog()">Schließen</button>
-        </div>
-    </div>
+    <app-confirmation-modal *ngIf="showDialog" (close)="closeDialog($event)">
+        <p>Eine E-Mail für das Zurücksetzen Ihres Passworts wurde an <strong>{{ mailData }}</strong> gesendet.</p>
+        <p>Bitte überprüfen Sie auch Ihren Spam-Ordner.</p>
+    </app-confirmation-modal>
 </div>
