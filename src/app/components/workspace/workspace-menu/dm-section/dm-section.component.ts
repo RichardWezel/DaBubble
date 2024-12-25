@@ -33,9 +33,17 @@ export class DmSectionComponent {
   }
 
   getDmAvatar(dm: { contact: string, id: string, posts: any[] }) {
-    let avatar: string = this.storage.user[this.storage.user.findIndex(user => user.id === dm.contact)]?.avatar;
-    avatar = avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + avatar : this.cloud.openImage(avatar);
+    let avatar = this.findAvatar(dm.contact).startsWith('profile-') ? 'assets/img/profile-pictures/' + this.findAvatar(dm.contact) : this.cloud.openImage(this.findAvatar(dm.contact));
+    // let avatar: string = this.storage.user[this.storage.user.findIndex(user => user.id === dm.contact)]?.avatar;
+    // avatar = avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + avatar : this.cloud.openImage(avatar);
     return avatar;
+  }
+
+
+  findAvatar(user: string) {
+    let avatar = this.storage.user.find(u => u.id === user)?.avatar;
+    if (avatar) return avatar;
+    else return '';
   }
 
   // Methode zum Umschalten des Status
