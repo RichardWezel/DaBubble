@@ -94,11 +94,9 @@ export class ChannelHeadComponent implements OnInit {
       .find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel);
     // console.log('foundDM: ', foundDM)
     if (foundChannel) {
-      console.log('A Channel is found in currentChannel of currentUser: ', foundChannel.name);
       this.storage.currentUser.currentChannelName = '#' + foundChannel.name;
       return 'channel';
     } else if (foundDM) {
-      console.log('A Direct Message is found in currentChannel of currentUser: ', this.storage.user.find(user => user.id === foundDM?.contact)?.name);
       this.storage.currentUser.currentChannelName = this.storage.user.find(user => user.id === foundDM?.contact)?.name;
       return 'dm';
     } else if (sessionStorage.getItem('currentChannel') == "newMessage") {
