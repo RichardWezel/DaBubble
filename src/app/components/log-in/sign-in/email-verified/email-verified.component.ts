@@ -1,12 +1,14 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getAuth, applyActionCode } from 'firebase/auth';
-import { SignInService } from '../../../../shared/services/sign-in.service'; // Service der SignInCardComponent
+import { SignInService } from '../../../../shared/services/sign-in.service';
 
 @Component({
   selector: 'app-email-verified',
+  standalone: true,
+  imports: [],
   templateUrl: './email-verified.component.html',
-  styleUrls: ['./email-verified.component.scss']
+  styleUrl: './email-verified.component.scss'
 })
 export class EmailVerifiedComponent implements OnInit {
   message: string = 'Bitte warten...'; // Initiale Nachricht
@@ -75,3 +77,4 @@ export class EmailVerifiedComponent implements OnInit {
     }
   }
 }
+
