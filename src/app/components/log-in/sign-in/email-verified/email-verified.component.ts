@@ -1,7 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { getAuth, applyActionCode } from 'firebase/auth';
-import { SignInService } from '../../../../shared/services/sign-in.service';
+import { Auth } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-email-verified',
@@ -11,53 +11,90 @@ import { SignInService } from '../../../../shared/services/sign-in.service';
   styleUrl: './email-verified.component.scss'
 })
 export class EmailVerifiedComponent implements OnInit {
-  message: string = 'Bitte warten...'; // Initiale Nachricht
-  isLoading: boolean = true; // Ladeindikator
-  private signInService = inject(SignInService); // SignIn-Service importieren
+  message: string = 'Bitte warten...'; // Initial message
+  isLoading: boolean = true; // Loading indicator
 
+
+  /**
+   * The constructor of the component.
+   * @param route - The ActivatedRouteService that provides access to URL parameters and the route state.
+   * @param router - The Router service responsible for navigating between pages.
+   */
   constructor(private route: ActivatedRoute, private router: Router) {}
 
-  ngOnInit() {
+
+  /**
+   * Initializes the component and handles the email verification process.
+   */
+  async ngOnInit() {
     const auth = getAuth();
     this.route.queryParams.subscribe(async (params) => {
-      const mode = params['mode'] || 'verifyEmail';
-      const actionCode = params['oobCode'];
+      const mode = this.gettingParameterModeFromURL(params);
+      const actionCode = this.gettingOobCodeFromURL(params);
 
       if (mode === 'verifyEmail' && actionCode) {
-        try {
-          await applyActionCode(auth, actionCode); // E-Mail verifizieren
-          this.message = 'Deine E-Mail-Adresse wurde erfolgreich bestätigt!';
-          this.isLoading = false;
-
-          // Nach erfolgreicher Verifizierung Benutzeraktionen ausführen
-          // this.handlePostVerification();
-
-          setTimeout(() => {
-            this.router.navigate(['/login']); // Weiterleitung zur Login-Seite
-          }, 3000);
-        } catch (error: any) {
-          console.error('Fehler bei der E-Mail-Bestätigung:', error);
-          this.isLoading = false;
-          this.message = this.getErrorMessage(error);
-        }
+        await this.handleValidMailVerification(auth, actionCode);
       } else {
-        this.isLoading = false;
-        this.message = 'Ungültiger oder fehlender Bestätigungslink.';
-        setTimeout(() => {
-          this.router.navigate(['/login']); // Fallback-Weiterleitung
-        }, 3000);
+        this.handleInvalidMailVerification();
       }
     });
   }
 
-  /**
-   * Führt zusätzliche Aktionen nach der E-Mail-Bestätigung aus.
-   */
-  // private handlePostVerification(): void {
-  //   // Nutze eine relevante Methode aus dem SignInService
-  //   const currentUser = getAuth().currentUser;
 
-  // }
+  /**
+   * Retrieves the 'mode' parameter from the URL query parameters.
+   * If the 'mode' parameter is not present, it returns the default value 'verifyEmail'.
+   * @param params - The query parameters from the current route.
+   * @returns - The value of the 'mode' parameter or 'verifyEmail' if not found.
+   */
+  gettingParameterModeFromURL(params: Params): string {
+    return params['mode'] ? params['mode'] : 'verifyEmail'; 
+  }
+
+
+  /**
+   * Retrieves the 'oobCode' (out-of-band code) parameter from the URL query parameters.
+   * @param params - The query parameters from the current route.
+   * @returns - The value of the 'oobCode' parameter or 'undefined' if not found.
+   */
+  gettingOobCodeFromURL(params: Params): string | undefined {
+    return params['oobCode']
+  }
+
+
+  /**
+   * Handles the email verfification process when the action code is valid.
+   * @param auth - The authentication instance used to verify the action code.
+   * @param actionCode - The verification code sent to the user's email, used to verifiy the email address.
+   * @returns - A promise that resolves when the email verification process is complete.
+   */
+  async handleValidMailVerification(auth: Auth, actionCode: string): Promise<void> {
+    try {
+      await applyActionCode(auth, actionCode); // Verifying email
+      this.message = 'Deine E-Mail-Adresse wurde erfolgreich bestätigt!';
+      this.isLoading = false;
+      setTimeout(() => {
+        this.router.navigate(['/login']); // Navigation to log-in page
+      }, 3000);
+    } catch (error: any) {
+      console.error('Fehler bei der E-Mail-Bestätigung:', error);
+      this.isLoading = false;
+      this.message = this.getErrorMessage(error);
+    }
+  }
+
+
+  /**
+   * Handles the scenario when the email verification is invalid.
+   */
+  handleInvalidMailVerification() {
+    this.isLoading = false;
+    this.message = 'Ungültiger oder fehlender Bestätigungslink.';
+    setTimeout(() => {
+      this.router.navigate(['/login']); // Fallback-Weiterleitung
+    }, 3000);
+  }
+
 
   /**
    * Gibt eine benutzerfreundliche Fehlermeldung basierend auf dem Firebase-Fehlercode zurück.
