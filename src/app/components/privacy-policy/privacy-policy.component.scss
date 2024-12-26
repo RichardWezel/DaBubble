@@ -3,7 +3,13 @@
 @import './../../shared/components/log-in/card/card.component.scss';
 
 :host {
-    height: calc(100vh - 50px);
+    display: flex;
+    justify-content: center;
+}
+
+app-card {
+    max-height: 700px;
+    max-width: 700px;
 }
 
 .privacy-policy-container {
