@@ -33,10 +33,27 @@
         <div class="Inputfield">
           <input *ngIf="!addedUser.length" placeholder="Namen eingeben" type="search" id="newChannelMemberInput" #inputFieldChannelMember type="text" [(ngModel)]="userInput" (input)="onInput()"
           autocomplete="off">
+  
+          <div class="added-user-section" *ngIf="addedUser.length">
+            <div class="added-user" (click)="markUser(user)" *ngFor="let user of addedUser">
+              <div class="member-profile-icon">
+                <img [src]="findAvatar(user)" alt="User Avatar">
+              </div>
+              <div class="name-close">
+                <div class="member-name">
+                  <span>{{ getUserName(user) }}</span>
+                </div>
+                <div class="close" (click)="removeUser(user)">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
        
         <div>
-          <button >Hinzufügen</button>
+          <button [disabled]="!addedUser.length || isLoading" (click)="addUsers()">Hinzufügen</button>
         </div>
         <div class="userlist-dialog" *ngIf="userInput.trim() && searchResult.length > 0">
           <div class="ws-member-container">
@@ -54,5 +71,21 @@
           </div>
         </div>
       </section>
+
+      <!-- Erfolgsmeldung -->
+      <div *ngIf="successMessage" class="success-message">
+        {{ successMessage }}
+      </div>
+
+      <!-- Fehlermeldung -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Ladeindikator -->
+      <div *ngIf="isLoading" class="loading-indicator">
+        <!-- Sie können hier einen Spinner oder eine andere Ladeanzeige einfügen -->
+        Laden...
+      </div>
     </div>
   </main>

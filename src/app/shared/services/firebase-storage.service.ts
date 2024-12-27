@@ -6,6 +6,7 @@ import { ChannelInterface } from '../interfaces/channel.interface';
 import { PostInterface } from '../interfaces/post.interface';
 import { CurrentUserInterface } from '../interfaces/current-user-interface';
 import { UidService } from './uid.service';
+import { arrayUnion, arrayRemove } from 'firebase/firestore'; 
 
 @Injectable({
   providedIn: 'root'
@@ -387,6 +388,28 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
           dm: sendUser.dm
         })
       }
+    }
+  }
+
+  /**
+   * Fügt mehrere Benutzer zu einem Channel hinzu.
+   * @param channelId - Die ID des Channels.
+   * @param newUserIds - Ein Array von Benutzer-IDs, die hinzugefügt werden sollen.
+   */
+  async addUsersToChannel(channelId: string, newUserIds: string[]): Promise<void> {
+    try {
+      // Holen Sie das Channel-Dokument
+      const channelDocRef = doc(this.firestore, "channel", channelId);
+
+      // Aktualisieren Sie das 'user'-Feld mit arrayUnion, um Duplikate zu vermeiden
+      await updateDoc(channelDocRef, {
+        user: arrayUnion(...newUserIds)
+      });
+
+      console.log(`Benutzer erfolgreich zum Channel ${channelId} hinzugefügt.`);
+    } catch (error) {
+      console.error(`Fehler beim Hinzufügen von Benutzern zum Channel ${channelId}:`, error);
+      throw error;
     }
   }
 

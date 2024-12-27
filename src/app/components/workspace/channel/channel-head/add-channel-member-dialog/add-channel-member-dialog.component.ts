@@ -25,6 +25,9 @@ export class AddChannelMemberDialogComponent {
   isOpen: boolean = true;
   private subscriptions: Subscription = new Subscription();
   addedUser: UserInterface[] = [];
+  isLoading: boolean = false; // Neue Eigenschaft für Ladezustand
+  errorMessage: string = ''; // Neue Eigenschaft für Fehlermeldungen
+  successMessage: string = ''; // Neue Eigenschaft für Erfolgsmeldungen
 
   constructor() { }
 
@@ -47,6 +50,11 @@ export class AddChannelMemberDialogComponent {
 
   public closeDialog() {
     this.isOpen = false;
+    // Optional: Reset messages und addedUser beim Schließen des Dialogs
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.addedUser = [];
+    this.userInput = '';
   }
 
    /**
@@ -68,7 +76,6 @@ export class AddChannelMemberDialogComponent {
       ? `assets/img/profile-pictures/${avatar}`
       : this.cloud.openImage(avatar);
   }
-  
 
   channelName(): string {
     return (
@@ -94,6 +101,59 @@ export class AddChannelMemberDialogComponent {
   }
 
   markUser(user: UserInterface) {
-    this.addedUser.push(user);
+    if (!this.addedUser.find(u => u.id === user.id)) { // Verhindert doppelte Einträge
+      this.addedUser.push(user);
+    }
+    this.userInput = "";
+    this.errorMessage = ''; // Reset Fehlermeldung bei erfolgreicher Auswahl
   }
+
+  /**
+   * Fügt alle hinzugefügten Benutzer zum aktuellen Channel hinzu.
+   */
+  async addUsers() {
+    if (this.addedUser.length === 0) {
+      this.errorMessage = 'Es wurden keine Benutzer zum Hinzufügen ausgewählt.';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    try {
+      const currentChannelId = this.storage.currentUser.currentChannel;
+      if (!currentChannelId) {
+        throw new Error('Aktueller Channel nicht gefunden.');
+      }
+
+      // Extrahieren Sie die Benutzer-IDs aus addedUser
+      const newUserIds = this.addedUser.map(user => user.id!).filter(id => !!id);
+
+      // Rufen Sie die Service-Methode auf, um die Benutzer zum Channel hinzuzufügen
+      await this.storage.addUsersToChannel(currentChannelId, newUserIds);
+
+      this.successMessage = 'Benutzer erfolgreich hinzugefügt!';
+      // Optional: Aktualisieren Sie die channelUsers-Eingabe, falls sie vom Parent-Component kommt
+      this.channelUsers = [...this.channelUsers, ...newUserIds];
+
+      // Optional: Leeren Sie die addedUser-Liste und das Eingabefeld
+      this.addedUser = [];
+      this.userInput = '';
+    } catch (error: any) {
+      console.error('Fehler beim Hinzufügen der Benutzer:', error);
+      this.errorMessage = error.message || 'Beim Hinzufügen der Benutzer ist ein Fehler aufgetreten.';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+  
+  /**
+   * Entfernt einen Benutzer aus der addedUser-Liste.
+   * @param user - Der Benutzer, der entfernt werden soll.
+   */
+  removeUser(user: UserInterface): void {
+    this.addedUser = this.addedUser.filter(u => u.id !== user.id);
+  }
+
 }
