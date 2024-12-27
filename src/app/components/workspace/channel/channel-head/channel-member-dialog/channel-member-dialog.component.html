@@ -28,8 +28,8 @@
         </div>
       </div>
 
-      <div class="add-member-section">
-        <button>
+      <button class="add-member-section" (click)="openAddChannelMemberDialog($event)">
+        <div class="add-member-icon">
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <mask id="mask0_210_1603" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="8" y="8" width="24"
               height="24">
@@ -41,9 +41,9 @@
                 fill="black" />
             </g>
           </svg>
-        </button>
-        <div>Mitglieder hinzufügen</div>
-      </div>
+        </div>
+        <div class="label">Mitglieder hinzufügen</div>
+      </button>
 
     </section>
   </div>

@@ -1,9 +1,10 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, ViewChild } from '@angular/core';
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
 import { CloudStorageService } from '../../../../../shared/services/cloud-storage.service';
 import { OpenCloseDialogService } from '../../../../../shared/services/open-close-dialog.service';
 import { Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-channel-member-dialog',
@@ -20,16 +21,15 @@ export class ChannelMemberDialogComponent {
   openCloseDialogService = inject(OpenCloseDialogService);
   isOpen: boolean = false;
   private subscriptions: Subscription = new Subscription();
-
   constructor() { }
 
   ngOnInit(): void {
-    const sub = this.openCloseDialogService
+    const sub1 = this.openCloseDialogService
       .isDialogOpen('channelMember')
       ?.subscribe((status) => {
         this.isOpen = status;
       });
-    if (sub) this.subscriptions.add(sub);
+    if (sub1) this.subscriptions.add(sub1);
   }
 
   ngOnDestroy(): void {
@@ -58,6 +58,15 @@ export class ChannelMemberDialogComponent {
 
   public closeDialog() {
     this.isOpen = false;
+  }
+
+  public openAddChannelMemberDialog(event: Event) {
+    event.stopPropagation();
+    this.openCloseDialogService.open('addChannelMember');
+  }
+
+  public closeAddChannelMemberDialog() {
+    this.openCloseDialogService.close('addChannelMember');
   }
 
   getUserName(userId: string): string {

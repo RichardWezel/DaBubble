@@ -138,9 +138,31 @@ main {
             .add-member-section {
                 display: flex;
                 gap: 15px;
-                padding: 12px 29px 12px;
+                padding: 12px 29px;
                 align-items: center;
-                button {
+                border: unset;
+                background: unset;
+                width: fit-content;
+                &:hover {
+                    background-color: $backgroundColor;
+                    border-radius: 100px;
+                    cursor: pointer;
+                  
+
+                    .add-member-icon  {
+                        svg {
+                            path {
+                                fill: $secondaryColor;
+                            }
+                        }
+                    }
+
+                    .label {
+                        color: $secondaryColor;
+                    }
+
+                }
+                .add-member-icon {
                     background-color: $backgroundColor;
                     border-radius: 100%;
                     display: flex;
@@ -151,7 +173,7 @@ main {
                     height: 40px;
                 }
     
-                div {
+                .label {
                     font-family: "Nunito";
                     font-size: 18px;
                     font-weight: 400;
