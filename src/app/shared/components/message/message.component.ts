@@ -261,6 +261,11 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  /**
+   * Handels the click on thread-link and open the thread. If the mobile screen is shown, the view is set to thread.
+   * 
+   * @param {String} postId 
+   */
   handleClick(postId: string) {
     this.openThread(postId)
     if (!this.isLargeScreen) {
@@ -268,7 +273,11 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // Methode zum Wechseln der Ansicht über den Service
+  /**
+   * Sets the view of workspace in mobile mode.
+   * 
+   * @param {String} view 'workspaceMenu' | 'channel' | 'thread'
+   */
   setView(view: CurrentView): void {
     this.viewService.setCurrentView(view);
   }
