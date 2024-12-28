@@ -22,7 +22,7 @@
 
 <div class="ws-member-container" *ngIf="isListVisible && storage.currentUser">
     <div class="ws-member" *ngFor="let dm of storage.user[currentUserIndex()]?.dm">
-        <div class="ws-member-content" (click)="navigationService.setChannel(dm.id)"
+        <div class="ws-member-content" (click)="handleClick(dm.id || '')"
             [ngClass]="{'active': dm.id == storage.currentUser.currentChannel}">
             <div class="member-profile-icon">
                 <img [src]="getDmAvatar(dm)" alt="">

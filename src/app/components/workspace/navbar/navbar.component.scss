@@ -47,6 +47,14 @@
           display: flex;
         }
 
+        &:hover {
+          cursor: pointer;
+          .ws-logo-name {
+            color: $thirdColor;
+          }
+
+        }
+
         .arrow-icon {
           width: 25px;
           height: 25px;

@@ -9,6 +9,7 @@ import { EmojiService } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CloudStorageService } from '../../services/cloud-storage.service';
 import { Subscription } from 'rxjs';
+import { SetMobileViewService, CurrentView } from '../../services/set-mobile-view.service';
 
 
 @Component({
@@ -25,6 +26,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   emoji = inject(EmojiService);
   sanitizer = inject(DomSanitizer);
   cloud = inject(CloudStorageService);
+  isLargeScreen: boolean = false;
 
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
   @Input() threadHead: boolean = false;
@@ -39,10 +41,12 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
 
   isAuthorCurrentUser: boolean = false;
 
-  // Neue Property zur Verwaltung der Subscription
-  private currentUserSubscription: Subscription | undefined;
+  private subscriptions: Subscription = new Subscription();
 
-  constructor(private authorService: AuthorService) { }
+  constructor(
+    private authorService: AuthorService,
+    private viewService: SetMobileViewService
+  ) { }
 
   /**
    * Lifecycle hook that is called after the component is initialized.
@@ -51,6 +55,12 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     this.resolveAuthor();
     this.updateAuthorStatus();
+    // Subscription für isLargeScreen
+    const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
+      this.isLargeScreen = isLarge;
+      console.log('isLargeScreen', isLarge);
+    });
+    this.subscriptions.add(screenSub);
 
   }
 
@@ -67,7 +77,9 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void { }
+  ngOnDestroy(): void { 
+    this.subscriptions.unsubscribe();
+  }
 
 
   /**
@@ -247,6 +259,18 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
     if (!path.includes(this.elementRef.nativeElement.querySelector('special-container'))) {
       this.isSpecialMenuOpen = false;
     }
+  }
+
+  handleClick(postId: string) {
+    this.openThread(postId)
+    if (!this.isLargeScreen) {
+      this.setView('thread')
+    }
+  }
+
+  // Methode zum Wechseln der Ansicht über den Service
+  setView(view: CurrentView): void {
+    this.viewService.setCurrentView(view);
   }
 }
 

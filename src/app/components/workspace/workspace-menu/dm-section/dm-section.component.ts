@@ -3,6 +3,8 @@ import { NgFor, NgIf, NgClass } from '@angular/common';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 import { CloudStorageService } from '../../../../shared/services/cloud-storage.service';
+import { SetMobileViewService, CurrentView } from '../../../../shared/services/set-mobile-view.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dm-section',
@@ -15,12 +17,24 @@ export class DmSectionComponent {
   storage = inject(FirebaseStorageService);
   navigationService = inject(NavigationService);
   cloud = inject(CloudStorageService);
-
-  constructor() { }
-
-  // Statusvariable zur Steuerung der Sichtbarkeit
+  isLargeScreen: boolean = false;
   isListVisible: boolean = true;
+  private subscriptions: Subscription = new Subscription();
 
+  constructor(private viewService: SetMobileViewService) {}
+
+  ngOnInit(): void {
+    
+    // Subscription für isLargeScreen
+    const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
+      this.isLargeScreen = isLarge;
+    });
+    this.subscriptions.add(screenSub);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
 
   currentUserIndex() {
     return this.storage.user.findIndex(user => user.id === this.storage.currentUser.id);
@@ -53,5 +67,17 @@ export class DmSectionComponent {
 
   goToSignIn() {
     this.navigationService.navigateTo('/signin');
+  }
+
+  handleClick(dmId: string) {
+    this.navigationService.setChannel(dmId)
+    if (!this.isLargeScreen) {
+      this.setView('channel')
+    }
+  }
+  
+  // Methode zum Wechseln der Ansicht über den Service
+  setView(view: CurrentView): void {
+    this.viewService.setCurrentView(view);
   }
 }

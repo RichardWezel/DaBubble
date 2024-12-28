@@ -34,14 +34,12 @@ export class NavbarComponent {
     // Subscription für currentView
     const viewSub = this.viewService.currentView$.subscribe(view => {
       this.currentView = view;
-      console.log('currentView is', view);
     });
     this.subscriptions.add(viewSub);
     
     // Subscription für isLargeScreen
     const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
       this.isLargeScreen = isLarge;
-      console.log('isLargeScreen', isLarge);
     });
     this.subscriptions.add(screenSub);
   }

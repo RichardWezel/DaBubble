@@ -27,13 +27,13 @@
 </div>
 
 <!-- Navigationsleiste für große Bildschirme -->
-<aside *ngIf="isLargeScreen">
+<!-- <aside *ngIf="isLargeScreen">
     <div class="nav-buttons">
         <button (click)="setView('workspaceMenu')" [class.active]="currentView === 'workspaceMenu'">Workspace Menü</button>
         <button (click)="setView('channel')" [class.active]="currentView === 'channel'">Channel</button>
         <button (click)="setView('thread')" [class.active]="currentView === 'thread'">Thread</button>
     </div>
-</aside>
+</aside> -->
 
 <!-- Bestehendes Aside für kleine Bildschirme -->
 <aside *ngIf="!isLargeScreen">
