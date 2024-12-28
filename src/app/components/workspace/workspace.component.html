@@ -1,9 +1,22 @@
+<!-- workspace.component.html -->
 <main>
     <app-navbar></app-navbar>
     <div class="container">
-        <app-workspace-menu [class.openWorkspaceMenu]="wsmOpen"></app-workspace-menu>
-        <app-channel></app-channel>
-        <app-thread [class.openThread]="storage.currentUser.threadOpen"></app-thread>
+        <!-- Große Bildschirme: Nur eine Komponente anzeigen -->
+        <ng-container *ngIf="isLargeScreen; else smallScreenLayout">
+            <ng-container [ngSwitch]="currentView">
+                <app-workspace-menu [class.openWorkspaceMenu]="true" *ngSwitchCase="'workspaceMenu'"></app-workspace-menu>
+                <app-channel *ngSwitchCase="'channel'"></app-channel>
+                <app-thread *ngSwitchCase="'thread'"></app-thread>
+            </ng-container>
+        </ng-container>
+
+        <!-- Kleine Bildschirme: Mehrere Komponenten anzeigen -->
+        <ng-template #smallScreenLayout>
+            <app-workspace-menu [class.openWorkspaceMenu]="wsmOpen"></app-workspace-menu>
+            <app-channel></app-channel>
+            <app-thread [class.openThread]="storage.currentUser.threadOpen"></app-thread>
+        </ng-template>
     </div>
     <app-user-profile></app-user-profile>
 </main>
@@ -13,15 +26,26 @@
     <span class="loader"></span>
 </div>
 
-<aside>
+<!-- Navigationsleiste für große Bildschirme -->
+<aside *ngIf="isLargeScreen">
+    <div class="nav-buttons">
+        <button (click)="setView('workspaceMenu')" [class.active]="currentView === 'workspaceMenu'">Workspace Menü</button>
+        <button (click)="setView('channel')" [class.active]="currentView === 'channel'">Channel</button>
+        <button (click)="setView('thread')" [class.active]="currentView === 'thread'">Thread</button>
+    </div>
+</aside>
+
+<!-- Bestehendes Aside für kleine Bildschirme -->
+<aside *ngIf="!isLargeScreen">
     <div class="label" (click)="toggleMenu()">
         {{ wsmOpen ? 'Workspace-Menü schließen' : 'Workspace-Menü öffnen' }}
     </div>
-    <div class="icon">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="1" y="1" width="16" height="16" rx="1" stroke="black" stroke-width="2"/>
-            <path d="M6.71423 1V17" stroke="black" stroke-width="2"/>
-            <path d="M12.4285 11.2857L10.4964 9.35354C10.3011 9.15828 10.3011 8.8417 10.4964 8.64644L12.4285 6.71428" stroke="black" stroke-width="2" stroke-linecap="round"/>
+    <div class="icon" (click)="toggleMenu()">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="16" height="16" rx="1" stroke="black" stroke-width="2" />
+            <path d="M6.71423 1V17" stroke="black" stroke-width="2" />
+            <path d="M12.4285 11.2857L10.4964 9.35354C10.3011 9.15828 10.3011 8.8417 10.4964 8.64644L12.4285 6.71428" stroke="black" stroke-width="2" stroke-linecap="round" />
         </svg>
     </div>
 </aside>

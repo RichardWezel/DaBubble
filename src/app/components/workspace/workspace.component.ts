@@ -10,6 +10,7 @@ import { UserProfileComponent } from "./user-profile/user-profile.component";
 import { FirebaseAuthService } from '../../shared/services/firebase-auth.service';
 import { OpenCloseDialogService } from '../../shared/services/open-close-dialog.service';
 import { Subscription } from 'rxjs';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-workspace',
@@ -25,13 +26,20 @@ import { Subscription } from 'rxjs';
   templateUrl: './workspace.component.html',
   styleUrl: './workspace.component.scss'
 })
-export class WorkspaceComponent {
+export class WorkspaceComponent implements OnInit, OnDestroy {
   storage = inject(FirebaseStorageService);
   authService = inject(FirebaseAuthService);
   wsmOpen: boolean = false;
   private subscriptions: Subscription = new Subscription();
 
-  constructor( public openCloseDialogService: OpenCloseDialogService) { }
+  // Responsive Layout
+  isLargeScreen: boolean = false;
+  currentView: 'workspaceMenu' | 'channel' | 'thread' = 'channel'; // Default view
+
+  constructor(
+    public openCloseDialogService: OpenCloseDialogService,
+    private breakpointObserver: BreakpointObserver
+  ) { }
 
   ngOnInit(): void {
     const sub = this.openCloseDialogService
@@ -41,6 +49,16 @@ export class WorkspaceComponent {
       });
     if (sub) this.subscriptions.add(sub);
  
+    // BreakpointObserver für Responsive Design
+    const breakpointSub = this.breakpointObserver.observe([`(max-width: 1200px)`]) // Beispielbreite
+      .subscribe(result => {
+        this.isLargeScreen = result.matches;
+        if (!this.isLargeScreen) {
+          // Bei kleinen Bildschirmen kann die Ansicht zurückgesetzt werden
+          this.currentView = 'channel';
+        }
+      });
+    this.subscriptions.add(breakpointSub);
   }
 
   ngOnDestroy(): void {
@@ -63,6 +81,11 @@ export class WorkspaceComponent {
   toggleMenu(): void {
     this.wsmOpen = !this.wsmOpen;
 
+  }
+
+  // Methode zum Wechseln der Ansicht auf großen Bildschirmen
+  setView(view: 'workspaceMenu' | 'channel' | 'thread') {
+    this.currentView = view;
   }
 
 }
