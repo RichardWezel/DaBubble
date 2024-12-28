@@ -5,7 +5,6 @@ import { ChannelComponent } from './channel/channel.component';
 import { WorkspaceMenuComponent } from './workspace-menu/workspace-menu.component';
 import { ThreadComponent } from './thread/thread.component';
 import { FirebaseStorageService } from '../../shared/services/firebase-storage.service';
-import { AddChannelDialogComponent } from "./workspace-menu/channel-section/add-channel-dialog/add-channel-dialog.component";
 import { UserProfileComponent } from "./user-profile/user-profile.component";
 import { FirebaseAuthService } from '../../shared/services/firebase-auth.service';
 import { OpenCloseDialogService } from '../../shared/services/open-close-dialog.service';
@@ -34,7 +33,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   // Responsive Layout
-  public isLargeScreen: boolean = false;
+  public isLargeScreen: boolean = true;
   currentView: 'workspaceMenu' | 'channel' | 'thread' = 'channel'; // Default view
 
   constructor(
@@ -52,12 +51,12 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     if (sub) this.subscriptions.add(sub);
  
     // BreakpointObserver für Responsive Design
-    const breakpointSub = this.breakpointObserver.observe([`(max-width: 1200px)`]) // Beispielbreite
+    const breakpointSub = this.breakpointObserver.observe([`(min-width: 1201px)`]) // Korrigierter Breakpoint für große Bildschirme
       .subscribe(result => {
-        this.isLargeScreen = result.matches;
-        if (!this.isLargeScreen) {
-          // Bei kleinen Bildschirmen kann die Ansicht zurückgesetzt werden
-          this.currentView = 'workspaceMenu';
+        const isLarge = result.matches;
+        this.viewService.setIsLargeScreen(isLarge);
+        if (!isLarge) {
+          this.viewService.setCurrentView('workspaceMenu');
         }
       });
     this.subscriptions.add(breakpointSub);

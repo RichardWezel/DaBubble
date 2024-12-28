@@ -6,13 +6,13 @@
         class="daBubble-img" 
         src="assets/img/dabubble-logo.png" 
         alt="" 
-        *ngIf="isLargeScreen && (currentView === 'channel' || currentView === 'thread')" 
+        *ngIf="(!isLargeScreen && (currentView === 'workspaceMenu')) || isLargeScreen" 
         style="display: flex;">
       
       <button 
         class="backToWs-menu" 
         (click)="setView('workspaceMenu')"
-        *ngIf="isLargeScreen && currentView === 'workspaceMenu'" 
+        *ngIf="!isLargeScreen && currentView === 'channel' || currentView === 'thread'" 
         style="display: flex;">
         <div class="arrow-icon">
           <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
