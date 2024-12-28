@@ -3,20 +3,47 @@
 .navbar {
   display: flex;
   justify-content: flex-start;
-  // padding: 0 24px 24px;
   width: 100%;
+
+  @media (max-width: 1200px) {
+    padding: 17.5px 16px;
+  }
 
   .left-group {
     display: flex;
     width: 100%;
     padding-right: 24px;
+
+    @media (max-width: 1200px) {
+      height: 50px;
+      
+    }
     .logo {
       height: 70px;
+
+      @media (max-width: 1200px) {
+        display: flex;
+        align-items: center;
+        
+      }
+
+      img {
+        @media (max-width: 1200px) {
+          width: 161.5px;
+          height: 45px;
+        }
+      }
+
+      
     }
 
     app-search {
       margin-left: 147px;
       width: 100%;
+
+      @media (max-width: 1200px) {
+        display: none;
+    }
     }
   }
 
@@ -35,6 +62,10 @@
     h3 {
       font-size: 32px;
       font-weight: bold;
+
+      @media (max-width: 1200px) {
+        display: none;
+      }
     }
   
     &:hover{
@@ -54,6 +85,10 @@
     .user-avatar {
       height: 70px;
       border-radius: 50%;
+
+      @media (max-width: 1200px) {
+        height: 50px;
+      }
     }
   
   
@@ -68,6 +103,10 @@
   
       &.rotate {
         transform: rotate(180deg);
+      }
+
+      @media (max-width: 1200px) {
+       display: none;
       }
     }
   

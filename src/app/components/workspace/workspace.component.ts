@@ -55,7 +55,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
         this.isLargeScreen = result.matches;
         if (!this.isLargeScreen) {
           // Bei kleinen Bildschirmen kann die Ansicht zurückgesetzt werden
-          this.currentView = 'channel';
+          this.currentView = 'workspaceMenu';
         }
       });
     this.subscriptions.add(breakpointSub);

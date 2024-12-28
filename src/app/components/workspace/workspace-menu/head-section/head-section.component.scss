@@ -12,11 +12,19 @@ main {
         background-color: $backgroundColor;
         border-radius: 30px;
         cursor: pointer;
+
+        @media (max-width: 1200px) {
+            background-color: unset;
+        }
     }
 
     div {
         display: flex;
         align-items: center;
+
+        @media (max-width: 1200px) {
+            display: none;
+        }
 
         .ws-icon {
             position: relative;
@@ -59,6 +67,10 @@ main {
         border-style: none;
         background-color: unset;
 
+        @media (max-width: 1200px) {
+            display: none;
+        }
+
         @include icon-style;
 
         div {
@@ -68,6 +80,42 @@ main {
                     height: 21.55px;
                 }
             }
+        }
+    }
+
+    app-search {
+        display: none;
+        max-height: 48px;
+
+        @media (max-width: 1200px) {
+            display: flex;
+            width: 100%;
+        }
+    }
+}
+
+.mobile-edit-btn {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    border: unset;
+    background-color: $primaryColor;
+    box-shadow: 0px 6px 10px 0px #00000033;
+    width: 60px;
+    height: 60px;
+    bottom: 57px;
+    right: 16px;
+    border-radius: 100px;
+
+    @media (max-width: 1200px) {
+        display: flex;
+        
+      }
+
+    svg {
+        path {
+            fill: #fff;
         }
     }
 }

@@ -30,6 +30,10 @@ main {
             transform: translateX(-100%);
             transition: all 125ms ease-in-out;
 
+            @media (max-width: 1200px) {
+                width: 100%;
+            }
+
             &.openWorkspaceMenu {
                 position: relative;
                 left: 0;
@@ -181,3 +185,4 @@ aside {
         height: 32px;
     }
 }
+

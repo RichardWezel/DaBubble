@@ -1,3 +1,6 @@
+@import 'variables';
+@import 'mixins';
+
 .workspace-menu {
     display: grid;
     grid-template-rows: 60px 1fr;
@@ -8,8 +11,19 @@
     height: 100%;
     width: 366px;
 
+    @media (max-width: 1200px){
+        border-radius: unset;
+        width: 100%;
+    }
+
     app-head-section {
         height: 60px;
+        display: flex;
+
+        // @media (max-width: 1200px) {
+        //     display: none;
+        //  }
+        
     }
 
     .channel-container {
@@ -28,3 +42,4 @@ app-dm-section {
     width: 100%;
     overflow: hidden;
 }
+
