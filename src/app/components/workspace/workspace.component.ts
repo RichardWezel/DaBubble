@@ -11,6 +11,7 @@ import { FirebaseAuthService } from '../../shared/services/firebase-auth.service
 import { OpenCloseDialogService } from '../../shared/services/open-close-dialog.service';
 import { Subscription } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { SetMobileViewService, CurrentView } from '../../shared/services/set-mobile-view.service';
 
 @Component({
   selector: 'app-workspace',
@@ -21,7 +22,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     ChannelComponent,
     ThreadComponent,
     CommonModule,
-    UserProfileComponent
+    UserProfileComponent,
   ],
   templateUrl: './workspace.component.html',
   styleUrl: './workspace.component.scss'
@@ -33,12 +34,13 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   // Responsive Layout
-  isLargeScreen: boolean = false;
+  public isLargeScreen: boolean = false;
   currentView: 'workspaceMenu' | 'channel' | 'thread' = 'channel'; // Default view
 
   constructor(
     public openCloseDialogService: OpenCloseDialogService,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
+    private viewService: SetMobileViewService // Injektion des ViewService
   ) { }
 
   ngOnInit(): void {
@@ -59,6 +61,18 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
         }
       });
     this.subscriptions.add(breakpointSub);
+
+    // Subscription für currentView Änderungen
+    const viewSub = this.viewService.currentView$.subscribe(view => {
+      this.currentView = view;
+    });
+    this.subscriptions.add(viewSub);
+
+    // Subscription für isLargeScreen Änderungen (optional, falls benötigt)
+    const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
+      // Optional: Hier kannst du zusätzliche Logik basierend auf isLargeScreen implementieren
+    });
+    this.subscriptions.add(screenSub);
   }
 
   ngOnDestroy(): void {
@@ -83,9 +97,9 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
   }
 
-  // Methode zum Wechseln der Ansicht auf großen Bildschirmen
-  setView(view: 'workspaceMenu' | 'channel' | 'thread') {
-    this.currentView = view;
+  // Methode zum Wechseln der Ansicht über den Service
+  setView(view: CurrentView): void {
+    this.viewService.setCurrentView(view);
   }
 
 }
