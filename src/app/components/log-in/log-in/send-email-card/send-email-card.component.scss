@@ -11,6 +11,10 @@
     }
 }
 
+ng-container {
+    display: block;
+}
+
 .form-container {
     display: flex;
     flex-direction: column;

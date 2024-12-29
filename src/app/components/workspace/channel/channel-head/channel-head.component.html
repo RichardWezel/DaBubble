@@ -42,13 +42,13 @@
   <div class="channel-member-container" *ngIf="findChannel() === 'channel'">
     <div class="channel-member" (click)="callOpenDialog($event)">
       <ng-container *ngFor="let user of channelUser(); let i = index">
-        <ng-container *ngIf="i < 6">
+        <ng-container *ngIf="i < 3">
           <img class="user-avatar"
             [src]="findAvatar(user).startsWith('profile-') ? 'assets/img/profile-pictures/' + findAvatar(user) : cloud.openImage(findAvatar(user))"
             alt="user-avatar" [ngStyle]="{'margin-right': channelUser().length === i + 1 ? '0px' : '-24px' }">
         </ng-container>
       </ng-container>
-      <span class="more-user user-avatar" *ngIf="channelUser().length > 6">
+      <span class="more-user user-avatar" *ngIf="channelUser().length > 3">
         ...
       </span>
       <p>{{ channelUser().length }}</p>

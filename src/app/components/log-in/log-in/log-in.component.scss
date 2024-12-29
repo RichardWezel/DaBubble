@@ -32,10 +32,6 @@
     align-items: center;
     gap: 16px;
 
-    @media (max-width: 510px) {
-        gap: 0;
-    }
-
     img {
         width: auto;
         height: 184px;
@@ -46,6 +42,10 @@
         padding-top: 10px;
         opacity: 0;
         animation: fadeInText 1s ease-in-out forwards 1s;
+
+        @media (max-width: 600px) {
+            display: none;
+        }
     }
 }
 
