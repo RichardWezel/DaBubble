@@ -110,12 +110,21 @@ main {
 
     @media (max-width: 1200px) {
         display: flex;
-        
-      }
+    }
 
     svg {
         path {
             fill: #fff;
+        }
+    }
+
+    &:hover {
+        cursor: pointer;
+        background-color: $secondaryColor;
+
+        svg {
+            width: 21.52px;
+            height: 21.55px;
         }
     }
 }

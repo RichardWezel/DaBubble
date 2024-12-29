@@ -100,7 +100,6 @@ export class ChannelHeadComponent implements OnInit {
       this.storage.currentUser.currentChannelName = this.storage.user.find(user => user.id === foundDM?.contact)?.name;
       return 'dm';
     } else if (sessionStorage.getItem('currentChannel') == "newMessage") {
-      console.log('New Message Mode is activatetd at channelhead');
       return 'newMessage';
     }
     else

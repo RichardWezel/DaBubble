@@ -38,7 +38,7 @@
 </aside> -->
 
 <!-- Bestehendes Aside für kleine Bildschirme -->
-<aside *ngIf="!isLargeScreen">
+<aside *ngIf="isLargeScreen">
     <div class="label" (click)="toggleMenu()">
         {{ wsmOpen ? 'Workspace-Menü schließen' : 'Workspace-Menü öffnen' }}
     </div>

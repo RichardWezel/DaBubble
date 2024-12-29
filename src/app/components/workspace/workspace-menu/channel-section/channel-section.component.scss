@@ -89,6 +89,14 @@
         @include icon-style;
         background-color: unset;
         border: unset;
+
+        @media(max-width: 1201px) {
+            svg {
+                path {
+                    fill: $thirdColor;
+                }
+            }
+        }
     }
 }
 
