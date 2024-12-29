@@ -33,7 +33,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   // Responsive Layout
-  public isLargeScreen: boolean = true;
+  public isLargeScreen: boolean = window.innerWidth >= 1201;
   currentView: 'workspaceMenu' | 'channel' | 'thread' = 'channel'; // Default view
 
   constructor(
@@ -43,15 +43,16 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    const sub = this.openCloseDialogService
+    // Subscribe to workspace menu dialog status
+    const dialogSub = this.openCloseDialogService
       .isDialogOpen('workspaceMenu')
       ?.subscribe((status) => {
         this.wsmOpen = status;
       });
-    if (sub) this.subscriptions.add(sub);
- 
-    // BreakpointObserver für Responsive Design
-    const breakpointSub = this.breakpointObserver.observe([`(min-width: 1201px)`]) // Korrigierter Breakpoint für große Bildschirme
+    if (dialogSub) this.subscriptions.add(dialogSub);
+
+    // BreakpointObserver for Responsive Design
+    const breakpointSub = this.breakpointObserver.observe([`(min-width: 1201px)`]) // Corrected breakpoint for large screens
       .subscribe(result => {
         const isLarge = result.matches;
         this.viewService.setIsLargeScreen(isLarge);
@@ -61,15 +62,15 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       });
     this.subscriptions.add(breakpointSub);
 
-    // Subscription für currentView Änderungen
+    // Subscribe to currentView changes
     const viewSub = this.viewService.currentView$.subscribe(view => {
       this.currentView = view;
     });
     this.subscriptions.add(viewSub);
 
-    // Subscription für isLargeScreen Änderungen (optional, falls benötigt)
+    // Subscribe to isLargeScreen changes and update local variable
     const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
-      // Optional: Hier kannst du zusätzliche Logik basierend auf isLargeScreen implementieren
+      this.isLargeScreen = isLarge; // Update local isLargeScreen
     });
     this.subscriptions.add(screenSub);
   }
