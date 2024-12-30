@@ -11,6 +11,12 @@
     <div class="main-content">
         <ng-content></ng-content>
     </div>
+    @if(newAccount) {
+        <div class="create-new-profile-container-mobile">
+            <span>Neu bei DABubble?</span>
+            <button class="mainButton" (click)="navigationService.navigateTo('/signin')">Konto erstellen</button>
+        </div>
+    }
     <footer>
         <button class="mainButton" (click)="navigationService.navigateTo('/imprint')">Impressum</button>
         <button class="mainButton" (click)="navigationService.navigateTo('/privacy-policy')">Datenschutz</button>
