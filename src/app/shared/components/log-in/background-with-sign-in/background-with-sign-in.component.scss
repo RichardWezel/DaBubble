@@ -4,7 +4,7 @@
     padding: 28px 0;
     box-sizing: border-box;
     font-weight: 400;
-    min-height: 100vh;
+    min-height: 100%;
     display: flex;
     flex-direction: column;
 
@@ -93,6 +93,7 @@ header {
 }
 
 .main-content {
+    flex: 1;
     display: flex;
     justify-content: center;
 
@@ -118,18 +119,10 @@ footer {
     button:first-child {
         width: 121px;
         height: 42px;
-
-        @media (max-width: 510px) {
-            font-size: 14px;
-        }
     }
 
     button:nth-child(2) {
         width: 133px;
         height: 42px;
-
-        @media (max-width: 510px) {
-            font-size: 14px;
-        }
     }
 }

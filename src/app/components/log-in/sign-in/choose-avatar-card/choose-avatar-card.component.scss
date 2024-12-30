@@ -9,6 +9,23 @@
     }
 }
 
+.title-container {
+    @media (max-width: 480px) {
+        display: flex;
+        justify-content: center;
+    }
+
+    h2 {
+        @media (max-width: 480px) {
+            max-width: 300px;
+        }
+
+        @media (max-width: 370px) {
+            margin-top: 8px;
+        }
+    }
+}
+
 .chosen-picture-container {
     display: flex;
     justify-content: center;
@@ -91,19 +108,6 @@ h3 {
     display: flex;
     align-items: center;
     gap: 24px;
-
-    @media (max-width: 510px) {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    button {
-        @media (max-width: 510px) {
-            font-size: 14px;
-            padding: 0px 20px;
-            height: 40px;
-        }
-    }
 }
 
 .button-container {
@@ -123,6 +127,24 @@ form {
     display: flex;
     flex-direction: column;
     gap: 30px;
+
+    @media (max-width: 790px) {
+        gap: 20px;
+    }
+}
+
+.desktop {
+    @media (max-width: 790px) {
+        display: none;
+    }
+}
+
+.mobile {
+    display: none;
+
+    @media (max-width: 790px) {
+        display: unset;
+    }
 }
 
 ::-webkit-scrollbar {

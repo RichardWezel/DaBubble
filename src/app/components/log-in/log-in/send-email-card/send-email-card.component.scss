@@ -1,7 +1,6 @@
 @import 'variables';
 @import 'styles';
 @import './../../../../shared/components/log-in/card/card.component.scss';
-@import './../../../../shared/components/log-in/background/background.component.scss';
 
 .width-container {
     width: 698px;
@@ -11,8 +10,15 @@
     }
 }
 
-ng-container {
-    display: block;
+.title-container {
+    display: flex;
+    justify-content: center;
+
+    h2 {
+        @media (max-width: 510px) {
+            max-width: 300px;
+        }
+    }
 }
 
 .form-container {
@@ -22,6 +28,10 @@ ng-container {
     justify-content: center;
     gap: 30px;
     width: 100%;
+
+    @media (max-width: 790px) {
+        gap: 20px;
+    }
 
     form, p {
         max-width: 486px;

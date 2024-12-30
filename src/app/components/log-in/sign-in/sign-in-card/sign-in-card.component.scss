@@ -10,10 +10,27 @@
     }
 }
 
+.title-container {
+    @media (max-width: 790px) {
+        display: flex;
+        justify-content: center;
+    }
+
+    h2 {
+        @media (max-width: 400px) {
+            max-width: 200px;
+        }
+    }
+}
+
 form {
     display: flex;
     flex-direction: column;
     gap: 30px;
+
+    @media (max-width: 790px) {
+        gap: 20px;
+    }
 }
 
 .main-checkbox-container {
