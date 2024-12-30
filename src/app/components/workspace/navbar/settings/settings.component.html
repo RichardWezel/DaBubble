@@ -1,4 +1,7 @@
-<main class="user-dropdown-menu">
+<main class="user-dropdown-menu" [class.active]="open">
+    <button class="close" (click)="toggleDropdown()">
+        
+    </button>
     <button class="profile" (click)="openUserProfile()">
         <div *ngIf="!isLargeScreen" class="icon-profile">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

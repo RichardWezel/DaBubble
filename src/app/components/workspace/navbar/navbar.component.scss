@@ -32,7 +32,6 @@
         @media (max-width: 1200px) {
           width: 161.5px;
           height: 45px;
-          // display: none;
         }
       }
 
@@ -182,9 +181,10 @@
       bottom: 0;
       left: 0;
       background-color: rgba(0,0,0,0.2);
+      justify-content: center; /* Zentriert den Inhalt */
   
       &.open {
-        display: flex;
+        display: flex !important;
       }
     }
   }

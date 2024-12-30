@@ -86,6 +86,9 @@
         </g>
       </svg>
     </div>
-    <app-settings [class.open]="dropDownOpen"></app-settings>
+    <app-settings 
+      [open]="dropDownOpen" 
+      (close)="dropDownOpen = false"
+    ></app-settings>
   </div>
 </section>
