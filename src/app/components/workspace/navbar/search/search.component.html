@@ -48,7 +48,7 @@
 
         <!-- Kanal mit gefundener Post -->
         <ng-container *ngIf="result.type === 'channel-post'">
-          <span class="prefix-channel-post">#&nbsp;<span [innerHTML]="highlightMatch(result.channel.name)"></span>:</span>&nbsp;<span [innerHTML]="highlightMatch(result.post.text)"></span>
+          <span class="prefix-channel-post">#&nbsp;<span [innerHTML]="highlightMatch(result.channel.name)"></span>:</span>&nbsp;<span class="result-info" [innerHTML]="highlightMatch(result.post.text)"></span>
         </ng-container>
 
         <!-- Thread -->
