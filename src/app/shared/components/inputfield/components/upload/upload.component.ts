@@ -31,6 +31,7 @@ export class UploadComponent implements OnChanges, OnInit {
 
 
   ngOnChanges(): void {
+    console.log('This.inputfield.showUpload', this.inputfield.showUpload);
     if (!this.inputfield.showUpload) {
       this.cancelUpload();
     }

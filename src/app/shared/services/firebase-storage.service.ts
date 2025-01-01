@@ -34,6 +34,11 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     this.unsubUsers = this.getUserCollection();
   }
 
+
+  /**
+   * Retrieves all threads from the user's channels and direct messages.
+   * @returns - An array of objects, where each object contains a thread and a parent.
+   */
   getAllThreads(): { thread: PostInterface, parent: ChannelInterface | UserInterface }[] {
     const threads: { thread: PostInterface, parent: ChannelInterface | UserInterface }[] = [];
     const userChannel = this.channel.filter(channel => channel.user.includes(this.authUid));
@@ -65,6 +70,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
 
     return threads;
   }
+
 
   /**
    * Funktion, um die Parent-Post-ID für einen gegebenen Channel und Thread zu finden.
@@ -104,12 +110,15 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     this.unsubChannels();
   }
 
+
   ngOnChanges(changes: SimpleChanges): void {
   }
+
 
   ngOnInit(): void {
 
   }
+
 
   /**
    * Subscribes to the "channel" collection in Firestore and updates the local channel array.
@@ -127,6 +136,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     });
   }
 
+
   /**
    * Filters the channel collection according to which channel contains the current user and uses it to fill currentUserChannel.
    * 
@@ -140,9 +150,16 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     this.doneLoading = true;
   }
 
+
+  /**
+   * Checks if the current user is a member of the given channel.
+   * @param users - An array of user IDs representing the members of the channel.
+   * @returns - 'true' if the current user's ID is included in the 'users' array, otherwise 'false'.
+   */
   checkCurrentUserIsMemberOfChannel(users: string[]) {
     return users.includes(this.currentUser.id || '');
   }
+
 
   /**
   * Subscribes to the "user" collection in Firestore and updates the local user array.
@@ -159,6 +176,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
       // console.log("User Collection: ", this.user);
     });
   }
+
 
   /**
   * Determines the current channel for the user based on session storage, channels, or DMs.
@@ -181,6 +199,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     return undefined;
   }
 
+
   /**
    * Finds a channel that includes the specified user ID.
    * @param userId - The ID of the user to search for in channels.
@@ -190,6 +209,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     const channel = this.channel.find(channel => channel.user.includes(userId));
     return channel?.id;
   }
+
 
   /**
   * Finds a direct message (DM) that includes the specified user ID as a contact.
@@ -201,6 +221,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     sessionStorage.setItem("currentChannel", dm?.id || '');
     return dm?.id;
   }
+
 
   /**
    * Adds a new user to the Firestore "user" collection after Firebase Auth registration.
@@ -222,12 +243,11 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     } as UserInterface);
   }
 
+
   /**
   * Adds a new channel to the Firestore "channel" collection after sending the new channel form.
   * @param channelData - An object containing the channel's name, description, and owner.
   */
-
-
   async addChannel(channelData: { name: string, description: string, owner: string }) {
     try {
       const channelsCollection = collection(this.firestore, "channel");
@@ -247,6 +267,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     }
   }
 
+
   /**
     * Updates an existing user's profile in the Firestore "user" collection after sending the edit user profile form.
     * @param userId - The ID of the user to update.
@@ -255,6 +276,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   async updateUser(userId: string, userData: Partial<UserInterface>) {
     await updateDoc(doc(this.firestore, "user", userId), userData);
   }
+
 
   /**
    * Updates an existing channel in the Firestore "channel" collection after sending the edit channel form.
@@ -276,6 +298,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     }
   }
 
+
   /**
   * Überprüft, ob ein bestimmter Benutzer online ist, basierend auf den lokal gespeicherten Benutzerdaten.
   * @param userId - Die ID des Benutzers, der überprüft werden soll.
@@ -285,6 +308,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     const user = this.user.find(u => u.id === userId);
     return user ? user.online : false;
   }
+
 
   /**
    * Writes a direct message (DM) post for a user and updates the Firestore "user" collection.
@@ -317,6 +341,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     });
   };
 
+
   /**
    * Creates a new empty direct message (DM) for a user and updates the Firestore "user" collection.
    * @param contact - The ID of the contact receiving the DM.
@@ -341,6 +366,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     });
   }
 
+
   /**
    * Writes a new post to a channel and updates the Firestore "channel" collection.
    * @param channelId - The ID of the channel to add the post to.
@@ -358,6 +384,13 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     };
   }
 
+
+  /**
+   * Updates a specific post in a channel.
+   * @param channelId - The ID of the channel.
+   * @param postId - The ID of the post.
+   * @param newPost - The new post data to update the existing post.
+   */
   async updateChannelPost(channelId: string, postId: string, newPost: PostInterface) {
     let currentChannel = this.channel[this.channel.findIndex(channel => channel.id === channelId)];
     if (currentChannel) {
@@ -374,6 +407,14 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     };
   }
 
+
+  /**
+   * Updates a specific post in a user's direct message.
+   * @param userId - The ID of the user.
+   * @param contact - The ID of the contact.
+   * @param postId - The ID of the post.
+   * @param newPost - The new post data to update the existing post.
+   */
   async updateDmPost(userId: string, contact: string, postId: string, newPost: PostInterface) {
     let sendUser = this.user[this.user.findIndex(user => user.id === userId)];
     let newDm = sendUser.dm ? sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)] : null;
@@ -390,6 +431,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
       }
     }
   }
+
 
   /**
    * Fügt mehrere Benutzer zu einem Channel hinzu.

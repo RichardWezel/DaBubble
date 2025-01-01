@@ -18,7 +18,11 @@ export class OpenCloseDialogService {
 
   constructor() { }
 
-  // Methode zum Öffnen eines Dialogs
+
+  /**
+   * Method to open a dialog.
+   * @param dialogName - The name of the dialog.
+   */
   open(dialogName: string): void {
     const dialog = this.dialogs[dialogName];
     if (dialog) {
@@ -28,7 +32,11 @@ export class OpenCloseDialogService {
     }
   }
 
-  // Methode zum Schließen eines Dialogs
+
+  /**
+   * Method to close a dialog.
+   * @param dialogName - The name of the dialog.
+   */
   close(dialogName: string): void {
     const dialog = this.dialogs[dialogName];
     if (dialog) {
@@ -38,7 +46,13 @@ export class OpenCloseDialogService {
     }
   }
 
-  // Observable zum Abonnieren des Dialogstatus
+
+  /**
+   * Observable to subscribe the dialog status-
+   * @param dialogName - The name of the dialog.
+   * @returns - An Observable<boolean> that emits the open/close status of the dialog if it exists.
+   *          - 'null' if no dialog with the given name is found.
+   */
   isDialogOpen(dialogName: string): Observable<boolean> | null {
     const dialog = this.dialogs[dialogName];
     if (dialog) {

@@ -24,10 +24,12 @@ export class SetMobileViewService {
    */
   private currentViewSubject: BehaviorSubject<CurrentView> = new BehaviorSubject<CurrentView>('workspaceMenu');
 
+
   /**
    * Observable stream of the current view state.
    */
   public currentView$: Observable<CurrentView> = this.currentViewSubject.asObservable();
+
 
   /**
    * BehaviorSubject holding the screen size state.
@@ -36,6 +38,7 @@ export class SetMobileViewService {
    */
   private isLargeScreenSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
+
   /**
    * Observable stream of the screen size state.
    */
@@ -43,6 +46,7 @@ export class SetMobileViewService {
 
   constructor() { }
  
+
   /**
    * Sets the current view.
    * 
@@ -52,6 +56,7 @@ export class SetMobileViewService {
     this.currentViewSubject.next(view);
   }
 
+
   /**
    * Retrieves the current view.
    * 
@@ -60,6 +65,8 @@ export class SetMobileViewService {
   getCurrentView(): CurrentView {
     return this.currentViewSubject.value;
   }
+
+
   /**
    * Sets the screen size state.
    * 
@@ -69,6 +76,7 @@ export class SetMobileViewService {
     this.isLargeScreenSubject.next(isLarge);
   }
 
+  
   /**
    * Retrieves the current screen size state.
    * 

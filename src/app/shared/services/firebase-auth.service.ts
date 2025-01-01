@@ -18,6 +18,11 @@ export class FirebaseAuthService {
 
   onlineTimer: any = null;
 
+
+  /**
+   * Initializes a new instance and checks if an authentication UID is present in the session storage.
+   * If an autehntication UID is found, it sets the 'authUid' in the storage and retrieves the current user.
+   */
   constructor() {
     if (sessionStorage.getItem("authUid")) {
       this.storage.authUid = sessionStorage.getItem("authUid") || '';

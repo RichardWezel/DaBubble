@@ -31,26 +31,53 @@ export class OpenUserProfileService {
     else await this.showNewDm(userOfSuggestion);
   }
 
+
+  /**
+   * Shows existing direct messages in the channel between the current user and a specified user.
+   * @param userOfSuggestion - The user for whom to find the exiting DMs.
+   */
   showExistingDm(userOfSuggestion: UserInterface) {
     let dmsOfCurrentUser = this.storage.user.find(user => user.id === this.storage.currentUser.id)!.dm;
     let dmWithUserOfSuggestion = dmsOfCurrentUser.find(dm => dm.contact === userOfSuggestion.id);
     this.navigationService.setChannel(dmWithUserOfSuggestion!.id);
   }
 
+
+  /**
+   * Creates a new direct message with the specified user if it doesn't already exist and shows the DMs.
+   * @param userOfSuggestion - The user for whom to create or navigate to a DM channel.
+   */
   async showNewDm(userOfSuggestion: UserInterface) {
     await this.createEmptyDms(userOfSuggestion);
     this.showExistingDm(userOfSuggestion);
   }
 
+
+  /**
+   * Checks if a direct message (DM) exists between the current user and a specified user.
+   * @param userOfSuggestion - The user to search for in the current user's DMs.
+   * @returns - 'True' if a DM with the specified user exists, 'false' otherwise.
+   */
   findUserInDms(userOfSuggestion: UserInterface): boolean {
     return this.storage.currentUser.dm.some(dm => dm.contact === userOfSuggestion.id);
   }
 
-  findUserInCurrentUserDms(foundUser: UserInterface) {
+
+  /**
+   * Searches for a user in the current user's direct messages.
+   * @param foundUser - The user to search for in the current user's DMs.
+   * @returns - The matching user object if found, or 'undefined' if no match exists.
+   */
+  findUserInCurrentUserDms(foundUser: UserInterface): object | undefined {
     let match = this.storage.currentUser.dm.find(user => user.id === foundUser.id);
     return match
   }
 
+
+  /**
+   * Creates new empty direct message between the current user and a specified user.
+   * @param userOfSuggestion - The user hwom to create mutual empty DM.
+   */
   async createEmptyDms(userOfSuggestion: UserInterface) {
     let currentUserId = this.storage.currentUser.id;
     let suggestedUserId = userOfSuggestion.id;
