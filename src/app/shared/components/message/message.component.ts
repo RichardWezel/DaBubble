@@ -174,6 +174,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    */
   filterEmoticonNameArray(names: string[], index: number) {
     let newNames = [...names];
+    this.reactSelf = false;
     let self = newNames.findIndex(name => name === this.storage.currentUser?.id);
     if (self !== -1) {
       newNames.splice(self, 1);
@@ -182,8 +183,8 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
     let newIndex = this.reactSelf ? index - 1 : index;
     if (newNames.length === 0) return 'Du';
     else if ((newNames.length - 1 === newIndex) && this.reactSelf) return this.getUserName(newNames[newIndex]) + ' und Du';
-    else if (newNames[newIndex] !== this.storage.currentUser?.id) return this.getUserName(newNames[newIndex]);
-    else return;
+    else if (newIndex >= 0 && newIndex < newNames.length) return this.getUserName(newNames[newIndex]);
+    else return null;
   }
 
 
