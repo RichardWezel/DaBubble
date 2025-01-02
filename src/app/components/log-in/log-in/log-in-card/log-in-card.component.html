@@ -65,7 +65,7 @@
 
             <div class="btns-container">
                 <button type="submit" [disabled]="loginForm.invalid" class="mainButton buttonPrimary">Anmelden</button>
-                <button class="mainButton buttonSecondary" (click)="authService.guestLogin()">Gäste-Login</button>
+                <button type="button" class="mainButton buttonSecondary" (click)="authService.guestLogin()">Gäste-Login</button>
             </div>
         </form>
     </app-card>
