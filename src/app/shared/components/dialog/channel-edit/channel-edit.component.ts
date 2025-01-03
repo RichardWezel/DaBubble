@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../services/firebase-storage.service';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-channel-edit',
   standalone: true, 
@@ -20,7 +20,7 @@ export class ChannelEditComponent {
   isEditingDescription: boolean = false;
   isEditingChannelName: boolean = false; 
 
-  constructor(private firebaseStorageService: FirebaseStorageService) {}
+  constructor(private firebaseStorageService: FirebaseStorageService,  private router: Router) {}
 
   save(): void {
     console.log('Channel gespeichert:', this.channelName, this.channelDescription);
@@ -98,10 +98,12 @@ export class ChannelEditComponent {
         .filter(userId => userId !== currentUserId) || [],
     }).then(() => {
       console.log('Channel erfolgreich verlassen');
-      this.close.emit(); // Schließe das Modal
+      this.firebaseStorageService.currentUser.currentChannel = '';
+      sessionStorage.removeItem('currentChannel'); 
+      this.router.navigate(['/workspace']);
+      this.close.emit(); 
     }).catch((error) => {
       console.error('Fehler beim Verlassen des Channels:', error);
     });
   }
-  
 }
