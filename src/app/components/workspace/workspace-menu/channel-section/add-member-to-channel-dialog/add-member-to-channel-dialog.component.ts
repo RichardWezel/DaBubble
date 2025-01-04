@@ -62,7 +62,8 @@ export class AddMemberToChannelDialogComponent {
   
     if (this.selectedOption === "addSpecificUser") {
       console.log('Navigation zum add-channel-member-dialog');
-      
+      this.openCloseDialogService.open('addChannelMember');
+      this.closeDialog();
     }
   }
   
