@@ -1,5 +1,5 @@
 <main *ngIf="isDialogVisible">
-    <form class="dialog" (ngSubmit)="takeChannelInfo()" #addChannelForm="ngForm">
+    <form class="dialog" (ngSubmit)="openAddChannelMemberChoiseDialog()" #addChannelForm="ngForm">
         <section class="label">
             <div>Channel erstellen</div>
             <button (click)="closeDialog()">

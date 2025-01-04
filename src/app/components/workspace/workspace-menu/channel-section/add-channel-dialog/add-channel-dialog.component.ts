@@ -23,6 +23,7 @@ export class AddChannelDialogComponent implements OnInit, OnDestroy {
     posts: [],
     id: ""
   };
+
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -51,12 +52,13 @@ export class AddChannelDialogComponent implements OnInit, OnDestroy {
     this.openCloseDialogService.close('addChannel');
   }
 
-  takeChannelInfo() {
-    this.storage.addChannel({ 
-      name: this.channelData.name, 
-      description: this.channelData.description, 
-      owner: this.storage.currentUser.id || ""
-    }).then(() => {
+  async takeChannelInfo(): Promise<void> {
+    try {
+      await this.storage.addChannel({ 
+        name: this.channelData.name, 
+        description: this.channelData.description, 
+        owner: this.storage.currentUser.id || ""
+      });
       this.closeDialog();
       this.channelData = {
         name: "",
@@ -66,9 +68,16 @@ export class AddChannelDialogComponent implements OnInit, OnDestroy {
         posts: [],
         id: ""
       };
-    }).catch(error => {
+    } catch (error) {
       console.error("Fehler beim Hinzufügen des Channels:", error);
-    });
+    }
+  }
+
+  async openAddChannelMemberChoiseDialog() {
+    await this.takeChannelInfo();
+    // hier dann noch den neuen channel setzen!
+    this.openCloseDialogService.open('addChannelMemberChoice');
+    this.closeDialog();
   }
   
 }

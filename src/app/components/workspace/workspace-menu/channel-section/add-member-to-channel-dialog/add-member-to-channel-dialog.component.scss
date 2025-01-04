@@ -1,0 +1,179 @@
+@import 'variables';
+@import 'mixins';
+
+main {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba($color: #000000, $alpha: 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+
+    .dialog {
+        max-width: 514px;
+        width: 100%;
+        padding: 40px;
+        border-radius: 30px 0px 30px 30px;
+        background-color: #FFFFFF;
+        box-shadow: 0px 6px 10px 0px #00000033;
+        z-index: 1000;
+        position: absolute;
+        top: 210px;
+        right: 97px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        @media(max-width: 1200px) {
+            position: fixed;
+            top: 0 !important;
+            right: 0 !important;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: unset !important;
+            max-width: unset;
+        }
+
+
+        .head {
+            display: flex;
+            justify-content: space-between;
+            flex-direction: column;
+            gap: 5px;
+
+            .header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                div {
+                    font-family: "Nunito";
+                    font-size: 24px;
+                    font-weight: 700;
+                    line-height: 32.74px;
+                    text-align: left;
+                    text-underline-position: from-font;
+                    text-decoration-skip-ink: none;
+                }
+               
+
+                button {
+                    width: 40px;
+                    height: 40px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: unset;
+                    border: unset;
+    
+                    &:hover{
+                        background-color: $backgroundColor;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        svg {
+                            width: 15.07px !important;
+                            height: 15.13px !important;
+                            path {
+                                fill: $secondaryColor
+                            }
+                        }
+                    }
+                }
+            }
+            
+        }
+
+        .choice {
+            .radio-group {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+              }
+              
+              .radio-label {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                position: relative;
+                font-size: 18px;
+              
+                input {
+                  opacity: 0;
+                  position: absolute;
+                  left: -9999px;
+              
+                  &:focus + .custom-radio {
+                    box-shadow: 0 0 0 3px rgba(21, 156, 228, 0.4);
+                  }
+              
+                  &:checked + .custom-radio::after {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 10px;
+                    height: 10px;
+                    background-color: #2196F3;
+                    border-radius: 50%;
+                  }
+                }
+              
+                .custom-radio {
+                  width: 20px;
+                  height: 20px;
+                  border: 2px solid #2196F3;
+                  border-radius: 50%;
+                  position: relative;
+                  margin-right: 10px;
+                  transition: border-color 0.3s;
+              
+                  &:hover {
+                    border-color: #1769aa;
+                  }
+                }
+              }
+        }
+
+        .btn-section {
+            display: flex;
+            justify-content: end;
+            
+            button {
+                max-width: 147px;
+                padding: 12px 25px;
+                border-radius: 25px;
+                font-family: "Nunito";
+                font-size: 18px;
+                font-weight: 700;
+                line-height: 24.55px;
+                text-align: left;
+                text-underline-position: from-font;
+                text-decoration-skip-ink: none;
+                color: #FFFFFF;
+                background-color: $textGrey;
+                border: unset;
+                transition: background-color 0.3s ease; 
+                &:disabled{
+                    background-color: lighten($textGrey, 20%);
+                    cursor: not-allowed;
+                }
+            
+                &:not(:disabled):hover{
+                    background-color: $primaryColor;
+                    cursor: pointer;
+                }
+
+            }
+        }
+
+            
+    }
+
+}
