@@ -6,11 +6,12 @@ import { AddChannelDialogComponent } from "./add-channel-dialog/add-channel-dial
 import { NavigationService } from '../../../../shared/services/navigation.service';
 import { SetMobileViewService, CurrentView } from '../../../../shared/services/set-mobile-view.service';
 import { Subscription } from 'rxjs';
+import { OpenCloseDialogService } from '../../../../shared/services/open-close-dialog.service';
 
 @Component({
   selector: 'app-channel-section',
   standalone: true,
-  imports: [NgIf, FormsModule, NgClass, AddChannelDialogComponent],
+  imports: [NgIf, FormsModule, NgClass],
   templateUrl: './channel-section.component.html',
   styleUrl: './channel-section.component.scss'
 })
@@ -24,7 +25,7 @@ export class ChannelSectionComponent {
   isListVisible: boolean = true;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private viewService: SetMobileViewService) {}
+  constructor(private viewService: SetMobileViewService, public openCloseDialogService: OpenCloseDialogService) {}
 
   ngOnInit(): void {
     
@@ -43,13 +44,8 @@ export class ChannelSectionComponent {
     this.isListVisible = !this.isListVisible;
   }
 
-  callOpenDialog(event: Event) {
-    event.stopPropagation();
-    if (this.addChannelDialogComponent) {
-      this.addChannelDialogComponent.openDialog();
-    } else {
-      console.log("Error of call addChannelDialogComponent.openDialog()")
-    }
+  openAddChannelDialog() {
+    this.openCloseDialogService.open('addChannel');
   }
 
   handleClick(channelId: string) {
