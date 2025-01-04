@@ -447,9 +447,9 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         user: arrayUnion(...newUserIds)
       });
 
-      console.log(`Benutzer erfolgreich zum Channel ${channelId} hinzugefügt.`);
+      console.log(`Benutzer erfolgreich zum Channel "${channelId}" hinzugefügt.`);
     } catch (error) {
-      console.error(`Fehler beim Hinzufügen von Benutzern zum Channel ${channelId}:`, error);
+      console.error(`Fehler beim Hinzufügen von Benutzern zum Channel "${channelId}":`, error);
       throw error;
     }
   }

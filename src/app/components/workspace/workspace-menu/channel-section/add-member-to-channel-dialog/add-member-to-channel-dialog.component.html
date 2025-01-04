@@ -19,12 +19,12 @@
         <section class="choice">
             <div class="radio-group">
                 <label class="radio-label">
-                  <input type="radio" name="customRadio" value="Option1" [(ngModel)]="selectedOption" (change)="onOptionChange()">
+                  <input type="radio" name="customRadio" value="addAllUsers" [(ngModel)]="selectedOption" (change)="onOptionChange()">
                   <span class="custom-radio"></span>
                   Alle Mitglieder von <span class="userGroupName" #allusers></span> hinzufügen
                 </label>
                 <label class="radio-label">
-                  <input type="radio" name="customRadio" value="Option2" [(ngModel)]="selectedOption" (change)="onOptionChange()">
+                  <input type="radio" name="customRadio" value="addSpecificUser" [(ngModel)]="selectedOption" (change)="onOptionChange()">
                   <span class="custom-radio"></span>
                   Bestimmte Leute hinzufügen
                 </label>
@@ -32,9 +32,7 @@
         </section>
 
         <div class="btn-section">
-          <button 
-            
-            >Erstellen</button>
+          <button (click)="handleSelection()">Erstellen</button>
         </div>
     </div>
   </main>
