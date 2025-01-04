@@ -113,20 +113,20 @@ h2 {
       left: 16px;
     }
   }
+}
 
-  .error-text-input {
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 19.1px;
-    color: $errorColor;
-    position: absolute;
-    top: 60px;
+.error-text-input {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 19.1px;
+  color: $errorColor;
+  position: absolute;
+  top: 60px;
 
-    @media (max-width: 510px) {
-      top: 50px;
-      font-size: 12px;
-      line-height: 15px;
-    }
+  @media (max-width: 510px) {
+    top: 50px;
+    font-size: 12px;
+    line-height: 15px;
   }
 }
 

@@ -87,7 +87,7 @@ export class FirebaseAuthService {
   getGoogleLoginErrorMessage(error: FirebaseError) {
     switch (error.code) {
       case 'auth/popup-closed-by-user':
-        this.errorMessage = 'Das Anmelde-Popup wurde geschlossen, bevor die Anmeldung abgeschlossen werden konnte.';
+        this.errorMessage = 'Das Anmeldefenster wurde vor Abschluss geschlossen. Bitte erneut versuchen.';
         break;
       case 'auth/network-request-failed':
         this.errorMessage = 'Netzwerkproblem! Bitte überprüfe deine Internetverbindung.';

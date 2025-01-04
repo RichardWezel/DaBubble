@@ -117,7 +117,24 @@ form {
     }
 }
 
+.relative-container {
+    position: relative;
+
+    @media (max-width: 790px) {
+        height: 68px;
+    }
+}
+
 .error-message {
-    color: red;
-    font-size: 0.9rem;
+    position: absolute;
+    top: 48px;
+
+    @media (max-width: 510px) {
+        font-size: 12px;
+        line-height: 15px;
+    }
+
+    @media (max-width: 393px) {
+        top: 58px;
+    }
 }

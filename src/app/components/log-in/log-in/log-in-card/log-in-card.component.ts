@@ -98,7 +98,7 @@ export class LogInCardComponent {
   async loginAsUser(userCredential: UserCredential): Promise<void> {
     const user = userCredential.user;
     if (!user.emailVerified) {
-      this.authService.errorMessage = "Ihre E-Mail-Adresse ist noch nicht verifiziert. Bitte überprüfen Sie Ihren Posteingang.";
+      this.authService.errorMessage = "Ihre E-Mail-Adresse ist noch nicht verifiziert. Überprüfen Sie Ihren Posteingang.";
       return; // Stops further execution
     }
     console.log("Benutzer eingeloggt:", user);
@@ -156,10 +156,10 @@ export class LogInCardComponent {
     console.log('Error code', error.code);
     switch (error.code) {
       case 'auth/invalid-credential':
-        this.authService.errorMessage = "E-Mail-Adresse oder Passwort ist falsch. Bitte überprüfen Sie Ihre Eingabe.";
+        this.authService.errorMessage = "E-Mail-Adresse oder Passwort ist falsch. Überprüfen Sie Ihre Eingabe.";
         break;
       default:
-        this.authService.errorMessage = "Es gibt kein Konto mit dieser E-Mail-Adresse. Bitte registrieren Sie sich zuerst.";
+        this.authService.errorMessage = "Es gibt kein Konto mit dieser E-Mail-Adresse. Registrieren Sie sich zuerst.";
     }
   }
 }

@@ -1,9 +1,9 @@
 <div class="width-container">
     <app-card>
         <h2>Anmeldung</h2>
-        <p class="instruction">Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</p>
-        <div *ngIf="authService.errorMessage" class="notification-container">
-            <p class="error-message">{{ authService.errorMessage }}</p>
+        <div class="relative-container">
+            <p class="instruction">Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</p>
+            <p class="error-text-input error-message" *ngIf="authService.errorMessage">{{ authService.errorMessage }}</p>
         </div>
         <form (ngSubmit)="checkLogin(loginForm)" #loginForm="ngForm">
             <label class="login-label" for="email">
