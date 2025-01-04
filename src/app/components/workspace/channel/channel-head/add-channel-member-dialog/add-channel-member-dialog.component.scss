@@ -128,6 +128,7 @@ main {
                 border: 1px solid $backgroundColor;
                 width: 100%;
                 transition: border 0.3s ease, box-shadow 0.3s ease;
+                position: relative;
 
                 &:focus-within{
                     border: 1px solid $primaryColor;
@@ -173,7 +174,7 @@ main {
                         background-color: $backgroundColor;
                         border-radius: 35px;
                         width: fit-content;
-                        
+
                         .member-profile-icon {
                             max-width: 34px;
                             max-height: 34px;
@@ -217,6 +218,22 @@ main {
                         
                     }
                 }
+
+                .success-message {
+                    color: #92C83E;
+                    position: absolute;
+                    top: 56px;
+                  }
+                  
+                  .error-message {
+                    color: #ED1E79;
+                   
+                  }
+                  
+                  .loading-indicator {
+                   
+                    font-style: italic;
+                  }
             }
 
             .btn-section {
@@ -334,20 +351,7 @@ main {
             }
         }
 
-        .success-message {
-            color: #92C83E;
-            margin-top: 10px;
-          }
-          
-          .error-message {
-            color: #ED1E79;
-            margin-top: 10px;
-          }
-          
-          .loading-indicator {
-            margin-top: 10px;
-            font-style: italic;
-          }
+        
         
         
     }
