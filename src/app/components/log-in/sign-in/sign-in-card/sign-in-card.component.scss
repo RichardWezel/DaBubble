@@ -48,7 +48,13 @@ form {
 .password-label {
     margin-bottom: 10px;
 
-    @media (max-width: 350px) {
+    .error-text-input {
+        @media (max-width: 790px) {
+            line-height: 16px;
+        }
+    }
+
+    @media (max-width: 510px) {
         margin-bottom: 12px;
     }
 }
@@ -161,23 +167,6 @@ form {
         color: $primaryColor;
         font-weight: 700;
         background-color: $backgroundColor;
-    }
-
-    // Verification // 
-    .notification-container {
-        margin-top: 20px;
-
-        .error-message {
-            color: #ff4d4f;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .success-message {
-            color: #52c41a;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
     }
 }
 

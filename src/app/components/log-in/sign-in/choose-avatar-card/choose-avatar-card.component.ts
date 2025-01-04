@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, inject, Output, ViewChild } from '@angular/core';
 import { CardComponent } from '../../../../shared/components/log-in/card/card.component';
 import { CommonModule } from '@angular/common';
 import { SignInService } from '../../../../shared/services/sign-in.service';
@@ -27,6 +27,7 @@ export class ChooseAvatarCardComponent {
   private auth: Auth = inject(Auth);
   navigationService: NavigationService = inject(NavigationService);
   @Output() generateAccount = new EventEmitter<boolean>();
+  @ViewChild('submitButton') submitButton!: ElementRef<HTMLButtonElement>;
 
   isLoading: boolean = false; // Ladezustand
   errorMessage: string = '';  // Fehlermeldung
@@ -91,6 +92,8 @@ export class ChooseAvatarCardComponent {
   
     if (this.inputFieldsNotFilledIn()) {
       this.errorMessage = 'Bitte füllen Sie alle erforderlichen Felder aus.';
+      this.isLoading = false;
+      this.submitButton.nativeElement.disabled = true;
       return;
     }
   
@@ -110,6 +113,7 @@ export class ChooseAvatarCardComponent {
    */
   closeDialog(event: boolean) {
     this.showDialog = event;
+    this.signInService.resetSignInData();
     this.navigationService.navigateTo('/login');
   }
 
@@ -153,6 +157,8 @@ export class ChooseAvatarCardComponent {
   
       return true; // Return true if everything succeeded
     } catch (error) {
+      this.isLoading = false;
+      this.submitButton.nativeElement.disabled = true;
       this.errorMessage = 'Fehler beim Erstellen des Kontos.';
       return false; // Return false if something failed
     }
@@ -218,6 +224,8 @@ export class ChooseAvatarCardComponent {
       return true;
     } catch (emailError) {
       console.error('Fehler beim Senden der Bestätigungs-E-Mail:', emailError);
+      this.isLoading = false;
+      this.submitButton.nativeElement.disabled = true;
       this.errorMessage = 'Die Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.';
       return false;
     }

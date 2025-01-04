@@ -113,6 +113,16 @@ h3 {
 .button-container {
     display: flex;
     justify-content: end;
+    position: relative;
+
+    p {
+        position: absolute;
+        top: -22px;
+
+        @media (max-width: 510px) {
+            top: -16px;
+        }
+    }
 
     button {
         @media (max-width: 510px) {
