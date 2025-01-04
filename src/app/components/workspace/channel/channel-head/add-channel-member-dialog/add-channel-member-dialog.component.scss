@@ -77,8 +77,8 @@ main {
                         border-radius: 20px;
                         cursor: pointer;
                         svg {
-                            width: 14.07px;
-                            height: 14.13px;
+                            width: 15.07px !important;
+                            height: 15.13px !important;
                             path {
                                 fill: $secondaryColor
                             }
@@ -123,10 +123,15 @@ main {
             gap: 20px;
 
             .Inputfield {
-                padding: 7.5px 20px;
+                padding: 15px 20px 15px;
                 border-radius: 30px;
                 border: 1px solid $backgroundColor;
                 width: 100%;
+                transition: border 0.3s ease, box-shadow 0.3s ease;
+
+                &:focus-within{
+                    border: 1px solid $primaryColor;
+                }
 
                 input {
                     width: 100%;
@@ -138,7 +143,8 @@ main {
                     text-underline-position: from-font;
                     text-decoration-skip-ink: none;
                     position: relative;
-                    border: unset;
+                    border: none;
+                    outline: none; 
     
                     &::placeholder{
                         font-family: "Nunito";
@@ -151,24 +157,11 @@ main {
                         color: #686868;
                     }
 
-                    &:focus {
-                        border: none;
+                    &:focus,
+                    &:focus-visible{
                         outline: none;
                         box-shadow: none;
                     }
-
-                    &:focus-visible {
-                        border: none;
-                        outline: none;
-                        box-shadow: none;
-                    }
-
-                    &:active {
-                        border: none;
-                        outline: none;
-                        box-shadow: none;
-                    }
-                   
                 }
 
                 .added-user-section {
@@ -179,6 +172,8 @@ main {
                         padding: 3px 20px;
                         background-color: $backgroundColor;
                         border-radius: 35px;
+                        width: fit-content;
+                        
                         .member-profile-icon {
                             max-width: 34px;
                             max-height: 34px;
@@ -224,8 +219,9 @@ main {
                 }
             }
 
-            div {
+            .btn-section {
                 display: flex;
+                justify-content: end;
 
                 button {
                     max-width: 147px;
@@ -239,13 +235,20 @@ main {
                     text-underline-position: from-font;
                     text-decoration-skip-ink: none;
                     color: #FFFFFF;
-                    background-color: #686868;
+                    background-color: $textGrey;
                     border: unset;
+                    transition: background-color 0.3s ease;
     
-                    &:hover{
-                        background-color: #444DF2;
+                    &:disabled{
+                        background-color: lighten($textGrey, 20%);
+                        cursor: not-allowed;
+                    }
+                  
+                    &:not(:disabled):hover{
+                        background-color: $primaryColor;
                         cursor: pointer;
                     }
+                    
                 }
             }
 
@@ -261,7 +264,7 @@ main {
                 background-color: #FFFFFF;
                 box-shadow: 0px 6px 10px 0px #00000033;
                 z-index: 1000;
-                border: 1px solid #ADB0D9;
+                border: 1px solid $dividerColor;
 
                 .ws-member-container {
                     display: flex;
@@ -278,7 +281,7 @@ main {
                             align-items: center;
         
                             &:hover,
-                            &.active {
+                            &.active{
                                 cursor: pointer;
                                 background-color: $backgroundColor;
                                 border-radius: 30px;
@@ -332,12 +335,12 @@ main {
         }
 
         .success-message {
-            color: green;
+            color: #92C83E;
             margin-top: 10px;
           }
           
           .error-message {
-            color: red;
+            color: #ED1E79;
             margin-top: 10px;
           }
           

@@ -56,7 +56,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     });
 
     // Durch alle DMs und deren Posts iterieren
-
     user?.dm.forEach(dm => {
       dm.posts.forEach(post => {
         if (post.thread && post.threadMsg) {
@@ -66,7 +65,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         }
       });
     });
-
 
     return threads;
   }
@@ -432,7 +430,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     }
   }
 
-
   /**
    * Fügt mehrere Benutzer zu einem Channel hinzu.
    * @param channelId - Die ID des Channels.
@@ -454,5 +451,4 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
       throw error;
     }
   }
-
 }

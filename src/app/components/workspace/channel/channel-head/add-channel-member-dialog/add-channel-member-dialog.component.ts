@@ -1,4 +1,4 @@
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor, NgIf, NgStyle } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
 import { CloudStorageService } from '../../../../../shared/services/cloud-storage.service';
@@ -10,7 +10,7 @@ import { UserInterface } from '../../../../../shared/interfaces/user.interface';
 @Component({
   selector: 'app-add-channel-member-dialog',
   standalone: true,
-  imports: [NgFor, NgIf, FormsModule],
+  imports: [NgFor, NgIf, FormsModule, NgStyle],
   templateUrl: './add-channel-member-dialog.component.html',
   styleUrl: './add-channel-member-dialog.component.scss'
 })
