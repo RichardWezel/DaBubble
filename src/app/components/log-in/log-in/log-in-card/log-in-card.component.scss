@@ -13,7 +13,7 @@
 form {
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 40px;
 
     @media (max-width: 790px) {
         gap: 20px;
@@ -120,5 +120,4 @@ form {
 .error-message {
     color: red;
     font-size: 0.9rem;
-    margin-top: 10px;
 }

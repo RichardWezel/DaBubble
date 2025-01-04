@@ -64,7 +64,7 @@
                     Kleinbuchstabe und 1 Sonderzeichen</span>
                 }
             </label>
-            <div class="main-checkbox-container">
+            <div class="main-checkbox-container" [class.margin-top]="!password.valid && password.touched">
                 <label for="checkbox" class="checkbox-container">
                     <input id="checkbox" #checkbox="ngModel" [(ngModel)]="signInService.signInData.checkboxChecked"
                         name="checkbox" type="checkbox" class="checkbox-button" required>
