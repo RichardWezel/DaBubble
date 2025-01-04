@@ -4,6 +4,7 @@ import { NgForm, FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
 import { Subscription } from 'rxjs';
 import { OpenCloseDialogService } from '../../../../../shared/services/open-close-dialog.service';
+import { NavigationService } from '../../../../../shared/services/navigation.service';
 
 @Component({
   selector: 'app-add-channel-dialog',
@@ -23,6 +24,7 @@ export class AddChannelDialogComponent implements OnInit, OnDestroy {
     posts: [],
     id: ""
   };
+  navigation = inject(NavigationService);
 
   private subscriptions: Subscription = new Subscription();
 
@@ -75,7 +77,7 @@ export class AddChannelDialogComponent implements OnInit, OnDestroy {
 
   async openAddChannelMemberChoiseDialog() {
     await this.takeChannelInfo();
-    // hier dann noch den neuen channel setzen!
+    this.navigation.setChannel(this.storage.lastCreatedChannel);
     this.openCloseDialogService.open('addChannelMemberChoice');
     this.closeDialog();
   }

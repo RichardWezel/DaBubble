@@ -21,6 +21,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   profileId: string = '';
   authUid: string = '';
   doneLoading: boolean = true;
+  lastCreatedChannel: string = '';
 
   unsubUsers: () => void = () => { };
   unsubChannels: () => void = () => { };
@@ -258,6 +259,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         posts: [],
       } as ChannelInterface);
       console.log("Neuer Channel hinzugefügt mit ID: ", docRef.id);
+      this.lastCreatedChannel = docRef.id;
       return docRef;
     } catch (error) {
       console.error("Fehler beim Hinzufügen des Channels: ", error);

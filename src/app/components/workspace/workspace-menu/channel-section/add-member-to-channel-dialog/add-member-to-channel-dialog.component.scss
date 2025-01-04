@@ -93,7 +93,7 @@ main {
             .radio-group {
                 display: flex;
                 flex-direction: column;
-                gap: 10px;
+                gap: 20px;
               }
               
               .radio-label {
@@ -102,6 +102,15 @@ main {
                 cursor: pointer;
                 position: relative;
                 font-size: 18px;
+                gap: 20px;
+                font-family: "Nunito";
+                font-size: 18px;
+                font-weight: 400;
+                line-height: 24.55px;
+                text-align: left;
+                text-underline-position: from-font;
+                text-decoration-skip-ink: none;
+
               
                 input {
                   opacity: 0;
@@ -118,9 +127,9 @@ main {
                     top: 50%;
                     left: 50%;
                     transform: translate(-50%, -50%);
-                    width: 10px;
-                    height: 10px;
-                    background-color: #2196F3;
+                    width: 12px;
+                    height: 12px;
+                    background-color: $primaryColor;
                     border-radius: 50%;
                   }
                 }
@@ -128,7 +137,7 @@ main {
                 .custom-radio {
                   width: 20px;
                   height: 20px;
-                  border: 2px solid #2196F3;
+                  border: 2px solid $dividerColor;
                   border-radius: 50%;
                   position: relative;
                   margin-right: 10px;
@@ -138,13 +147,17 @@ main {
                     border-color: #1769aa;
                   }
                 }
+
+                .userGroupName {
+                    color: $thirdColor;
+                }
               }
         }
 
         .btn-section {
             display: flex;
             justify-content: end;
-            
+
             button {
                 max-width: 147px;
                 padding: 12px 25px;
