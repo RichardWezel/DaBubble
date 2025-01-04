@@ -1,7 +1,9 @@
 import { NgIf } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { NgForm, FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
+import { Subscription } from 'rxjs';
+import { OpenCloseDialogService } from '../../../../../shared/services/open-close-dialog.service';
 
 @Component({
   selector: 'app-add-channel-dialog',
@@ -10,7 +12,7 @@ import { FirebaseStorageService } from '../../../../../shared/services/firebase-
   templateUrl: './add-channel-dialog.component.html',
   styleUrls: ['./add-channel-dialog.component.scss'] // Corrected property name and format
 })
-export class AddChannelDialogComponent {
+export class AddChannelDialogComponent implements OnInit, OnDestroy {
   protected storage = inject(FirebaseStorageService);
   isDialogVisible: boolean = false;
   channelData = {
@@ -21,13 +23,32 @@ export class AddChannelDialogComponent {
     posts: [],
     id: ""
   };
+  private subscriptions: Subscription = new Subscription();
+
+  constructor(
+    public openCloseDialogService: OpenCloseDialogService,
+  ) {}
+
+  ngOnInit(): void {
+    const sub = this.openCloseDialogService
+      .isDialogOpen('addChannel')
+      ?.subscribe((status) => {
+        this.isDialogVisible = status;
+      });
+    
+    if (sub) this.subscriptions.add(sub);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
 
   public openDialog() {
     this.isDialogVisible = true;
   }
 
   public closeDialog() {
-    this.isDialogVisible = false;
+    this.openCloseDialogService.close('addChannel');
   }
 
   takeChannelInfo() {

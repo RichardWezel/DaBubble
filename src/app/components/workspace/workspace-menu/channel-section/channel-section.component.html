@@ -1,5 +1,5 @@
-<div class="header-channels" (click)="toggleList()">
-    <div class="channel-dropdown-label">
+<div class="header-channels">
+    <div class="channel-dropdown-label" (click)="toggleList()">
         
         <button class="dropdown-btn" [class.rotated]="!isListVisible">
             <svg width="10" height="7" viewBox="0 0 10 7" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -22,7 +22,7 @@
 
     </div>
 
-    <button (click)="callOpenDialog($event)">
+    <button (click)="openAddChannelDialog()">
         <div>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -69,4 +69,3 @@
     </div>
 </div>
 
-<app-add-channel-dialog #addChannelDialog></app-add-channel-dialog>

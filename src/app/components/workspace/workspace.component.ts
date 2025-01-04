@@ -11,6 +11,7 @@ import { OpenCloseDialogService } from '../../shared/services/open-close-dialog.
 import { Subscription } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { SetMobileViewService, CurrentView } from '../../shared/services/set-mobile-view.service';
+import { AddChannelDialogComponent } from './workspace-menu/channel-section/add-channel-dialog/add-channel-dialog.component';
 
 @Component({
   selector: 'app-workspace',
@@ -22,6 +23,7 @@ import { SetMobileViewService, CurrentView } from '../../shared/services/set-mob
     ThreadComponent,
     CommonModule,
     UserProfileComponent,
+    AddChannelDialogComponent
   ],
   templateUrl: './workspace.component.html',
   styleUrl: './workspace.component.scss'

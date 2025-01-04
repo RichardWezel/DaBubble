@@ -12,6 +12,7 @@ export class OpenCloseDialogService {
     channelMember: new BehaviorSubject<boolean>(false),
     workspaceMenu: new BehaviorSubject<boolean>(true),
     addChannelMember: new BehaviorSubject<boolean>(false),
+    addChannel: new BehaviorSubject<boolean>(false),
   };
 
   profileId = new EventEmitter<string>();
