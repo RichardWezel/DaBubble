@@ -49,6 +49,7 @@
                 </div>
               </div>
             </div>
+
           </div>
             <!-- Erfolgsmeldung -->
       <div *ngIf="successMessage" class="success-message">
@@ -72,8 +73,12 @@
         <div class="btn-section">
           <button [disabled]="!addedUser.length || isLoading" (click)="addUsers()">Hinzufügen</button>
         </div>
+
         <div class="userlist-dialog" *ngIf="userInput.trim() && searchResult.length > 0">
           <div class="ws-member-container">
+            <div *ngIf="searchResult.length === 0 && userInput.trim()" class="no-results-message">
+              Keine Benutzer gefunden, die hinzugefügt werden können.
+            </div>
             <div class="ws-member" *ngFor="let user of searchResult" >
               <div class="ws-member-content" (click)="markUser(user)">
                 <div class="member-profile-icon">
