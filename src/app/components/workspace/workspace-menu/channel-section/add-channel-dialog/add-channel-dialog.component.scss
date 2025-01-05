@@ -86,6 +86,7 @@ main {
             display: flex;
             flex-direction: column;
             gap: 20px;
+            position: relative;
 
             .label {
                 font-family: "Nunito";
@@ -104,6 +105,14 @@ main {
                 border-radius: 40px;
                 border: 1px solid #686868;
                 opacity: 0px;
+                font-family: "Nunito";
+                font-size: 18px;
+                font-weight: 400;
+                line-height: 24.55px;
+                text-align: left;
+                text-underline-position: from-font;
+                text-decoration-skip-ink: none;
+
 
                 &::placeholder{
                     font-family: "Nunito";
@@ -116,6 +125,13 @@ main {
                     color: #686868;
                     ;
                 }
+            }
+
+            .error-message {
+                position: absolute;
+                top: 108px;
+                font-size: 13px;
+                color: $errorColor;
             }
         }
 

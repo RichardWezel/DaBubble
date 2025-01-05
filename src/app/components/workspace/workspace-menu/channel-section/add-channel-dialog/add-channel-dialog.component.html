@@ -14,13 +14,17 @@
         <section class="name-section">
             <div class="label">Channel-Name</div>
             <input id="channel-name" #channelName="ngModel" [(ngModel)]="channelData.name" name="channel-name" class="input-name" required  placeholder="# z.B. Kooperationsprojekte">
+            <!-- Fehlermeldung anzeigen -->
+            <div *ngIf="isChannelNameExists" class="error-message">
+                {{ errorMessage }}
+            </div>
         </section>
         <section class="description-section">
             <div class="label">Beschreibung <span> (optional)</span></div>
             <input id="channel-description" #channelDescription="ngModel" [(ngModel)]="channelData.description" name="channel-description" class="input-name" placeholder="Dein Text hier">
         </section>
         <div class="btns-container">
-            <button type="submit" [disabled]="!channelData.name" class="mainButton buttonPrimary">Erstellen</button>
+            <button type="submit" [disabled]="!channelData.name && findChannelName(channelData.name)" class="mainButton buttonPrimary">Erstellen</button>
         </div>
     </form>
 </main>

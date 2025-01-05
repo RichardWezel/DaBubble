@@ -5,6 +5,7 @@ import { FirebaseStorageService } from '../../../../../shared/services/firebase-
 import { Subscription } from 'rxjs';
 import { OpenCloseDialogService } from '../../../../../shared/services/open-close-dialog.service';
 import { NavigationService } from '../../../../../shared/services/navigation.service';
+import { ChannelInterface } from '../../../../../shared/interfaces/channel.interface';
 
 @Component({
   selector: 'app-add-channel-dialog',
@@ -25,6 +26,10 @@ export class AddChannelDialogComponent implements OnInit, OnDestroy {
     id: ""
   };
   navigation = inject(NavigationService);
+
+  // Neue Variable zur Überprüfung der Kanalnamen
+  isChannelNameExists: boolean = false;
+  errorMessage: string = '';
 
   private subscriptions: Subscription = new Subscription();
 
@@ -54,6 +59,34 @@ export class AddChannelDialogComponent implements OnInit, OnDestroy {
     this.openCloseDialogService.close('addChannel');
   }
 
+  /**
+   * Überprüft, ob der Channel-Name bereits existiert.
+   * @returns boolean
+   */
+  isChannelNameTaken(): boolean {
+    return !!this.findChannelName(this.channelData.name);
+  }
+
+  /**
+    * Diese Methode wird beim Absenden des Formulars aufgerufen.
+    */
+  async openAddChannelMemberChoiseDialog() {
+    if (this.isChannelNameTaken()) {
+      this.isChannelNameExists = true;
+      this.errorMessage = 'Der Channel-Name existiert bereits. Bitte wählen Sie einen anderen Namen.';
+      return;
+    } else {
+      this.isChannelNameExists = false;
+    }
+
+    if(this.isChannelNameExists === false) {
+      await this.takeChannelInfo();
+      this.navigation.setChannel(this.storage.lastCreatedChannel);
+      this.openCloseDialogService.open('addChannelMemberChoice');
+      this.closeDialog();
+    }
+  }
+
   async takeChannelInfo(): Promise<void> {
     try {
       await this.storage.addChannel({ 
@@ -75,11 +108,17 @@ export class AddChannelDialogComponent implements OnInit, OnDestroy {
     }
   }
 
-  async openAddChannelMemberChoiseDialog() {
-    await this.takeChannelInfo();
-    this.navigation.setChannel(this.storage.lastCreatedChannel);
-    this.openCloseDialogService.open('addChannelMemberChoice');
-    this.closeDialog();
+  /**
+   * Sucht nach einem Channel mit dem angegebenen Namen.
+   * @param inputChannel string
+   * @returns string | undefined
+   */
+  findChannelName(inputChannel: string): string | undefined {
+    let channels: ChannelInterface[] = this.storage.CurrentUserChannel;
+    let match = channels.find(channel =>
+      channel.name.toLowerCase() === inputChannel.toLowerCase());
+    console.log('inputChannel: ', inputChannel, 'foundChannel: ', match?.name!);
+    return match?.name!;
   }
   
 }
