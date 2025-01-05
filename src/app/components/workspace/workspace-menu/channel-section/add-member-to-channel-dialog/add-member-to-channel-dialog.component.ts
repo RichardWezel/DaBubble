@@ -14,7 +14,7 @@ import { FirebaseStorageService } from '../../../../../shared/services/firebase-
 export class AddMemberToChannelDialogComponent {
 
   isOpen: boolean = false;
-  selectedOption: string = 'Option1'; 
+  selectedOption: string = ''; 
   private subscriptions: Subscription = new Subscription();
   storage = inject(FirebaseStorageService);
   constructor(public openCloseDialogService: OpenCloseDialogService) {}
@@ -27,6 +27,7 @@ export class AddMemberToChannelDialogComponent {
       });
     
     if (sub) this.subscriptions.add(sub);
+    console.log()
   }
 
   ngOnDestroy(): void {
