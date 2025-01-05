@@ -31,9 +31,12 @@
             <section class="user-name">
                 <div class="nameAndEdit">
                     <div class="name">{{ user?.name }}</div>
-                    <button (click)="changeToEditMode()" class="edit"
-                        *ngIf="isCurrentUser(user?.name!)">Bearbeiten</button>
-
+                    <button 
+                        (click)="changeToEditMode()" 
+                        class="edit"
+                        *ngIf="isCurrentUser(user?.name!)">
+                        Bearbeiten
+                    </button>
                 </div>
 
                 <div class="online">
