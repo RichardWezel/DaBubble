@@ -17,7 +17,13 @@ export class ThreadHeadComponent extends ChannelHeadComponent {
 
   channelNameThread() {
     let currentChannel = this.storage.currentUser.currentChannelName;
-    if (currentChannel?.startsWith('#')) return currentChannel.replace('#', '# ');
-    else return '@ ' + currentChannel;
-  }
+    
+    if (currentChannel?.startsWith('#')) {
+        // Entfernt die ersten zwei Zeichen ('# ')
+        return currentChannel.slice(1);
+    } else {
+        // Fügt '@ ' vor dem aktuellen Channel-Namen hinzu
+        return '@ ' + currentChannel;
+    }
+}
 }

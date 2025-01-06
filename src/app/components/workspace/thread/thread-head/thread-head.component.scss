@@ -13,21 +13,65 @@
   box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.08);
   border-radius: 32px 32px 0px 0px;
 
+  @media (max-width: $breakpoint1){
+    padding: 10px 16px;
+    height: unset;
+    justify-content: space-between;
+  }
+
   .thread-name {
     display: flex;
     align-items: center;
     gap: 16px;
+
+    @media (max-width: $breakpoint1){
+      gap: 5px;
+    }
+
+    h3 {
+      font-size: 24px;
+      font-weight: bold;
+  
+      @media (max-width: $breakpoint1){
+        font-size: 20px;
+      }
+    }
+  
+    .channel-label-section {
+      display: flex;
+      gap: 1.5px;
+      align-items: center;
+      .icon {
+        width: 16px;
+        height: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+  
+        svg {
+          path {
+            fill: $secondaryColor;
+          }
+        }
+      }
+      .label {
+        font-family: "Nunito";
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 19.1px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        color: $secondaryColor;
+    
+        @media (max-width: $breakpoint1){    
+          font-size: 14px;
+        }
+      }
+    }
   }
 
-  h3 {
-    font-size: 24px;
-    font-weight: bold;
-  }
-
-  p {
-    font-size: 16px;
-    color: $secondaryColor;
-  }
+  
 
   .closeThread {
     position: absolute;
@@ -39,6 +83,12 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
+
+    @media (max-width: $breakpoint1){    
+      position: relative;
+      right: unset;
+      top: unset;
+    }
 
     &:hover {
       background-color: $backgroundColor;
