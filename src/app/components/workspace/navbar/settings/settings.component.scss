@@ -22,7 +22,7 @@
     visibility: visible;
     will-change: transform, opacity;
 
-    @media(max-width: 1200px){
+    @media(max-width: $breakpoint1){
       gap: 15px;
       width: 100%;
       bottom: 0;

@@ -21,6 +21,10 @@
   padding: 25px 45px;
   box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.08);
   border-radius: 32px 32px 0px 0px;
+
+  @media(max-width: $breakpoint1){
+    padding: 13px 16px;
+  }
 }
 
 .channel-name,
@@ -33,6 +37,10 @@
   p {
     font-size: 24px;
     font-weight: bold;
+
+    @media(max-width: $breakpoint1){
+      font-size: 20px;
+    }
   }
 
   .icon {
@@ -68,6 +76,12 @@
   gap: 16px;
   position: relative;
 
+  @media(max-width: $breakpoint1){
+    display: unset;
+    align-items: unset;
+    justify-content: unset;
+  }
+
 
   .channel-member {
     display: flex;
@@ -75,6 +89,10 @@
     justify-content: flex-end;
     gap: 16px;
     padding: 4px 16px;
+
+    @media(max-width: $breakpoint1){
+      display: none;
+    }
 
 
     &:hover {
@@ -119,6 +137,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    @media(max-width: $breakpoint1){
+      min-width: unset;
+      width: 34px;
+      height: 34px;
+
+      svg {
+        width: 34px;
+        height: 34px;
+      }
+    }
 
     &:hover {
       cursor: pointer;

@@ -1,5 +1,7 @@
 <main *ngIf="isOpen">
-    <div class="dialog">
+    <div class="dialog" [class.active]="isOpen">
+
+      <button class="close-notch" (click)="closeDialog()"></button>
   
       <section class="head">
         <div class="header">

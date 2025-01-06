@@ -28,16 +28,49 @@ main {
         flex-direction: column;
         gap: 20px;
 
-        @media(max-width: 1200px) {
-            position: fixed;
-            top: 0 !important;
-            right: 0 !important;
-            bottom: 0;
-            left: 0;
+        // @media(max-width: $breakpoint1) {
+        //     position: fixed;
+        //     top: 0 !important;
+        //     right: 0 !important;
+        //     bottom: 0;
+        //     left: 0;
+        //     width: 100%;
+        //     height: 100%;
+        //     border-radius: unset !important;
+        //     max-width: unset;
+        // }
+
+        @media(max-width: $breakpoint1){
+            gap: 15px;
             width: 100%;
-            height: 100%;
-            border-radius: unset !important;
-            max-width: unset;
+            bottom: 0;
+            top: unset;
+            right: 0;
+            border-radius: 30px 30px 0 0;
+            transform-origin: bottom;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(100%); 
+            transition: transform 50s ease-in-out, opacity 50s ease-in-out !important;
+            padding: 56px 16px;
+
+            &.active{
+                opacity: 1;
+                transform: translateY(0);
+                visibility: visible;
+            }
+        }
+
+        .close-notch {
+            width: 62px;
+            height: 6px;
+            border-radius: 23px;
+            background-color: #D9D9D9;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 30px;
+            border: unset;
         }
 
 
@@ -91,6 +124,11 @@ main {
                 width: 100%;
                 display: flex;
                 gap: 15px;
+
+                @media(max-width: $breakpoint1){
+                    display: none;
+                }
+
                 .icon {
                     width: 24px;
                     height: 24px;
