@@ -41,7 +41,7 @@ main {
                 font-family: "Nunito";
                 font-size: 24px;
                 font-weight: 700;
-                line-height: 32.74px;
+                line-height: 38.74px;
                 text-align: left;
                 text-underline-position: from-font;
                 text-decoration-skip-ink: none; 
@@ -79,6 +79,10 @@ main {
             text-align: left;
             text-underline-position: from-font;
             text-decoration-skip-ink: none;
+
+            @media (max-width: $breakpoint1){
+                font-size: 17px;
+            }
 
         }
 

@@ -13,7 +13,7 @@
         </section>
         <section class="name-section">
             <div class="label">Channel-Name</div>
-            <input id="channel-name" #channelName="ngModel" [(ngModel)]="channelData.name" name="channel-name" class="input-name" required  placeholder="# z.B. Kooperationsprojekte">
+            <input id="channel-name" #channelName="ngModel" [(ngModel)]="channelData.name" name="channel-name" class="input-name" required  placeholder="#   z.B. Kooperationsprojekte">
             <!-- Fehlermeldung anzeigen -->
             <div *ngIf="isChannelNameExists" class="error-message">
                 {{ errorMessage }}
