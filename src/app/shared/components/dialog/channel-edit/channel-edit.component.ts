@@ -68,7 +68,7 @@ export class ChannelEditComponent {
       name: this.channelName,
       description: description,
     });
-  
+    
     this.firebaseStorageService.updateChannel(this.channelId, {
       name: this.channelName,
       description: description, // `undefined` wird durch einen leeren String ersetzt
