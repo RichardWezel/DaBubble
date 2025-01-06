@@ -9,6 +9,10 @@
   border-radius: 32px;
   background-color: $textWhite;
 
+  @media (max-width: 1200px) {
+    border-radius: unset;
+  }
+
 
   .main-thread {
     display: flex;

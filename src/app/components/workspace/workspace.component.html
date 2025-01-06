@@ -15,7 +15,7 @@
             <ng-container [ngSwitch]="currentView">
                 <app-workspace-menu [class.openWorkspaceMenu]="true" *ngSwitchCase="'workspaceMenu'"></app-workspace-menu>
                 <app-channel *ngSwitchCase="'channel'"></app-channel>
-                <app-thread *ngSwitchCase="'thread'"></app-thread>
+                <app-thread [class.openThread]="storage.currentUser.threadOpen" *ngSwitchCase="'thread'"></app-thread>
             </ng-container>
         </ng-template>
 

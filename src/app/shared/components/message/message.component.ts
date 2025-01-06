@@ -270,7 +270,8 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   handleClick(postId: string) {
     this.openThread(postId)
     if (!this.isLargeScreen) {
-      this.setView('thread')
+      this.setView('thread');
+      this.storage.currentUser.threadOpen = true;
     }
   }
 

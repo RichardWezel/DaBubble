@@ -54,11 +54,14 @@ main {
             transform: translateX(100%);
             transition: all 125ms ease-in-out;
 
-
             &.openThread {
                 position: relative;
                 right: 0;
                 transform: translateX(0);
+            }
+
+            @media (max-width: 1200px) {
+                width: 100%;
             }
         }
     }
