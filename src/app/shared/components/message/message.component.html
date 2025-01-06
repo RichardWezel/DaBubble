@@ -102,7 +102,7 @@
       <div class="answer-section" [class.self]="isAuthorCurrentUser">
         <div class="answers" (click)="handleClick(post.id)"
           [innerHTML]="post.threadMsg?.length + (post.threadMsg?.length === 1 ? ' Antwort' : ' Antworten')"></div>
-        <div class="post-time" [innerHTML]="'Letzte Antwort ' + lastThreadMsgTime() + ' Uhr'"></div>
+        <div class="post-time" [innerHTML]="'Letzte Antwort ' + lastThreadMsgTime()"></div>
       </div>
     }
   </section>
