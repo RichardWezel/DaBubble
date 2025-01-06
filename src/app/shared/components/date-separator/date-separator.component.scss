@@ -9,6 +9,10 @@
   position: relative;
   padding: 0 36px;
 
+  @media (max-width: $breakpoint1){
+    padding: 0 1%;
+  }
+
   .line {
     border: 1px solid $dividerColor;
     width: 100%;

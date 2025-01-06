@@ -13,12 +13,13 @@ import { SendMessageService } from './services/send-message.service';
 import { InputEventsService } from './services/input-events.service';
 import { UidService } from '../../services/uid.service';
 import { UploadComponent } from "./components/upload/upload.component";
+import { NgIf } from '@angular/common';
 
 
 @Component({
   selector: 'app-inputfield',
   standalone: true,
-  imports: [FormsModule, PickerModule, EmojiSelectorComponent, TextFormatterDirective, UploadComponent],
+  imports: [FormsModule, PickerModule, EmojiSelectorComponent, TextFormatterDirective, UploadComponent, NgIf],
   templateUrl: './inputfield.component.html',
   styleUrl: './inputfield.component.scss'
 })

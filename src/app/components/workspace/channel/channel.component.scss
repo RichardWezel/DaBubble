@@ -35,6 +35,10 @@
     left: 0;
     width: 100%;
     padding: 0 40px 24px;
+
+    @media (max-width: $breakpoint1){
+      padding: 0 16px 24px;
+    }
   }
 
  
