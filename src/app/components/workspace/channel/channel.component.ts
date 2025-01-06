@@ -8,7 +8,7 @@ import { SearchComponent } from '../navbar/search/search.component';
 @Component({
   selector: 'app-channel',
   standalone: true,
-  imports: [ChannelHeadComponent, InputfieldComponent, ChannelMessagesComponent, SearchComponent],
+  imports: [ChannelHeadComponent, InputfieldComponent, ChannelMessagesComponent],
   templateUrl: './channel.component.html',
   styleUrl: './channel.component.scss'
 })
