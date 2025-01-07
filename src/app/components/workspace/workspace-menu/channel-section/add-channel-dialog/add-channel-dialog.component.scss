@@ -23,7 +23,7 @@ main {
         gap: 20px;
         border-radius: 30px;
         
-        @media(max-width: 1200px) {
+        @media(max-width: $breakpoint1){
             position: fixed;
             top: 0 !important;
             right: 0 !important;

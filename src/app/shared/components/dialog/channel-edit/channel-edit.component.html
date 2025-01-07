@@ -59,8 +59,9 @@
                             </svg>
                         </div>
                         <input [(ngModel)]="channelName" placeholder="Neuer Channel-Name" />
-                     
+        
                     </div>
+                    <div class="error-message" *ngIf="errorMessage">{{errorMessage}}</div>
                 </div>
             </div>
 

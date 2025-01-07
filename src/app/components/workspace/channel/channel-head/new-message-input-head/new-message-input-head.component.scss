@@ -9,7 +9,6 @@
   text-decoration-skip-ink: none;
 }
 
-
 .newMessage {
   display: flex;
   flex-direction: column;
@@ -29,11 +28,8 @@
       position: absolute;
       width: 100%;
       padding: 8px;
-      /* Passe das Padding entsprechend dem Input an */
       color: #ccc;
-      /* Helle Schrift für die Vorschläge */
       pointer-events: none;
-      /* Erlaubt Klicks durch das Vorschlags-`div` zum Input */
       font-family: inherit;
       font-size: inherit;
       white-space: nowrap;
@@ -59,8 +55,6 @@
     }
   }
 
-
-
   p {
     font-size: 24px;
     font-weight: 700;
@@ -68,8 +62,5 @@
     text-align: left;
     text-underline-position: from-font;
     text-decoration-skip-ink: none;
-
   }
-
-
 }

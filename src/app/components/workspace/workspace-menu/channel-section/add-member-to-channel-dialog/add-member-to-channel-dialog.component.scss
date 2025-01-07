@@ -28,7 +28,7 @@ main {
         flex-direction: column;
         gap: 20px;
 
-        @media(max-width: 1200px) {
+        @media(max-width: $breakpoint1){
             position: fixed;
             top: 0 !important;
             right: 0 !important;
@@ -62,7 +62,6 @@ main {
                     text-decoration-skip-ink: none;
                 }
                
-
                 button {
                     width: 40px;
                     height: 40px;
@@ -86,7 +85,6 @@ main {
                     }
                 }
             }
-            
         }
 
         .choice {
@@ -184,11 +182,6 @@ main {
             //     }
 
             // }
-
-
-        }
-
-            
+        }  
     }
-
 }

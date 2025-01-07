@@ -1,8 +1,10 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, inject ,Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../services/firebase-storage.service';
 import { Router } from '@angular/router';
+import { ChannelInterface } from '../../../interfaces/channel.interface';
+
 @Component({
   selector: 'app-channel-edit',
   standalone: true, 
@@ -16,9 +18,10 @@ export class ChannelEditComponent {
   @Input() channelDescription: string = ''; 
   @Input() creatorName: string = ''; 
   @Output() close = new EventEmitter<void>(); 
-
+  protected storage = inject(FirebaseStorageService);
   isEditingDescription: boolean = false;
   isEditingChannelName: boolean = false; 
+  errorMessage: string = ""; 
 
   constructor(private firebaseStorageService: FirebaseStorageService,  private router: Router) {}
 
@@ -26,7 +29,6 @@ export class ChannelEditComponent {
     console.log('Channel gespeichert:', this.channelName, this.channelDescription);
     this.close.emit(); 
   }
-
   
   closeDialog(): void {
     this.close.emit(); 
@@ -69,19 +71,42 @@ export class ChannelEditComponent {
       description: description,
     });
     
-    this.firebaseStorageService.updateChannel(this.channelId, {
-      name: this.channelName,
-      description: description, // `undefined` wird durch einen leeren String ersetzt
-    }).then(() => {
-      this.isEditingChannelName = false;
-      console.log('Channel-Name erfolgreich gespeichert:', this.channelName);
-    }).catch((error) => {
-      console.error('Fehler beim Speichern des Channel-Namens:', error);
-    });
+    if (this.isChannelNameTaken()) {
+      this.firebaseStorageService.updateChannel(this.channelId, {
+        name: this.channelName,
+        description: description, // `undefined` wird durch einen leeren String ersetzt
+      }).then(() => {
+        this.isEditingChannelName = false;
+        console.log('Channel-Name erfolgreich gespeichert:', this.channelName);
+      }).catch((error) => {
+        console.error('Fehler beim Speichern des Channel-Namens:', error);
+      });
+    } else {
+      this.errorMessage = 'Der Channel-Name existiert bereits. Bitte wählen Sie einen anderen Namen.';
+    }
+   
   }
-  
-  
 
+   /**
+   * Überprüft, ob der Channel-Name bereits existiert.
+   * @returns boolean
+   */
+   isChannelNameTaken(): boolean {
+    return !!this.findChannelName(this.channelName);
+  }
+
+  /**
+   * Sucht nach einem Channel mit dem angegebenen Namen.
+   * @param inputChannel string
+   * @returns string | undefined
+   */
+  findChannelName(inputChannel: string): string | undefined {
+    let channels: ChannelInterface[] = this.storage.CurrentUserChannel;
+    let match = channels.find(channel =>
+      channel.name.toLowerCase() === inputChannel.toLowerCase());
+    console.log('inputChannel: ', inputChannel, 'foundChannel: ', match?.name!);
+    return match?.name!;
+  }
   
   leaveChannel(): void {
     if (!this.channelId) {

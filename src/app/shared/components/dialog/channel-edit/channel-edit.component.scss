@@ -282,6 +282,13 @@
                             }
                         }
                     }
+
+                    .error-message {
+                        position: absolute;
+                        top: 108px;
+                        font-size: 13px;
+                        color: $errorColor;
+                    }
                 }
             }
         }
