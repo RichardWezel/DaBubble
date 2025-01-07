@@ -28,7 +28,7 @@ export class ChannelEditComponent {
   }
 
   
-  cancel(): void {
+  closeDialog(): void {
     this.close.emit(); 
   }
 
