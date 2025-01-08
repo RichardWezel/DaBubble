@@ -19,6 +19,10 @@ export class AddMemberToChannelDialogComponent {
   storage = inject(FirebaseStorageService);
   constructor(public openCloseDialogService: OpenCloseDialogService) {}
 
+
+  /**
+   * Subscribes to the dialog open/close state and initializes the dialog state.
+   */
   ngOnInit(): void {
     const sub = this.openCloseDialogService
       .isDialogOpen('addChannelMemberChoice')
@@ -30,18 +34,35 @@ export class AddMemberToChannelDialogComponent {
     console.log()
   }
 
+
+  /**
+   * Unsubscribes from all active subscriptions when the component is destroyed to prevent memory leaks.
+   */
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
+
+  /**
+   * Closes the dialog for adding channel members.
+   */
   public closeDialog() {
     this.openCloseDialogService.close('addChannelMemberChoice');
   }
 
+
+  /**
+   * Handles the change in selection within the dialog, logging the selected option.
+   */
   onOptionChange() {
     console.log(`Ausgewählte Option: ${this.selectedOption}`);
   }
 
+
+  /**
+   * Handles the action based on the user's selection, either adding all users to the current channel
+   * or opening another dialog to add specific users.
+   */
   handleSelection() {
     if (this.selectedOption === "addAllUsers") {
       const channelId = this.storage.currentUser.currentChannel;
@@ -70,9 +91,9 @@ export class AddMemberToChannelDialogComponent {
   
 
   /**
-   * Retrieves the channel name based on the channel ID.
-   * @param channelId - The ID of the channel.
-   * @returns The name of the channel or an empty string if not found.
+   * Retrieves the name of a channel based on its ID.
+   * @param {string} channelId - The ID of the channel.
+   * @returns {string} The name of the channel, or an empty string if the channel is not found.
    */
   getChannelName(channelId: string): string {
    const channel = this.storage.channel.find(ch => ch.id === channelId);

@@ -119,7 +119,7 @@ main {
                     box-shadow: 0 0 0 3px rgba(21, 156, 228, 0.4);
                   }
               
-                  &:checked + .custom-radio::after {
+                  &:checked + .custom-radio::after{
                     content: '';
                     position: absolute;
                     top: 50%;
@@ -141,7 +141,7 @@ main {
                   margin-right: 10px;
                   transition: border-color 0.3s;
               
-                  &:hover {
+                  &:hover{
                     border-color: #1769aa;
                   }
                 }
@@ -155,33 +155,6 @@ main {
         .btn-section {
             display: flex;
             justify-content: end;
-
-            // button {
-            //     max-width: 147px;
-            //     padding: 12px 25px;
-            //     border-radius: 25px;
-            //     font-family: "Nunito";
-            //     font-size: 18px;
-            //     font-weight: 700;
-            //     line-height: 24.55px;
-            //     text-align: left;
-            //     text-underline-position: from-font;
-            //     text-decoration-skip-ink: none;
-            //     color: #FFFFFF;
-            //     background-color: $textGrey;
-            //     border: unset;
-            //     transition: background-color 0.3s ease; 
-            //     &:disabled{
-            //         background-color: lighten($textGrey, 20%);
-            //         cursor: not-allowed;
-            //     }
-            
-            //     &:not(:disabled):hover{
-            //         background-color: $primaryColor;
-            //         cursor: pointer;
-            //     }
-
-            // }
         }  
     }
 }

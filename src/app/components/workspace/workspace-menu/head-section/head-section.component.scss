@@ -8,12 +8,12 @@ main {
     gap: 16px;
     align-items: center;
 
-    &:hover {
+    &:hover{
         background-color: $backgroundColor;
         border-radius: 30px;
         cursor: pointer;
 
-        @media (max-width: 1200px) {
+        @media (max-width: breakpoint1){
             background-color: unset;
         }
     }
@@ -22,7 +22,7 @@ main {
         display: flex;
         align-items: center;
 
-        @media (max-width: 1200px) {
+        @media (max-width: $breakpoint1){
             display: none;
         }
 
@@ -52,13 +52,14 @@ main {
             text-align: left;
             margin: 13.5px 20px 13.5px 15px;
 
-            &:hover {
+            &:hover{
                 color: $thirdColor;
             }
         }
     }
 
     .new-message-btn {
+        @include icon-style;
         width: 40px;
         height: 40px;
         display: flex;
@@ -67,14 +68,12 @@ main {
         border-style: none;
         background-color: unset;
 
-        @media (max-width: 1200px) {
+        @media (max-width: $breakpoint1){
             display: none;
         }
 
-        @include icon-style;
-
         div {
-            &:hover {
+            &:hover{
                 svg {
                     width: 21.52px;
                     height: 21.55px;
@@ -87,7 +86,7 @@ main {
         display: none;
         max-height: 48px;
 
-        @media (max-width: 1200px) {
+        @media (max-width: $breakpoint1){
             display: flex;
             width: 100%;
         }
@@ -108,7 +107,7 @@ main {
     right: 16px;
     border-radius: 100px;
 
-    @media (max-width: 1200px) {
+    @media (max-width: $breakpoint1){
         display: flex;
     }
 
@@ -118,7 +117,7 @@ main {
         }
     }
 
-    &:hover {
+    &:hover{
         cursor: pointer;
         background-color: $secondaryColor;
 

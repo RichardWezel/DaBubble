@@ -11,7 +11,7 @@
     height: 100%;
     width: 366px;
 
-    @media (max-width: 1200px){
+    @media (max-width: $breakpoint1){
         border-radius: unset;
         width: 100%;
     }
@@ -19,11 +19,6 @@
     app-head-section {
         height: 60px;
         display: flex;
-
-        // @media (max-width: 1200px) {
-        //     display: none;
-        //  }
-        
     }
 
     .channel-container {
@@ -43,4 +38,3 @@ app-dm-section {
     width: 100%;
     overflow: hidden;
 }
-

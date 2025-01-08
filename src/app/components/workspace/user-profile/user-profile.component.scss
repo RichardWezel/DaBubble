@@ -13,8 +13,6 @@ main {
     align-items: center;
     z-index: 1000;
 
-
-
     .dialog {
         padding: 40px;
         border-radius: 30px 30px 30px 30px;
@@ -27,7 +25,7 @@ main {
         gap: 45px;
         width: 500px;
 
-        @media(max-width: 1200px) {
+        @media(max-width: $breakpoint1){
             position: fixed;
             top: 0 !important;
             right: 0 !important;
@@ -38,7 +36,7 @@ main {
             border-radius: unset !important;
         }
 
-        &.currentUserPosition {
+        &.currentUserPosition{
             position: fixed;
             right: 20px;
             top: 119px;
@@ -69,7 +67,7 @@ main {
                 background-color: unset;
                 border: unset;
 
-                &:hover {
+                &:hover{
                     background-color: $backgroundColor;
                     border-radius: 20px;
                     cursor: pointer;
@@ -98,13 +96,13 @@ main {
                 aspect-ratio: 1;
                 object-fit: cover;
                 width: auto;
-                @media(max-width: 1200px) {
+                @media(max-width: $breakpoint1){
                     width: 200px;
                     height: 200px;
                 }
             }
 
-            input[type="file"] {
+            input[type="file"]{
                 display: none;
             }
         }
@@ -115,10 +113,10 @@ main {
             @include dja;
             position: relative;
 
-            &:hover {
+            &:hover{
                 cursor: pointer;
 
-                &::before {
+                &::before{
                     content: 'Avatar ändern';
                     position: absolute;
                     top: 0;
@@ -196,7 +194,7 @@ main {
                         background: unset;
                         border: unset;
 
-                        &:hover {
+                        &:hover{
                             font-weight: 700;
                             cursor: pointer;
                         }
@@ -210,11 +208,11 @@ main {
                     align-items: center;
                     gap: 15px;
 
-                    .offline-status {
+                    .offline-status{
                         color: $textGrey !important;
                     }
 
-                    .offline-dott {
+                    .offline-dott{
                         background-color: $textGrey !important;
                     }
 
@@ -234,7 +232,6 @@ main {
                         text-align: left;
                         text-underline-position: from-font;
                         text-decoration-skip-ink: none;
-
                     }
                 }
             }
@@ -291,7 +288,7 @@ main {
                     color: #FFFFFF;
                     border: unset;
 
-                    &:hover {
+                    &:hover{
                         cursor: pointer;
                         background-color: $secondaryColor;
                     }
@@ -309,7 +306,6 @@ main {
                         text-align: left;
                         text-underline-position: from-font;
                         text-decoration-skip-ink: none;
-
                     }
                 }
             }
@@ -360,7 +356,6 @@ main {
                     text-align: left;
                     text-underline-position: from-font;
                     text-decoration-skip-ink: none;
-
                 }
             }
 
@@ -404,7 +399,6 @@ main {
                     text-align: left;
                     text-underline-position: from-font;
                     text-decoration-skip-ink: none;
-
                 }
             }
 
@@ -433,7 +427,7 @@ main {
                 .cancel-btn {
                     color: #797EF3;
 
-                    &:hover {
+                    &:hover{
                         color: #FFFFFF;
                         background-color: #797EF3;
                         cursor: pointer;
@@ -444,22 +438,18 @@ main {
                     color: #FFFFFF;
                     background-color: $primaryColor;
 
-                    &:hover {
+                    &:hover{
 
                         background-color: #ADB0D9;
                         cursor: pointer;
                     }
 
-                    &:disabled {
+                    &:disabled{
                         filter: grayscale(100%);
                         cursor: unset;
                     }
                 }
-
             }
-
-
         }
-
     }
 }

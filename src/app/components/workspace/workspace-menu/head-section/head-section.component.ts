@@ -19,21 +19,33 @@ export class HeadSectionComponent {
   isLargeScreen: boolean = false;
   private subscriptions: Subscription = new Subscription();
 
+
   constructor(private viewService: SetMobileViewService) {}
 
+
+  /**
+   * Initializes by subscribing to the screen size state to adapt the UI based on device size.
+   */
   ngOnInit(): void {
-    
-    // Subscription für isLargeScreen
     const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
       this.isLargeScreen = isLarge;
     });
     this.subscriptions.add(screenSub);
   }
 
+
+  /**
+   * Unsubscribes from all subscriptions to clean up resources and prevent memory leaks.
+   */
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
+
+  /**
+   * Handles click actions on the header section, setting the navigation to a new message channel
+   * and adjusting the view accordingly if not on a large screen.
+   */
   handleClick() {
     this.navigationService.setChannel('newMessage')
     if (!this.isLargeScreen) {
@@ -41,7 +53,14 @@ export class HeadSectionComponent {
     }
   }
 
-  // Methode zum Wechseln der Ansicht über den Service
+  
+  /**
+   * Changes the current view of the application based on the given view type.
+   * This method controls how different parts of the application are displayed,
+   * especially in response to changes in device orientation or screen size.
+   *
+   * @param {CurrentView} view - The view type to set (e.g., 'workspaceMenu', 'channel', 'thread').
+   */
   setView(view: CurrentView): void {
     this.viewService.setCurrentView(view);
   }

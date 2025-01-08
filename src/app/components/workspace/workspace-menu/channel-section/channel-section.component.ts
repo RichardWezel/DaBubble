@@ -25,29 +25,52 @@ export class ChannelSectionComponent {
   isListVisible: boolean = true;
   private subscriptions: Subscription = new Subscription();
 
+
   constructor(private viewService: SetMobileViewService, public openCloseDialogService: OpenCloseDialogService) {}
 
+
+  /**
+   * Subscribes to the view service to track if the device is displaying on a large screen
+   * and adjusts the UI components accordingly.
+   */
   ngOnInit(): void {
-    
-    // Subscription für isLargeScreen
     const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
       this.isLargeScreen = isLarge;
     });
     this.subscriptions.add(screenSub);
   }
 
+
+  /**
+   * Unsubscribes from all active subscriptions when the component is destroyed to prevent memory leaks.
+   */
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
+
+  /**
+   * Toggles the visibility of the channel list within the UI.
+   */
   toggleList() {
     this.isListVisible = !this.isListVisible;
   }
 
+
+  /**
+   * Opens the dialog to add a new channel, interfacing with the OpenCloseDialogService.
+   */
   openAddChannelDialog() {
     this.openCloseDialogService.open('addChannel');
   }
 
+
+  /**
+   * Handles the selection of a channel by setting the current channel in the navigation service,
+   * and potentially changing the view based on the screen size.
+   * 
+   * @param {string} channelId - The ID of the channel to navigate to.
+   */
   handleClick(channelId: string) {
     this.navigationService.setChannel(channelId)
     if (!this.isLargeScreen) {
@@ -55,7 +78,13 @@ export class ChannelSectionComponent {
     }
   }
 
-  // Methode zum Wechseln der Ansicht über den Service
+
+  /**
+   * Sets the current view for the application based on the provided view type,
+   * aiding in responsive layout management.
+   * 
+   * @param {CurrentView} view - The view to set (e.g., 'workspaceMenu', 'channel', 'thread').
+   */
   setView(view: CurrentView): void {
     this.viewService.setCurrentView(view);
   }

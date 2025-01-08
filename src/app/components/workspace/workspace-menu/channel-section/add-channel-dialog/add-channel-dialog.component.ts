@@ -26,17 +26,20 @@ export class AddChannelDialogComponent implements OnInit, OnDestroy {
     id: ""
   };
   navigation = inject(NavigationService);
-
-  // Neue Variable zur Überprüfung der Kanalnamen
   isChannelNameExists: boolean = false;
   errorMessage: string = '';
 
   private subscriptions: Subscription = new Subscription();
 
+
   constructor(
     public openCloseDialogService: OpenCloseDialogService,
   ) {}
 
+
+  /**
+   * Subscribes to the open/close status of the dialog, setting visibility based on the status.
+   */
   ngOnInit(): void {
     const sub = this.openCloseDialogService
       .isDialogOpen('addChannel')
@@ -47,29 +50,44 @@ export class AddChannelDialogComponent implements OnInit, OnDestroy {
     if (sub) this.subscriptions.add(sub);
   }
 
+
+  /**
+   * Unsubscribes from all active subscriptions when the component is destroyed to prevent memory leaks.
+   */
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
+
+  /**
+   * Opens the dialog for adding a new channel.
+   */
   public openDialog() {
     this.isDialogVisible = true;
   }
 
+
+  /**
+   * Closes the dialog for adding a new channel.
+   */
   public closeDialog() {
     this.openCloseDialogService.close('addChannel');
   }
 
+
   /**
-   * Überprüft, ob der Channel-Name bereits existiert.
-   * @returns boolean
+   * Validates the channel name against existing channels to prevent duplicates.
+   * @returns {boolean} True if the channel name already exists, false otherwise.
    */
   isChannelNameTaken(): boolean {
     return !!this.findChannelName(this.channelData.name);
   }
 
+
   /**
-    * Diese Methode wird beim Absenden des Formulars aufgerufen.
-    */
+   * Handles the submission of the channel creation form.
+   * Checks if the channel name exists and, if not, proceeds to create the channel and navigate to it.
+   */
   async openAddChannelMemberChoiseDialog() {
     if (this.isChannelNameTaken()) {
       this.isChannelNameExists = true;
@@ -87,6 +105,10 @@ export class AddChannelDialogComponent implements OnInit, OnDestroy {
     }
   }
 
+
+  /**
+   * Takes the channel information from the form and adds the channel to the storage.
+   */
   async takeChannelInfo(): Promise<void> {
     try {
       await this.storage.addChannel({ 
@@ -108,10 +130,11 @@ export class AddChannelDialogComponent implements OnInit, OnDestroy {
     }
   }
 
+  
   /**
-   * Sucht nach einem Channel mit dem angegebenen Namen.
-   * @param inputChannel string
-   * @returns string | undefined
+   * Searches for an existing channel by name.
+   * @param {string} inputChannel - The name of the channel to search for.
+   * @returns {string | undefined} The name of the found channel or undefined if no match is found.
    */
   findChannelName(inputChannel: string): string | undefined {
     let channels: ChannelInterface[] = this.storage.CurrentUserChannel;
