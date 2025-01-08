@@ -30,47 +30,81 @@ export class ChannelHeadComponent implements OnInit {
   storage = inject(FirebaseStorageService);
   cloud = inject(CloudStorageService);
   channelUsers: string[] = [];
-  isChannelEditVisible: boolean = false; // Steuerung für ChannelEdit
+  isChannelEditVisible: boolean = false; // Controls visibility of ChannelEdit
 
+  @ViewChild('channelMemberDialog') channelMemberDialog!: ChannelMemberDialogComponent;
+  @ViewChild('addChannelMemberDialog') addChannelMemberDialog!: AddChannelMemberDialogComponent;
+
+  /**
+   * Initialize component state by updating the list of channel users.
+   */
   ngOnInit() {
     this.updateChannelUsers();
   }
 
+
+  /**
+   * Fetches the current channel's users from the storage and updates the local state.
+   */
   updateChannelUsers() {
     const users = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.user;
     this.channelUsers = users ? users : [];
   }
 
+
+  /**
+   * Opens the channel edit dialog.
+   */
   openChannelEdit() {
     console.log('ChannelEdit geöffnet');
     this.isChannelEditVisible = true;
   }
 
-  // Schließt ChannelEditComponent
+
+  /**
+   * Closes the channel edit dialog.
+   */
   closeChannelEdit() {
     this.isChannelEditVisible = false;
   }
 
+
+  /**
+   * Returns the name of the creator of the current channel.
+   * @returns {string} Name of the channel creator or 'Unbekannt' if not found.
+   */
   channelCreator(): string {
     const currentChannel = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
     if (!currentChannel) {
-      return 'Unbekannt'; // Fallback, falls der Channel nicht gefunden wird
+      return 'Unbekannt'; 
     }
     const owner = this.storage.user.find(user => user.id === currentChannel.owner);
     return owner?.name || '';
   }
 
+
+  /**
+   * Getter to retrieve the current channel ID.
+   * @returns {string} Current channel ID.
+   */
   get currentChannelId(): string {
     return this.storage.currentUser.currentChannel || '';
   }
   
 
+  /**
+   * Returns the description of the current channel.
+   * @returns {string} Channel description.
+   */
   channelDescription(): string {
     return this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.description || '';
   }
 
-  @ViewChild('channelMemberDialog') channelMemberDialog!: ChannelMemberDialogComponent;
 
+  /**
+   * Trigger to open the channel member dialog.
+   * @param {Event} event - The DOM event triggered by user interaction.
+   */
   callOpenDialog(event: Event) {
     event.stopPropagation();
     if (this.channelMemberDialog) {
@@ -81,11 +115,8 @@ export class ChannelHeadComponent implements OnInit {
   }
 
   /**
-   * Matches the string property currentChannel of the currentUser to determine whether a channel or a user ID is present and returns ‘channel’ or ‘dm’ accordingly. 
-   * If the value ‘newMessage’ is assigned in the sessionStorage under the key ‘currentChannel’, ‘newMessage’ is returned. 
-   * Otherwise ‘ ’ is returned.
-   *
-   * @returns {string} "channel" | "dm" | "newMessage" | ""
+   * Returns the appropriate context ('channel', 'dm', 'newMessage', or '') based on the current channel setting.
+   * @returns {"channel" | "dm" | "newMessage" | ""}
    */
   findChannel(): "channel" | "dm" | "newMessage" | "" {
     // findet den ersten Channel, deren id mit der currentChannel des currentUser übereinstimmt.
@@ -106,12 +137,22 @@ export class ChannelHeadComponent implements OnInit {
       return '';
   }
 
+
+  /**
+   * Returns the name of the current channel.
+   * @returns {string} Name of the current channel.
+   */
   channelName(): string {
     return (
       this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.name || ''
     );
   }
 
+
+  /**
+   * Fetches and returns the list of users associated with the current channel.
+   * @returns {Array<string>} Array of user IDs or an empty array if no users are found.
+   */
   channelUser() {
     let users = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.user;
     if (users) return users;
@@ -119,6 +160,11 @@ export class ChannelHeadComponent implements OnInit {
   }
 
 
+  /**
+   * Retrieves the avatar for a specific user.
+   * @param {string} user - User ID for which to retrieve the avatar.
+   * @returns {string} URL or path to the user's avatar.
+   */
   findAvatar(user: string) {
     let avatar = this.storage.user.find(u => u.id === user)?.avatar;
     if (avatar) return avatar;
@@ -126,6 +172,10 @@ export class ChannelHeadComponent implements OnInit {
   }
 
 
+  /**
+   * Retrieves the avatar of a user involved in the current direct message.
+   * @returns {string} URL or path to the user's avatar.
+   */
   userAvatar() {
     let foundUser = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm
       .find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel)?.contact;
@@ -135,6 +185,10 @@ export class ChannelHeadComponent implements OnInit {
   }
 
 
+  /**
+   * Retrieves the name of a user involved in the current direct message.
+   * @returns {string} Name of the user, or the current user's name appended with ' (Du)' if the current user is involved.
+   */
   userName() {
     let foundUser = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm
       .find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel)?.contact;
@@ -142,8 +196,11 @@ export class ChannelHeadComponent implements OnInit {
     else return this.storage.user.find(user => user.id === foundUser)?.name;
   }
 
-  @ViewChild('addChannelMemberDialog') addChannelMemberDialog!: AddChannelMemberDialogComponent;
-
+  
+  /**
+   * Opens the dialog to add channel members.
+   * @param {Event} event - The DOM event triggered by user interaction.
+   */
   openAddChannelMemberDialog(event: Event) {
     event.stopPropagation();
     if (this.addChannelMemberDialog) {
@@ -152,4 +209,5 @@ export class ChannelHeadComponent implements OnInit {
       console.log("Error of call channelMemberDialog.openDialog()")
     }
   }
-  }
+
+}
