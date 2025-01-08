@@ -21,8 +21,14 @@ export class ChannelMemberDialogComponent {
   openCloseDialogService = inject(OpenCloseDialogService);
   isOpen: boolean = false;
   private subscriptions: Subscription = new Subscription();
+
+
   constructor() { }
 
+
+  /**
+   * Subscribes to the dialog service to listen for open/close events.
+   */
   ngOnInit(): void {
     const sub1 = this.openCloseDialogService
       .isDialogOpen('channelMember')
@@ -32,17 +38,19 @@ export class ChannelMemberDialogComponent {
     if (sub1) this.subscriptions.add(sub1);
   }
 
+
+  /**
+   * Unsubscribes from all subscriptions on component destruction to prevent memory leaks.
+   */
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
 
   /**
-   * The user ID of the user clicked on is transferred via the open-user-service
-   *  and saved in a property in the service called userIDSource. 
-   * The dialogue of the profile with the data of the clicked user is then opened.
-   * 
-   * @param {string} userID - ID of clicked User
+   * Opens the user profile dialog for a specific user.
+   *
+   * @param {string} userID - ID of the clicked user.
    */
   async openUserProfile(userID: string) {
     if (userID !== this.storage.currentUser.id) {
@@ -52,28 +60,59 @@ export class ChannelMemberDialogComponent {
     }
   }
 
+
+  /**
+   * Opens the channel member dialog.
+   */
   public openDialog() {
     this.isOpen = true;
   }
 
+
+  /**
+   * Closes the channel member dialog.
+   */
   public closeDialog() {
     this.isOpen = false;
   }
 
+
+  /**
+   * Opens the add channel member dialog.
+   *
+   * @param {Event} event - Event object to prevent propagation.
+   */
   public openAddChannelMemberDialog(event: Event) {
     event.stopPropagation();
     this.openCloseDialogService.open('addChannelMember');
   }
 
+
+  /**
+   * Closes the add channel member dialog.
+   */
   public closeAddChannelMemberDialog() {
     this.openCloseDialogService.close('addChannelMember');
   }
 
+  /**
+   * Retrieves a user's name, or returns 'Unbekannt' if the user is not found.
+   *
+   * @param {string} userId - ID of the user to find.
+   * @returns {string} The name of the user or 'Unbekannt'.
+   */
   getUserName(userId: string): string {
     const user = this.storage.user.find(u => u.id === userId);
     return user ? (user.id === this.storage.currentUser.id ? `${user.name} (Du)` : user.name) : 'Unbekannt';
   }
 
+
+  /**
+   * Finds the avatar for a user and constructs the path or URL to it.
+   *
+   * @param {string} userId - ID of the user whose avatar is to be found.
+   * @returns {string} Path or URL to the user's avatar.
+   */
   findAvatar(userId: string): string {
     const avatar = this.storage.user.find(u => u.id === userId)?.avatar || '';
     return avatar.startsWith('profile-')
