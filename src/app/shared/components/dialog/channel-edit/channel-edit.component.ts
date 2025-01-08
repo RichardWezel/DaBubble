@@ -57,35 +57,34 @@ export class ChannelEditComponent {
   editChannelName(): void {
     this.isEditingChannelName = true; 
   }
-  
-  saveChannelName(): void {
-    if (!this.channelId) {
-      console.error('Channel-ID fehlt. Änderungen können nicht gespeichert werden.');
-      return;
-    }
-  
-    const description = this.channelDescription || ''; // Fallback für description
-  
-    console.log('Channel-Daten zum Speichern:', {
-      name: this.channelName,
-      description: description,
-    });
-    
-    if (this.isChannelNameTaken()) {
-      this.firebaseStorageService.updateChannel(this.channelId, {
-        name: this.channelName,
-        description: description, // `undefined` wird durch einen leeren String ersetzt
-      }).then(() => {
-        this.isEditingChannelName = false;
-        console.log('Channel-Name erfolgreich gespeichert:', this.channelName);
-      }).catch((error) => {
-        console.error('Fehler beim Speichern des Channel-Namens:', error);
-      });
-    } else {
-      this.errorMessage = 'Der Channel-Name existiert bereits. Bitte wählen Sie einen anderen Namen.';
-    }
-   
+
+  // in channel-edit.component.ts
+
+async saveChannelName(): Promise<void> {
+  if (!this.channelId) {
+    console.error('Channel-ID fehlt. Änderungen können nicht gespeichert werden.');
+    return;
   }
+
+  if (await this.firebaseStorageService.channelNameExists(this.channelId, this.channelName)) {
+    this.errorMessage = 'Der Channel-Name existiert bereits. Bitte wählen Sie einen anderen Namen.';
+    return;
+  }
+
+  // Wenn der Name nicht existiert, führe die Update-Operation durch
+  this.firebaseStorageService.updateChannel(this.channelId, {
+    name: this.channelName,
+    description: this.channelDescription
+  }).then(() => {
+    this.isEditingChannelName = false;
+    this.errorMessage = '';
+    console.log('Channel-Name erfolgreich gespeichert:', this.channelName);
+  }).catch((error) => {
+    console.error('Fehler beim Speichern des Channel-Namens:', error);
+  });
+}
+
+
 
    /**
    * Überprüft, ob der Channel-Name bereits existiert.

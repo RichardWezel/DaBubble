@@ -1,6 +1,6 @@
 import { inject, Injectable, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
-import { collection, doc, addDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, addDoc, onSnapshot, setDoc, updateDoc, getDocs } from "firebase/firestore";
 import { UserInterface } from '../interfaces/user.interface';
 import { ChannelInterface } from '../interfaces/channel.interface';
 import { PostInterface } from '../interfaces/post.interface';
@@ -452,5 +452,11 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
       console.error(`Fehler beim Hinzufügen von Benutzern zum Channel "${channelId}":`, error);
       throw error;
     }
+  }
+
+  async channelNameExists(channelId: string, newName: string): Promise<boolean> {
+    const channels = this.channel.filter(channel => channel.id !== channelId);
+    const channelNames = channels.map(channel => channel.name.toLowerCase());
+    return channelNames.includes(newName.toLowerCase());
   }
 }
