@@ -29,12 +29,14 @@ export class AddChannelMemberDialogComponent {
   errorMessage: string = ''; 
   successMessage: string = '';
 
-  // Timer-Referenzen
+  // Timer-References
   private successTimer: any;
   private errorTimer: any;
   private loadingTimer: any;
 
+
   constructor() { }
+
 
   /**
    * Subscribes to the status of addChannelMember in the openCloseDialogService and equates isOpen with the status.
@@ -47,6 +49,7 @@ export class AddChannelMemberDialogComponent {
       });
     if (sub) this.subscriptions.add(sub);
   }
+
 
   /**
    * Destroys all subscribtions and clears timer.
@@ -65,12 +68,14 @@ export class AddChannelMemberDialogComponent {
     }
   }
 
+
   /**
    * Sets property isOpen on true;
    */
   public openDialog() {
     this.isOpen = true;
   }
+
 
   /**
    * Sets property isOpen on false and clear all texts and inputs.
@@ -83,6 +88,7 @@ export class AddChannelMemberDialogComponent {
     this.userInput = '';
   }
 
+
   /**
   * During input in the input field, the function “updateSuggestion” is called, which updates the suggested text in the background of input field.
   */
@@ -90,6 +96,7 @@ export class AddChannelMemberDialogComponent {
     this.searchResult = [];
     this.updateSearchResult();
   }
+
 
   /**
    * Searches for the user in the user collection with the id of the entered user. If there is a match, the user name is returned.
@@ -101,6 +108,7 @@ export class AddChannelMemberDialogComponent {
     const foundUser = this.storage.user.find(u => u.id === user.id);
     return foundUser ? (foundUser.id === this.storage.currentUser.id ? `${foundUser.name} (Du)` : foundUser.name) : 'Unbekannt';
   }
+
 
   /**
    * Finds the path to the user's avatar using the id and returns the path to the image.
@@ -115,6 +123,7 @@ export class AddChannelMemberDialogComponent {
       : this.cloud.openImage(avatar);
   }
 
+
   /**
    * Finds the Channel witch is current used und returns the name.
    * 
@@ -125,6 +134,7 @@ export class AddChannelMemberDialogComponent {
       this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.name || ''
     );
   }
+
 
   /**
    * If there is an input from the user, 
@@ -140,6 +150,7 @@ export class AddChannelMemberDialogComponent {
     }
     this.setSearchresult(trimmedInput);
   }
+
 
   /**
    * Sets the property searchResult with matched usern of user input.
@@ -160,6 +171,7 @@ export class AddChannelMemberDialogComponent {
     });
   }
 
+
   /**
    * Adds users to addedUser property who are not yet members of the channel. 
    * Empties the input field afterwards.
@@ -174,34 +186,19 @@ export class AddChannelMemberDialogComponent {
     this.errorMessage = ''; // Reset Fehlermeldung bei erfolgreicher Auswahl
   }
 
+
   /**
    * Adds all selected users to the current channel.
-   *
-   * This asynchronous method performs the following actions:
-   *
-   * 1. **Check for Selected Users**:
-   *    - Verifies if any users have been added to the `addedUser` list.
-   *    - If no users are selected, sets an error message indicating that no users were selected and exits the method.
-   *
-   * 2. **Initialize Loading State**:
-   *    - Calls `startValues()` to set up loading indicators and reset any existing messages.
-   *
-   * 3. **Attempt to Add Users**:
-   *    - Calls the `addUser()` method to add the selected users to the channel.
-   *    - Waits for the `addUser` operation to complete.
-   *
-   * 4. **Handle Errors**:
-   *    - If an error occurs during the addition of users, catches the error and invokes `addErrorMessage(error)` to display an appropriate error message.
-   *
-   * 5. **Finalize Loading State**:
-   *    - Regardless of success or failure, sets `isLoading` to `false` to stop any loading indicators.
-   *
+   * 
+   * The method performs the following steps:
+   * 1. Checks if any users have been added to the `addedUser` list. Exits if no users are selected.
+   * 2. Initializes the loading state by setting up indicators and resetting messages.
+   * 3. Attempts to add users using `addUser()` and waits for completion.
+   * 4. Catches and displays errors if the addition fails.
+   * 5. Finalizes the loading state by disabling indicators.
+   * 
    * @async
-   * @returns {Promise<void>} A promise that resolves once the users have been processed for addition.
-   *
-   * @example
-   * this.addUsers();
-   * // Adds the selected users to the current channel and handles any potential errors.
+   * @returns {Promise<void>} Resolves once the users have been processed for addition.
    */
   async addUsers(): Promise<void> {
     if (this.addedUser.length === 0) {
@@ -220,38 +217,18 @@ export class AddChannelMemberDialogComponent {
 
 
   /**
-   * Adds the selected users to the current channel.
+   * Adds selected users to the current channel.
    * 
-   * This asynchronous method performs the following actions:
-   * 
-   * 1. **Retrieve Current Channel ID**:
-   *    - Accesses the `currentChannel` property from the `currentUser` object within the `FirebaseStorageService`.
-   * 
-   * 2. **Validate Channel ID**:
-   *    - Checks if the `currentChannelId` exists.
-   *    - Throws an error with the message `'Aktueller Channel nicht gefunden.'` if the channel ID is not found.
-   * 
-   * 3. **Extract User IDs**:
-   *    - Maps over the `addedUser` array to extract the `id` of each user.
-   *    - Filters out any falsy values to ensure only valid user IDs are processed.
-   * 
-   * 4. **Add Users to Channel**:
-   *    - Calls the `addUsersToChannel` method from the `FirebaseStorageService`, passing the `currentChannelId` and the array of `newUserIds`.
-   *    - Awaits the completion of this asynchronous operation.
-   * 
-   * 5. **Display Success Message**:
-   *    - Invokes the `showSuccessMessage` method to display a confirmation message indicating that users have been successfully added.
-   * 
-   * 6. **Update Channel Users**:
-   *    - Merges the newly added user IDs into the existing `channelUsers` array to reflect the updated list of channel members.
-   * 
-   * 7. **Reset Component State**:
-   *    - Clears the `addedUser` array to remove the users that were just added.
-   *    - Resets the `userInput` string to an empty value, clearing the input field in the UI.
+   * The method performs the following steps:
+   * 1. Retrieves and validates the current channel ID.
+   * 2. Extracts and filters user IDs from the `addedUser` array.
+   * 3. Calls `addUsersToChannel` to add users and awaits the operation.
+   * 4. Displays a success message and updates the channel users list.
+   * 5. Resets component state after adding users.
    * 
    * @async
-   * @throws {Error} Throws an error if the current channel ID is not found.
-   * @returns {Promise<void>} A promise that resolves once the users have been successfully added to the channel.
+   * @throws {Error} If the current channel ID is not found.
+   * @returns {Promise<void>} Resolves after users are added to the channel.
    */
   async addUser(): Promise<void> {
     const currentChannelId = this.storage.currentUser.currentChannel;
@@ -266,6 +243,8 @@ export class AddChannelMemberDialogComponent {
     this.userInput = '';
   }
 
+
+
   /**
    * Adds the error-message to the dialog.
    * 
@@ -275,6 +254,7 @@ export class AddChannelMemberDialogComponent {
     console.error('Fehler beim Hinzufügen der Benutzer:', error);
     this.showErrorMessage(error.message || 'Beim Hinzufügen der Benutzer ist ein Fehler aufgetreten.');
   }
+
 
   /**
    * Sets the start values and the Timeout of loading.
@@ -288,6 +268,7 @@ export class AddChannelMemberDialogComponent {
     }, 2000);
   }
 
+
   /**
    * Clears the timeout of loading.
    */
@@ -298,6 +279,7 @@ export class AddChannelMemberDialogComponent {
     this.isLoading = false;
   }
   
+
   /**
    * Removes a user from the `addedUser` list.
    *

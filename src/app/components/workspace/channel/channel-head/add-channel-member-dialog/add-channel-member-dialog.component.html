@@ -33,6 +33,7 @@
       <section class="searchbar">
   
         <div class="Inputfield" [ngStyle]="{'padding': !addedUser.length ? '15px 20px 15px' : '7.5px 20px'}">
+
           <input *ngIf="!addedUser.length" placeholder="Namen eingeben" type="search" id="newChannelMemberInput" #inputFieldChannelMember type="text" [(ngModel)]="userInput" (input)="onInput()"
           autocomplete="off">
   
@@ -53,22 +54,17 @@
             </div>
 
           </div>
-          <!-- Erfolgsmeldung -->
+
           <div *ngIf="successMessage" class="success-message">
             {{ successMessage }}
           </div>
         
-          <!-- Fehlermeldung -->
           <div *ngIf="errorMessage" class="error-message">
             {{ errorMessage }}
           </div>
-        
-          <!-- Ladeindikator -->
           
         </div>
 
-      
-       
         <div class="btn-section">
           <button [disabled]="!addedUser.length || isLoading" (click)="addUsers()">Hinzufügen</button>
         </div>
@@ -93,6 +89,6 @@
         </div>
       </section>
 
-      
     </div>
   </main>
+  
