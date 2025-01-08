@@ -32,10 +32,9 @@ export class LogInCardComponent {
 
   @Output() login = new EventEmitter<boolean>();
 
-
   constructor() { }
 
-
+  
   /**
    * Shows the send-email-card to insert the mail for resetting the password.
    */

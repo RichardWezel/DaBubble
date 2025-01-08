@@ -19,27 +19,30 @@ export class AppComponent implements OnInit {
 
   constructor() { }
 
+  /**
+   * Initializes the component by subscribing to route query parameters and setting up window status.
+   */
   ngOnInit() {
-    // Prüfen der URL-Parameter beim Start der Anwendung
+    // Checking URL parameters at the start of the application
     this.route.queryParams.subscribe((params) => {
-      const mode = params['mode']; // Typ der Aktion (verifyEmail, resetPassword)
-      const oobCode = params['oobCode']; // Firebase Aktions-Code
+      const mode = params['mode']; // Type of action (verifyEmail, resetPassword)
+      const oobCode = params['oobCode']; // Firebase action code
 
       if (mode && oobCode) {
         this.handleFirebaseActions(mode, oobCode);
       }
     });
 
-    // console.log('AppComponent ngOnInit aufgerufen');
+    // Log the call of ngOnInit for AppComponent
     (window as any).status = this.status.bind(this);
   }
 
-   /**
-   * Verarbeitet Firebase-spezifische Aktionen basierend auf dem Modus
-   * @param mode Der Modus der Aktion (z.B. verifyEmail, resetPassword)
-   * @param oobCode Der Firebase OOB-Code zur Validierung
+  /**
+   * Processes Firebase-specific actions based on the mode provided in the URL parameters.
+   * @param mode The mode of the action (e.g., verifyEmail, resetPassword)
+   * @param oobCode The Firebase OOB (Out of Band) code for validation
    */
-   private handleFirebaseActions(mode: string, oobCode: string): void {
+  private handleFirebaseActions(mode: string, oobCode: string): void {
     switch (mode) {
       case 'resetPassword':
         this.router.navigate(['/resetpassword'], { queryParams: { oobCode } });
@@ -48,15 +51,17 @@ export class AppComponent implements OnInit {
         this.router.navigate(['/emailverified'], { queryParams: { oobCode } });
         break;
       default:
-        console.error('Unbekannter Modus:', mode);
-        this.router.navigate(['/']); // Zurück zur Startseite oder Standardroute
+        console.error('Unknown mode:', mode);
+        this.router.navigate(['/']); // Navigate back to home page or default route
         break;
     }
   }
 
+  /**
+   * Logs the current user details and channel to the console.
+   */
   status() {
     console.log('Current User: ', this.storage.currentUser);
     console.log('Current channel of Current User', this.storage.currentUser.currentChannel);
-    // Fügen Sie hier weitere console.log Ausgaben hinzu
   }
 }
