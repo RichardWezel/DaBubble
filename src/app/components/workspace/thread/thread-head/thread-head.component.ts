@@ -15,6 +15,14 @@ export class ThreadHeadComponent extends ChannelHeadComponent {
     super();
   }
 
+
+  /**
+   * Returns the display name of the current channel or direct message. This method adjusts the formatting based on whether the
+   * channel is identified by a hashtag (indicating a public channel) or is a direct message (DM).
+   * 
+   * @returns {string} The formatted name of the current channel or direct message.
+   * For channels, it removes the prefix hash ('#'), and for DMs, it prefixes the name with '@'.
+   */
   channelNameThread() {
     let currentChannel = this.storage.currentUser.currentChannelName;
     
@@ -25,5 +33,6 @@ export class ThreadHeadComponent extends ChannelHeadComponent {
         // Fügt '@ ' vor dem aktuellen Channel-Namen hinzu
         return '@ ' + currentChannel;
     }
-}
+  }
+  
 }

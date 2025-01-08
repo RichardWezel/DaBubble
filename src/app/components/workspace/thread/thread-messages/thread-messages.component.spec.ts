@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ThreadMessagesComponent } from './thread-messages.component';
 
 describe('ThreadMessagesComponent', () => {
