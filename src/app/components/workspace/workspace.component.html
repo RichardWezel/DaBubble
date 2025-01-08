@@ -1,16 +1,14 @@
-<!-- workspace.component.html -->
+
 <main>
     <app-navbar></app-navbar>
     <div class="container">
 
-       <!-- Große Bildschirme: Nur eine Komponente anzeigen -->
         <ng-container *ngIf="isLargeScreen; else smallScreenLayout">
             <app-workspace-menu [class.openWorkspaceMenu]="wsmOpen"></app-workspace-menu>
             <app-channel></app-channel>
             <app-thread [class.openThread]="storage.currentUser.threadOpen"></app-thread>
         </ng-container>
         
-          <!-- Kleine Bildschirme: Mehrere Komponenten anzeigen -->
         <ng-template #smallScreenLayout>
             <ng-container [ngSwitch]="currentView">
                 <app-workspace-menu [class.openWorkspaceMenu]="true" *ngSwitchCase="'workspaceMenu'"></app-workspace-menu>
@@ -30,16 +28,6 @@
     <span class="loader"></span>
 </div>
 
-<!-- Navigationsleiste für große Bildschirme -->
-<!-- <aside *ngIf="isLargeScreen">
-    <div class="nav-buttons">
-        <button (click)="setView('workspaceMenu')" [class.active]="currentView === 'workspaceMenu'">Workspace Menü</button>
-        <button (click)="setView('channel')" [class.active]="currentView === 'channel'">Channel</button>
-        <button (click)="setView('thread')" [class.active]="currentView === 'thread'">Thread</button>
-    </div>
-</aside> -->
-
-<!-- Bestehendes Aside für kleine Bildschirme -->
 <aside *ngIf="isLargeScreen">
     <div class="label" (click)="toggleMenu()">
         {{ wsmOpen ? 'Workspace-Menü schließen' : 'Workspace-Menü öffnen' }}
@@ -53,7 +41,3 @@
         </svg>
     </div>
 </aside>
-
-
-
-

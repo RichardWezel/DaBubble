@@ -30,11 +30,11 @@ main {
             transform: translateX(-100%);
             transition: all 125ms ease-in-out;
 
-            @media (max-width: 1200px) {
+            @media (max-width: $breakpoint1){
                 width: 100%;
             }
 
-            &.openWorkspaceMenu {
+            &.openWorkspaceMenu{
                 position: relative;
                 left: 0;
                 transform: translateX(0);
@@ -60,7 +60,7 @@ main {
                 transform: translateX(0);
             }
 
-            @media (max-width: 1200px) {
+            @media (max-width: $breakpoint1){
                 width: 100%;
             }
         }
@@ -83,7 +83,7 @@ main {
     background-color: $backgroundColor;
     z-index: 10;
 
-    &.hidden {
+    &.hidden{
         display: none;
     }
 }
@@ -122,18 +122,18 @@ main {
     animation: flash 0.5s ease-out infinite alternate;
 }
 
-@keyframes flash {
-    0% {
+@keyframes flash{
+    0%{
         background-color: $secondaryColor;
         box-shadow: 20px 0 $secondaryColor, -20px 0 $primaryColor;
     }
 
-    50% {
+    50%{
         background-color: $primaryColor;
         box-shadow: 20px 0 $secondaryColor, -20px 0 $secondaryColor;
     }
 
-    100% {
+    100%{
         background-color: $secondaryColor;
         box-shadow: 20px 0 $primaryColor, -20px 0 $secondaryColor;
     }
@@ -152,7 +152,7 @@ aside {
     border-radius: 0px 30px 30px 0px;
     box-shadow: 4px 4px 7px 0px #00000033;
 
-    &:hover {
+    &:hover{
         cursor: pointer;
         color: $thirdColor;
         .label {
@@ -169,7 +169,6 @@ aside {
             }
         }
     }
-
 
     .label {
         writing-mode: vertical-lr;
@@ -188,4 +187,3 @@ aside {
         height: 32px;
     }
 }
-

@@ -35,10 +35,9 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   authService = inject(FirebaseAuthService);
   wsmOpen: boolean = false;
   private subscriptions: Subscription = new Subscription();
-
-  // Responsive Layout
   public isLargeScreen: boolean = window.innerWidth >= 1201;
   currentView: 'workspaceMenu' | 'channel' | 'thread' = 'channel'; // Default view
+
 
   constructor(
     public openCloseDialogService: OpenCloseDialogService,
@@ -46,6 +45,10 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     private viewService: SetMobileViewService // Injektion des ViewService
   ) { }
 
+
+  /**
+   * Subscribes to dialog, breakpoint, and view state changes to manage the workspace layout and functionality.
+   */
   ngOnInit(): void {
     // Subscribe to workspace menu dialog status
     const dialogSub = this.openCloseDialogService
@@ -79,29 +82,51 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     this.subscriptions.add(screenSub);
   }
 
+
+  /**
+   * Unsubscribes from all active subscriptions to prevent memory leaks when the component is destroyed.
+   */
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
+
+  /**
+   * Triggers when mouse movement, keydown, click, or keyup events occur to refresh the online status timer.
+   */
   @HostListener('document:mousemove', ['$event'])
   @HostListener('document:keydown', ['$event'])
   @HostListener('document:click', ['$event'])
   @HostListener('document:keyup', ['$event'])
-
   onMouseMove(event: MouseEvent) {
     this.authService.onlineStatusTimer(true);
   }
 
+
+  /**
+   * Handles keyboard events to maintain user activity status.
+   * This method triggers when any key is pressed and invokes the online status timer of the authentication service.
+   * 
+   * @param {KeyboardEvent} event - The keyboard event triggered by the user pressing a key.
+   */
   onKeydown(event: KeyboardEvent) {
     this.authService.onlineStatusTimer(true);
   }
 
+
+  /**
+  * Toggles the visibility of the workspace menu.
+  */
   toggleMenu(): void {
     this.wsmOpen = !this.wsmOpen;
 
   }
 
-  // Methode zum Wechseln der Ansicht über den Service
+
+  /**
+   * Sets the current view within the workspace, managing how components like the menu, channel, or thread are displayed.
+   * @param {CurrentView} view - The new view to set in the workspace.
+   */
   setView(view: CurrentView): void {
     this.viewService.setCurrentView(view);
   }
