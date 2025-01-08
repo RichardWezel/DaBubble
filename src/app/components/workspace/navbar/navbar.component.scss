@@ -42,24 +42,24 @@
         border: unset;
         background: unset;
 
-        @media (max-width: 1200px) {
+        @media (max-width: $breakpoint1){
           display: flex;
         }
 
-        &:hover {
+        &:hover{
           cursor: pointer;
+          
           .ws-logo-name {
             color: $thirdColor;
           }
-
         }
 
         .arrow-icon {
           width: 25px;
           height: 25px;
           @include dja();
-
         }
+
         .ws-logo-name {
           display: flex;
           align-items: center;
@@ -83,18 +83,17 @@
             .icon {
                 position: absolute;
             }
-        }
+          }
 
-        .ws-name {
-          font-family: "Nunito";
-          font-size: 20px;
-          font-weight: 700;
-          line-height: 27.28px;
-          text-align: left;
-          text-underline-position: from-font;
-          text-decoration-skip-ink: none;
-
-        }
+          .ws-name {
+            font-family: "Nunito";
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 27.28px;
+            text-align: left;
+            text-underline-position: from-font;
+            text-decoration-skip-ink: none;
+          }
         }
       }
     }
@@ -103,9 +102,9 @@
       margin-left: 147px;
       width: 100%;
 
-      @media (max-width: 1200px) {
+      @media (max-width: $breakpoint1){
         display: none;
-    }
+      }
     }
   }
 
@@ -125,7 +124,7 @@
       font-size: 32px;
       font-weight: bold;
 
-      @media (max-width: 1200px) {
+      @media (max-width: $breakpoint1){
         display: none;
       }
     }
@@ -148,11 +147,10 @@
       height: 70px;
       border-radius: 50%;
 
-      @media (max-width: 1200px) {
+      @media (max-width: $breakpoint1){
         height: 50px;
       }
     }
-  
   
     .dropdown-arrow {
       display: flex;
@@ -163,11 +161,11 @@
       transform: rotate(0deg);
       transition: transform 125ms ease-in-out;
   
-      &.rotate {
+      &.rotate{
         transform: rotate(180deg);
       }
 
-      @media (max-width: 1200px) {
+      @media (max-width: $breakpoint1){
        display: none;
       }
     }
@@ -189,6 +187,3 @@
     }
   }
 }
-
-
-

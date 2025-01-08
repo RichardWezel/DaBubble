@@ -20,7 +20,7 @@ export class NavbarComponent {
   cloud = inject(CloudStorageService);
   dropDownOpen: boolean = false;
 
-  // Zustände für die Sichtbarkeit der Elemente
+  // State variables for UI responsiveness and current view management
   isLargeScreen: boolean = false;
   currentView: CurrentView = 'workspaceMenu'; // Standardwert
 
@@ -30,24 +30,35 @@ export class NavbarComponent {
     
   }
 
+
+  /**
+   * Initializes subscriptions to manage changes in the UI based on screen size and current view updates from the viewService.
+   */
   ngOnInit(): void {
-    // Subscription für currentView
     const viewSub = this.viewService.currentView$.subscribe(view => {
       this.currentView = view;
     });
     this.subscriptions.add(viewSub);
     
-    // Subscription für isLargeScreen
     const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
       this.isLargeScreen = isLarge;
     });
     this.subscriptions.add(screenSub);
   }
 
+
+  /**
+   * Cleans up all active subscriptions when the component is destroyed to prevent memory leaks.
+   */
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
+  
+  /**
+   * Closes the user dropdown menu if a click event occurs outside of the dropdown area.
+   * @param {MouseEvent} event - The mouse event triggered when clicking in the document.
+   */
   @HostListener('document:click', ['$event'])
   onClick(event: MouseEvent) {
     if (!this.elementRef.nativeElement.querySelector('.current-user').contains(event.target)) {
@@ -55,7 +66,10 @@ export class NavbarComponent {
     }
   }
 
-  // Methode zum Wechseln der Ansicht über den Service
+  /**
+   * Sets the current view using the view service, facilitating state management across different components.
+   * @param {CurrentView} view - The new view to be set in the navbar and potentially other parts of the UI.
+   */
   setView(view: CurrentView): void {
     this.viewService.setCurrentView(view);
   }

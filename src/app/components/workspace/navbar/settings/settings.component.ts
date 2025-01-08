@@ -15,9 +15,8 @@ import { Subscription } from 'rxjs';
 })
 export class SettingsComponent  implements OnInit, OnDestroy{
 
-  @Input() open: boolean = false; // Neue Input-Eigenschaft
-  @Output() close = new EventEmitter<void>(); // Neue Output-Eigenschaft
-
+  @Input() open: boolean = false;
+  @Output() close = new EventEmitter<void>();
   @HostBinding('class.open') get isOpen() {
     return this.open;
   }
@@ -28,12 +27,17 @@ export class SettingsComponent  implements OnInit, OnDestroy{
   isLargeScreen: boolean = false;
   private subscriptions: Subscription = new Subscription();
 
+
    constructor(
     private viewService: SetMobileViewService,
     private renderer: Renderer2, // For manipulating classes
     private el: ElementRef // To access DOM elements
    ) {}
 
+  
+  /**
+   * Opens the user profile dialog and emits an event to close the settings dropdown.
+   */
   openUserProfile() {
     this.openCloseDialogService.changeProfileId(this.storage.currentUser.id!);
     this.openCloseDialogService.open('userProfile');
@@ -41,6 +45,10 @@ export class SettingsComponent  implements OnInit, OnDestroy{
     console.log('User profile opened and dropdown closed.');
   }
 
+
+  /**
+   * Initializes subscriptions to manage UI responsiveness based on screen size.
+   */
   ngOnInit(): void {
 
     const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
@@ -49,11 +57,18 @@ export class SettingsComponent  implements OnInit, OnDestroy{
     this.subscriptions.add(screenSub);
   }
 
+
+  /**
+   * Cleans up all active subscriptions when the component is destroyed to prevent memory leaks.
+   */
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
+  
 
-  // Methode zum Schließen des Dropdowns
+  /**
+   * Toggles the dropdown close state and emits an event to signal this change.
+   */
   toggleDropdown(): void {
     this.close.emit(); // Emitiert das `close`-Ereignis
     console.log('Dropdown closed via toggle.');

@@ -458,5 +458,5 @@ export class SearchComponent {
     const user = this.storage.user.find(u => u.id === userId);
     return user ? user.name : '';
   }
-
+  
 }
