@@ -12,7 +12,7 @@
             </div>
         </div>
         <p class="instruction">Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</p>
-        <form #signInForm="ngForm" (submit)="goToChooseAvatar()">
+        <form #signInForm="ngForm" (submit)="checkForm()">
             <label class="login-label" for="name">
                 <input id="name" class="input-login" #name="ngModel" [(ngModel)]="signInService.signInData.name"
                     name="name" placeholder="Name und Nachname" type="text"

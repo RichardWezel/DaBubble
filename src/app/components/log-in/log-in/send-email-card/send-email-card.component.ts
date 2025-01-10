@@ -18,6 +18,7 @@ import { ConfirmationModalComponent } from "../../../../shared/components/confir
 export class SendEmailCardComponent {
   mailData: string = '';
   showDialog: boolean = false;
+  mailInputIsFocused = false;
   @Output() login = new EventEmitter<boolean>();
 
   private validator = inject(ValidatorService);

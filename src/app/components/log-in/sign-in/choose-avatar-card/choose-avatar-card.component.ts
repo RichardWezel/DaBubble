@@ -157,6 +157,7 @@ export class ChooseAvatarCardComponent {
   
       return true; // Return true if everything succeeded
     } catch (error) {
+      console.log("Error sign in", error);
       this.isLoading = false;
       this.submitButton.nativeElement.disabled = true;
       this.errorMessage = 'Fehler beim Erstellen des Kontos.';

@@ -26,6 +26,24 @@ export class SignInCardComponent {
   @Output() generateAccount = new EventEmitter<boolean>();
 
 
+
+  checkForm() {
+    try {
+      this.checkIfMailAlreadyExisting();
+    } catch (e) {
+      
+
+    } finally {
+      this.goToChooseAvatar();
+    }
+
+
+  }
+
+  checkIfMailAlreadyExisting() {
+
+  }
+
   /**
    * Navigates the user to the choose avatar card.
    */
