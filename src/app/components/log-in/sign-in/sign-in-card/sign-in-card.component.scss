@@ -37,25 +37,13 @@ form {
     display: flex;
     align-items: center;
     gap: 8px;
-}
 
-.margin-top {
-    @media (max-width: 390px) {
+    @media (min-width: 511px) and (max-width: 522px) {
         margin-top: 14px;
     }
-}
 
-.password-label {
-    margin-bottom: 10px;
-
-    .error-text-input {
-        @media (max-width: 790px) {
-            line-height: 16px;
-        }
-    }
-
-    @media (max-width: 510px) {
-        margin-bottom: 12px;
+    @media (max-width: 450px) {
+        margin-top: 14px;
     }
 }
 

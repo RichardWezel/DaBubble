@@ -22,6 +22,9 @@ export class SignInCardComponent {
   errorMessage: string = '';  // Error message
   successMessage: string = ''; // Success message (HERE ADDED)
   passwordVisible: boolean = false;
+  nameInputIsFocused: boolean = false;
+  mailInputIsFocused: boolean = false;
+  passwordIsFocused: boolean = false;
 
   @Output() generateAccount = new EventEmitter<boolean>();
 

@@ -40,8 +40,8 @@ export class ResetPasswordCardComponent implements OnInit {
   oobCode: string = '';
   isLoading: boolean = true;
   errorMessage: string = '';
-  passwordInputIsFocused = false;
-  confirmPasswordInputIsFocused = false;
+  passwordInputIsFocused: boolean = false;
+  confirmPasswordInputIsFocused: boolean = false;
 
 
   constructor() {

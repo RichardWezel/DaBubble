@@ -29,8 +29,8 @@ export class LogInCardComponent {
   };
   passwordVisible: boolean = false;
   isLoading: boolean = false;
-  mailInputIsFocused = false;
-  passwordInputIsFocused = false;
+  mailInputIsFocused: boolean = false;
+  passwordInputIsFocused: boolean = false;
 
   @Output() login = new EventEmitter<boolean>();
 
