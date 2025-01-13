@@ -1,11 +1,11 @@
 import { NgFor, NgIf, NgStyle } from '@angular/common';
-import { Component, inject, Input, OnDestroy } from '@angular/core';
-import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
-import { CloudStorageService } from '../../../../../shared/services/cloud-storage.service';
-import { OpenCloseDialogService } from '../../../../../shared/services/open-close-dialog.service';
-import { Subscription } from 'rxjs';
+import { Component, inject, } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { UserInterface } from '../../../../../shared/interfaces/user.interface';
+import { FirebaseStorageService } from '../../../services/firebase-storage.service';
+import { CloudStorageService } from '../../../services/cloud-storage.service';
+import { OpenCloseDialogService } from '../../../services/open-close-dialog.service';
+import { Subscription } from 'rxjs';
+import { UserInterface } from '../../../interfaces/user.interface';
 
 @Component({
   selector: 'app-add-channel-member-dialog',
@@ -384,4 +384,5 @@ export class AddChannelMemberDialogComponent {
       clearTimeout(this.errorTimer);
     }
   }
+
 }

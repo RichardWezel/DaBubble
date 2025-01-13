@@ -6,7 +6,7 @@ import { NewMessageInputHeadComponent } from "./new-message-input-head/new-messa
 import { ChannelMemberDialogComponent } from '../../../../shared/components/dialog/channel-member-dialog/channel-member-dialog.component';
 import { CloudStorageService } from '../../../../shared/services/cloud-storage.service';
 import { ChannelEditComponent } from '../../../../shared/components/dialog/channel-edit/channel-edit.component';
-import { AddChannelMemberDialogComponent } from './add-channel-member-dialog/add-channel-member-dialog.component';
+import { AddChannelMemberDialogComponent } from '../../../../shared/components/dialog/add-channel-member-dialog/add-channel-member-dialog.component';
 
 @Component({
   selector: 'app-channel-head',
