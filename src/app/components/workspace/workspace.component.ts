@@ -13,6 +13,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { SetMobileViewService, CurrentView } from '../../shared/services/set-mobile-view.service';
 import { AddChannelDialogComponent } from './workspace-menu/channel-section/add-channel-dialog/add-channel-dialog.component';
 import { AddMemberToChannelDialogComponent } from './workspace-menu/channel-section/add-member-to-channel-dialog/add-member-to-channel-dialog.component';
+import { AddChannelComponent } from '../../shared/components/dialog/add-channel/add-channel.component';
 
 @Component({
   selector: 'app-workspace',
@@ -24,8 +25,8 @@ import { AddMemberToChannelDialogComponent } from './workspace-menu/channel-sect
     ThreadComponent,
     CommonModule,
     UserProfileComponent,
-    AddChannelDialogComponent,
-    AddMemberToChannelDialogComponent
+    AddMemberToChannelDialogComponent,
+    AddChannelComponent
   ],
   templateUrl: './workspace.component.html',
   styleUrl: './workspace.component.scss'
