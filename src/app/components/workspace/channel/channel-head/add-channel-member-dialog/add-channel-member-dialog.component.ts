@@ -16,7 +16,7 @@ import { UserInterface } from '../../../../../shared/interfaces/user.interface';
 })
 export class AddChannelMemberDialogComponent {
 
-  @Input() channelUsers: string[] = [];
+  channelUsers: string[] = [];
   searchResult: UserInterface[] = [];
   userInput: string = "";
   storage = inject(FirebaseStorageService);
@@ -48,6 +48,18 @@ export class AddChannelMemberDialogComponent {
         this.isOpen = status;
       });
     if (sub) this.subscriptions.add(sub);
+
+    this.channelUsers = this.channelUser();
+  }
+
+  /**
+   * Fetches and returns the list of users associated with the current channel.
+   * @returns {Array<string>} Array of user IDs or an empty array if no users are found.
+   */
+  channelUser() {
+    let users = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.user;
+    if (users) return users;
+    else return [];
   }
 
 
@@ -149,9 +161,6 @@ export class AddChannelMemberDialogComponent {
       this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.name || ''
     );
   }
-
-
-  
 
 
   /**
