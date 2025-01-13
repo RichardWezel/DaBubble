@@ -21,11 +21,8 @@
         display: flex;
     }
 
-    .channel-container {
+    .channel-dm-container {
         display: grid;
-        grid-template-rows: auto 1fr;
-        overflow: hidden;
-        height: 100%;
         gap: 25px;
     }
 }
