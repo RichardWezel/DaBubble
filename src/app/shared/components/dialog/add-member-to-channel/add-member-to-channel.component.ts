@@ -1,22 +1,27 @@
 import { Component, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { OpenCloseDialogService } from '../../../../../shared/services/open-close-dialog.service';
+import { OpenCloseDialogService } from '../../../services/open-close-dialog.service';
 import { NgIf } from '@angular/common';
-import { FormsModule } from '@angular/forms'; 
-import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
+import { FormsModule } from '@angular/forms';
+import { FirebaseStorageService } from '../../../services/firebase-storage.service';
+
 @Component({
-  selector: 'app-add-member-to-channel-dialog',
+  selector: 'app-add-member-to-channel',
   standalone: true,
   imports: [NgIf, FormsModule],
-  templateUrl: './add-member-to-channel-dialog.component.html',
-  styleUrl: './add-member-to-channel-dialog.component.scss'
+  templateUrl: './add-member-to-channel.component.html',
+  styleUrl: './add-member-to-channel.component.scss'
 })
-export class AddMemberToChannelDialogComponent {
+export class AddMemberToChannelComponent {
+
+  storage = inject(FirebaseStorageService);
 
   isOpen: boolean = false;
   selectedOption: string = ''; 
+
   private subscriptions: Subscription = new Subscription();
-  storage = inject(FirebaseStorageService);
+
+
   constructor(public openCloseDialogService: OpenCloseDialogService) {}
 
 
@@ -64,29 +69,65 @@ export class AddMemberToChannelDialogComponent {
    * or opening another dialog to add specific users.
    */
   handleSelection() {
+    this.checkAllUsersHasBeenSelected();
+    this.checkSpecificUserHasBeenSelected();
+  }
+
+  /**
+   * Checks whether all users have been selected as an option and first defines all users and then adds them to the new channel.
+   * 
+   * @returns 
+   */
+  checkAllUsersHasBeenSelected() {
     if (this.selectedOption === "addAllUsers") {
       const channelId = this.storage.currentUser.currentChannel;
       if (!channelId) {
         console.error("Keine aktuelle Channel-ID gefunden.");
         return;
       }
-      const allUserIds = this.storage.user
-        .map(user => user.id)
-        .filter((id): id is string => id !== undefined && id !== this.storage.currentUser.id);
-      this.storage.addUsersToChannel(channelId, allUserIds)
-        .then(() => {
-          this.closeDialog();
-        })
-        .catch(error => {
-          console.error(`Fehler beim Hinzufügen aller Benutzer zum Channel "${channelId}":`, error);
-        });
+      const allUserIds = this.defineAllUserIds();
+      this.addAllUsersToNewChannel(allUserIds, channelId);
     }
-  
+  }
+
+
+  /**
+   * Checks if Add specific users is selected as an option and opens a dialogue to manually add individual users.
+   */
+  checkSpecificUserHasBeenSelected() {
     if (this.selectedOption === "addSpecificUser") {
       console.log('Navigation zum add-channel-member-dialog');
       this.openCloseDialogService.open('addChannelMember');
       this.closeDialog();
     }
+  }
+
+
+  /**
+   * Adds all Users to the new created channel.
+   * 
+   * @param allUserIds - A map of all users with sorting out of undefined ids and the currentUser, as this is automatically a member of the channel when the channel is created.
+   * @param channelId - id of current channel. When a new channel is created, it is immediately set as the current channel.
+   */
+  addAllUsersToNewChannel(allUserIds:string[], channelId: string) {
+    this.storage.addUsersToChannel(channelId, allUserIds)
+    .then(() => {
+      this.closeDialog();
+    })
+    .catch(error => {
+      console.error(`Fehler beim Hinzufügen aller Benutzer zum Channel "${channelId}":`, error);
+    });
+  }
+
+  /**
+   * Creates a map of all users with sorting out of undefined ids and the currentUser, as this is automatically a member of the channel when the channel is created.
+   * 
+   * @returns 
+   */
+  defineAllUserIds() {
+    return this.storage.user
+    .map(user => user.id)
+    .filter((id): id is string => id !== undefined && id !== this.storage.currentUser.id);
   }
   
 
@@ -99,4 +140,5 @@ export class AddMemberToChannelDialogComponent {
    const channel = this.storage.channel.find(ch => ch.id === channelId);
    return channel ? channel.name : '';
   }
+
 }

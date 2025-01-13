@@ -22,9 +22,6 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   storage = inject(FirebaseStorageService);
   auth = inject(FirebaseAuthService);
 
-
-  @Input() channelUsers: string[] = [];
-
   isOpen: boolean = false;
   userId: string = "";
   user: UserInterface | undefined = undefined;
@@ -35,7 +32,6 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   currentProfilePicture: string = '';
   uploadFile: File | null = null;
   avatarChanged: boolean = false;
-
 
   private subscriptions: Subscription = new Subscription();
 
