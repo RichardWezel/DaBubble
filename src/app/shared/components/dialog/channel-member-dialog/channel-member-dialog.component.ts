@@ -1,10 +1,9 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, inject, Input, ViewChild } from '@angular/core';
-import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
-import { CloudStorageService } from '../../../../../shared/services/cloud-storage.service';
-import { OpenCloseDialogService } from '../../../../../shared/services/open-close-dialog.service';
+import { Component, inject } from '@angular/core';
+import { FirebaseStorageService } from '../../../services/firebase-storage.service';
+import { CloudStorageService } from '../../../services/cloud-storage.service';
+import { OpenCloseDialogService } from '../../../services/open-close-dialog.service';
 import { Subscription } from 'rxjs';
-
 
 @Component({
   selector: 'app-channel-member-dialog',
@@ -128,5 +127,4 @@ export class ChannelMemberDialogComponent {
     if (users) return users;
     else return [];
   }
-
 }

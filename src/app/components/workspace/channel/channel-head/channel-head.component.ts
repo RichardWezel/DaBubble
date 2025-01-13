@@ -3,7 +3,7 @@ import { FirebaseStorageService } from '../../../../shared/services/firebase-sto
 import { NgStyle, CommonModule, NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NewMessageInputHeadComponent } from "./new-message-input-head/new-message-input-head.component"; // Importiere FormsModule
-import { ChannelMemberDialogComponent } from './channel-member-dialog/channel-member-dialog.component';
+import { ChannelMemberDialogComponent } from '../../../../shared/components/dialog/channel-member-dialog/channel-member-dialog.component';
 import { CloudStorageService } from '../../../../shared/services/cloud-storage.service';
 import { ChannelEditComponent } from '../../../../shared/components/dialog/channel-edit/channel-edit.component';
 import { AddChannelMemberDialogComponent } from './add-channel-member-dialog/add-channel-member-dialog.component';
