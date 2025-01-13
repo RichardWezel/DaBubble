@@ -1,14 +1,13 @@
 import { NgClass, NgIf } from '@angular/common';
-import { Component, inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { FirebaseStorageService } from '../../../shared/services/firebase-storage.service';
-import { OpenUserProfileService } from '../../../shared/services/open-user-profile.service';
-import { UserInterface } from '../../../shared/interfaces/user.interface';
-import { Subscription } from 'rxjs';
-import { CloudStorageService } from '../../../shared/services/cloud-storage.service';
-import { OpenCloseDialogService } from '../../../shared/services/open-close-dialog.service';
+import { Component, inject, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { FirebaseAuthService } from '../../../shared/services/firebase-auth.service';
-
+import { OpenUserProfileService } from '../../../services/open-user-profile.service';
+import { UserInterface } from '../../../interfaces/user.interface';
+import { Subscription } from 'rxjs';
+import { CloudStorageService } from '../../../services/cloud-storage.service';
+import { OpenCloseDialogService } from '../../../services/open-close-dialog.service';
+import { FirebaseAuthService } from '../../../services/firebase-auth.service';
+import { FirebaseStorageService } from '../../../services/firebase-storage.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -18,6 +17,7 @@ import { FirebaseAuthService } from '../../../shared/services/firebase-auth.serv
   styleUrl: './user-profile.component.scss'
 })
 export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
+
   cloud = inject(CloudStorageService);
   storage = inject(FirebaseStorageService);
   auth = inject(FirebaseAuthService);
