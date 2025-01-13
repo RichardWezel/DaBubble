@@ -97,6 +97,21 @@ export class AddChannelMemberDialogComponent {
     this.updateSearchResult();
   }
 
+  /**
+   * If there is an input from the user, 
+   * the setSearchresult function will return all users that match the input by name or e-mail address.
+   * 
+   * @returns any
+   */
+  updateSearchResult() {
+    const trimmedInput = this.userInput.trim();
+    if (!trimmedInput) {
+      this.searchResult = [];
+      return;
+    }
+    this.setSearchresult(trimmedInput);
+  }
+
 
   /**
    * Searches for the user in the user collection with the id of the entered user. If there is a match, the user name is returned.
@@ -136,20 +151,7 @@ export class AddChannelMemberDialogComponent {
   }
 
 
-  /**
-   * If there is an input from the user, 
-   * the setSearchresult function will return all users that match the input by name or e-mail address.
-   * 
-   * @returns any
-   */
-  updateSearchResult() {
-    const trimmedInput = this.userInput.trim();
-    if (!trimmedInput) {
-      this.searchResult = [];
-      return;
-    }
-    this.setSearchresult(trimmedInput);
-  }
+  
 
 
   /**

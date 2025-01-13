@@ -1,8 +1,8 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { OpenCloseDialogService } from '../../../../../shared/services/open-close-dialog.service';
 import { NgIf } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // Importiere FormsModule
+import { FormsModule } from '@angular/forms'; 
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
 @Component({
   selector: 'app-add-member-to-channel-dialog',
