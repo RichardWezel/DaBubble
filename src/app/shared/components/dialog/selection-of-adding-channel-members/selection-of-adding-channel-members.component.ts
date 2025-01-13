@@ -6,13 +6,13 @@ import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../services/firebase-storage.service';
 
 @Component({
-  selector: 'app-add-member-to-channel',
+  selector: 'app-selection-of-adding-channel-members',
   standalone: true,
   imports: [NgIf, FormsModule],
-  templateUrl: './add-member-to-channel.component.html',
-  styleUrl: './add-member-to-channel.component.scss'
+  templateUrl: './selection-of-adding-channel-members.component.html',
+  styleUrl: './selection-of-adding-channel-members.component.scss'
 })
-export class AddMemberToChannelComponent {
+export class SelectionOfAddingChannelMembersComponent {
 
   storage = inject(FirebaseStorageService);
 
@@ -30,7 +30,7 @@ export class AddMemberToChannelComponent {
    */
   ngOnInit(): void {
     const sub = this.openCloseDialogService
-      .isDialogOpen('addChannelMemberChoice')
+      .isDialogOpen('SelectionOfAddingChannelMembers')
       ?.subscribe((status) => {
         this.isOpen = status;
       });
@@ -52,7 +52,7 @@ export class AddMemberToChannelComponent {
    * Closes the dialog for adding channel members.
    */
   public closeDialog() {
-    this.openCloseDialogService.close('addChannelMemberChoice');
+    this.openCloseDialogService.close('SelectionOfAddingChannelMembers');
   }
 
 

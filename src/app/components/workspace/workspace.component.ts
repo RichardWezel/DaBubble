@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { SetMobileViewService, CurrentView } from '../../shared/services/set-mobile-view.service';
 import { AddChannelComponent } from '../../shared/components/dialog/add-channel/add-channel.component';
-import { AddMemberToChannelComponent } from '../../shared/components/dialog/add-member-to-channel/add-member-to-channel.component';
+import { SelectionOfAddingChannelMembersComponent } from '../../shared/components/dialog/selection-of-adding-channel-members/selection-of-adding-channel-members.component';
 
 @Component({
   selector: 'app-workspace',
@@ -24,8 +24,8 @@ import { AddMemberToChannelComponent } from '../../shared/components/dialog/add-
     ThreadComponent,
     CommonModule,
     UserProfileComponent,
-    AddMemberToChannelComponent,
-    AddChannelComponent
+    AddChannelComponent,
+    SelectionOfAddingChannelMembersComponent
   ],
   templateUrl: './workspace.component.html',
   styleUrl: './workspace.component.scss'

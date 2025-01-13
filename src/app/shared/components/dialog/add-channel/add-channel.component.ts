@@ -100,7 +100,7 @@ export class AddChannelComponent implements OnInit, OnDestroy {
     if(this.isChannelNameExists === false) {
       await this.takeChannelInfo();
       this.navigation.setChannel(this.storage.lastCreatedChannel);
-      this.openCloseDialogService.open('addChannelMemberChoice');
+      this.openCloseDialogService.open('SelectionOfAddingChannelMembers');
       this.closeDialog();
     }
   }
