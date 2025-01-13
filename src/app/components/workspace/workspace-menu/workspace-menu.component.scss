@@ -22,7 +22,8 @@
     }
 
     .channel-dm-container {
-        display: grid;
+        display: flex;
+        flex-direction: column;
         gap: 25px;
     }
 }
@@ -31,7 +32,7 @@ app-channel-section,
 app-dm-section {
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 30px;
     width: 100%;
     overflow: hidden;
 }

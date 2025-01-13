@@ -10,6 +10,11 @@ main {
     app-navbar {
         position: absolute;
         width: 100%;
+
+        @media (max-width: $breakpoint1){
+            background-color: $backgroundColor;
+        }
+       
     }
 
     .container {
