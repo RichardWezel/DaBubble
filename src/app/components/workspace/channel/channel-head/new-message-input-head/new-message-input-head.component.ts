@@ -402,5 +402,4 @@ export class NewMessageInputHeadComponent {
     if (users) return users;
     else return [];
   }
-
 }

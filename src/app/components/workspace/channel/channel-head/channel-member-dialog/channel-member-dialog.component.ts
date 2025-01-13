@@ -15,7 +15,6 @@ import { Subscription } from 'rxjs';
 })
 export class ChannelMemberDialogComponent {
 
-  @Input() channelUsers: string[] = [];
   storage = inject(FirebaseStorageService);
   cloud = inject(CloudStorageService);
   openCloseDialogService = inject(OpenCloseDialogService);
@@ -118,6 +117,16 @@ export class ChannelMemberDialogComponent {
     return avatar.startsWith('profile-')
       ? `assets/img/profile-pictures/${avatar}`
       : this.cloud.openImage(avatar);
+  }
+
+  /**
+   * Fetches and returns the list of users associated with the current channel.
+   * @returns {Array<string>} Array of user IDs or an empty array if no users are found.
+   */
+  channelUser() {
+    let users = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.user;
+    if (users) return users;
+    else return [];
   }
 
 }

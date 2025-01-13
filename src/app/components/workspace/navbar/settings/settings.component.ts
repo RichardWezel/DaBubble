@@ -24,14 +24,14 @@ export class SettingsComponent  implements OnInit, OnDestroy{
   storage = inject(FirebaseStorageService);
   authService = inject(FirebaseAuthService);
   openCloseDialogService = inject(OpenCloseDialogService);
+
   isLargeScreen: boolean = false;
+
   private subscriptions: Subscription = new Subscription();
 
 
    constructor(
-    private viewService: SetMobileViewService,
-    private renderer: Renderer2, // For manipulating classes
-    private el: ElementRef // To access DOM elements
+    private viewService: SetMobileViewService
    ) {}
 
   
