@@ -126,6 +126,26 @@ export class AddChannelMemberDialogComponent {
 
 
   /**
+   * Sets the property searchResult with matched usern of user input.
+   * 
+   * @param trimmedInput - User input trimmed
+   */
+  setSearchresult(trimmedInput: any) {
+    const searchTerm = trimmedInput.toLowerCase();
+    this.searchResult = this.storage.user.filter(user => {
+      const isAlreadyMember = this.channelUsers.includes(user.id!);
+      return (
+        !isAlreadyMember && // Benutzer ist noch kein Mitglied
+        (
+          user.name.toLowerCase().includes(searchTerm) ||
+          user.email.toLowerCase().includes(searchTerm)
+        )
+      );
+    });
+  }
+
+
+  /**
    * Searches for the user in the user collection with the id of the entered user. If there is a match, the user name is returned.
    * 
    * @param user - Users Object
@@ -160,26 +180,6 @@ export class AddChannelMemberDialogComponent {
     return (
       this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.name || ''
     );
-  }
-
-
-  /**
-   * Sets the property searchResult with matched usern of user input.
-   * 
-   * @param trimmedInput - User input trimmed
-   */
-  setSearchresult(trimmedInput: any) {
-    const searchTerm = trimmedInput.toLowerCase();
-    this.searchResult = this.storage.user.filter(user => {
-      const isAlreadyMember = this.channelUsers.includes(user.id!);
-      return (
-        !isAlreadyMember && // Benutzer ist noch kein Mitglied
-        (
-          user.name.toLowerCase().includes(searchTerm) ||
-          user.email.toLowerCase().includes(searchTerm)
-        )
-      );
-    });
   }
 
 
