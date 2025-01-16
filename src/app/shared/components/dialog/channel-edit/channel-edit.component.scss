@@ -293,6 +293,14 @@
             }
         }
 
+        app-channel-member-dialog {
+            display: none;
+
+            @media (max-width: $breakpoint1){
+                display: flex;
+            }
+        }
+
         .modal-footer {
             display: flex;
             justify-content: flex-end;

@@ -76,15 +76,6 @@ export class AddChannelComponent implements OnInit, OnDestroy {
 
 
   /**
-   * Validates the channel name against existing channels to prevent duplicates.
-   * @returns {boolean} True if the channel name already exists, false otherwise.
-   */
-  isChannelNameTaken(): boolean {
-    return !!this.findChannelName(this.channelData.name);
-  }
-
-
-  /**
    * Handles the submission of the channel creation form.
    * Checks if the channel name exists and, if not, proceeds to create the channel and navigate to it.
    */
@@ -103,6 +94,15 @@ export class AddChannelComponent implements OnInit, OnDestroy {
       this.openCloseDialogService.open('SelectionOfAddingChannelMembers');
       this.closeDialog();
     }
+  }
+
+
+  /**
+   * Validates the channel name against existing channels to prevent duplicates.
+   * @returns {boolean} True if the channel name already exists, false otherwise.
+   */
+  isChannelNameTaken(): boolean {
+    return !!this.findChannelName(this.channelData.name);
   }
 
 
