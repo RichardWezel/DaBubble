@@ -5,10 +5,7 @@ import { SignInService } from '../../../../shared/services/sign-in.service';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { CommonModule } from '@angular/common';
-import { getAuth } from '@angular/fire/auth';
-import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from '@firebase/auth';
 import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
-import { FirebaseError } from '@angular/fire/app';
 import { collection, Firestore, getDocs, query, where } from '@angular/fire/firestore';
 
 @Component({

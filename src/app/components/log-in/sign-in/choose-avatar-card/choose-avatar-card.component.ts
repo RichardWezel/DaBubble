@@ -89,21 +89,10 @@ export class ChooseAvatarCardComponent {
   async setNewUser(): Promise<void> {
     const auth = getAuth();
     this.resetVariables();
-  
-    if (this.inputFieldsNotFilledIn()) {
-      this.errorMessage = 'Bitte füllen Sie alle erforderlichen Felder aus.';
-      this.isLoading = false;
-      this.submitButton.nativeElement.disabled = true;
-      return;
-    }
-  
-    // Handle user creation and verification email
     const userCreatedSuccessfully = await this.createUserAndSendVerification(auth);
     if (!userCreatedSuccessfully) {
       return; // Abort further execution if user creation or email failed
     }
-  
-    // If everything is successful, show the dialog
     this.showSuccessDialog();
   }
 
@@ -129,15 +118,6 @@ export class ChooseAvatarCardComponent {
 
 
   /**
-   * Checks if all input fields are filled in.
-   * @returns - Returns true if any input fields are emtpy; otherwise, false.
-   */
-  inputFieldsNotFilledIn(): boolean {
-    return !this.signInService.signInData.name || !this.signInService.signInData.email || !this.signInService.signInData.password;
-  }
-
-
-  /**
    * Handles the creation of a new user in the authentication as well as in the userCollection.
    * Handles the upload of the profile picture.
    * @param auth - The Firebase authentication object.
@@ -147,17 +127,12 @@ export class ChooseAvatarCardComponent {
     try {
       const userCredential = await this.createFirebaseAuthenticationUser(auth);
       const uid = userCredential.user.uid;
-  
       await this.handleProfilePictureUpload(uid);
-  
       await this.addNewUserToUserCollection(uid);
-  
       const emailSent = await this.sendVerificationEmail(userCredential.user);
       if (!emailSent) return false; // Abort if email failed to send
-  
       return true; // Return true if everything succeeded
     } catch (error) {
-      console.log("Error sign in", error);
       this.isLoading = false;
       this.submitButton.nativeElement.disabled = true;
       this.errorMessage = 'Fehler beim Erstellen des Kontos.';
@@ -224,7 +199,6 @@ export class ChooseAvatarCardComponent {
       await sendEmailVerification(user);
       return true;
     } catch (emailError) {
-      console.error('Fehler beim Senden der Bestätigungs-E-Mail:', emailError);
       this.isLoading = false;
       this.submitButton.nativeElement.disabled = true;
       this.errorMessage = 'Die Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.';
