@@ -86,6 +86,7 @@
             </div>
 
             <div class="nextBtnContainer">
+                <span class="error-message">{{ authService.errorMessage }}</span>
                 <button type="submit" [disabled]="signInForm.invalid || isLoading"
                     class="mainButton buttonPrimary next-button">
                     {{ isLoading ? 'Wird geladen...' : 'Weiter' }}

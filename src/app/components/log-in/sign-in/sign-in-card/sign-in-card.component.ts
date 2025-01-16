@@ -5,6 +5,11 @@ import { SignInService } from '../../../../shared/services/sign-in.service';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { CommonModule } from '@angular/common';
+import { getAuth } from '@angular/fire/auth';
+import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from '@firebase/auth';
+import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
+import { FirebaseError } from '@angular/fire/app';
+import { collection, Firestore, getDocs, query, where } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-sign-in-card',
@@ -17,10 +22,11 @@ export class SignInCardComponent {
   signInService: SignInService = inject(SignInService);
   navigationService: NavigationService = inject(NavigationService);
   firebaseStorageService: FirebaseStorageService = inject(FirebaseStorageService);
+  authService: FirebaseAuthService = inject(FirebaseAuthService);
+  firestore: Firestore = inject(Firestore);
 
   isLoading: boolean = false; // Loading level
-  errorMessage: string = '';  // Error message
-  successMessage: string = ''; // Success message (HERE ADDED)
+  formError: boolean = false;
   passwordVisible: boolean = false;
   nameInputIsFocused: boolean = false;
   mailInputIsFocused: boolean = false;
@@ -29,23 +35,64 @@ export class SignInCardComponent {
   @Output() generateAccount = new EventEmitter<boolean>();
 
 
-
-  checkForm() {
+  /**
+   * Verifies ifan email address already exists and performs corresponding actions.
+   */
+  async checkForm() {
+    this.resetCheckForm();
     try {
-      this.checkIfMailAlreadyExisting();
-    } catch (e) {
-      
-
+      const emailExists = await this.checkIfEmailExists();
+      if (emailExists) {
+        this.showErrorMessageIfMailExists();
+      } else {
+        this.goToChooseAvatar();
+      } 
+    } catch (error) {
+      this.authService.errorMessage = "Es gab ein Problem bei der Überprüfung der E-Mail-Adresse.";
     } finally {
-      this.goToChooseAvatar();
+      this.isLoading = false;
     }
-
-
   }
 
-  checkIfMailAlreadyExisting() {
 
+  /**
+   * Resets the form state by initializing relevant properties.
+   */
+  resetCheckForm() {
+    this.isLoading = true;
+    this.authService.errorMessage = '';
   }
+
+
+  /**
+   * Displays an error message indicating the email address is already in use.
+   */
+  showErrorMessageIfMailExists() {
+    this.authService.errorMessage = "Diese E-Mail-Adresse wird bereits verwendet.";
+    this.signInService.resetSignInData();
+  }
+
+  
+  /**
+   * Checks if an email address already exists in the Firestore "user" collection.
+   * @returns - A proise that resolves to 'true' if the email exists, or 'false' if it does not.
+   */
+  async checkIfEmailExists(): Promise<boolean> {
+    try {
+      const collectionRef = collection(this.firestore, "user");
+      const collectionQuery = query(collectionRef, where("email", "==", this.signInService.signInData.email));
+      const querySnapshot = await getDocs(collectionQuery);
+      if (!querySnapshot.empty) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    } catch (error) {
+      return false;
+    }
+  }
+
 
   /**
    * Navigates the user to the choose avatar card.
