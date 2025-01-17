@@ -1,12 +1,14 @@
 import { EventEmitter, inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { FirebaseStorageService } from './firebase-storage.service';
+import { FirebaseAuthService } from './firebase-auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NavigationService {
   storage = inject(FirebaseStorageService);
+  authService = inject(FirebaseAuthService);
   private router = inject(Router);
 
   channelChanged = new EventEmitter<string>();
@@ -19,6 +21,16 @@ export class NavigationService {
    * @param route - The route where the user gets navigated.
    */
   navigateTo(route: string) {
+    this.router.navigate([route]);
+  }
+
+
+  /**
+   * Navigates the user to a specific route and resets the error message.
+   * @param route - The route where the user gets navigated.
+   */
+  navigateToAndResetErrorMessage(route: string) {
+    this.authService.errorMessage = '';
     this.router.navigate([route]);
   }
 

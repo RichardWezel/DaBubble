@@ -41,6 +41,7 @@ export class LogInCardComponent {
    * Shows the send-email-card to insert the mail for resetting the password.
    */
   goToSendMail() {
+    this.authService.errorMessage = '';
     this.login.emit(false);
   }
 
