@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../services/firebase-storage.service';
 import { Router } from '@angular/router';
 import { ChannelInterface } from '../../../interfaces/channel.interface';
-import { ChannelMemberDialogComponent } from '../channel-member-dialog/channel-member-dialog.component';
+import { MemberContainerComponent } from '../../member-container/member-container.component'; 
 
 @Component({
   selector: 'app-channel-edit',
@@ -12,7 +12,7 @@ import { ChannelMemberDialogComponent } from '../channel-member-dialog/channel-m
   imports: [
     CommonModule, 
     FormsModule,
-    ChannelMemberDialogComponent],  
+    MemberContainerComponent],  
   templateUrl: './channel-edit.component.html',
   styleUrls: ['./channel-edit.component.scss']
 })

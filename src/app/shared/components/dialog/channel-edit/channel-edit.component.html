@@ -82,6 +82,7 @@
 
 
             <div class="field">
+
                 <div class="field-head">
                     <label>Beschreibung</label>
                     <button *ngIf="!isEditingDescription" (click)="editDescription()" class="edit-button">
@@ -107,6 +108,7 @@
                         </div>
                     </button>
                 </div>
+
                 <div class="field-body">
                     <div *ngIf="!isEditingDescription" class="value">
                         <div class="channel-name">{{ channelDescription }}</div>
@@ -117,17 +119,22 @@
                     </div>
                 </div>
 
-
-
                 <div class="divider"></div>
 
                 <div class="created-by">
                     <span>Erstellt von</span>
                     <span class="creator-name">{{ creatorName }}</span>
                 </div>
+
             </div>
 
+            <div class="member-container">
+                <div class="field">
+                    <app-member-container [dialog]="false"></app-member-container>
+                </div>
+            </div>
 
+            
         </div>
 
 
