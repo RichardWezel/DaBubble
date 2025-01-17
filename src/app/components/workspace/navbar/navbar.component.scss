@@ -145,6 +145,7 @@
   
     .user-avatar {
       height: 70px;
+      aspect-ratio: 1/1;
       border-radius: 50%;
 
       @media (max-width: $breakpoint1){
