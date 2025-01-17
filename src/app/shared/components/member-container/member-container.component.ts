@@ -3,7 +3,6 @@ import { OpenCloseDialogService } from '../../services/open-close-dialog.service
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { CloudStorageService } from '../../services/cloud-storage.service';
 import { NgFor, NgIf } from '@angular/common';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-member-container',
@@ -17,38 +16,15 @@ export class MemberContainerComponent {
   storage = inject(FirebaseStorageService);
   cloud = inject(CloudStorageService);
   openCloseDialogService = inject(OpenCloseDialogService);
-  private subscriptions: Subscription = new Subscription();
 
   @Input() dialog: boolean = false;
-
-  channelMemberDialogIsOpen: boolean = false;
-
-  /**
-   * Subscribes to the dialog service to listen for open/close events.
-   */
-  ngOnInit(): void {
-    const sub1 = this.openCloseDialogService
-      .isDialogOpen('channelMember')
-      ?.subscribe((status) => {
-        this.channelMemberDialogIsOpen = status;
-      });
-    if (sub1) this.subscriptions.add(sub1);
-  }
-
-
-  /**
-   * Unsubscribes from all subscriptions on component destruction to prevent memory leaks.
-   */
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
 
 
   /**
    * Closes the channel member dialog.
    */
-  public closeDialog() {
-    this.channelMemberDialogIsOpen = false;
+  public closeChannelMemberDialog() {
+    this.openCloseDialogService.close('channelMember');
   }
 
 
@@ -64,6 +40,7 @@ export class MemberContainerComponent {
       console.log('User ', userID, ' is clicked to open the respective dialogue!');
     }
   }
+
 
   /**
    * Opens the add channel member dialog.
@@ -82,6 +59,7 @@ export class MemberContainerComponent {
   public closeAddChannelMemberDialog() {
     this.openCloseDialogService.close('addChannelMember');
   }
+
 
   /**
    * Retrieves a user's name, or returns 'Unbekannt' if the user is not found.
@@ -108,6 +86,7 @@ export class MemberContainerComponent {
       : this.cloud.openImage(avatar);
   }
 
+  
   /**
    * Fetches and returns the list of users associated with the current channel.
    * @returns {Array<string>} Array of user IDs or an empty array if no users are found.
