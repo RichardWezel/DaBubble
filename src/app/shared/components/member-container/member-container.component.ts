@@ -1,29 +1,27 @@
+import { Component, inject, Input } from '@angular/core';
+import { OpenCloseDialogService } from '../../services/open-close-dialog.service';
+import { FirebaseStorageService } from '../../services/firebase-storage.service';
+import { CloudStorageService } from '../../services/cloud-storage.service';
 import { NgFor, NgIf } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { FirebaseStorageService } from '../../../services/firebase-storage.service';
-import { CloudStorageService } from '../../../services/cloud-storage.service';
-import { OpenCloseDialogService } from '../../../services/open-close-dialog.service';
 import { Subscription } from 'rxjs';
-import { MemberContainerComponent } from '../../member-container/member-container.component';
 
 @Component({
-  selector: 'app-channel-member-dialog',
+  selector: 'app-member-container',
   standalone: true,
-  imports: [NgIf, MemberContainerComponent],
-  templateUrl: './channel-member-dialog.component.html',
-  styleUrl: './channel-member-dialog.component.scss'
+  imports: [NgFor, NgIf],
+  templateUrl: './member-container.component.html',
+  styleUrl: './member-container.component.scss'
 })
-export class ChannelMemberDialogComponent {
+export class MemberContainerComponent {
 
   storage = inject(FirebaseStorageService);
   cloud = inject(CloudStorageService);
   openCloseDialogService = inject(OpenCloseDialogService);
-  isOpen: boolean = false;
   private subscriptions: Subscription = new Subscription();
 
+  @Input() dialog: boolean = false;
 
-  constructor() { }
-
+  channelMemberDialogIsOpen: boolean = false;
 
   /**
    * Subscribes to the dialog service to listen for open/close events.
@@ -32,7 +30,7 @@ export class ChannelMemberDialogComponent {
     const sub1 = this.openCloseDialogService
       .isDialogOpen('channelMember')
       ?.subscribe((status) => {
-        this.isOpen = status;
+        this.channelMemberDialogIsOpen = status;
       });
     if (sub1) this.subscriptions.add(sub1);
   }
@@ -43,6 +41,14 @@ export class ChannelMemberDialogComponent {
    */
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+
+  /**
+   * Closes the channel member dialog.
+   */
+  public closeDialog() {
+    this.channelMemberDialogIsOpen = false;
   }
 
 
@@ -58,23 +64,6 @@ export class ChannelMemberDialogComponent {
       console.log('User ', userID, ' is clicked to open the respective dialogue!');
     }
   }
-
-
-  /**
-   * Opens the channel member dialog.
-   */
-  public openDialog() {
-    this.isOpen = true;
-  }
-
-
-  /**
-   * Closes the channel member dialog.
-   */
-  public closeDialog() {
-    this.isOpen = false;
-  }
-
 
   /**
    * Opens the add channel member dialog.
@@ -128,4 +117,5 @@ export class ChannelMemberDialogComponent {
     if (users) return users;
     else return [];
   }
+
 }
