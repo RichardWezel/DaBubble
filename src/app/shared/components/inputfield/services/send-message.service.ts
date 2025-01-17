@@ -161,4 +161,39 @@ export class SendMessageService {
     this.storage.writeDm(this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.contact || '', this.storage.currentUser.id, newPost);
   }
 
+
+  editMessage(post: PostInterface, thread: boolean) {
+    if (!this.storage.currentUser.currentChannel || !this.storage.currentUser.id) return;
+    let origin = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel) ? 'dm' : 'channel';
+    console.log(post);
+    let posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
+    let currentPost = posts?.find(post => post.id === this.storage.currentUser.postId);
+    let currentDm = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
+    let dmPost = currentDm?.posts?.find(post => post.id === this.storage.currentUser.postId);
+    switch (true) {
+      case thread && origin === 'channel':
+        let threadMsg = currentPost?.threadMsg?.find(thread => thread.id === post.id);
+        if (threadMsg) threadMsg.text = post.text;
+        this.storage.updateChannelPost(this.storage.currentUser.currentChannel, this.storage.currentUser.postId!, currentPost!);
+        break;
+      case thread && origin === 'dm':
+        let dmThreadMsg = dmPost?.threadMsg?.find(thread => thread.id === post.id);
+        if (dmThreadMsg) dmThreadMsg.text = post.text;
+        this.storage.updateDmPost(this.storage.currentUser.id, currentDm?.contact!, this.storage.currentUser.postId!, dmPost!);
+        break;
+      case !thread && origin === 'channel':
+        currentPost = posts?.find(p => p.id === post.id);
+        if (currentPost) currentPost.text = post.text;
+        this.storage.updateChannelPost(this.storage.currentUser.currentChannel, post.id, currentPost!);
+        break;
+      case !thread && origin === 'dm':
+        console.log(this.storage.currentUser.id);
+        dmPost = currentDm!.posts?.find(p => p.id === post.id);
+        if (dmPost) dmPost.text = post.text;
+        this.storage.updateDmPost(this.storage.currentUser.id, currentDm?.contact!, post.id, dmPost!);
+        break;
+    }
+  }
+
+
 }

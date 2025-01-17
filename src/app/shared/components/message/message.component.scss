@@ -9,6 +9,9 @@ main {
     transition: background-color 100ms ease-in-out;
     z-index: 1;
 
+    &.edit {
+        background-color: $backgroundColor;
+    }
 
     &:hover {
         background-color: $backgroundColor;
@@ -146,7 +149,7 @@ main {
         width: 70px;
         border-radius: 50%;
 
-        @media (max-width: $breakpoint1){
+        @media (max-width: $breakpoint1) {
             height: 50px;
             width: 50px;
         }
@@ -186,6 +189,19 @@ main {
             }
         }
 
+        #editMessage {
+            width: 90%;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 30px;
+            border: 1px solid $dividerColor;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+
+
+        }
+
         .message {
             padding: 15px;
             border-radius: 0px 30px 30px 30px;
@@ -196,7 +212,7 @@ main {
             text-align: left;
             width: fit-content;
 
-            @media (max-width: $breakpoint1){
+            @media (max-width: $breakpoint1) {
                 font-size: 17px;
                 line-height: 23.19px;
             }
@@ -227,7 +243,7 @@ main {
                 text-align: left;
                 color: $thirdColor;
 
-                @media (max-width: $breakpoint1){
+                @media (max-width: $breakpoint1) {
                     font-size: 17px;
                     line-height: 23.19px;
                 }
@@ -313,7 +329,7 @@ main {
         justify-content: space-between;
         align-items: center;
 
-        @media (max-width: $breakpoint1){
+        @media (max-width: $breakpoint1) {
             height: 34px;
         }
 

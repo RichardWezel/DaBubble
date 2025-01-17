@@ -22,7 +22,7 @@ export class DmSectionComponent {
   private subscriptions: Subscription = new Subscription();
 
 
-  constructor(private viewService: SetMobileViewService) {}
+  constructor(private viewService: SetMobileViewService) { }
 
 
   /**
@@ -71,9 +71,9 @@ export class DmSectionComponent {
    * @returns {string} Avatar URL or path for the contact.
    */
   getDmAvatar(dm: { contact: string, id: string, posts: any[] }) {
-    let avatar = this.findAvatar(dm.contact).startsWith('profile-') ? 'assets/img/profile-pictures/' + this.findAvatar(dm.contact) : this.cloud.openImage(this.findAvatar(dm.contact));
-    // let avatar: string = this.storage.user[this.storage.user.findIndex(user => user.id === dm.contact)]?.avatar;
-    // avatar = avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + avatar : this.cloud.openImage(avatar);
+    // let avatar = this.findAvatar(dm.contact).startsWith('profile-') ? 'assets/img/profile-pictures/' + this.findAvatar(dm.contact) : this.cloud.openImage(this.findAvatar(dm.contact));
+    let avatar: string = this.storage.user[this.storage.user.findIndex(user => user.id === dm.contact)]?.avatar;
+    avatar = avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + avatar : this.cloud.openImage(avatar);
     return avatar;
   }
 
@@ -116,8 +116,8 @@ export class DmSectionComponent {
       this.setView('channel')
     }
   }
-  
-  
+
+
   /**
    * Sets the current view of the application based on the given view type, especially useful for responsive layouts.
    * @param {CurrentView} view - The view to set.

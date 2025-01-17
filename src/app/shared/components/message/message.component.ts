@@ -10,12 +10,13 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { CloudStorageService } from '../../services/cloud-storage.service';
 import { Subscription } from 'rxjs';
 import { SetMobileViewService, CurrentView } from '../../services/set-mobile-view.service';
+import { InputfieldComponent } from "../inputfield/inputfield.component";
 
 
 @Component({
   selector: 'app-message',
   standalone: true,
-  imports: [NgStyle, EmojiSelectorComponent],
+  imports: [NgStyle, EmojiSelectorComponent, InputfieldComponent],
   templateUrl: './message.component.html',
   styleUrl: './message.component.scss'
 })
@@ -26,6 +27,9 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   emoji = inject(EmojiService);
   sanitizer = inject(DomSanitizer);
   cloud = inject(CloudStorageService);
+  private authorService: AuthorService = inject(AuthorService);
+  private viewService: SetMobileViewService = inject(SetMobileViewService);
+
   isLargeScreen: boolean = false;
 
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
@@ -35,6 +39,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   authorName: string = '';
   authorAvatar: string = '';
   showEmojiSelector: boolean = false;
+  showEmojiSelectorEdit: boolean = false;
   reactSelf: boolean = false;
   postEdit: boolean = false;
   isSpecialMenuOpen: boolean = false;
@@ -43,10 +48,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private authorService: AuthorService,
-    private viewService: SetMobileViewService
-  ) { }
+  constructor() { }
 
   /**
    * Lifecycle hook that is called after the component is initialized.
@@ -76,7 +78,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void { 
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
@@ -240,7 +242,14 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
 
   editPost() {
     this.postEdit = true;
+    this.isSpecialMenuOpen = false;
   }
+
+
+  toggleEmojiSelector() {
+    this.showEmojiSelectorEdit = !this.showEmojiSelectorEdit;
+  }
+
 
   /**
  * Handles clicks outside of the emoji selector component.

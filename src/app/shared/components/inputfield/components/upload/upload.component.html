@@ -28,6 +28,6 @@
   <div class="upload-buttons">
     <button [disabled]="!getUploadedFiles(upload) || getUploadedFiles(upload).length == 0"
       (click)="$event.stopPropagation(); uploadFiles()" type="button" class="mainButton buttonPrimary">Upload</button>
-    <button class="mainButton buttonSecondary" (click)="cancelUpload()">Abbrechen</button>
+    <button class="mainButton buttonSecondary" (click)="$event.stopPropagation(); cancelUpload()">Abbrechen</button>
   </div>
 </div>

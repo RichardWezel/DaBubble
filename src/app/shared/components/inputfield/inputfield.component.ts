@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, inject, Input, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, inject, Input, OnChanges, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { PostInterface } from '../../interfaces/post.interface';
@@ -32,13 +32,16 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   sendMessageService = inject(SendMessageService);
   inputEvent = inject(InputEventsService);
 
-  excludedTags: string[] = ['messageContent', 'newMessageInput', 'searchbar', 'channel-name', 'profile-name', 'profile-email'];
+  excludedTags: string[] = ['messageContent', 'newMessageInput', 'searchbar', 'channel-name', 'profile-name', 'profile-email', 'editMessage'];
 
   @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective;
-  // @ViewChild('messageContent', { static: false }) messageContent!: ElementRef<HTMLDivElement>;
+  @ViewChild('messageContent', { static: false }) messageContent!: ElementRef<HTMLDivElement>;
 
 
   @Input() thread: boolean = false;
+  @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
+  @Input() edit: boolean = false;
+  @Output() editChange = new EventEmitter<boolean>();
 
   public message: string = '';
   startInput: boolean = false;
@@ -68,7 +71,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * is initialized, so setting the focus immediately does not work.
    */
   ngAfterViewInit() {
-    // setTimeout(() => this.setFocus(), 250);
+    setTimeout(() => this.setFocus(), 250);
   }
 
 
@@ -79,7 +82,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * is initialized, so setting the focus immediately does not work.
    */
   ngOnChanges(): void {
-    // setTimeout(() => this.setFocus(), 250);
+    setTimeout(() => this.setFocus(), 250);
   }
 
 
@@ -131,22 +134,22 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     (focusElement as HTMLInputElement).selectionEnd = (focusElement as HTMLInputElement).value.length;
   }
 
-  // onKeyUp(event: KeyboardEvent) {
-  //   const content = this.messageContent.nativeElement.innerHTML;
-  //   this.message = content;
-  //   this.startInput = content.trim() !== '' && content !== '<br>';
-  //   // Entferne den setFocus-Aufruf hier, um den Cursor nicht zu stören
-  // }
+  onKeyUp(event: KeyboardEvent) {
+    const content = this.messageContent.nativeElement.innerHTML;
+    this.message = content;
+    this.startInput = content.trim() !== '' && content !== '<br>';
+    this.setFocus();
+  }
 
-  // onKeyDown(event: KeyboardEvent) {
-  //   const targetElement = event.target as HTMLElement;
-  //   if (this.inputEvent.isInsideTagSearch(targetElement)) {
-  //     this.handleTagSearch(event);
-  //   }
-  //   if (this.inputEvent.isInsideMessageContent(targetElement)) {
-  //     this.handleMessage(event);
-  //   }
-  // }
+  onKeyDown(event: KeyboardEvent) {
+    const targetElement = event.target as HTMLElement;
+    if (this.inputEvent.isInsideTagSearch(targetElement)) {
+      this.handleTagSearch(event);
+    }
+    if (this.inputEvent.isInsideMessageContent(targetElement)) {
+      this.handleMessage(event);
+    }
+  }
 
   /**
    * Retrieves the HTML element that should receive focus based on the current state.
@@ -191,19 +194,6 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     if (this.inputEvent.isInsideTagSearch(targetElement)) this.handleTagSearch(event);
     if (this.inputEvent.isInsideMessageContent(targetElement)) this.handleMessage(event);
   }
-
-  // checkKey(event: KeyboardEvent) {
-  //   const targetElement = event.target as HTMLElement;
-  //   if (this.inputEvent.isInsideTagSearch(targetElement)) this.handleTagSearch(event);
-  //   if (this.inputEvent.isInsideMessageContent(targetElement)) this.handleMessage(event);
-  // }
-
-  // // checkInput(event: KeyboardEvent) {
-  // //   let message = this.elementRef.nativeElement.querySelector('.message-content');
-  // //   this.message = message.innerHTML;
-  // //   this.startInput = (message.innerHTML === '' || message.innerHTML === '<br>') ? false : true;
-  // //   // this.setFocus();
-  // // }
 
 
   /**
@@ -261,7 +251,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
     this.message = message.innerHTML;
     this.startInput = (message.innerHTML === '' || message.innerHTML === '<br>') ? false : true;
-    // this.setFocus();
+    this.setFocus();
   }
 
 
@@ -282,6 +272,17 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   }
 
 
+  async savePost(post: PostInterface): Promise<void> {
+    let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
+    if (!message.innerHTML || !this.storage.currentUser.id || !this.storage.currentUser.currentChannel) return;
+    post.text = message.innerHTML;
+    await this.sendMessageService.editMessage(post, this.thread);
+    message.innerHTML = '';
+    this.edit = !this.edit;
+    this.editChange.emit(this.edit);
+  }
+
+
   /**
    * Appends the given emoji to the current message.
    * 
@@ -293,7 +294,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     newMessage.innerHTML = newMessage.innerHTML.replaceAll('<br>', '');
     this.startInput = true;
     this.showEmojiSelector = false;
-    // this.setFocus();
+    this.setFocus();
   }
 
 
@@ -310,7 +311,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     this.showTagSearch = !this.showTagSearch;
     this.showEmojiSelector = false;
     this.showUpload = false;
-    // this.setFocus();
+    this.setFocus();
   }
 
 
@@ -324,7 +325,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     this.showEmojiSelector = !this.showEmojiSelector;
     this.showTagSearch = false;
     this.showUpload = false;
-    // this.setFocus();
+    this.setFocus();
   }
 
 
@@ -336,7 +337,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   toggleAppendix() {
     this.showUpload = !this.showUpload;
     this.showEmojiSelector = false;
-    // this.setFocus();
+    this.setFocus();
   }
 
 
@@ -398,7 +399,14 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     this.showTagSearch = false;
     this.showEmojiSelector = false;
     this.showUpload = false;
-    // this.setFocus();
+    this.setFocus();
+  }
+
+
+
+  cancelPost() {
+    this.edit = !this.edit;
+    this.editChange.emit(this.edit);
   }
 
 }

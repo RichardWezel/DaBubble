@@ -13,7 +13,7 @@
 
   &:focus-within {
     .inputfield-buttons {
-      button {
+      .inputfield-send {
         &:hover {
           svg {
             path {
@@ -129,12 +129,17 @@
         background-repeat: no-repeat;
         background-position: center;
         cursor: pointer;
-
       }
+    }
+
+    .edit-buttons {
+      display: flex;
+      gap: 32px;
+      justify-content: space-between;
     }
   }
 
-  button {
+  .inputfield-send {
     display: flex;
     justify-content: center;
     align-items: center;

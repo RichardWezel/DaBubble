@@ -1,17 +1,25 @@
 <section class="inputfield">
-  <div [class.op]="showTagSearch" [id]="thread ? 'inputfieldThread' : 'inputfield'" class="inputfield-textarea">
-    <span [class.op]="showTagSearch" class="placeholder" [class.disabled]="startInput"
-      [innerHTML]="thread ? 'Antworten...' : 'Schreibe an ' + storage.currentUser.currentChannelName"></span>
-    <div #messageContent [id]="thread ? 'messageContentThread' : 'messageContent'" (keyup)="checkInput($event)"
-      (keydown)="checkKey($event)" class="message-content" contentEditable="true" appTextFormatter>
+  @if(!edit) {
+    <div [class.op]="showTagSearch" [id]="thread ? 'inputfieldThread' : 'inputfield'" class="inputfield-textarea">
+      <span [class.op]="showTagSearch" class="placeholder" [class.disabled]="startInput"
+        [innerHTML]="thread ? 'Antworten...' : 'Schreibe an ' + storage.currentUser.currentChannelName"></span>
+      <div #messageContent [id]="thread ? 'messageContentThread' : 'messageContent'" (keyup)="checkInput($event)"
+        (keydown)="checkKey($event)" class="message-content" contentEditable="true" appTextFormatter>
+      </div>
     </div>
-  </div>
-
+  }
+  @if(edit) {
+    <div id="inputFieldEdit" class="inputfield-textarea">
+      <div #messageContent id="editMessage" (keyup)="checkInput($event)" (keydown)="checkKey($event)"
+        class="message-content" contentEditable="true" [innerHTML]="post.text" appTextFormatter>
+      </div>
+    </div>
+  }
   <app-upload></app-upload>
 
   <div class="inputfield-buttons">
     <div class="tags">
-      <div *ngIf="!thread" class="icon appendix" (click)="toggleAppendix()">
+      <div *ngIf="!edit" class="icon appendix" (click)="toggleAppendix()">
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_813_12245)">
             <mask id="mask0_813_12245" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="3" y="3" width="24"
@@ -31,7 +39,7 @@
           </defs>
         </svg>
       </div>
-      <div *ngIf="!thread" class="divider"></div>
+      <div *ngIf="!edit" class="divider"></div>
       <div class="icon smileys" (click)="toggleEmojiSelector()">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <mask id="mask0_813_12139" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24"
@@ -48,7 +56,7 @@
           <app-emoji-selector [isInput]="true" [inputField]="this"></app-emoji-selector>
         </div>
       </div>
-      <div class="icon at" (click)="toggleTagSearch()">
+      <div *ngIf="!edit" class="icon at" (click)="toggleTagSearch()">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <mask id="mask0_813_12157" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24"
             height="24">
@@ -85,18 +93,26 @@
         </div>
       </div>
     </div>
-    <button class="inputfield-send" (click)="sendMessage()">
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <mask id="mask0_813_12249" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="5" y="5" width="30"
-          height="30">
-          <rect x="5" y="5" width="30" height="30" fill="#D9D9D9" />
-        </mask>
-        <g mask="url(#mask0_813_12249)">
-          <path
-            d="M10.5 29.2811C10.0833 29.4478 9.6875 29.4111 9.3125 29.1711C8.9375 28.932 8.75 28.5832 8.75 28.1249V23.4686C8.75 23.177 8.83333 22.9166 9 22.6874C9.16667 22.4582 9.39583 22.3124 9.6875 22.2499L18.75 19.9999L9.6875 17.7499C9.39583 17.6874 9.16667 17.5416 9 17.3124C8.83333 17.0832 8.75 16.8228 8.75 16.5311V11.8749C8.75 11.4166 8.9375 11.0674 9.3125 10.8274C9.6875 10.5882 10.0833 10.552 10.5 10.7186L29.75 18.8436C30.2708 19.0728 30.5312 19.4582 30.5312 19.9999C30.5312 20.5416 30.2708 20.927 29.75 21.1561L10.5 29.2811Z"
-            fill="#444DF2" />
-        </g>
-      </svg>
-    </button>
+    @if (!edit) {
+      <button class="inputfield-send" (click)="sendMessage()">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <mask id="mask0_813_12249" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="5" y="5" width="30"
+            height="30">
+            <rect x="5" y="5" width="30" height="30" fill="#D9D9D9" />
+          </mask>
+          <g mask="url(#mask0_813_12249)">
+            <path
+              d="M10.5 29.2811C10.0833 29.4478 9.6875 29.4111 9.3125 29.1711C8.9375 28.932 8.75 28.5832 8.75 28.1249V23.4686C8.75 23.177 8.83333 22.9166 9 22.6874C9.16667 22.4582 9.39583 22.3124 9.6875 22.2499L18.75 19.9999L9.6875 17.7499C9.39583 17.6874 9.16667 17.5416 9 17.3124C8.83333 17.0832 8.75 16.8228 8.75 16.5311V11.8749C8.75 11.4166 8.9375 11.0674 9.3125 10.8274C9.6875 10.5882 10.0833 10.552 10.5 10.7186L29.75 18.8436C30.2708 19.0728 30.5312 19.4582 30.5312 19.9999C30.5312 20.5416 30.2708 20.927 29.75 21.1561L10.5 29.2811Z"
+              fill="#444DF2" />
+          </g>
+        </svg>
+      </button>
+    }
+    @if (edit) {
+      <div class="edit-buttons">
+        <button class="mainButton buttonSecondary" (click)="cancelPost()">Abbrechen</button>
+        <button class="mainButton buttonPrimary" (click)="savePost(post)">Speichern</button>
+      </div>
+    }
   </div>
 </section>

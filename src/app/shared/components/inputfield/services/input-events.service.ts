@@ -15,7 +15,7 @@ export class InputEventsService {
    * @returns {boolean} True if the target element is either the message content or the thread message content, otherwise false.
    */
   isInsideMessageContent(targetElement: HTMLElement): boolean {
-    return targetElement.id === 'messageContent' || targetElement.id === 'messageContentThread'
+    return targetElement.id === 'messageContent' || targetElement.id === 'messageContentThread' || targetElement.id === 'editMessage'
   }
 
 
@@ -45,7 +45,7 @@ export class InputEventsService {
     if (!this.isValidTextNode(currentNode)) return;
 
     const previousElement = currentNode.previousSibling as HTMLElement;
-    if (this.isTagMessage(previousElement) && this.isCursorAfterZeroWidthSpace(currentNode, offset)) {
+    if ((this.isTagMessage(previousElement) || this.isThumbnailMessage(previousElement)) && this.isCursorAfterZeroWidthSpace(currentNode, offset)) {
       this.removeTag(previousElement, currentNode, offset);
       event.preventDefault();
     }
@@ -102,6 +102,17 @@ export class InputEventsService {
 
 
   /**
+   * Determines if the given HTML element is a thumbnail message.
+   * A thumbnail message is defined as a <div> element with the class 'thumbnail'.
+   * @param {HTMLElement} element - The HTML element to check.
+   * @returns {boolean} True if the element is a thumbnail message, otherwise false.
+   */
+  isThumbnailMessage(element: HTMLElement): boolean {
+    return element?.tagName === 'DIV' && element.classList.contains('file-thumbnail');
+  }
+
+
+  /**
    * Checks if the cursor is positioned immediately after a zero-width space character
    * in the given text node.
    *
@@ -138,14 +149,6 @@ export class InputEventsService {
   isInsideTagSearch(targetElement: HTMLElement): boolean {
     return targetElement.id === 'tag-search-input' || targetElement.id === 'tag-search-input-thread'
   }
-
-
-  /**
-   * Handles key events in the tag search input.
-   * If the user presses the send button and a suggestion is available, adds the suggestion as a tag.
-   * If the user presses the escape key, toggles the tag search input.
-   * @param {KeyboardEvent} event The event object.
-   */
 
 
   /**
