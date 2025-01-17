@@ -32,7 +32,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   sendMessageService = inject(SendMessageService);
   inputEvent = inject(InputEventsService);
 
-  excludedTags: string[] = ['messageContent', 'newMessageInput', 'searchbar', 'channel-name', 'profile-name', 'profile-email', 'editMessage'];
+  excludedTags: string[] = ['messageContent', 'newMessageInput', 'searchbar', 'channel-name', 'channel-description', 'profile-name', 'profile-email', 'editMessage', 'newChannelMemberInput'];
 
   @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective;
   @ViewChild('messageContent', { static: false }) messageContent!: ElementRef<HTMLDivElement>;
