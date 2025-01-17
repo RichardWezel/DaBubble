@@ -23,7 +23,7 @@
             <input id="channel-description" #channelDescription="ngModel" [(ngModel)]="channelData.description" name="channel-description" class="input-name" placeholder="Dein Text hier">
         </section>
         <div class="btns-container">
-            <button type="submit" [disabled]="!channelData.name && findChannelName(channelData.name)" class="mainButton buttonPrimary">Erstellen</button>
+            <button type="submit" [disabled]="!channelData.name" class="mainButton buttonPrimary">Erstellen</button>
         </div>
     </form>
 </main>

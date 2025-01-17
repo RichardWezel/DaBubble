@@ -140,7 +140,6 @@ export class AddChannelComponent implements OnInit, OnDestroy {
     let channels: ChannelInterface[] = this.storage.CurrentUserChannel;
     let match = channels.find(channel =>
       channel.name.toLowerCase() === inputChannel.toLowerCase());
-    console.log('inputChannel: ', inputChannel, 'foundChannel: ', match?.name!);
     return match?.name!;
   }
   
