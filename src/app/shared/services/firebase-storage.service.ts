@@ -291,7 +291,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
       );
   
       await updateDoc(doc(this.firestore, "channel", channelId), validData);
-      console.log("Channel erfolgreich aktualisiert:", validData);
     } catch (error) {
       console.error("Fehler beim Aktualisieren des Channels:", error);
       throw error;
