@@ -30,6 +30,7 @@
             border-bottom-right-radius: unset;
             border-bottom-left-radius: unset;
             padding: 20px 16px;
+            overflow-y: auto;
         }
 
         .modal-header {
@@ -40,6 +41,38 @@
             margin-bottom: 20px;
             width: 100%;
             margin-top: 24.5px;
+
+            @media (max-width: $breakpoint1){
+                padding-bottom: unset;
+                margin-bottom: unset; 
+                margin-top: unset;
+                position: fixed;
+                background-color: white;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 90px;
+                z-index: 99;
+                align-items: end;
+                padding: 14.5px 16px;
+
+                h1 {
+                    .header-name {
+                        font-size: 20px !important;
+                        line-height: 27.28px !important;
+                    }
+
+                    .header-tag-icon {
+                        width: 25px !important;
+                        height: 25px !important;
+
+                        svg {
+                            width: 17.16px !important;
+                            height: 16.67px !important;
+                        }
+                    }
+                }
+            }
 
             h1 {
                 display: flex;
@@ -116,6 +149,10 @@
             flex-direction: column;
             overflow-y: auto;
             gap: 20px;
+
+            @media (max-width: $breakpoint1){
+               margin-top: 70px;
+            }
 
             &::-webkit-scrollbar {
                 width: 8px;
