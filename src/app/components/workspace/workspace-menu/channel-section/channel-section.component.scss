@@ -194,6 +194,16 @@
                 @include dja;
                 background-color: unset;
                 border: unset;
+
+                @media(max-width: $breakpoint1){
+                    svg {
+                        path {
+                            fill: $thirdColor;
+                        }
+                        
+                    }
+               
+                }
             }
 
             .addChannel-label {
@@ -201,6 +211,10 @@
                 font-weight: 400;
                 line-height: 24.55px;
                 text-align: left;
+
+                @media(max-width: $breakpoint1){
+                    color: $thirdColor;
+                }
             }
         }
     }
