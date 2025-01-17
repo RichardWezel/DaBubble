@@ -6,7 +6,7 @@
         <ng-content></ng-content>
     </div>
     <footer>
-        <button class="mainButton" (click)="navigationService.navigateTo('/imprint')">Impressum</button>
-        <button class="mainButton" (click)="navigationService.navigateTo('/privacy-policy')">Datenschutz</button>
+        <button class="mainButton" (click)="navigationService.navigateToAndResetErrorMessage('/imprint')">Impressum</button>
+        <button class="mainButton" (click)="navigationService.navigateToAndResetErrorMessage('/privacy-policy')">Datenschutz</button>
     </footer>
 </div>
