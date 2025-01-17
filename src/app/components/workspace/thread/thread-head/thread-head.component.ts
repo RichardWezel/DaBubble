@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ChannelHeadComponent } from '../../channel/channel-head/channel-head.component';
+import { SetMobileViewService } from '../../../../shared/services/set-mobile-view.service';
 
 @Component({
   selector: 'app-thread-head',
@@ -10,8 +11,9 @@ import { ChannelHeadComponent } from '../../channel/channel-head/channel-head.co
 })
 export class ThreadHeadComponent extends ChannelHeadComponent {
 
+  public isLargeScreen: boolean = window.innerWidth >= 1300;
 
-  constructor() {
+  constructor(private viewService: SetMobileViewService) {
     super();
   }
 
@@ -32,6 +34,14 @@ export class ThreadHeadComponent extends ChannelHeadComponent {
     } else {
         // Fügt '@ ' vor dem aktuellen Channel-Namen hinzu
         return '@ ' + currentChannel;
+    }
+  }
+
+  closeThread() {
+    if (this.isLargeScreen) {
+      this.storage.currentUser.threadOpen = false
+    } else {
+      this.viewService.setCurrentView('channel');
     }
   }
   
