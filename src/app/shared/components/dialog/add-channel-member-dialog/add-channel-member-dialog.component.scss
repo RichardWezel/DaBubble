@@ -29,11 +29,14 @@ main {
         gap: 20px;
 
         @media(max-width: $breakpoint1){
+            max-width: unset;
             gap: 15px;
             width: 100%;
+            height: 340px;
             bottom: 0;
             top: unset;
             right: 0;
+            left: 0;
             border-radius: 30px 30px 0 0;
             transform-origin: bottom;
             opacity: 0;
@@ -286,8 +289,8 @@ main {
 
             .userlist-dialog {
                 position: absolute;
-                top: 175px;
-                left: 60px;
+                top: 160px;
+                left: 37px;
                 max-width: 335px;
                 max-height: 171px;
                 width: 100%;
