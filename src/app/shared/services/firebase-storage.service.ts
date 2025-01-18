@@ -7,6 +7,7 @@ import { PostInterface } from '../interfaces/post.interface';
 import { CurrentUserInterface } from '../interfaces/current-user-interface';
 import { UidService } from './uid.service';
 import { arrayUnion, arrayRemove } from 'firebase/firestore'; 
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,9 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   authUid: string = '';
   doneLoading: boolean = true;
   lastCreatedChannel: string = '';
+
+  private userSubject: BehaviorSubject<UserInterface[]> = new BehaviorSubject<UserInterface[]>([]);
+  public users$: Observable<UserInterface[]> = this.userSubject.asObservable();
 
   unsubUsers: () => void = () => { };
   unsubChannels: () => void = () => { };
@@ -161,9 +165,9 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
 
 
   /**
-  * Subscribes to the "user" collection in Firestore and updates the local user array.
-  * @returns A function to unsubscribe from the snapshot listener.
-  */
+   * Subscribes to the "user" collection in Firestore and updates the local user array.
+   * @returns A function to unsubscribe from the snapshot listener.
+   */
   getUserCollection() {
     return onSnapshot(collection(this.firestore, "user"), (snapshot) => {
       this.user = [];
@@ -172,6 +176,8 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         userData.id = doc.id;
         this.user.push(userData);
       });
+      // Aktualisiere das BehaviorSubject mit den neuesten Benutzerdaten
+      this.userSubject.next(this.user);
       // console.log("User Collection: ", this.user);
     });
   }

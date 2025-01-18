@@ -95,6 +95,7 @@ export class SearchComponent {
     }
   }
 
+
   /**
    * Aggregates search results by finding matching threads.
    */
@@ -112,6 +113,7 @@ export class SearchComponent {
     this.searchResults = [...this.searchResults, ...threadMatches];
   }
 
+
   /**
    * Searches for channels that include the user input in their names.
    * @param userInput - The search term entered by the user.
@@ -125,6 +127,7 @@ export class SearchComponent {
     return matches;
   }
 
+
   /**
    * Searches for users that include the user input in their names.
    * @param userInput - The search term entered by the user.
@@ -137,6 +140,7 @@ export class SearchComponent {
     ).map(user => ({ type: 'user', user } as SearchResultUser));
     return matches;
   }
+
 
   /**
    * Searches for channel posts that include the user input in their text.
@@ -165,6 +169,7 @@ export class SearchComponent {
     return matches;
   }
 
+
   /**
    * Sets the channel, user, channel post, or thread based on the selected search result.
    * Navigates to the appropriate channel or direct message and opens the thread if applicable.
@@ -180,6 +185,7 @@ export class SearchComponent {
     this.searchResults = [];
     this.selectedIndex = -1;
   }
+
 
   /**
    * Handles navigation when a channel is selected from the search results.
@@ -197,6 +203,7 @@ export class SearchComponent {
       }
     }
   }
+
 
   /**
    * Handles navigation when a user is selected from the search results.
@@ -217,6 +224,7 @@ export class SearchComponent {
     }
   }
 
+
   /**
    * Handles navigation when a channel post is selected from the search results.
    * Navigates to the specific channel and optionally to the specific post.
@@ -235,6 +243,7 @@ export class SearchComponent {
       }
     }
   }
+
 
   /**
    * Handles navigation when a thread is selected from the search results.
@@ -258,6 +267,7 @@ export class SearchComponent {
     }
   }
 
+
   /**
    * Finds the ID of the direct message (DM) channel for a given user.
    * Creates a new DM channel if one does not already exist.
@@ -277,6 +287,7 @@ export class SearchComponent {
     }
   }
 
+
   /**
    * Checks if a user is already in the current user's direct messages.
    * @param UserMatch - The UserInterface object to check.
@@ -285,6 +296,7 @@ export class SearchComponent {
   findUserInDms(UserMatch: UserInterface): boolean {
     return this.storage.currentUser.dm.some(dm => dm.contact === UserMatch.id);
   }
+
 
   /**
    * Retrieves the DM channel ID for a given user ID.
@@ -295,6 +307,7 @@ export class SearchComponent {
     const dm = this.storage.currentUser.dm.find(dm => dm.contact === IdOfUser);
     return dm ? dm.id : undefined;
   }
+
 
   /**
    * Creates a new direct message channel with the specified user.
@@ -311,6 +324,7 @@ export class SearchComponent {
     }
   }
 
+
   /**
    * Creates empty DM channels between the current user and the specified user.
    * @param match - The UserInterface object representing the user to message.
@@ -323,6 +337,7 @@ export class SearchComponent {
       await this.storage.createNewEmptyDm(NewUserId, currentUserId);
     }
   }
+
 
   /**
    * Handles keyboard events for navigating through search results.
@@ -341,6 +356,7 @@ export class SearchComponent {
     }
   }
 
+
   /**
    * Handles the ArrowDown key press to move the selection down in the search results.
    * @param event - The KeyboardEvent object.
@@ -351,6 +367,7 @@ export class SearchComponent {
     this.scrollToSelected();
   }
 
+
   /**
    * Handles the ArrowUp key press to move the selection up in the search results.
    * @param event - The KeyboardEvent object.
@@ -360,6 +377,7 @@ export class SearchComponent {
     this.selectedIndex = (this.selectedIndex > 0 ? this.selectedIndex - 1 : this.searchResults.length - 1);
     this.scrollToSelected();
   }
+
 
   /**
    * Handles the Enter key press to select the currently highlighted search result.
@@ -377,6 +395,7 @@ export class SearchComponent {
     }
   }
   
+
   /**
    * Scrolls the view to the currently selected search result.
    */
@@ -388,6 +407,7 @@ export class SearchComponent {
     }
   }
 
+
   /**
    * Type guard to determine if a SearchResult is a ChannelInterface.
    * @param result - The SearchResult object to check.
@@ -398,6 +418,7 @@ export class SearchComponent {
     return isChan;
   }
 
+
   /**
    * Type guard to determine if a SearchResult is a UserInterface.
    * @param result - The SearchResult object to check.
@@ -407,6 +428,7 @@ export class SearchComponent {
     const isUsr = result.type === 'user';
     return isUsr;
   }
+
 
   /**
    * Opens or closes the thread of the given post ID.
@@ -421,6 +443,7 @@ export class SearchComponent {
     // Optional: Emit an event or trigger UI update if necessary
   }
 
+
   /**
    * Highlights the search term within the given text by wrapping it in a span with the "highlight" class.
    * @param text - The text in which the search term should be highlighted.
@@ -433,6 +456,7 @@ export class SearchComponent {
     return this.sanitizer.bypassSecurityTrustHtml(highlighted);
   }
 
+
   /**
    * Escapes special characters in a string to safely use it within a regular expression.
    * @param text - The text to escape.
@@ -442,7 +466,8 @@ export class SearchComponent {
     return text.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
   }
 
-    /**
+
+  /**
    * Retrieves the channel name based on the channel ID.
    * @param channelId - The ID of the channel.
    * @returns The name of the channel or an empty string if not found.
@@ -451,6 +476,7 @@ export class SearchComponent {
     const channel = this.storage.channel.find(ch => ch.id === channelId);
     return channel ? channel.name : '';
   }
+
 
   /**
    * Retrieves the user name based on the user ID.
