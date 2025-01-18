@@ -105,7 +105,7 @@ export class LogInCardComponent {
     }
     console.log("Benutzer eingeloggt:", user);
     this.savingAuthUid(user);
-    await this.loadingUserInformation(user);
+    await this.authService.getCurrentUser();
     this.navigateToWorkspace();
   }
 
@@ -118,27 +118,6 @@ export class LogInCardComponent {
   savingAuthUid(user: User) {
     sessionStorage.setItem("authUid", user.uid);
     this.storage.authUid = user.uid;
-  }
-
-
-  /**
-   * Loads the information from the logged in user.
-   * This are the user informations as well as the channels in which the user is included.
-   */
-  async loadingUserInformation(user: User) {
-    await this.authService.getCurrentUser();
-    await this.setUserStatusOnline(user);
-    this.storage.getCurrentUserChannelCollection();
-    console.log("Benutzerkanäle geladen:", this.storage.CurrentUserChannel);
-  }
-
-
-  /**
-   * Sets the status of the user to online.
-   * @param user - A Firebase 'User' object, which rpresents the currently authenticated user.
-   */
-  async setUserStatusOnline(user: User) {
-    await this.authService.setCurrentUserOnline(user.uid);
   }
 
 
