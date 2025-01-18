@@ -58,7 +58,10 @@
               <span *ngSwitchCase="'channel'">#&nbsp;</span>
               <span *ngSwitchCase="'user'">&#x40; &nbsp;</span>
             </ng-container>
-            <span [innerHTML]="result.parentType === 'channel' ? highlightMatch(getChannelName(result.parentId)) : highlightMatch(getUserName(result.parentId))"></span>:
+            <span [innerHTML]="result.parentType === 'channel' 
+              ? highlightMatch(getChannelName(result.parentId)) 
+              : highlightMatch((getUserName.getName(result.parentId) | async) || '')">
+            </span>:
           </span>
           &nbsp;
           <span [innerHTML]="highlightMatch(result.thread.text)"></span>

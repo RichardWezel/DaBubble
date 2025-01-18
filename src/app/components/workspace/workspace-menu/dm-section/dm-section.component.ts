@@ -111,6 +111,7 @@ export class DmSectionComponent {
    * @param {string} dmId - The ID of the direct message to navigate to.
    */
   handleClick(dmId: string) {
+    console.log('handleClick(dmId: string): ', dmId);
     this.navigationService.setChannel(dmId)
     if (!this.isLargeScreen) {
       this.setView('channel')

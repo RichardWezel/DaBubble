@@ -18,7 +18,7 @@ export class GetUserNameService {
    * @param {string} id - The ID of the user whose name is to be found.
    * @returns {Observable<string>} The name of the user if found, otherwise an empty string.
    */
-  getUserName(userId: string): Observable<string> {
+  getName(userId: string): Observable<string> {
     return this.storage.users$.pipe(
       map(users => {
         const user = users.find(user => user.id === userId);

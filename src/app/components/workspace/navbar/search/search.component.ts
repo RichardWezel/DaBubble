@@ -1,4 +1,4 @@
-import { NgFor, NgIf, NgSwitch, NgSwitchCase } from '@angular/common';
+import { NgFor, NgIf, NgSwitch, NgSwitchCase, CommonModule } from '@angular/common';
 import { Component, inject, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
@@ -10,7 +10,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { SetMobileViewService } from '../../../../shared/services/set-mobile-view.service';
-
+import { GetUserNameService } from '../../../../shared/services/get-user-name.service';
 /**
  * SearchComponent handles the search functionality within the application,
  * including searching for channels, users, posts, and threads, and navigating to selected results.
@@ -18,13 +18,14 @@ import { SetMobileViewService } from '../../../../shared/services/set-mobile-vie
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [FormsModule, NgIf, NgFor, NgSwitch, NgSwitchCase],
+  imports: [FormsModule, NgIf, NgFor, NgSwitch, NgSwitchCase, CommonModule],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })
 export class SearchComponent {
   protected storage = inject(FirebaseStorageService);
   navigation = inject(NavigationService);
+  getUserName = inject(GetUserNameService);
   searchResults: SearchResult[] = [];
   userInput: string = "";
   selectedIndex: number = -1;
@@ -176,6 +177,7 @@ export class SearchComponent {
    * @param result - The selected SearchResult object.
    */
   async setChannel(result: SearchResult): Promise<void> {
+    console.log('setChannel: ', result);
     this.setTypeChannel(result);
     this.setTypeUser(result);
     this.setTypeChannelPost(result);
@@ -217,6 +219,12 @@ export class SearchComponent {
       if (dmId) {
         this.navigation.setChannel(dmId);
         this.viewService.setCurrentView('channel');
+      } else if (user.id === this.storage.currentUser.id) {
+        console.log('Guest');
+        this.navigation.setChannel(user.id!);
+        console.log('this.navigation.setChannel(user.id!): ', user.id!);
+        this.viewService.setCurrentView('channel');
+        console.log('this.viewService.setCurrentView(channel)');
       } else {
         console.error('DM id ist undefiniert.');
         return;
@@ -449,10 +457,11 @@ export class SearchComponent {
    * @param text - The text in which the search term should be highlighted.
    * @returns The highlighted text as SafeHtml.
    */
-  highlightMatch(text: string): SafeHtml {
+  highlightMatch(text: string | undefined): SafeHtml {
+    if (!text) return ''; // Fallback für undefined
     if (!this.userInput) return text;
     const regex = new RegExp(`(${this.escapeRegExp(this.userInput)})`, 'gi');
-    const highlighted = text.replace(regex, '<span class="highlight" style="color: #797EF3;; font-weight: 100;">$1</span>');
+    const highlighted = text.replace(regex, '<span class="highlight" style="color: #797EF3; font-weight: 100;">$1</span>');
     return this.sanitizer.bypassSecurityTrustHtml(highlighted);
   }
 
@@ -475,17 +484,6 @@ export class SearchComponent {
   getChannelName(channelId: string): string {
     const channel = this.storage.channel.find(ch => ch.id === channelId);
     return channel ? channel.name : '';
-  }
-
-
-  /**
-   * Retrieves the user name based on the user ID.
-   * @param userId - The ID of the user.
-   * @returns The name of the user or an empty string if not found.
-   */
-  getUserName(userId: string): string {
-    const user = this.storage.user.find(u => u.id === userId);
-    return user ? user.name : '';
   }
   
 }
