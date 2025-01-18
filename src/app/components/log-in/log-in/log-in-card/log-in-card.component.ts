@@ -36,7 +36,7 @@ export class LogInCardComponent {
 
   constructor() { }
 
-  
+
   /**
    * Shows the send-email-card to insert the mail for resetting the password.
    */
@@ -105,8 +105,7 @@ export class LogInCardComponent {
     }
     console.log("Benutzer eingeloggt:", user);
     this.savingAuthUid(user);
-    this.loadingUserInformation();
-    await this.setUserStatusOnline(user);
+    await this.loadingUserInformation(user);
     this.navigateToWorkspace();
   }
 
@@ -126,8 +125,9 @@ export class LogInCardComponent {
    * Loads the information from the logged in user.
    * This are the user informations as well as the channels in which the user is included.
    */
-  loadingUserInformation() {
-    this.authService.getCurrentUser();
+  async loadingUserInformation(user: User) {
+    await this.authService.getCurrentUser();
+    await this.setUserStatusOnline(user);
     this.storage.getCurrentUserChannelCollection();
     console.log("Benutzerkanäle geladen:", this.storage.CurrentUserChannel);
   }
