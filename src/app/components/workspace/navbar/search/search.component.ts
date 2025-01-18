@@ -9,6 +9,7 @@ import { SearchResult, SearchResultChannel, SearchResultChannelPost, SearchResul
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { SetMobileViewService } from '../../../../shared/services/set-mobile-view.service';
 
 /**
  * SearchComponent handles the search functionality within the application,
@@ -37,7 +38,8 @@ export class SearchComponent {
    * @param sanitizer - The DomSanitizer service to safely bind HTML content.
    */
   constructor(
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private viewService: SetMobileViewService
   ) {
     this.searchSubject.pipe(
       debounceTime(300)
@@ -188,6 +190,7 @@ export class SearchComponent {
       const channel = result.channel;
       if (channel.id) {
         this.navigation.setChannel(channel.id);
+        this.viewService.setCurrentView('channel');
       } else {
         console.error('Channel id ist undefiniert.');
         return;
@@ -206,6 +209,7 @@ export class SearchComponent {
       let dmId = await this.findIdOfDM(user);
       if (dmId) {
         this.navigation.setChannel(dmId);
+        this.viewService.setCurrentView('channel');
       } else {
         console.error('DM id ist undefiniert.');
         return;
@@ -224,9 +228,7 @@ export class SearchComponent {
       const post = result.post;
       if (channel.id) {
         this.navigation.setChannel(channel.id);
-        // Optional: Navigieren Sie zu dem spezifischen Post, falls Ihr Navigationssystem dies unterstützt
-        // Beispielsweise:
-        // this.navigation.navigateToPost(channel.id, post.id);
+        this.viewService.setCurrentView('channel');
       } else {
         console.error('Channel id ist undefiniert.');
         return;
@@ -248,6 +250,7 @@ export class SearchComponent {
         let postId = this.storage.findParentPostId(threadResult.parentId, threadResult.thread.id)
         this.openThread(postId!);
         console.log('postId: ',this.storage.currentUser.postId);
+        this.viewService.setCurrentView('thread');
       } else {
         console.error('Parent ID des Threads ist undefiniert.');
         return;
