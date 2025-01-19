@@ -3,7 +3,11 @@
 :host {
     display: flex;
     justify-content: center;
-    margin: 92px 16px 92px 16px;
+    align-items: center;
+    padding: 92px 16px 92px 16px;
+    box-sizing: border-box;
+    height: 100vh;
+    background-color: $backgroundColor;
 }
 
 app-card {

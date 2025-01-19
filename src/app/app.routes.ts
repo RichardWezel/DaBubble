@@ -21,6 +21,6 @@ export const routes: Routes = [
     { path: 'imprint', component: ImprintComponent },
     { path: 'privacy-policy', component: PrivacyPolicyComponent },
     { path: 'emailverified', component: EmailVerifiedComponent },
-    {path: 'channel-edit', component: ChannelEditComponent },
+    /* { path: 'channel-edit', component: ChannelEditComponent }, */
 ];
 

@@ -1,22 +1,25 @@
 @import 'mixins';
 @import 'variables';
+@import 'styles';
 @import './../../shared/components/log-in/card/card.component.scss';
 
 :host {
     display: flex;
     justify-content: center;
-    min-height: 100%;
-    margin: 92px 16px 92px 16px;
+    align-items: center;
+    padding: 92px 16px 92px 16px;
+    box-sizing: border-box;
+    height: 100vh;
+    background-color: $backgroundColor;
 }
 
 app-card {
-    max-width: 700px;
+    height: 100%;
     max-height: 700px;
+    max-width: 700px;
 }
 
 .privacy-policy-container {
-    height: 100%;
-    max-height: calc(700px - 115px);
     overflow: scroll;
 }
 
