@@ -34,7 +34,7 @@ export class AddChannelComponent implements OnInit, OnDestroy {
 
   constructor(
     public openCloseDialogService: OpenCloseDialogService,
-  ) {}
+  ) { }
 
 
   /**
@@ -46,7 +46,7 @@ export class AddChannelComponent implements OnInit, OnDestroy {
       ?.subscribe((status) => {
         this.isDialogVisible = status;
       });
-    
+
     if (sub) this.subscriptions.add(sub);
   }
 
@@ -88,7 +88,7 @@ export class AddChannelComponent implements OnInit, OnDestroy {
       this.isChannelNameExists = false;
     }
 
-    if(this.isChannelNameExists === false) {
+    if (this.isChannelNameExists === false) {
       await this.takeChannelInfo();
       this.navigation.setChannel(this.storage.lastCreatedChannel);
       this.openCloseDialogService.open('SelectionOfAddingChannelMembers');
@@ -111,9 +111,9 @@ export class AddChannelComponent implements OnInit, OnDestroy {
    */
   async takeChannelInfo(): Promise<void> {
     try {
-      await this.storage.addChannel({ 
-        name: this.channelData.name, 
-        description: this.channelData.description, 
+      await this.storage.addChannel({
+        name: this.channelData.name,
+        description: this.channelData.description,
         owner: this.storage.currentUser.id || ""
       });
       this.closeDialog();
@@ -130,17 +130,17 @@ export class AddChannelComponent implements OnInit, OnDestroy {
     }
   }
 
-  
+
   /**
    * Searches for an existing channel by name.
    * @param {string} inputChannel - The name of the channel to search for.
    * @returns {string | undefined} The name of the found channel or undefined if no match is found.
    */
   findChannelName(inputChannel: string): string | undefined {
-    let channels: ChannelInterface[] = this.storage.CurrentUserChannel;
+    let channels: ChannelInterface[] = this.storage.channel;
     let match = channels.find(channel =>
       channel.name.toLowerCase() === inputChannel.toLowerCase());
     return match?.name!;
   }
-  
+
 }
