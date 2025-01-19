@@ -1,5 +1,5 @@
 import { NgClass, NgIf } from '@angular/common';
-import { Component, inject, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, HostListener, inject, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { OpenUserProfileService } from '../../../services/open-user-profile.service';
 import { UserInterface } from '../../../interfaces/user.interface';
@@ -41,6 +41,19 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
     public openCloseDialogService: OpenCloseDialogService,
     public openUserProfileService: OpenUserProfileService) {
     this.email = this.user?.email || '';
+  }
+
+
+  /**
+   * Closes the dialog by click on esc key.
+   * 
+   * @param event - click escape Key
+   */
+  @HostListener('document:keydown.escape', ['$event']) 
+  handleEscape(event: KeyboardEvent) {
+    if (this.isOpen) {
+      this.closeDialog();
+    }
   }
 
 

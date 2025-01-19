@@ -1,5 +1,5 @@
-<main *ngIf="isOpen">
-    <div class="dialog" [class.currentUserPosition]="userIsCurrentUser(user?.id!)">
+<main *ngIf="isOpen" (click)="closeDialog()">
+    <div class="dialog" (click)="$event.stopPropagation()" [class.currentUserPosition]="userIsCurrentUser(user?.id!)">
 
         <section class="head">
             <div>Profil</div>

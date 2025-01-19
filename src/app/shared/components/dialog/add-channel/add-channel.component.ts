@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { NgForm, FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../services/firebase-storage.service';
@@ -35,6 +35,19 @@ export class AddChannelComponent implements OnInit, OnDestroy {
   constructor(
     public openCloseDialogService: OpenCloseDialogService,
   ) { }
+
+
+  /**
+   * Closes the dialog by click on esc key.
+   * 
+   * @param event - click escape Key
+   */
+  @HostListener('document:keydown.escape', ['$event']) 
+  handleEscape(event: KeyboardEvent) {
+    if (this.isDialogVisible) {
+      this.closeDialog();
+    }
+  }
 
 
   /**
