@@ -65,11 +65,16 @@
         </div>
       }
       @else {
-        @for (post of getPostOfDm(); track $index) {
+        @for (post of getPostOfDm(); track trackByPostId) {
           @if (currentDate(post.timestamp) > compareTimestamp) {
             <app-date-separator [date]="trackByDate(post)"></app-date-separator>
           }
-          <app-message [origin]="'dm'" [post]="post" #message></app-message>
+          <app-message 
+            [origin]="'dm'" 
+            [post]="post" 
+            #message
+            [attr.id]="post.id">
+          </app-message>
         }
         {{ resetCompareTimestamp() }}
       }
