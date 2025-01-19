@@ -178,25 +178,25 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
    */
   async saveProfile(): Promise<void> {
     if (this.avatarChanged && this.uploadFile && this.storage.currentUser.id) {
-        this.avatar = await this.cloud.uploadProfilePicture(this.storage.currentUser.id, this.uploadFile);
-        this.uploadFile = null;
+      this.avatar = await this.cloud.uploadProfilePicture(this.storage.currentUser.id, this.uploadFile);
+      this.uploadFile = null;
     } else {
-        this.avatar = this.storage.currentUser.avatar;
+      this.avatar = this.storage.currentUser.avatar;
     }
 
     const updatedUser: Partial<UserInterface> = {
-        name: this.name,
-        email: this.email,
-        avatar: this.avatar
+      name: this.name,
+      email: this.email,
+      avatar: this.avatar
     };
 
     await this.storage.updateUser(this.userId, updatedUser as UserInterface);
     await this.auth.getCurrentUser();
 
     if (this.user) {
-        this.user.name = this.name;
-        this.user.email = this.email;
-        this.user.avatar = this.avatar;
+      this.user.name = this.name;
+      this.user.email = this.email;
+      this.user.avatar = this.avatar;
     }
 
     this.mode = "show";

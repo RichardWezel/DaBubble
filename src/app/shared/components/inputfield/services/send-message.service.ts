@@ -31,7 +31,8 @@ export class SendMessageService {
    * @returns {object | undefined} The DM object if found, otherwise undefined.
    */
   isDM(): object | undefined {
-    return this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
+    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    return curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
   }
 
 
@@ -144,7 +145,7 @@ export class SendMessageService {
    */
   writeNormalPostToDm(newPost: PostInterface) {
     if (!this.storage.currentUser.currentChannel || !this.storage.currentUser.id) return;
-    this.storage.writeDm(this.storage.currentUser.id, this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.contact || '', newPost);
+    this.storage.writeDm(this.storage.currentUser.id, this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.contact || '', newPost);
   }
 
 
@@ -158,7 +159,7 @@ export class SendMessageService {
    */
   writeNormalPostToContactDm(newPost: PostInterface) {
     if (!this.storage.currentUser.currentChannel || !this.storage.currentUser.id) return;
-    this.storage.writeDm(this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.contact || '', this.storage.currentUser.id, newPost);
+    this.storage.writeDm(this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.contact || '', this.storage.currentUser.id, newPost);
   }
 
 

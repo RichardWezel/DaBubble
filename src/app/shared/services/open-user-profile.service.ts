@@ -22,10 +22,7 @@ export class OpenUserProfileService {
  * @param {string} searchTerm - user name as submitted
  */
   async showSubmittedDirectMessage(searchTerm: string) {
-    console.log(searchTerm);
     const userOfSuggestion = this.storage.user.find(user => user.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
-    console.log(userOfSuggestion);
-    console.log(this.findUserInDms(userOfSuggestion!));
     if (!userOfSuggestion) return;
     if (this.findUserInDms(userOfSuggestion)) this.showExistingDm(userOfSuggestion)
     else await this.showNewDm(userOfSuggestion);
