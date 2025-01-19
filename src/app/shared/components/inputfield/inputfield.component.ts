@@ -269,6 +269,19 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     else this.sendMessageService.handleNormalPost(newPost);
     message.innerHTML = '';
     this.startInput = false;
+    this.scrollToPost(newPost.id);
+  }
+
+  scrollToPost(postId: string) {
+    // Verzögern Sie das Scrollen, um sicherzustellen, dass das Element im DOM vorhanden ist
+    setTimeout(() => {
+      const postElement = document.getElementById(postId);
+      if (postElement) {
+        postElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        console.warn(`Element mit ID ${postId} nicht gefunden.`);
+      }
+    }, 100); // Passen Sie die Verzögerung nach Bedarf an
   }
 
 
