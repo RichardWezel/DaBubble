@@ -41,8 +41,7 @@ export class SettingsComponent  implements OnInit, OnDestroy{
   openUserProfile() {
     this.openCloseDialogService.changeProfileId(this.storage.currentUser.id!);
     this.openCloseDialogService.open('userProfile');
-    this.close.emit(); // Optional: Dropdown nach dem Öffnen schließen
-    console.log('User profile opened and dropdown closed.');
+    this.close.emit();
   }
 
 

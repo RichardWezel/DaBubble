@@ -143,6 +143,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
     console.log('openThread() in message.c: ', postId);
     this.storage.currentUser.postId = postId;
     this.storage.currentUser.threadOpen = !this.storage.currentUser.threadOpen;
+    this.viewService.setCurrentView('thread');
   }
 
 

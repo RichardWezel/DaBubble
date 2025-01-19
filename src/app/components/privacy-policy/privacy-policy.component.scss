@@ -16,6 +16,21 @@
 app-card {
     height: 100%;
     max-height: 700px;
+
+    @media (max-width: $breakpoint1) {
+        max-width: unset;
+        max-height: unset;
+
+        ::ng-deep .card {
+            padding: 20px 20px;
+            height: 100%;
+            .privacy-policy-container {
+                max-height: unset;
+            }
+        }
+    }
+
+    
     max-width: 700px;
 }
 

@@ -11,7 +11,7 @@
       
       <button 
         class="backToWs-menu" 
-        (click)="setView('workspaceMenu')"
+        (click)="handleSetView()"
         *ngIf="!isLargeScreen && currentView === 'channel' || currentView === 'thread'" 
         style="display: flex;">
         <div class="arrow-icon">

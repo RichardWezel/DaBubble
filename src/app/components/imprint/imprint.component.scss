@@ -13,6 +13,16 @@
 app-card {
     max-height: 700px;
     max-width: 700px;
+
+    @media (max-width: $breakpoint1) {
+        max-height: unset;
+        max-width: unset;
+
+        ::ng-deep .card {
+            box-shadow: unset;
+        }
+    }
+    
 }
 
 .top-section {
