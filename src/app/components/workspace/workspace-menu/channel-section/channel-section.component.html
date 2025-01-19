@@ -1,6 +1,6 @@
 <div class="header-channels">
     <div class="channel-dropdown-label" (click)="toggleList()">
-        
+
         <button class="dropdown-btn" [class.rotated]="!isListVisible">
             <svg width="10" height="7" viewBox="0 0 10 7" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -39,7 +39,9 @@
         @for(channel of storage.channel; track $index) {
             @if(channel.user && channel.user.includes(storage.currentUser.id || '')) {
                 <div class="open-channel">
-                    <button class="open-channel-content" [ngClass]="{'active': channel.id == storage.currentUser.currentChannel}" (click)="handleClick(channel.id || '')">
+                    <button class="open-channel-content"
+                        [ngClass]="{'active': channel.id == storage.currentUser.currentChannel}"
+                        (click)="handleClick(channel.id || '')">
                         <div class="tag-icon">
                             <svg width="18" height="17" viewBox="0 0 18 17" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -65,7 +67,7 @@
                         fill="black" />
                 </svg>
             </button>
-            <div class="addChannel-label">Channel hinzufügen</div>
+            <div (click)="openAddChannelDialog()" class="addChannel-label">Channel hinzufügen</div>
         </div>
     </div>
 </div>
