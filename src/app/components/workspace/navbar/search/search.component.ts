@@ -177,7 +177,6 @@ export class SearchComponent {
    * @param result - The selected SearchResult object.
    */
   async setChannel(result: SearchResult): Promise<void> {
-    console.log('setChannel: ', result);
     this.setTypeChannel(result);
     this.setTypeUser(result);
     this.setTypeChannelPost(result);
@@ -220,11 +219,8 @@ export class SearchComponent {
         this.navigation.setChannel(dmId);
         this.viewService.setCurrentView('channel');
       } else if (user.id === this.storage.currentUser.id) {
-        console.log('Guest');
-        this.navigation.setChannel(user.id!);
-        console.log('this.navigation.setChannel(user.id!): ', user.id!);
+        this.navigation.setChannel('');
         this.viewService.setCurrentView('channel');
-        console.log('this.viewService.setCurrentView(channel)');
       } else {
         console.error('DM id ist undefiniert.');
         return;
@@ -396,7 +392,6 @@ export class SearchComponent {
     if (this.selectedIndex >= 0 && this.selectedIndex < this.searchResults.length) {
       try {
         await this.setChannel(this.searchResults[this.selectedIndex]);
-        console.log('Channel is set with ', this.searchResults[this.selectedIndex])
       } catch (error) {
         console.error('Error setting channel:', error);
       }
