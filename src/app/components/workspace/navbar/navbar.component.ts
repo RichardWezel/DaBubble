@@ -66,6 +66,16 @@ export class NavbarComponent {
     }
   }
 
+  handleSetView() {
+    if (this.currentView === 'channel') {
+      this.setView('workspaceMenu');
+    } 
+    if (this.currentView === 'thread') {
+      this.setView('channel');
+    }
+    
+  }
+
   /**
    * Sets the current view using the view service, facilitating state management across different components.
    * @param {CurrentView} view - The new view to be set in the navbar and potentially other parts of the UI.
