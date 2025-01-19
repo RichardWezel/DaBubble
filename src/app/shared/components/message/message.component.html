@@ -2,10 +2,12 @@
   @if (!threadHead) {
 
     @if (!postEdit) {
-      <section class="reaction-bar" [ngStyle]="{
-    'right': isAuthorCurrentUser ? 'unset' : '40.06px',
-    'left': isAuthorCurrentUser ? '40.06px' : 'unset'
-    }">
+      <section 
+        class="reaction-bar" 
+        [ngStyle]="{
+          'right': isAuthorCurrentUser ? 'unset' : '40.06px',
+          'left': isAuthorCurrentUser ? '40.06px' : 'unset'
+        }">
 
         <div class="reaction-bar-icon" (click)="emojiSelector.addEmojiToReaction(getLastEmoji())">
           <p class="emoji">{{getLastEmoji().emoji.native}}</p>
@@ -25,6 +27,7 @@
             </svg>
           </div>
         </div>
+
         @if (!isThread ) {
           <div class="reaction-bar-icon answer reaction-bar-icon-special" (click)="openThread(post.id)">
             <div>
@@ -36,6 +39,7 @@
             </div>
           </div>
         }
+
         <div class="reaction-bar-icon more reaction-bar-icon-special"
           [ngStyle]="{'display': isAuthorCurrentUser ? 'flex' : 'none'}">
           <div (click)="isSpecialMenuOpen = !isSpecialMenuOpen">
@@ -49,6 +53,7 @@
             <p (click)="editPost()">Nachricht bearbeiten</p>
           </div>
         </div>
+
       </section>
     }
   }
@@ -68,9 +73,9 @@
     </div>
 
     @if(postEdit) {
-      <div id="editMessage">
-        <app-inputfield [thread]="isThread" [(edit)]="postEdit" [post]="post"></app-inputfield>
-      </div>
+
+      <app-inputfield id="editMessage" [thread]="isThread" [(edit)]="postEdit" [post]="post"></app-inputfield>
+     
     }
     @else {
       <div class="message" [class.self]="isAuthorCurrentUser" [innerHTML]="getText(post.text)"></div>
