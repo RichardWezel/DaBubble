@@ -1,5 +1,5 @@
 import { NgFor, NgIf, NgStyle } from '@angular/common';
-import { Component, inject, } from '@angular/core';
+import { Component, HostListener,inject, } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../services/firebase-storage.service';
 import { CloudStorageService } from '../../../services/cloud-storage.service';
@@ -36,6 +36,19 @@ export class AddChannelMemberDialogComponent {
 
 
   constructor() { }
+
+
+  /**
+   * Closes the dialog by click on esc key.
+   * 
+   * @param event - click escape Key
+   */
+  @HostListener('document:keydown.escape', ['$event']) 
+  handleEscape(event: KeyboardEvent) {
+    if (this.isOpen) {
+      this.closeDialog();
+    }
+  }
 
 
   /**

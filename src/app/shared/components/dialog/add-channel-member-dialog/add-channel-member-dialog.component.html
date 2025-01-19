@@ -1,5 +1,5 @@
-<main *ngIf="isOpen">
-    <div class="dialog" [class.active]="isOpen">
+<main *ngIf="isOpen" (click)="closeDialog()">
+    <div class="dialog" [class.active]="isOpen" (click)="$event.stopPropagation()">
 
       <button class="close-notch" (click)="closeDialog()"></button>
   

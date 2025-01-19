@@ -1,4 +1,4 @@
-<main *ngIf="isOpen">
-    <app-member-container [dialog]="true"></app-member-container>
+<main *ngIf="isOpen" (click)="closeDialog()">
+    <app-member-container [dialog]="true" (click)="$event.stopPropagation()"></app-member-container>
   </main>
   

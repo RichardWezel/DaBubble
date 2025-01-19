@@ -1,4 +1,4 @@
-import { Component, Input, inject ,Output, EventEmitter } from '@angular/core';
+import { Component, Input, inject ,Output, EventEmitter, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../services/firebase-storage.service';
@@ -28,6 +28,20 @@ export class ChannelEditComponent {
   errorMessage: string = ""; 
 
   constructor(private firebaseStorageService: FirebaseStorageService,  private router: Router) {}
+
+
+  /**
+   * Closes the dialog by click on esc key.
+   * 
+   * @param event - click escape Key
+   */
+  @HostListener('document:keydown.escape', ['$event']) 
+  handleEscape(event: KeyboardEvent) {
+    
+    this.closeDialog();
+    
+  }
+
 
   save(): void {
     console.log('Channel gespeichert:', this.channelName, this.channelDescription);
