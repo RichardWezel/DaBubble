@@ -124,6 +124,7 @@
                 height: 50px;
                 @include dja;
                 position: relative;
+                min-width: 50px;
 
                 img {
                     border-radius: 100%;
