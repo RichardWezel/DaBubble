@@ -8,12 +8,12 @@
   @if((getUploadedFiles(upload) || []).length > 0) {
     <div class="upload-container">
       @for (file of getUploadedFiles(upload); track $index) {
-        <div class="file-container" [class.error]="file.size > 2000000">
+        <div class="file-container" [class.error]="file.size > 512000">
           <div class="file">
             <p>{{ file.name }}</p>
-            <p>{{ (file.size / 1000000).toFixed(2) }} MB</p>
-            @if (file.size > 2000000) {
-              <p class="error">Datei zu groß</p>
+            <p>{{ (file.size / 1024 ).toFixed(2) }} kB</p>
+            @if (file.size > 512000) {
+              <p class="error">Datei zu groß Max 500 kB</p>
             }
           </div>
           <button (click)="$event.stopPropagation(); removeFile($index)">

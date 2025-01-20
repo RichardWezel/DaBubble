@@ -41,7 +41,7 @@ export class CloudStorageService {
     for (let i = 0; i < files.length; i++) {
       const file = files.item(i);
       if (!file) continue;
-      if (file.size > 1.91 * 1024 * 1024) {
+      if (file.size > 0.5 * 1024 * 1024) {
         console.error('Dateigröße überschritten');
         continue;
       }
