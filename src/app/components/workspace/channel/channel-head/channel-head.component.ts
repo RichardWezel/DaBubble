@@ -56,7 +56,6 @@ export class ChannelHeadComponent implements OnInit {
    * Opens the channel edit dialog.
    */
   openChannelEdit() {
-    console.log('ChannelEdit geöffnet');
     this.isChannelEditVisible = true;
   }
 

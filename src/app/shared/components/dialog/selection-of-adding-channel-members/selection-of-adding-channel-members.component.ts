@@ -57,14 +57,6 @@ export class SelectionOfAddingChannelMembersComponent {
 
 
   /**
-   * Handles the change in selection within the dialog, logging the selected option.
-   */
-  onOptionChange() {
-    console.log(`Ausgewählte Option: ${this.selectedOption}`);
-  }
-
-
-  /**
    * Handles the action based on the user's selection, either adding all users to the current channel
    * or opening another dialog to add specific users.
    */

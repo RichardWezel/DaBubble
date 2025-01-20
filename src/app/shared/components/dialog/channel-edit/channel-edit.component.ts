@@ -139,7 +139,6 @@ async saveChannelName(): Promise<void> {
         .find(channel => channel.id === this.channelId)?.user
         .filter(userId => userId !== currentUserId) || [],
     }).then(() => {
-      console.log('Channel erfolgreich verlassen');
       this.firebaseStorageService.currentUser.currentChannel = '';
       sessionStorage.removeItem('currentChannel'); 
       this.router.navigate(['/workspace']);

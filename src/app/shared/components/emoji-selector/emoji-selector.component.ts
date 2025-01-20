@@ -75,7 +75,6 @@ export class EmojiSelectorComponent {
 
   postReaction(event: any) {
     if (!this.storage.currentUser.currentChannel || !this.storage.currentUser.id) return;
-    console.log(this.post);
     let posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
     let currentPost = posts?.find(post => post.id === this.storage.currentUser.postId);
     let currentDm = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
