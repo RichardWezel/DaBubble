@@ -3,7 +3,8 @@
   (dragleave)="handleDragLeave($event)">
   <label [class.d-none]="(getUploadedFiles(upload) || []).length > 0" for="fileUpload">Datei durch Klicken Wählen oder
     durch Ziehen und Ablegen</label>
-  <input class="d-none" id="fileUpload" type="file" multiple accept="image/*, document/pdf" #upload>
+  <input class="d-none" id="fileUpload" type="file" multiple accept="image/*, document/pdf" #upload
+    (click)="$event.stopPropagation()">
   @if((getUploadedFiles(upload) || []).length > 0) {
     <div class="upload-container">
       @for (file of getUploadedFiles(upload); track $index) {
