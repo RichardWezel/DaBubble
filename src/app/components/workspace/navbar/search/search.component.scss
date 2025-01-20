@@ -8,43 +8,43 @@ main {
   width: 100%;
   background-color: #fff;
   z-index: 9;
-  box-shadow:  0px 4px 5px -3px rgba(0,0,0,0.17);
-  position: relative; 
+  box-shadow: 0px 4px 5px -3px rgba(0, 0, 0, 0.17);
+  position: relative;
 
-  @media (max-width: $breakpoint1){
+  @media (max-width: $breakpoint1) {
     height: fit-content;
     border: 1px solid $dividerColor;
-    box-shadow:  unset;
+    box-shadow: unset;
     padding: 8px 24px;
   }
 
   .input {
-    position: relative; 
+    position: relative;
     display: flex;
 
-    @media (max-width: $breakpoint1){
+    @media (max-width: $breakpoint1) {
       align-items: center;
     }
 
-    input[type="search"]{
+    input[type="search"] {
       width: 100%;
       font-size: 24px;
       border: none;
       outline: none;
-      padding-right: 50px; 
       background-position: right 32px center;
       display: flex;
+
       &::-webkit-search-cancel-button,
-      &::-webkit-search-decoration{
+      &::-webkit-search-decoration {
         -webkit-appearance: none;
         appearance: none;
       }
-    
-      &::placeholder{
+
+      &::placeholder {
         color: $textGrey;
         font-size: 24px;
 
-        @media (max-width: $breakpoint1){
+        @media (max-width: $breakpoint1) {
           font-size: 17px;
           font-family: "Nunito";
           font-size: 17px;
@@ -55,10 +55,10 @@ main {
           text-decoration-skip-ink: none;
         }
       }
-    
-      &:focus+.search{
+
+      &:focus+.search {
         svg {
-    
+
           path {
             fill: $textBlack;
           }
@@ -71,7 +71,7 @@ main {
       align-items: center;
       justify-content: center;
 
-      @media (max-width: $breakpoint1){
+      @media (max-width: $breakpoint1) {
         max-height: 32px;
         max-width: 32px;
       }
@@ -83,14 +83,14 @@ main {
       gap: 10px;
       margin-top: 18.5px;
       padding: 0;
-      max-height: 300px; 
-      overflow-y: auto; 
+      max-height: 300px;
+      overflow-y: auto;
 
       li {
         display: flex;
         align-items: start;
-        list-style: none; 
-        margin-bottom: 8px; 
+        list-style: none;
+        margin-bottom: 8px;
         padding: 8px 16px;
         border-radius: 32px;
         cursor: pointer;
@@ -108,68 +108,68 @@ main {
           color: #444DF2;
         }
 
-        .text{
-          .searchTerm{
+        .text {
+          .searchTerm {
             color: $thirdColor;
           }
         }
 
         &:hover,
-        &.selected{
+        &.selected {
           background-color: $backgroundColor;
           border-radius: 32px;
         }
 
-       .result-info {
-          ::ng-deep{
-            .tagMessage{
-                color: $secondaryColor;
-                background-color: $backgroundColor;
-                border: 1px solid $thirdColor;
-                border-radius: 4px;
-                padding: 2px 4px;
-                font-size: 14px;
+        .result-info {
+          ::ng-deep {
+            .tagMessage {
+              color: $secondaryColor;
+              background-color: $backgroundColor;
+              border: 1px solid $thirdColor;
+              border-radius: 4px;
+              padding: 2px 4px;
+              font-size: 14px;
             }
-          
-            .file-thumbnail{
-                display: inline-flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                position: relative;
-                padding: 0 4px;
-                cursor: pointer;
+
+            .file-thumbnail {
+              display: inline-flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              position: relative;
+              padding: 0 4px;
+              cursor: pointer;
             }
-          
-            .thumbnail-image{
-                width: auto;
-                height: 48px;
-                object-fit: cover;
-                border-radius: 5px;
+
+            .thumbnail-image {
+              width: auto;
+              height: 48px;
+              object-fit: cover;
+              border-radius: 5px;
             }
-          
+
             .pdf-thumbnail svg {
-                width: auto;
-                height: 48px;
+              width: auto;
+              height: 48px;
             }
-        
-            .pdf-thumbnail .pdf-link{
-                text-align: center;
-                font-size: 12px;
-                color: $textBlack;
-                text-decoration: none;
+
+            .pdf-thumbnail .pdf-link {
+              text-align: center;
+              font-size: 12px;
+              color: $textBlack;
+              text-decoration: none;
             }
-          
+
             .image-thumbnail svg {
-                cursor: pointer;
+              cursor: pointer;
             }
-          
+
             .other-thumbnail svg {
-                width: auto;
-                height: 48px;
+              width: auto;
+              height: 48px;
             }
-        
-            .file-thumbnail .file-link{
+
+            .file-thumbnail .file-link {
               display: flex;
               flex: 1;
               text-align: center;
@@ -179,7 +179,7 @@ main {
               overflow: hidden;
               white-space: nowrap;
               max-width: 80px;
-            } 
+            }
           }
         }
       }
