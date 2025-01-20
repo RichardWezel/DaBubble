@@ -8,6 +8,7 @@ import { CurrentUserInterface } from '../interfaces/current-user-interface';
 import { UidService } from './uid.service';
 import { arrayUnion, arrayRemove } from 'firebase/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { StorageHelperService } from './storage-helper.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class FirebaseStorageService implements OnDestroy {
   firestore: Firestore = inject(Firestore);
   uid = inject(UidService);
+  storageHelper = inject(StorageHelperService);
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
   CurrentUserChannel: ChannelInterface[] = [];
@@ -94,9 +96,7 @@ export class FirebaseStorageService implements OnDestroy {
     for (const post of targetChannel?.posts!) {
       if (post.threadMsg && post.threadMsg.length > 0) {
         const foundThread = post.threadMsg.find(threadPost => threadPost.id === threadId);
-        if (foundThread) {
-          return post.id;
-        }
+        if (foundThread) return post.id;
       }
     }
     console.warn(`Thread mit ID ${threadId} im Channel ${channelId} nicht gefunden.`);
@@ -209,18 +209,7 @@ export class FirebaseStorageService implements OnDestroy {
    * @param userData - An object containing the user's name, email, and avatar.
    */
   async addUser(authUid: string, userData: { name: string, email: string, avatar: string }) {
-    await setDoc(doc(this.firestore, "user", authUid), {
-      type: 'user',
-      name: userData.name,
-      email: userData.email,
-      avatar: userData.avatar,
-      online: false,
-      dm: [{
-        contact: authUid,
-        id: this.uid.generateUid(),
-        posts: [],
-      },],
-    } as UserInterface);
+    await setDoc(doc(this.firestore, "user", authUid), this.storageHelper.generateUser(authUid, userData, this.uid.generateUid()));
   }
 
 
@@ -231,14 +220,7 @@ export class FirebaseStorageService implements OnDestroy {
   async addChannel(channelData: { name: string, description: string, owner: string }) {
     try {
       const channelsCollection = collection(this.firestore, "channel");
-      const docRef = await addDoc(channelsCollection, {
-        type: 'channel',
-        name: channelData.name,
-        description: channelData.description,
-        owner: channelData.owner,
-        user: [channelData.owner],
-        posts: [],
-      } as ChannelInterface);
+      const docRef = await addDoc(channelsCollection, this.storageHelper.generateChannel(channelData));
       this.lastCreatedChannel = docRef.id;
       return docRef;
     } catch (error) {
@@ -299,18 +281,8 @@ export class FirebaseStorageService implements OnDestroy {
     if (newDm) {
       newDm.posts.push(newPost);
     } else {
-      if (!sendUser.dm) sendUser.dm = [{
-        contact: contact,
-        id: this.uid.generateUid(),
-        posts: [newPost],
-      }];
-      else {
-        sendUser.dm.push({
-          contact: contact,
-          id: this.uid.generateUid(),
-          posts: [newPost],
-        });
-      }
+      if (!sendUser.dm) sendUser.dm = [this.storageHelper.generateDM(contact, this.uid.generateUid(), newPost)];
+      else sendUser.dm.push(this.storageHelper.generateDM(contact, this.uid.generateUid(), newPost));
     }
     await updateDoc(doc(this.firestore, "user", userId), {
       dm: sendUser.dm
@@ -324,18 +296,8 @@ export class FirebaseStorageService implements OnDestroy {
    */
   async createNewEmptyDm(user1: string, contact: string) {
     let sendUser = this.user[this.user.findIndex(user => user.id === user1)];
-    if (!sendUser.dm) sendUser.dm = [{
-      contact: contact,
-      id: this.uid.generateUid(),
-      posts: [],
-    }];
-    else {
-      sendUser.dm.push({
-        contact: contact,
-        id: this.uid.generateUid(),
-        posts: [],
-      });
-    }
+    if (!sendUser.dm) sendUser.dm = [this.storageHelper.generateDM(contact, this.uid.generateUid())];
+    else sendUser.dm.push(this.storageHelper.generateDM(contact, this.uid.generateUid()));
     await updateDoc(doc(this.firestore, "user", user1), {
       dm: sendUser.dm
     });
@@ -372,7 +334,7 @@ export class FirebaseStorageService implements OnDestroy {
     if (currentChannel) {
       let post = currentChannel.posts?.find(post => post.id === postId);
       if (post) {
-        post = this.generatePost(post, newPost);
+        post = this.storageHelper.generatePost(post, newPost);
         await updateDoc(doc(this.firestore, "channel", channelId,), {
           posts: currentChannel.posts
         })
@@ -395,27 +357,12 @@ export class FirebaseStorageService implements OnDestroy {
     if (newDm) {
       let post = newDm.posts.find(post => post.id === postId);
       if (post) {
-        post = this.generatePost(post, newPost);
+        post = this.storageHelper.generatePost(post, newPost);
         await updateDoc(doc(this.firestore, "user", userId), {
           dm: sendUser.dm
         })
       }
     }
-  }
-
-
-  /**
-   * Creates a new post with the same properties as the given post, but with new text, emoticons, threadMsg, and thread properties.
-   * @param post - The post to clone.
-   * @param newPost - The new post properties.
-   * @returns The new post with the same properties as the given post, but with the new properties.
-   */
-  generatePost(post: PostInterface, newPost: PostInterface): PostInterface {
-    post.text = newPost.text;
-    post.emoticons = newPost.emoticons;
-    post.threadMsg = newPost.threadMsg;
-    post.thread = newPost.thread;
-    return post;
   }
 
 
