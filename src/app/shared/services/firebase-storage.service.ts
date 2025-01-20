@@ -6,13 +6,13 @@ import { ChannelInterface } from '../interfaces/channel.interface';
 import { PostInterface } from '../interfaces/post.interface';
 import { CurrentUserInterface } from '../interfaces/current-user-interface';
 import { UidService } from './uid.service';
-import { arrayUnion, arrayRemove } from 'firebase/firestore'; 
+import { arrayUnion, arrayRemove } from 'firebase/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
+export class FirebaseStorageService implements OnDestroy {
   firestore: Firestore = inject(Firestore);
   uid = inject(UidService);
   user: UserInterface[] = [];
@@ -31,77 +31,12 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   unsubChannels: () => void = () => { };
 
   /**
-  * Initializes the service by subscribing to channel and user collections
-  * and fetching the current user.
+   * Initializes the service by subscribing to channel and user collections
+   * and fetching the current user.
   */
   constructor() {
     this.unsubChannels = this.getChannelCollection();
     this.unsubUsers = this.getUserCollection();
-  }
-
-
-  /**
-   * Retrieves all threads from the user's channels and direct messages.
-   * @returns - An array of objects, where each object contains a thread and a parent.
-   */
-  getAllThreads(): { thread: PostInterface, parent: ChannelInterface | UserInterface }[] {
-    const threads: { thread: PostInterface, parent: ChannelInterface | UserInterface }[] = [];
-    const userChannel = this.channel.filter(channel => channel.user.includes(this.authUid));
-    const user = this.user.find(user => user.id === this.authUid);
-
-    // Durch alle Channels und deren Posts iterieren
-    userChannel.forEach(channel => {
-      channel.posts?.forEach(post => {
-        if (post.thread && post.threadMsg) {
-          post.threadMsg.forEach(threadPost => {
-            threads.push({ thread: threadPost, parent: channel });
-          });
-        }
-      });
-    });
-
-    // Durch alle DMs und deren Posts iterieren
-    user?.dm.forEach(dm => {
-      dm.posts.forEach(post => {
-        if (post.thread && post.threadMsg) {
-          post.threadMsg.forEach(threadPost => {
-            threads.push({ thread: threadPost, parent: this.currentUser });
-          });
-        }
-      });
-    });
-
-    return threads;
-  }
-
-
-  /**
-   * Funktion, um die Parent-Post-ID für einen gegebenen Channel und Thread zu finden.
-   * @param channelId - Die ID des Channels.
-   * @param threadId - Die ID des Threads.
-   * @returns Die ID des übergeordneten Posts oder undefined, wenn nicht gefunden.
-   */
-  findParentPostId(channelId: string, threadId: string): string | undefined {
-    // Channel finden
-    const targetChannel = this.CurrentUserChannel.find(channel => channel.id === channelId);
-    if (!targetChannel) {
-      console.error(`Channel mit ID ${channelId} nicht gefunden.`);
-      return undefined;
-    }
-
-    // Durch alle Posts im Channel iterieren
-    for (const post of targetChannel?.posts!) {
-      if (post.threadMsg && post.threadMsg.length > 0) {
-        // Überprüfen, ob einer der Thread-Posts die gesuchte Thread-ID hat
-        const foundThread = post.threadMsg.find(threadPost => threadPost.id === threadId);
-        if (foundThread) {
-          return post.id; // Parent Post ID gefunden
-        }
-      }
-    }
-
-    console.warn(`Thread mit ID ${threadId} im Channel ${channelId} nicht gefunden.`);
-    return undefined;
   }
 
 
@@ -114,12 +49,58 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   }
 
 
-  ngOnChanges(changes: SimpleChanges): void {
+  /**
+   * Retrieves all threads from the user's channels and direct messages.
+   * @returns - An array of objects, where each object contains a thread and a parent.
+   */
+  getAllThreads(): { thread: PostInterface, parent: ChannelInterface | UserInterface }[] {
+    const threads: { thread: PostInterface, parent: ChannelInterface | UserInterface }[] = [];
+    const userChannel = this.channel.filter(channel => channel.user.includes(this.authUid));
+    const user = this.user.find(user => user.id === this.authUid);
+    userChannel.forEach(channel => {
+      channel.posts?.forEach(post => {
+        if (post.thread && post.threadMsg) {
+          post.threadMsg.forEach(threadPost => {
+            threads.push({ thread: threadPost, parent: channel });
+          });
+        }
+      });
+    });
+    user?.dm.forEach(dm => {
+      dm.posts.forEach(post => {
+        if (post.thread && post.threadMsg) {
+          post.threadMsg.forEach(threadPost => {
+            threads.push({ thread: threadPost, parent: this.currentUser });
+          });
+        }
+      });
+    });
+    return threads;
   }
 
 
-  ngOnInit(): void {
-
+  /**
+   * Funktion, um die Parent-Post-ID für einen gegebenen Channel und Thread zu finden.
+   * @param channelId - Die ID des Channels.
+   * @param threadId - Die ID des Threads.
+   * @returns Die ID des übergeordneten Posts oder undefined, wenn nicht gefunden.
+   */
+  findParentPostId(channelId: string, threadId: string): string | undefined {
+    const targetChannel = this.CurrentUserChannel.find(channel => channel.id === channelId);
+    if (!targetChannel) {
+      console.error(`Channel mit ID ${channelId} nicht gefunden.`);
+      return undefined;
+    }
+    for (const post of targetChannel?.posts!) {
+      if (post.threadMsg && post.threadMsg.length > 0) {
+        const foundThread = post.threadMsg.find(threadPost => threadPost.id === threadId);
+        if (foundThread) {
+          return post.id;
+        }
+      }
+    }
+    console.warn(`Thread mit ID ${threadId} im Channel ${channelId} nicht gefunden.`);
+    return undefined;
   }
 
 
@@ -135,7 +116,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         channelData.id = doc.id;
         this.channel.push(channelData);
       });
-      // console.log("Channel Collection: ", this.channel)
     });
   }
 
@@ -149,7 +129,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     this.CurrentUserChannel = this.channel.filter(channel =>
       this.checkCurrentUserIsMemberOfChannel(channel.user)
     );
-    // console.log("Current User Channels: ", this.CurrentUserChannel);
     this.doneLoading = true;
   }
 
@@ -176,9 +155,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         userData.id = doc.id;
         this.user.push(userData);
       });
-      // Aktualisiere das BehaviorSubject mit den neuesten Benutzerdaten
       this.userSubject.next(this.user);
-      // console.log("User Collection: ", this.user);
     });
   }
 
@@ -190,9 +167,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   */
   determineCurrentChannel(userData: CurrentUserInterface): string | undefined {
     const sessionChannel = sessionStorage.getItem("currentChannel");
-
     if (sessionChannel) return sessionChannel;
-
     if (userData.id) {
       const channelId = this.findUserChannel(userData.id);
       if (channelId) {
@@ -264,7 +239,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
         user: [channelData.owner],
         posts: [],
       } as ChannelInterface);
-      console.log("Neuer Channel hinzugefügt mit ID: ", docRef.id);
       this.lastCreatedChannel = docRef.id;
       return docRef;
     } catch (error) {
@@ -291,11 +265,9 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
    */
   async updateChannel(channelId: string, channelData: Partial<ChannelInterface>) {
     try {
-      // Entferne Felder mit undefined-Werten
       const validData = Object.fromEntries(
         Object.entries(channelData).filter(([_, value]) => value !== undefined)
       );
-  
       await updateDoc(doc(this.firestore, "channel", channelId), validData);
     } catch (error) {
       console.error("Fehler beim Aktualisieren des Channels:", error);
@@ -324,7 +296,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
   async writeDm(userId: string, contact: string, newPost: PostInterface) {
     let sendUser = this.user[this.user.findIndex(user => user.id === userId)];
     let newDm = sendUser.dm ? sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)] : null;
-
     if (newDm) {
       newDm.posts.push(newPost);
     } else {
@@ -353,7 +324,6 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
    */
   async createNewEmptyDm(user1: string, contact: string) {
     let sendUser = this.user[this.user.findIndex(user => user.id === user1)];
-
     if (!sendUser.dm) sendUser.dm = [{
       contact: contact,
       id: this.uid.generateUid(),
@@ -391,9 +361,10 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
 
 
   /**
-   * Updates a specific post in a channel.
-   * @param channelId - The ID of the channel.
-   * @param postId - The ID of the post.
+   * Updates a specific post within a channel in the Firestore "channel" collection.
+   * 
+   * @param channelId - The ID of the channel containing the post to update.
+   * @param postId - The ID of the post to update.
    * @param newPost - The new post data to update the existing post.
    */
   async updateChannelPost(channelId: string, postId: string, newPost: PostInterface) {
@@ -401,10 +372,7 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     if (currentChannel) {
       let post = currentChannel.posts?.find(post => post.id === postId);
       if (post) {
-        post.text = newPost.text;
-        post.emoticons = newPost.emoticons;
-        post.threadMsg = newPost.threadMsg;
-        post.thread = newPost.thread;
+        post = this.generatePost(post, newPost);
         await updateDoc(doc(this.firestore, "channel", channelId,), {
           posts: currentChannel.posts
         })
@@ -414,10 +382,11 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
 
 
   /**
-   * Updates a specific post in a user's direct message.
-   * @param userId - The ID of the user.
-   * @param contact - The ID of the contact.
-   * @param postId - The ID of the post.
+   * Updates a specific direct message (DM) post for a user in the Firestore "user" collection.
+   * 
+   * @param userId - The ID of the user whose DM post is to be updated.
+   * @param contact - The ID of the contact associated with the DM.
+   * @param postId - The ID of the post to be updated within the DM.
    * @param newPost - The new post data to update the existing post.
    */
   async updateDmPost(userId: string, contact: string, postId: string, newPost: PostInterface) {
@@ -426,16 +395,29 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
     if (newDm) {
       let post = newDm.posts.find(post => post.id === postId);
       if (post) {
-        post.text = newPost.text;
-        post.emoticons = newPost.emoticons;
-        post.threadMsg = newPost.threadMsg;
-        post.thread = newPost.thread;
+        post = this.generatePost(post, newPost);
         await updateDoc(doc(this.firestore, "user", userId), {
           dm: sendUser.dm
         })
       }
     }
   }
+
+
+  /**
+   * Creates a new post with the same properties as the given post, but with new text, emoticons, threadMsg, and thread properties.
+   * @param post - The post to clone.
+   * @param newPost - The new post properties.
+   * @returns The new post with the same properties as the given post, but with the new properties.
+   */
+  generatePost(post: PostInterface, newPost: PostInterface): PostInterface {
+    post.text = newPost.text;
+    post.emoticons = newPost.emoticons;
+    post.threadMsg = newPost.threadMsg;
+    post.thread = newPost.thread;
+    return post;
+  }
+
 
   /**
    * Fügt mehrere Benutzer zu einem Channel hinzu.
@@ -444,21 +426,23 @@ export class FirebaseStorageService implements OnDestroy, OnChanges, OnInit {
    */
   async addUsersToChannel(channelId: string, newUserIds: string[]): Promise<void> {
     try {
-      // Holen Sie das Channel-Dokument
       const channelDocRef = doc(this.firestore, "channel", channelId);
-
-      // Aktualisieren Sie das 'user'-Feld mit arrayUnion, um Duplikate zu vermeiden
       await updateDoc(channelDocRef, {
         user: arrayUnion(...newUserIds)
       });
-
-      console.log(`Benutzer erfolgreich zum Channel "${channelId}" hinzugefügt.`);
     } catch (error) {
       console.error(`Fehler beim Hinzufügen von Benutzern zum Channel "${channelId}":`, error);
       throw error;
     }
   }
 
+
+  /**
+   * Checks if a channel with the given name already exists, excluding the channel with the given ID.
+   * @param channelId - The ID of the channel to exclude from the search.
+   * @param newName - The name to check for existence.
+   * @returns A promise that resolves to true if a channel with the given name exists, false otherwise.
+   */
   async channelNameExists(channelId: string, newName: string): Promise<boolean> {
     const channels = this.channel.filter(channel => channel.id !== channelId);
     const channelNames = channels.map(channel => channel.name.toLowerCase());
