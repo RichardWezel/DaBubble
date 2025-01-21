@@ -136,8 +136,9 @@ export class SearchComponent {
    */
   findUser(userInput: string): SearchResultUser[] {
     const users: UserInterface[] = this.storage.user;
+    const lowerInput = userInput.toLowerCase();
     const matches = users.filter(user =>
-      user.name.toLowerCase().includes(userInput.toLowerCase())
+      user.name && user.name.toLowerCase().includes(lowerInput)
     ).map(user => ({ type: 'user', user } as SearchResultUser));
     return matches;
   }
