@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { ChannelInterface } from '../../../../../shared/interfaces/channel.interface';
 import { UserInterface } from '../../../../../shared/interfaces/user.interface';
 import { NavigationService } from '../../../../../shared/services/navigation.service';
+import { ResultDropdownComponent } from '../../../../../shared/components/result-dropdown/result-dropdown.component';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-new-message-input-head',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, ResultDropdownComponent, NgIf],
   templateUrl: './new-message-input-head.component.html',
   styleUrls: ['./new-message-input-head.component.scss']
 
@@ -19,13 +21,20 @@ export class NewMessageInputHeadComponent {
   navigationService: NavigationService = inject(NavigationService);
   userInput: string = ''; // Binding to input value
   suggestion: string = ''; // saves the current autocomplete
-
+  dropDownIsOpen: boolean = false;
 
   /**
    * Handles the input change event and updates the autocomplete suggestion.
    */
   onInput(): void {
+    if (this.userInput.startsWith('@') || this.userInput.startsWith('#')) {
+      this.showDropdown();
+    }
     this.updateSuggestion();
+  }
+
+  showDropdown() {
+    this.dropDownIsOpen = true;
   }
 
 
@@ -141,7 +150,7 @@ export class NewMessageInputHeadComponent {
   matchEmail(searchTerm: string): string | undefined {
     let users: UserInterface[] = this.storage.user;
     let match = users.find(user =>
-      user.email.toLowerCase().startsWith(searchTerm.toLowerCase())
+      user.email?.toLowerCase().startsWith(searchTerm.toLowerCase())
     );
     return match?.email;
   }
