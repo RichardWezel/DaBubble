@@ -1,0 +1,39 @@
+@import 'variables';
+@import 'mixins';
+
+main {
+    max-width: 335px;
+    max-height: 171px;
+    width: 100%;
+    padding: 20px 21px;
+    border-radius: 0px 30px 30px 30px;
+    background-color: #FFFFFF;
+    box-shadow: 0px 6px 10px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    border: 1px solid #ADB0D9;
+
+    .container {
+        ul {
+            li {
+                display: flex;
+                gap: 10px;
+
+                .icon {
+                    svg {
+                        path {
+                            fill:#ADB0D9
+                        }
+                    }
+                }
+
+                .name {
+                    font-size: 18px;
+                    font-weight: 400;
+                    line-height: 24.55px;
+                    text-align: left;
+                }
+            }
+
+        }
+    }
+}

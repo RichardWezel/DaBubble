@@ -11,6 +11,7 @@ import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { SetMobileViewService } from '../../../../shared/services/set-mobile-view.service';
 import { GetUserNameService } from '../../../../shared/services/get-user-name.service';
+import { ResultDropdownComponent } from '../../../../shared/components/result-dropdown/result-dropdown.component';
 /**
  * SearchComponent handles the search functionality within the application,
  * including searching for channels, users, posts, and threads, and navigating to selected results.
@@ -18,7 +19,7 @@ import { GetUserNameService } from '../../../../shared/services/get-user-name.se
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [FormsModule, NgIf, NgFor, NgSwitch, NgSwitchCase, CommonModule],
+  imports: [FormsModule, NgIf, NgFor, NgSwitch, NgSwitchCase, CommonModule, ResultDropdownComponent],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })
@@ -29,6 +30,7 @@ export class SearchComponent {
   searchResults: SearchResult[] = [];
   userInput: string = "";
   selectedIndex: number = -1;
+  dropDownIsOpen: boolean = false;
 
   private searchSubject = new Subject<string>();
 
@@ -54,8 +56,16 @@ export class SearchComponent {
    * Handles the input event from the search bar by emitting the current user input.
    */
   onInput(): void {
-    this.searchSubject.next(this.userInput);
-    this.selectedIndex = -1;
+    if (this.userInput.startsWith('@') || this.userInput.startsWith('#')) {
+      this.showDropdown();
+    } else {
+      this.searchSubject.next(this.userInput);
+      this.selectedIndex = -1;
+    }
+  }
+
+  showDropdown() {
+    this.dropDownIsOpen = true;
   }
 
   /**

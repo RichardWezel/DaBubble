@@ -148,10 +148,10 @@ export class AddChannelMemberDialogComponent {
     this.searchResult = this.storage.user.filter(user => {
       const isAlreadyMember = this.channelUsers.includes(user.id!);
       return (
-        !isAlreadyMember && // Benutzer ist noch kein Mitglied
+        !isAlreadyMember && 
         (
-          user.name.toLowerCase().includes(searchTerm) ||
-          user.email.toLowerCase().includes(searchTerm)
+          user.name?.toLowerCase().includes(searchTerm) ||
+          user.email?.toLowerCase().includes(searchTerm)
         )
       );
     });
