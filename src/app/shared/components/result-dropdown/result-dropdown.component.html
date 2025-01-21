@@ -1,7 +1,7 @@
 <main>
     <div class="container">
         <ul>
-            <li>
+            <li  *ngFor="let result of searchResults; let i = index">
                 <ng-container *ngIf="isChannel()">
                     <div class="icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -13,7 +13,7 @@
                             </g>
                         </svg>
                     </div>
-                    <div class="name">Testchannel</div>
+                    <div class="name">{{ result.name }}</div>
                   </ng-container>
 
                   <ng-container *ngIf="isUser()">
@@ -27,7 +27,7 @@
                             </g>
                         </svg>
                     </div>
-                    <div class="name">Fredick Jansen</div>
+                    <div class="name">{{ result.name }}</div>
                   </ng-container>
                 
             </li>
