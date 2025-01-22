@@ -1,7 +1,12 @@
 <main>
     <div class="container">
-        <ul>
-            <li  *ngFor="let result of searchResults; let i = index" (click)="handleClick(result)">
+        <ul #dropdown tabindex="0">
+            <li  
+                *ngFor="let result of searchResults; let i = index" 
+                (click)="handleClick(result)"
+                [class.selected]="i === selectedIndex"
+                (mouseenter)="selectedIndex = i"
+            >
                 <ng-container *ngIf="isChannel()">
                     <div class="icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

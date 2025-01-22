@@ -2,7 +2,7 @@
 @import 'mixins';
 
 main {
-    max-width: 335px;
+    max-width: 400px;
     max-height: 171px;
     width: 100%;
     padding: 20px 21px;
@@ -10,21 +10,47 @@ main {
     background-color: #FFFFFF;
     box-shadow: 0px 6px 10px 0px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-    border: 1px solid #ADB0D9;
+    border: 1px solid $dividerColor;
     overflow: hidden;
+
+    @media (max-width: 450px){
+        max-width: 300px;
+    }
+
+    @media (max-width: 400px){
+        max-width: 250px;
+    }
+
+    @media (max-width: 350px){
+        max-width: 200px;
+        padding: 16px 5px;
+    }
 
     .container {
         height: 100px;
         overflow-y: auto;
+
+        
         ul {
+            padding-right: 10px;
+            &:focus-visible {
+                border: unset;
+                outline: unset;
+            }
+    
+            
             li {
                 display: flex;
+                align-items: center;
+                padding: 6px 14px;
+                width: fit-content;
                 gap: 10px;
 
                 .icon {
+                    display: flex;
                     svg {
                         path {
-                            fill:#ADB0D9
+                            fill: $dividerColor;
                         }
                     }
                 }
@@ -35,6 +61,16 @@ main {
                     line-height: 24.55px;
                     text-align: left;
                 }
+            }
+
+            li.selected {
+                background-color: $backgroundColor; 
+                cursor: pointer;
+                border-radius: 20px;
+            }
+            
+            li:hover {
+                background-color: $backgroundColor;
             }
 
         }

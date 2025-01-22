@@ -1,4 +1,4 @@
-import { Component, Input, inject,  OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, inject,  OnChanges, SimpleChanges, HostListener, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { NgFor, NgIf, } from '@angular/common';
 import { ChannelInterface } from '../../interfaces/channel.interface';
 import { UserInterface } from '../../interfaces/user.interface';
@@ -16,15 +16,77 @@ type SearchResult = ChannelInterface | UserInterface;
   templateUrl: './result-dropdown.component.html',
   styleUrl: './result-dropdown.component.scss'
 })
-export class ResultDropdownComponent implements OnChanges{
+export class ResultDropdownComponent implements OnChanges, AfterViewInit{
   protected storage = inject(FirebaseStorageService);
   navigationService = inject(NavigationService);
   search = inject(SearchService);
   searchResults: SearchResult[] = [];
   @Input() userInput: string = "";
   public isLargeScreen: boolean = window.innerWidth >= 1201;
+  selectedIndex: number = -1;
+  dropdownElement: HTMLElement | undefined;
+
+  @ViewChild('dropdown') dropdown!: ElementRef;
 
   constructor(private viewService: SetMobileViewService) {}
+
+  ngAfterViewInit() {
+    // Fokus auf das Dropdown setzen, wenn es angezeigt wird
+    if (this.searchResults.length > 0) {
+      this.dropdownElement = this.dropdown.nativeElement;
+      this.dropdownElement!.focus();
+    }
+  }
+
+  @HostListener('keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (this.searchResults.length === 0) {
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.moveSelection(1);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        this.moveSelection(-1);
+        break;
+      case 'Enter':
+        event.preventDefault();
+        if (this.selectedIndex >= 0 && this.selectedIndex < this.searchResults.length) {
+          this.handleClick(this.searchResults[this.selectedIndex]);
+        }
+        break;
+      case 'Escape':
+        // Optional: Schließen Sie das Dropdown bei Escape
+        this.searchResults = [];
+        break;
+      default:
+        break;
+    }
+  }
+
+  moveSelection(delta: number) {
+    this.selectedIndex += delta;
+    if (this.selectedIndex < 0) {
+      this.selectedIndex = this.searchResults.length - 1;
+    } else if (this.selectedIndex >= this.searchResults.length) {
+      this.selectedIndex = 0;
+    }
+
+    this.scrollToSelected();
+  }
+
+  scrollToSelected() {
+    if (this.dropdownElement) {
+      const selectedItem = this.dropdownElement.querySelectorAll('li')[this.selectedIndex] as HTMLElement;
+      if (selectedItem) {
+        selectedItem.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['userInput']) {
