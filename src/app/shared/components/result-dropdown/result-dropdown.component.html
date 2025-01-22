@@ -1,6 +1,6 @@
 <main>
     <div class="container">
-        <ul #dropdown tabindex="0">
+        <ul #dropdown id="result-dropdown" tabindex="0">
             <li  
                 *ngFor="let result of searchResults; let i = index" 
                 (click)="handleClick(result)"
