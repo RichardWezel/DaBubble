@@ -1,5 +1,5 @@
-<main *ngIf="isOpen">
-    <div class="dialog" [class.currentUserPosition]="userIsCurrentUser(user?.id!)">
+<main *ngIf="isOpen" (click)="closeDialog()">
+    <div class="dialog" (click)="$event.stopPropagation()" [class.currentUserPosition]="userIsCurrentUser(user?.id!)">
 
         <section class="head">
             <div>Profil</div>
@@ -21,8 +21,8 @@
             <div *ngIf="mode === 'edit'" class="edit-avatar" (click)="openFileExplorer(fileInput)">
                 <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*">
                 <img [src]="currentProfilePicture">
-                @if (uploadFile && uploadFile.size > 2000000) {
-                    <div class="overlay">Bild zu groß</div>
+                @if (uploadFile && uploadFile.size > 512000) {
+                    <div class="overlay">Bild zu groß Max 500 kB</div>
                 }
             </div>
         </section>
@@ -31,17 +31,15 @@
             <section class="user-name">
                 <div class="nameAndEdit">
                     <div class="name">{{ user?.name }}</div>
-                    <button 
-                        (click)="changeToEditMode()" 
-                        class="edit"
-                        *ngIf="isCurrentUser(user?.name!)">
+                    <button (click)="changeToEditMode()" class="edit" *ngIf="isCurrentUser(user?.name!)">
                         Bearbeiten
                     </button>
                 </div>
 
                 <div class="online">
                     <div class="dott" [ngClass]="{'offline-dott': user?.online === false}"></div>
-                    <div class="status" [ngClass]="{'offline-status': user?.online === false}">{{ user?.online === false ? 'Abwesend' : 'Aktiv' }}
+                    <div class="status" [ngClass]="{'offline-status': user?.online === false}">{{ user?.online === false
+                        ? 'Abwesend' : 'Aktiv' }}
                     </div>
                 </div>
             </section>
@@ -116,7 +114,7 @@
                 </div>
                 <input id="profile-email" type="email" placeholder="E-Mail Adresse"
                     pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}" class="edit-name-input" name="email"
-                    [(ngModel)]="email">
+                    [(ngModel)]="email" (blur)="updateEmail()">
 
             </label>
 

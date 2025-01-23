@@ -1,5 +1,5 @@
 import { NgClass, NgIf } from '@angular/common';
-import { Component, inject, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, HostListener, inject, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { OpenUserProfileService } from '../../../services/open-user-profile.service';
 import { UserInterface } from '../../../interfaces/user.interface';
@@ -28,6 +28,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   mode: 'show' | 'edit' = 'show';
   email: string = '';
   name: string = '';
+  message: string = '';
   avatar: string = '';
   currentProfilePicture: string = '';
   uploadFile: File | null = null;
@@ -39,6 +40,20 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   constructor(
     public openCloseDialogService: OpenCloseDialogService,
     public openUserProfileService: OpenUserProfileService) {
+    this.email = this.user?.email || '';
+  }
+
+
+  /**
+   * Closes the dialog by click on esc key.
+   * 
+   * @param event - click escape Key
+   */
+  @HostListener('document:keydown.escape', ['$event']) 
+  handleEscape(event: KeyboardEvent) {
+    if (this.isOpen) {
+      this.closeDialog();
+    }
   }
 
 
@@ -238,4 +253,24 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   openFileExplorer(fileInput: HTMLInputElement) {
     fileInput.click();
   }
+
+  async updateEmail() {
+    console.log(" updateEmail() wurde aufgerufen mit:", this.email);
+
+    if (!this.email) {
+      this.message = " Bitte eine gültige neue E-Mail eingeben.";
+      console.warn(" Keine neue E-Mail eingegeben.");
+      return;
+    }
+
+    try {
+      await this.auth.changeUserEmail(this.email);
+      this.message = " E-Mail wurde erfolgreich geändert! Bitte überprüfen Sie Ihre neue E-Mail.";
+      console.log("changeUserEmail wurde erfolgreich ausgeführt!");
+    } catch (error: any) {
+      this.message = " Fehler: " + error.message;
+      console.error(" Fehler beim Ändern der E-Mail:", error.message);
+    }
+  }
+
 }

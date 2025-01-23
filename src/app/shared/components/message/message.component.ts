@@ -262,7 +262,6 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   outsideClick(event: any) {
     event.stopPropagation();
     const path = event.path || (event.composedPath && event.composedPath());
-    console.log(path);
     if (!path.includes(this.elementRef.nativeElement.querySelector('app-emoji-selector'))) {
       this.showEmojiSelector = false;
     }

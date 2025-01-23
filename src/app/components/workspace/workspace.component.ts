@@ -5,7 +5,7 @@ import { ChannelComponent } from './channel/channel.component';
 import { WorkspaceMenuComponent } from './workspace-menu/workspace-menu.component';
 import { ThreadComponent } from './thread/thread.component';
 import { FirebaseStorageService } from '../../shared/services/firebase-storage.service';
-import { UserProfileComponent } from '../../shared/components/dialog/user-profile/user-profile.component'; 
+import { UserProfileComponent } from '../../shared/components/dialog/user-profile/user-profile.component';
 import { FirebaseAuthService } from '../../shared/services/firebase-auth.service';
 import { OpenCloseDialogService } from '../../shared/services/open-close-dialog.service';
 import { Subscription } from 'rxjs';

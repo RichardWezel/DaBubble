@@ -20,12 +20,12 @@
             <section class="choice">
                 <div class="radio-group">
                     <label class="radio-label">
-                      <input type="radio" name="customRadio" value="addAllUsers" [(ngModel)]="selectedOption" (change)="onOptionChange()">
+                      <input type="radio" name="customRadio" value="addAllUsers" [(ngModel)]="selectedOption">
                       <span class="custom-radio"></span>
                       <div>Alle Mitglieder von<span class="userGroupName" #allusers>&nbsp;OfficeTeam&nbsp;</span>hinzufügen</div>
                     </label>
                     <label class="radio-label">
-                      <input type="radio" name="customRadio" value="addSpecificUser" [(ngModel)]="selectedOption" (change)="onOptionChange()">
+                      <input type="radio" name="customRadio" value="addSpecificUser" [(ngModel)]="selectedOption">
                       <span class="custom-radio"></span>
                       Bestimmte Leute hinzufügen
                     </label>

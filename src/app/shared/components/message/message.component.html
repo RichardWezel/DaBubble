@@ -1,4 +1,7 @@
-<main [class.self]="isAuthorCurrentUser" [class.edit]="postEdit">
+<main 
+  [id]="post.id" 
+  [class.self]="isAuthorCurrentUser" 
+  [class.edit]="postEdit">
   @if (!threadHead) {
 
     @if (!postEdit) {

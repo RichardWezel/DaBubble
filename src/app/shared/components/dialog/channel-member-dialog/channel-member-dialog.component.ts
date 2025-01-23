@@ -1,5 +1,5 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, HostListener } from '@angular/core';
 import { FirebaseStorageService } from '../../../services/firebase-storage.service';
 import { CloudStorageService } from '../../../services/cloud-storage.service';
 import { OpenCloseDialogService } from '../../../services/open-close-dialog.service';
@@ -23,6 +23,19 @@ export class ChannelMemberDialogComponent {
 
 
   constructor() { }
+
+
+  /**
+   * Closes the dialog by click on esc key.
+   * 
+   * @param event - click escape Key
+   */
+  @HostListener('document:keydown.escape', ['$event']) 
+  handleEscape(event: KeyboardEvent) {
+    if (this.isOpen) {
+      this.closeDialog();
+    }
+  }
 
 
   /**

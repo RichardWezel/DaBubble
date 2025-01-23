@@ -32,7 +32,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   sendMessageService = inject(SendMessageService);
   inputEvent = inject(InputEventsService);
 
-  excludedTags: string[] = ['messageContent', 'newMessageInput', 'searchbar', 'channel-name', 'channel-description', 'profile-name', 'profile-email', 'editMessage', 'newChannelMemberInput'];
+  excludedTags: string[] = ['messageContent', 'newMessageInput', 'searchbar', 'channel-name', 'channel-description', 'profile-name', 'profile-email', 'editMessage', 'newChannelMemberInput', 'result-dropdown'];
 
   @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective;
   @ViewChild('messageContent', { static: false }) messageContent!: ElementRef<HTMLDivElement>;
@@ -134,6 +134,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     (focusElement as HTMLInputElement).selectionEnd = (focusElement as HTMLInputElement).value.length;
   }
 
+
   onKeyUp(event: KeyboardEvent) {
     const content = this.messageContent.nativeElement.innerHTML;
     this.message = content;
@@ -182,7 +183,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   outsideClick(event: any): void {
     event.stopPropagation();
     const path = event.path || (event.composedPath && event.composedPath());
-    if (!path.includes(this.elementRef.nativeElement.querySelector('.smileys, .smileys-container'))) {
+    if (!path.includes(this.elementRef.nativeElement.querySelector('.active, .smileys-container'))) {
       this.showEmojiSelector = false;
     }
   }
@@ -269,6 +270,19 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     else this.sendMessageService.handleNormalPost(newPost);
     message.innerHTML = '';
     this.startInput = false;
+    this.scrollToPost(newPost.id);
+  }
+
+  scrollToPost(postId: string) {
+    // Verzögern Sie das Scrollen, um sicherzustellen, dass das Element im DOM vorhanden ist
+    setTimeout(() => {
+      const postElement = document.getElementById(postId);
+      if (postElement) {
+        postElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        console.warn(`Element mit ID ${postId} nicht gefunden.`);
+      }
+    }, 100); // Passen Sie die Verzögerung nach Bedarf an
   }
 
 
@@ -293,8 +307,9 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     newMessage.innerHTML += emoji;
     newMessage.innerHTML = newMessage.innerHTML.replaceAll('<br>', '');
     this.startInput = true;
-    this.showEmojiSelector = false;
     this.setFocus();
+    this.showEmojiSelector = false;
+    console.log(this.showEmojiSelector);
   }
 
 
@@ -404,6 +419,10 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
 
 
 
+  /**
+   * Cancels the current post edit operation. Toggles the edit mode and
+   * emits the editChange event with the new state.
+   */
   cancelPost() {
     this.edit = !this.edit;
     this.editChange.emit(this.edit);

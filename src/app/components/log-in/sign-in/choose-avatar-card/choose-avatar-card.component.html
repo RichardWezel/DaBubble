@@ -13,8 +13,8 @@
         <form (ngSubmit)="setNewUser()" #avatarForm="ngForm">
             <div class="chosen-picture-container">
                 <img src="{{ currentProfilePicture }}">
-                @if (uploadFile && uploadFile.size > 2000000) {
-                    <div class="overlay">Bild zu groß</div>
+                @if (uploadFile && uploadFile.size > 512000) {
+                    <div class="overlay">Bild zu groß Max 500 kB</div>
                 }
             </div>
 
@@ -36,7 +36,7 @@
             <div class="button-container">
                 <p *ngIf="errorMessage" class="error-message error-text-input">{{ errorMessage }}</p>
                 <button #submitButton type="submit" class="mainButton buttonPrimary"
-                    [disabled]="!avatarSelected || successMessage || (uploadFile && uploadFile.size > 2000000)">
+                    [disabled]="!avatarSelected || successMessage || (uploadFile && uploadFile.size > 512000)">
                     {{ isLoading ? 'Wird geladen...' : 'Weiter' }}
                 </button>
             </div>
@@ -44,8 +44,8 @@
         <app-confirmation-modal *ngIf="showDialog" (close)="closeDialog($event)">
             <h2>E-Mail versendet</h2>
             <p>
-              Eine Bestätigungs-E-Mail wurde an <strong>{{ signInService.signInData.email }}</strong> gesendet.<br>
-              Bitte überprüfen Sie auch Ihren Spam-Ordner.
+                Eine Bestätigungs-E-Mail wurde an <strong>{{ signInService.signInData.email }}</strong> gesendet.<br>
+                Bitte überprüfen Sie auch Ihren Spam-Ordner.
             </p>
         </app-confirmation-modal>
     </app-card>

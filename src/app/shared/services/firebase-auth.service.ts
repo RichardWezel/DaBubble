@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { Auth, GoogleAuthProvider, signInWithPopup, signOut } from '@angular/fire/auth';
+import { Auth, getAuth, GoogleAuthProvider, signInWithPopup, signOut, verifyBeforeUpdateEmail } from '@angular/fire/auth';
 import { FirebaseStorageService } from './firebase-storage.service';
-import { doc, getDoc, updateDoc } from '@angular/fire/firestore';
+import { doc, Firestore, getDoc, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { CurrentUserInterface } from '../interfaces/current-user-interface';
 import { FirebaseError } from '@angular/fire/app';
@@ -14,6 +14,7 @@ export class FirebaseAuthService {
   storage = inject(FirebaseStorageService);
   auth = inject(Auth);
   router = inject(Router);
+  private firestore = inject(Firestore);
   errorMessage: string = '';
 
   onlineTimer: any = null;
@@ -97,6 +98,29 @@ export class FirebaseAuthService {
     }
   }
 
+  async changeUserEmail(newEmail: string): Promise<void> {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user || !user.email) {
+      console.error(" Kein Benutzer angemeldet.");
+      alert("Fehler: Kein Benutzer angemeldet.");
+      return;
+    }
+
+    try {
+      console.log(" Bestätigungs-E-Mail wird gesendet...");
+      await verifyBeforeUpdateEmail(user, newEmail);
+      console.log(" Bestätigungs-E-Mail gesendet!");
+      alert("Eine Bestätigungs-Mail wurde an die neue Adresse gesendet. Bitte klicken Sie auf den Bestätigungslink, um die Änderung abzuschließen.");
+      await user.reload();
+      console.log("🔄 Benutzerinformationen aktualisiert!");
+    } catch (error: any) {
+      console.error(" Fehler beim Ändern der E-Mail:", error.message);
+      alert("Fehler: " + error.message);
+    }
+  }
+
 
 
   /**
@@ -149,6 +173,7 @@ export class FirebaseAuthService {
     if (user && user.id) {
       user.online = false;
       await this.setCurrentUserOffline(user.id); // Stelle sicher, dass das Setzen des Status erfolgreich ist
+      await this.auth.currentUser?.reload();
       await signOut(this.auth);
       this.deleteLocalData();
     }
