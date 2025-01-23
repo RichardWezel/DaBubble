@@ -47,6 +47,18 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
 
   /**
+ * Handles the 'beforeunload' event triggered when the user attempts to close
+ * the browser tab or window. Executes the logout process to ensure the user's
+ * session is terminated and their status is updated.
+ * @param event - the 'beforeunload' event object triggered by the browser.
+ */
+  @HostListener('window:beforeunload', ['$event'])
+  async handleBeforeUnload(event: Event) {
+    await this.authService.logout();
+  }
+
+  
+  /**
    * Subscribes to dialog, breakpoint, and view state changes to manage the workspace layout and functionality.
    */
   ngOnInit(): void {
