@@ -37,6 +37,7 @@ form {
     display: flex;
     align-items: center;
     gap: 8px;
+    position: relative;
 
     @media (min-width: 511px) and (max-width: 522px) {
         margin-top: 14px;
@@ -44,6 +45,14 @@ form {
 
     @media (max-width: 450px) {
         margin-top: 14px;
+    }
+}
+
+.error-text-privacy-policy {
+    top: 26px;
+
+    @media (max-width: 420px) {
+        top: 20px;
     }
 }
 
@@ -180,10 +189,24 @@ form {
     }
 }
 
+.btn-container {
+    position: relative;
+}
+
 .next-button {
     @media (max-width: 510px) {
         font-size: 14px;
         padding: 0px 20px;
         height: 40px;
     }
+}
+
+.ux-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 128, 0, 0.2);
+    border-radius: 24px;
 }

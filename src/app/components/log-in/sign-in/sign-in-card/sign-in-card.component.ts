@@ -28,6 +28,7 @@ export class SignInCardComponent {
   nameInputIsFocused: boolean = false;
   mailInputIsFocused: boolean = false;
   passwordIsFocused: boolean = false;
+  inputFieldCheck: boolean = false;
 
   @Output() generateAccount = new EventEmitter<boolean>();
 
@@ -104,5 +105,16 @@ export class SignInCardComponent {
    */
   togglePasswordVisibility(): void {
     this.passwordVisible = !this.passwordVisible;
+  }
+
+
+  /**
+   * Checks if the input fields are valid by setting the focus of the input fields to true.
+   */
+  checkInputFields() {
+    this.nameInputIsFocused = true;
+    this.mailInputIsFocused = true;
+    this.passwordIsFocused = true;
+    this.inputFieldCheck = true;
   }
 }
