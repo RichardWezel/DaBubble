@@ -18,7 +18,7 @@ export class SearchService {
    * @returns A promise that resolves to the DM channel ID or undefined.
    */
   async findIdOfDM(result: UserInterface): Promise<string | undefined> {
-    const UserMatch = this.storage.user.find(user => 
+    const UserMatch = this.storage.user.find(user =>
       user.name.toLowerCase().includes(result.name.toLowerCase())
     );
     if (UserMatch && this.findUserInDms(UserMatch)) {
@@ -30,13 +30,14 @@ export class SearchService {
     }
   }
 
-   /**
-   * Checks if a user is already in the current user's direct messages.
-   * @param UserMatch - The UserInterface object to check.
-   * @returns True if the user is in DMs, false otherwise.
-   */
-   findUserInDms(UserMatch: UserInterface): boolean {
-    return this.storage.currentUser.dm.some(dm => dm.contact === UserMatch.id);
+  /**
+  * Checks if a user is already in the current user's direct messages.
+  * @param UserMatch - The UserInterface object to check.
+  * @returns True if the user is in DMs, false otherwise.
+  */
+  findUserInDms(UserMatch: UserInterface): boolean {
+    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    return curUser!.dm.some(dm => dm.contact === UserMatch.id);
   }
 
   /**
@@ -45,7 +46,8 @@ export class SearchService {
    * @returns The DM channel ID or undefined if not found.
    */
   getDmContact(IdOfUser: string): string | undefined {
-    const dm = this.storage.currentUser.dm.find(dm => dm.contact === IdOfUser);
+    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    const dm = curUser?.dm.find(dm => dm.contact === IdOfUser);
     return dm ? dm.id : undefined;
   }
 
@@ -56,7 +58,8 @@ export class SearchService {
    */
   async showNewDm(UserMatch: UserInterface): Promise<string | undefined> {
     await this.createEmptyDms(UserMatch);
-    let dmWithNewUser = this.storage.currentUser.dm.find(dm => dm.contact === UserMatch.id);
+    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    let dmWithNewUser = curUser?.dm.find(dm => dm.contact === UserMatch.id);
     if (dmWithNewUser) {
       return dmWithNewUser!.id;
     } else {

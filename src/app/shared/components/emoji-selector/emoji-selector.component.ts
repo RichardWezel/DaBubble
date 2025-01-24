@@ -77,7 +77,8 @@ export class EmojiSelectorComponent {
     if (!this.storage.currentUser.currentChannel || !this.storage.currentUser.id) return;
     let posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
     let currentPost = posts?.find(post => post.id === this.storage.currentUser.postId);
-    let currentDm = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
+    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    let currentDm = curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
     let dmPost = currentDm?.posts?.find(post => post.id === this.storage.currentUser.postId);
     switch (true) {
       case this.isThread && this.origin === 'channel':

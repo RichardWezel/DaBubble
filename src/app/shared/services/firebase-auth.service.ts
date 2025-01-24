@@ -21,6 +21,18 @@ export class FirebaseAuthService {
 
 
   /**
+ * Initializes a new instance and checks if an authentication UID is present in the session storage.
+ * If an autehntication UID is found, it sets the 'authUid' in the storage and retrieves the current user.
+ */
+  constructor() {
+    if (sessionStorage.getItem("authUid")) {
+      this.storage.authUid = sessionStorage.getItem("authUid") || '';
+      this.getCurrentUser();
+    }
+  }
+
+
+  /**
    * Logs the user in as a guest by setting a predefined authentication UID in session storage and the storage service.
    * Updates the current user information and navigates to the workspace route with a reload option.
    */

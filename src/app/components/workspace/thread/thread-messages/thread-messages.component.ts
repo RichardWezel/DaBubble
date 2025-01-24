@@ -45,7 +45,8 @@ export class ThreadMessagesComponent extends ChannelMessagesComponent {
    * @returns {PostInterface} The original post from a DM that initiated the thread or a default empty post if not found.
    */
   getOriginalPostFromDm() {
-    let posts = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.posts;
+    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    let posts = curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.posts;
     let post = posts?.find(post => post.id === this.storage.currentUser.postId);
     return post ? post : { text: '', author: '', timestamp: 0, thread: false, id: '' };
   }
@@ -56,7 +57,8 @@ export class ThreadMessagesComponent extends ChannelMessagesComponent {
    * @returns {PostInterface[]} Array of thread messages or an empty array if none exist.
    */
   getThreadOfDm() {
-    let posts = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.posts;
+    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    let posts = curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.posts;
     let post = posts?.find(post => post.id === this.storage.currentUser.postId);
     return post ? post.threadMsg : [];
   }

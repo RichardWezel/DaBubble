@@ -56,7 +56,8 @@ export class OpenUserProfileService {
    * @returns - 'True' if a DM with the specified user exists, 'false' otherwise.
    */
   findUserInDms(userOfSuggestion: UserInterface): boolean {
-    return this.storage.currentUser.dm.some(dm => dm.contact === userOfSuggestion.id);
+    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    return curUser!.dm.some(dm => dm.contact === userOfSuggestion.id);
   }
 
 
@@ -66,7 +67,8 @@ export class OpenUserProfileService {
    * @returns - The matching user object if found, or 'undefined' if no match exists.
    */
   findUserInCurrentUserDms(foundUser: UserInterface): object | undefined {
-    let match = this.storage.currentUser.dm.find(user => user.id === foundUser.id);
+    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    let match = curUser!.dm.find(user => user.id === foundUser.id);
     return match
   }
 

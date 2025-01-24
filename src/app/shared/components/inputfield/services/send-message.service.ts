@@ -42,7 +42,8 @@ export class SendMessageService {
    * @returns {boolean}
    */
   isSelfDm(): boolean {
-    return this.storage.currentUser.id === this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.contact;
+    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    return this.storage.currentUser.id === curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.contact;
   }
 
 
@@ -82,7 +83,8 @@ export class SendMessageService {
    */
   writeThreadToDm(newPost: PostInterface) {
     if (!this.storage.currentUser.currentChannel || !this.storage.currentUser.id) return;
-    let dm = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
+    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    let dm = curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
     let post = dm?.posts.find(post => post.id === this.storage.currentUser.postId);
     if (post && this.storage.currentUser.postId) {
       let updatedPost = this.updatePost(post, newPost);
@@ -165,11 +167,12 @@ export class SendMessageService {
 
   editMessage(post: PostInterface, thread: boolean) {
     if (!this.storage.currentUser.currentChannel || !this.storage.currentUser.id) return;
-    let origin = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel) ? 'dm' : 'channel';
+    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    let origin = curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel) ? 'dm' : 'channel';
     console.log(post);
     let posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
     let currentPost = posts?.find(post => post.id === this.storage.currentUser.postId);
-    let currentDm = this.storage.currentUser.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
+    let currentDm = curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
     let dmPost = currentDm?.posts?.find(post => post.id === this.storage.currentUser.postId);
     switch (true) {
       case thread && origin === 'channel':
