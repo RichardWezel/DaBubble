@@ -25,9 +25,6 @@ export class SignInCardComponent {
   isLoading: boolean = false; // Loading level
   formError: boolean = false;
   passwordVisible: boolean = false;
-  nameInputIsFocused: boolean = false;
-  mailInputIsFocused: boolean = false;
-  passwordIsFocused: boolean = false;
   inputFieldCheck: boolean = false;
 
   @Output() generateAccount = new EventEmitter<boolean>();
@@ -59,6 +56,7 @@ export class SignInCardComponent {
   resetCheckForm() {
     this.isLoading = true;
     this.authService.errorMessage = '';
+    this.inputFieldCheck = false;
   }
 
 
@@ -112,9 +110,8 @@ export class SignInCardComponent {
    * Checks if the input fields are valid by setting the focus of the input fields to true.
    */
   checkInputFields() {
-    this.nameInputIsFocused = true;
-    this.mailInputIsFocused = true;
-    this.passwordIsFocused = true;
+    this.authService.errorMessage = '';
     this.inputFieldCheck = true;
+    console.log("Check");
   }
 }
