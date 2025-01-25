@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { NavigationService } from '../../../../shared/services/navigation.service';
 import { ValidatorService } from '../../../../shared/services/validator-service';
 import { ConfirmationModalComponent } from "../../../../shared/components/confirmation-modal/confirmation-modal.component";
+import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
 
 
 @Component({
@@ -19,9 +20,11 @@ export class SendEmailCardComponent {
   mailData: string = '';
   showDialog: boolean = false;
   mailInputIsFocused: boolean = false;
+  inputFieldCheck: boolean = false;
   @Output() login = new EventEmitter<boolean>();
 
   private validator = inject(ValidatorService);
+  authService: FirebaseAuthService = inject(FirebaseAuthService);
   private auth = inject(Auth);
 
 
@@ -37,6 +40,15 @@ export class SendEmailCardComponent {
    */
   goToLogin() {
     this.login.emit(true);
+    this.authService.errorMessage = '';
+  }
+
+
+  /**
+   * When the component gets loaded, the error message gets cleared.
+   */
+  ngOnInit() {
+    this.authService.errorMessage = '';
   }
 
 
@@ -46,6 +58,7 @@ export class SendEmailCardComponent {
    *            If the email is invalid, it returns early with no value.
    */
   async sendMail(): Promise<void> {
+    this.authService.errorMessage = '';
     if (!this.mailData || !this.validator.validateEmail(this.mailData)) {
       alert('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
       return;
@@ -54,8 +67,7 @@ export class SendEmailCardComponent {
       await sendPasswordResetEmail(this.auth, this.mailData);
       this.showDialog = true;
     } catch (error: any) {
-      console.error('Fehler beim Zurücksetzen des Passworts:', error);
-      alert('Es gab ein Problem beim Zurücksetzen des Passworts.');
+      this.authService.errorMessage = 'Fehler beim Zurücksetzen des Passworts.';
     }
   }
 
@@ -66,6 +78,15 @@ export class SendEmailCardComponent {
   closeDialog(event: boolean) {
     this.showDialog = event;
     this.login.emit(true);
+  }
+
+
+/**
+ * Checks if the input fields are valid by setting the focus of the input fields to true.
+ */
+  checkInputFields() {
+    this.authService.errorMessage = '';
+    this.inputFieldCheck = true;
   }
 
 }

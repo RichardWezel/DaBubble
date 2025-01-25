@@ -31,6 +31,7 @@ export class LogInCardComponent {
   isLoading: boolean = false;
   mailInputIsFocused: boolean = false;
   passwordInputIsFocused: boolean = false;
+  inputFieldCheck: boolean = false;
 
   @Output() login = new EventEmitter<boolean>();
 
@@ -142,5 +143,14 @@ export class LogInCardComponent {
       default:
         this.authService.errorMessage = "Es gibt kein Konto mit dieser E-Mail-Adresse. Registrieren Sie sich zuerst.";
     }
+  }
+
+
+  /**
+   * Checks if the input fields are valid by setting the focus of the input fields to true.
+   */
+  checkInputFields() {
+    this.authService.errorMessage = '';
+    this.inputFieldCheck = true;
   }
 }
