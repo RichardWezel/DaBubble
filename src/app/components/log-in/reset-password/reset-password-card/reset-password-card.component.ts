@@ -46,8 +46,6 @@ export class ResetPasswordCardComponent implements OnInit {
 
 
   constructor() {
-    console.log('Current User:', this.storage.currentUser);
-    console.log('Auth UID:', this.storage.authUid);
   }
 
 
@@ -58,7 +56,6 @@ export class ResetPasswordCardComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
       this.oobCode = params['oobCode'];
-      console.log('oobCode received:', this.oobCode); // Debugging
       if (!this.oobCode) {
         this.handleLinkError();
       } else {
@@ -83,11 +80,9 @@ export class ResetPasswordCardComponent implements OnInit {
   verifyOobCode() {
     verifyPasswordResetCode(this.auth, this.oobCode)
       .then(() => {
-        console.log('oobCode verified successfully'); // Debugging
         this.isLoading = false;
       })
       .catch((error) => {
-        console.error('Verification error:', error); // Debugging
         this.handleLinkError();
       });
   }
@@ -156,7 +151,6 @@ export class ResetPasswordCardComponent implements OnInit {
         this.errorMessage = err.code === 'auth/invalid-action-code'
           ? 'Der Link ist ungültig oder abgelaufen.'
           : 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.';
-        console.error('Passwort-Reset-Fehler:', err);
       });
   }
 

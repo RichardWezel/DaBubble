@@ -77,7 +77,6 @@ export class EmailVerifiedComponent implements OnInit {
         this.router.navigate(['/login']); // Navigation to log-in page
       }, 3000);
     } catch (error: any) {
-      console.error('Fehler bei der E-Mail-Bestätigung:', error);
       this.isLoading = false;
       this.message = this.getErrorMessage(error);
     }

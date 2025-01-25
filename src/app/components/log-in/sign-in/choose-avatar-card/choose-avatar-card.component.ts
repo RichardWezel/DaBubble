@@ -219,7 +219,6 @@ export class ChooseAvatarCardComponent {
     const auth = getAuth();
     const email = this.signInService.signInData.email;
     const password = this.signInService.signInData.password;
-    console.log('img', this.signInService.signInData.img);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       return userCredential.user.uid;

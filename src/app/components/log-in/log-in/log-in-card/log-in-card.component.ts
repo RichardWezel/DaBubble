@@ -104,7 +104,6 @@ export class LogInCardComponent {
       this.authService.errorMessage = "Ihre E-Mail-Adresse ist noch nicht verifiziert. Überprüfen Sie Ihren Posteingang.";
       return; // Stops further execution
     }
-    console.log("Benutzer eingeloggt:", user);
     this.savingAuthUid(user);
     await this.authService.getCurrentUser();
     this.navigateToWorkspace();
@@ -135,7 +134,6 @@ export class LogInCardComponent {
    * @param error - The Firebase error object containing details about the login failure.
    */
   showCorrectErrorMessage(error: FirebaseError) {
-    console.log('Error code', error.code);
     switch (error.code) {
       case 'auth/invalid-credential':
         this.authService.errorMessage = "E-Mail-Adresse oder Passwort ist falsch. Überprüfen Sie Ihre Eingabe.";
