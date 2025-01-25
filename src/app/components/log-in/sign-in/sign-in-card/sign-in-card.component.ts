@@ -112,6 +112,5 @@ export class SignInCardComponent {
   checkInputFields() {
     this.authService.errorMessage = '';
     this.inputFieldCheck = true;
-    console.log("Check");
   }
 }

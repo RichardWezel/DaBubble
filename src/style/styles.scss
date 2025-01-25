@@ -94,6 +94,10 @@ body {
   }
 }
 
+.btn-container {
+  position: relative;
+}
+
 .ux-button {
   position: absolute;
   top: 0;
@@ -103,6 +107,7 @@ body {
   background-color: unset;
   border: unset;
   border-radius: 24px;
+  background-color: rgba(176, 71, 71, 0.2);
 }
 
 app-workspace {

@@ -34,6 +34,7 @@ export class ChooseAvatarCardComponent {
   successMessage: string = ''; // Erfolgsmeldung
   showDialog: boolean = false; // Dialog-Steuerung
   uploadFile: File | null = null;
+  inputFieldCheck: boolean = false;
 
 
   /**
@@ -114,6 +115,7 @@ export class ChooseAvatarCardComponent {
     this.isLoading = true;
     this.errorMessage = '';
     this.successMessage = '';
+    this.inputFieldCheck = false;
   }
 
 
@@ -256,5 +258,14 @@ export class ChooseAvatarCardComponent {
    */
   goBackToLogin() {
     this.navigationService.navigateTo('login');
+  }
+
+
+  /**
+   * Checks if the input fields are valid by setting the focus of the input fields to true.
+   */
+  checkInputFields() {
+    this.errorMessage = '';
+    this.inputFieldCheck = true;
   }
 }
