@@ -74,7 +74,7 @@
                     <button type="submit" [disabled]="loginForm.invalid" class="mainButton buttonPrimary">Anmelden</button>
                     @if (loginForm.invalid) {
                         <button type="button" class="ux-button" (click)="checkInputFields()"></button>
-                        }
+                    }
                 </div>
                 <button type="button" class="mainButton buttonSecondary" (click)="authService.guestLogin()">Gäste-Login</button>
             </div>

@@ -42,6 +42,7 @@ export class ResetPasswordCardComponent implements OnInit {
   errorMessage: string = '';
   passwordInputIsFocused: boolean = false;
   confirmPasswordInputIsFocused: boolean = false;
+  inputFieldCheck: boolean = false;
 
 
   constructor() {
@@ -157,5 +158,14 @@ export class ResetPasswordCardComponent implements OnInit {
           : 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.';
         console.error('Passwort-Reset-Fehler:', err);
       });
+  }
+
+
+  /**
+   * Checks if the input fields are valid by setting the focus of the input fields to true.
+   */
+  checkInputFields() {
+    this.authService.errorMessage = '';
+    this.inputFieldCheck = true;
   }
 }
