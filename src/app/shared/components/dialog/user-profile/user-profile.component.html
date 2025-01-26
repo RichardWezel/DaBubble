@@ -101,8 +101,11 @@
                 <input id="profile-name" type="text" placeholder="Vollständiger Name" class="edit-name-input"
                     pattern="([A-Za-zÀ-ÖØ-öø-ÿ]{2,}(-[A-Za-zÀ-ÖØ-öø-ÿ]{2,})? ){1,2}[A-Za-zÀ-ÖØ-öø-ÿ]{2,}"
                     [(ngModel)]="name" name="name" #newName="ngModel" required>
-                @if (newName.valid && !inputFieldCheck) {
-                <span class="error-text-input">Bitte gebe deinen Vor- und Nachnamen ein.</span>
+                @if (!newName.valid && inputFieldCheck) {
+                    <span class="error-text-input">Bitte gebe deinen Vor- und Nachnamen ein.</span>
+                }
+                @if (newName.pristine && inputFieldCheck) {
+                    <span class="error-text-input">Du hast deinen Namen noch nicht geändert.</span>
                 }
             </label>
 
@@ -126,8 +129,11 @@
                 <input id="profile-email" type="email" placeholder="E-Mail Adresse"
                     pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}" class="edit-name-input" name="email"
                     #mail="ngModel" [(ngModel)]="email">
-                @if (mail.valid && !inputFieldCheck) {
-                <span class="error-text-input">Diese E-Mail-Adresse ist leider ungültig.</span>
+                @if (!mail.valid && inputFieldCheck) {
+                    <span class="error-text-input">Diese E-Mail-Adresse ist leider ungültig.</span>
+                }
+                @if (mail.pristine && inputFieldCheck) {
+                    <span class="error-text-input">Du hast die E-Mail-Adresse nicht geändert.</span>
                 }
             </label>
 

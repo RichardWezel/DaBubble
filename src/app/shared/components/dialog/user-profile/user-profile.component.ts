@@ -106,6 +106,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
    */
   closeDialog(): void {
     this.openCloseDialogService.close('userProfile');
+    this.mode = 'show';
   }
 
 
