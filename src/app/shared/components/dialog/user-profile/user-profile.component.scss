@@ -28,6 +28,9 @@ main {
         flex-direction: column;
         gap: 45px;
         width: 500px;
+        max-height: 80%;
+        overflow-y: auto;
+
 
         @media(max-width: $breakpoint1){
           

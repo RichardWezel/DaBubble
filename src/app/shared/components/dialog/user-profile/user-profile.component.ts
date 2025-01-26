@@ -206,6 +206,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
     };
 
     await this.storage.updateUser(this.userId, updatedUser as UserInterface);
+    await this.updateEmail();
     await this.auth.getCurrentUser();
 
     if (this.user) {
