@@ -485,6 +485,16 @@ main {
                         cursor: unset;
                     }
                 }
+
+                @media (max-width: 460px) {
+                    gap: 0px;
+                    justify-content: space-between;
+
+                    button {
+                        font-size: 16px;
+                        padding: 8px 20px;
+                    }
+                }
             }
         }
 
