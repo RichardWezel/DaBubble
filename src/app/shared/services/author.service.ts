@@ -1,5 +1,3 @@
-// src/app/services/author.service.ts
-
 import { Injectable } from '@angular/core';
 import { FirebaseStorageService } from './firebase-storage.service';
 import { Observable, of } from 'rxjs';
