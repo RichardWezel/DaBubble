@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-dm-section',
   standalone: true,
-  imports: [NgFor, NgIf, NgClass],
+  imports: [NgClass],
   templateUrl: './dm-section.component.html',
   styleUrl: './dm-section.component.scss'
 })
@@ -49,7 +49,7 @@ export class DmSectionComponent {
    * @returns {string} Index of the current user.
    */
   currentUserIndex() {
-    return this.storage.user.findIndex(user => user.id === this.storage.currentUser.id);
+    return this.storage.user.find(user => user.id === this.storage.currentUser.id);
   }
 
 
@@ -71,7 +71,6 @@ export class DmSectionComponent {
    * @returns {string} Avatar URL or path for the contact.
    */
   getDmAvatar(dm: { contact: string, id: string, posts: any[] }) {
-    // let avatar = this.findAvatar(dm.contact).startsWith('profile-') ? 'assets/img/profile-pictures/' + this.findAvatar(dm.contact) : this.cloud.openImage(this.findAvatar(dm.contact));
     let avatar: string = this.storage.user[this.storage.user.findIndex(user => user.id === dm.contact)]?.avatar;
     avatar = avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + avatar : this.cloud.openImage(avatar);
     return avatar;
@@ -125,5 +124,12 @@ export class DmSectionComponent {
    */
   setView(view: CurrentView): void {
     this.viewService.setCurrentView(view);
+  }
+
+
+  findContact(dm: { contact: string, id: string, posts: any[] }) {
+    let contact = this.storage.user.find(user => user.id === dm.contact);
+    if (contact) return true;
+    else return false;
   }
 }

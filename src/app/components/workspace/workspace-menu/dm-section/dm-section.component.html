@@ -20,19 +20,23 @@
     </div>
 </div>
 
-<div class="ws-member-container" *ngIf="isListVisible && storage.currentUser">
-    <div class="ws-member" *ngFor="let dm of storage.user[currentUserIndex()]?.dm">
-        <div class="ws-member-content" (click)="handleClick(dm.id || '')"
-            [ngClass]="{'active': dm.id == storage.currentUser.currentChannel}">
-            <div class="member-profile-icon">
-                <img [src]="getDmAvatar(dm)" alt="">
-                <div [class.online]="storage.isUserOnline(dm.contact)" class="status-dott"></div>
-            </div>
-            <div class="member-name">
-                <div>{{ 
-                    dmIndex(dm) 
-                    }}</div>
-            </div>
-        </div>
-    </div>
+<div class="ws-member-container">
+    @if(isListVisible && storage.currentUser) {
+        @for(dm of currentUserIndex()?.dm; track $index) {
+            @if (findContact(dm)) {
+                <div class="ws-member">
+                    <div class="ws-member-content" (click)="handleClick(dm.id || '')"
+                        [ngClass]="{'active': dm.id == storage.currentUser.currentChannel}">
+                        <div class="member-profile-icon">
+                            <img [src]="getDmAvatar(dm)" alt="">
+                            <div [class.online]="storage.isUserOnline(dm.contact)" class="status-dott"></div>
+                        </div>
+                        <div class="member-name">
+                            <div>{{ dmIndex(dm) }}</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    }
 </div>
