@@ -33,6 +33,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   currentProfilePicture: string = '';
   uploadFile: File | null = null;
   avatarChanged: boolean = false;
+  inputFieldCheck: boolean = false;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -192,6 +193,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
    * Saves the updated profile to the storage and updates the current session information.
    */
   async saveProfile(): Promise<void> {
+    this.resetcheckForm();
     if (this.avatarChanged && this.uploadFile && this.storage.currentUser.id) {
       this.avatar = await this.cloud.uploadProfilePicture(this.storage.currentUser.id, this.uploadFile);
       this.uploadFile = null;
@@ -272,6 +274,22 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
       this.message = " Fehler: " + error.message;
       console.error(" Fehler beim Ändern der E-Mail:", error.message);
     }
+  }
+
+
+  /**
+   * Checks if the input fields are valid by setting the focus of the input fields to true.
+   */
+  checkInputFields() {
+    this.inputFieldCheck = true;
+  }
+
+
+  /**
+   * Resets the inputFieldCheck varialbe, so that the error messages aren't showed.
+   */
+  resetcheckForm() {
+    this.inputFieldCheck = false;
   }
 
 }

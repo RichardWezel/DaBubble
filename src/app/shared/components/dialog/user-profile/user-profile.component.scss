@@ -1,5 +1,6 @@
 @import 'variables';
 @import 'mixins';
+@import './../../log-in/card/card.component.scss';
 
 main {
     position: fixed;
@@ -33,6 +34,9 @@ main {
 
 
         @media(max-width: $breakpoint1){
+
+            max-height: unset;
+            overflow-y: unset;
           
 
             .head{
@@ -199,6 +203,7 @@ main {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
+                    gap: 8px;
 
                     .name {
                         font-family: "Nunito";
@@ -349,6 +354,7 @@ main {
                 display: flex;
                 gap: 7px;
                 flex-direction: column;
+                position: relative;
 
                 .edit-name-label {
                     display: flex;
@@ -392,6 +398,7 @@ main {
                 display: flex;
                 gap: 7px;
                 flex-direction: column;
+                position: relative;
 
                 .edit-name-label {
                     display: flex;
@@ -480,5 +487,35 @@ main {
                 }
             }
         }
+
+        .edit-text {
+            display: unset;
+        }
+
+        .edit-responsive {
+            display: none;
+        }
+
+        @media (max-width: $breakpoint1) {
+            .edit-text {
+                display: none;
+            }
+
+            .edit-responsive {
+                box-sizing: border-box;
+                display: flex;
+                border-radius: 40px;
+                background-color: $backgroundColor;
+                @include dja;
+                width: 26px;
+                height: 26px;
+                padding: 3px;
+                box-sizing: content-box;
+            }
+        }
     }
+}
+
+.error-text-input {
+    top: 90px;
 }
