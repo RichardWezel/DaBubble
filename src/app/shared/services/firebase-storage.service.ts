@@ -52,31 +52,18 @@ export class FirebaseStorageService implements OnDestroy {
 
 
   /**
-   * Retrieves all threads from the user's channels and direct messages.
-   * @returns - An array of objects, where each object contains a thread and a parent.
+   * Retrieves all threads the user is currently in. This function goes through all the channels the user is in and
+   * all the direct messages the user has and aggregates all the thread messages into a single array of objects.
+   * Each object contains the thread message and the parent channel or user object.
+   * 
+   * @returns An array of objects with the thread message and the parent channel or user.
    */
   getAllThreads(): { thread: PostInterface, parent: ChannelInterface | UserInterface }[] {
     const threads: { thread: PostInterface, parent: ChannelInterface | UserInterface }[] = [];
     const userChannel = this.channel.filter(channel => channel.user.includes(this.authUid));
     const user = this.user.find(user => user.id === this.authUid);
-    userChannel.forEach(channel => {
-      channel.posts?.forEach(post => {
-        if (post.thread && post.threadMsg) {
-          post.threadMsg.forEach(threadPost => {
-            threads.push({ thread: threadPost, parent: channel });
-          });
-        }
-      });
-    });
-    user?.dm.forEach(dm => {
-      dm.posts.forEach(post => {
-        if (post.thread && post.threadMsg) {
-          post.threadMsg.forEach(threadPost => {
-            threads.push({ thread: threadPost, parent: this.currentUser });
-          });
-        }
-      });
-    });
+    threads.push(...this.storageHelper.getThreadsFromChannels(userChannel));
+    threads.push(...this.storageHelper.getThreadsFromDirectMessages(user?.dm, this.currentUser));
     return threads;
   }
 

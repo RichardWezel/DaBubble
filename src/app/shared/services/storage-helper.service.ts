@@ -78,4 +78,41 @@ export class StorageHelperService {
     };
 
   }
+
+
+  /**
+   * Retrieves all threads from the user's channels.
+   * @param channels - The array of channels from the user.
+   * @returns An array of objects, where each object contains a thread and a parent.
+   */
+  getThreadsFromChannels(channels: ChannelInterface[]): { thread: PostInterface, parent: ChannelInterface }[] {
+    const threads: { thread: PostInterface, parent: ChannelInterface }[] = [];
+    channels.forEach(channel => {
+      channel.posts?.forEach(post => {
+        if (post.thread && post.threadMsg) {
+          threads.push(...post.threadMsg.map(threadPost => ({ thread: threadPost, parent: channel })));
+        }
+      });
+    });
+    return threads;
+  }
+
+
+  /**
+   * Retrieves all threads from the user's direct messages.
+   * @param dms - The array of direct messages from the user.
+   * @param currentUser - The user object of the current user.
+   * @returns An array of objects, where each object contains a thread and a parent.
+   */
+  getThreadsFromDirectMessages(dms?: UserInterface['dm'], currentUser?: UserInterface): { thread: PostInterface, parent: UserInterface }[] {
+    const threads: { thread: PostInterface, parent: UserInterface }[] = [];
+    dms?.forEach(dm => {
+      dm.posts.forEach(post => {
+        if (post.thread && post.threadMsg) {
+          threads.push(...post.threadMsg.map(threadPost => ({ thread: threadPost, parent: currentUser! })));
+        }
+      });
+    });
+    return threads;
+  }
 }
