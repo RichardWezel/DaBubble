@@ -4,31 +4,31 @@ import { Injectable } from '@angular/core';
 import { FirebaseStorageService } from './firebase-storage.service';
 import { Observable, of } from 'rxjs';
 import { UserInterface } from '../interfaces/user.interface';
-import { Auth, signInWithPopup, GoogleAuthProvider, signOut as firebaseSignOut } from '@angular/fire/auth';
-import { Firestore, doc, getDoc, setDoc } from '@angular/fire/firestore';   
-import { User } from 'firebase/auth';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthorService {
- 
-  constructor(private firebaseService: FirebaseStorageService, private auth: Auth, private firestore: Firestore) { }
+
+
+  constructor(private firebaseService: FirebaseStorageService) { }
+
 
   /**
-   * Gibt den Namen des Autors basierend auf der authorId zurück.
-   * @param authorId Die Dokumenten-ID des Autors.
-   * @returns Ein Observable, das den Namen des Autors enthält.
+   * Retrieves the author information based on the provided author ID.
+   * Searches the user list from FirebaseStorageService to find a user with a matching ID.
+   * If found, returns an observable of the UserInterface with the author's details.
+   * If not found, returns an observable with a default user object indicating an unknown author.
+   *
+   * @param {string} authorId - The ID of the author to be retrieved.
+   * @returns {Observable<UserInterface>} An observable containing the author's information or a default unknown author object.
    */
   getAuthorNameById(authorId: string): Observable<UserInterface> {
-    // Zugriff auf die Benutzerliste aus dem FirebaseStorageService
     const user = this.firebaseService.user.find(user => user.id === authorId);
     if (user) {
       return of(user);
     } else {
-      // Optional: Fallback-Mechanismus, falls der Benutzer noch nicht geladen wurde
-      // Hier kannst du auch eine Echtzeit-Abfrage an Firestore durchführen
       return of({ type: 'user', name: 'Unbekannter Autor', id: authorId, avatar: '', email: '', online: false, dm: [] });
     }
   }
