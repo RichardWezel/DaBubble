@@ -102,6 +102,7 @@
     app-search {
       margin-left: 147px;
       width: 100%;
+      position: relative;
 
       @media (max-width: $breakpoint1){
         display: none;
