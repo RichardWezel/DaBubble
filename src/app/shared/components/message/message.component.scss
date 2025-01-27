@@ -432,6 +432,7 @@ main {
             transform-origin: left bottom;
             transition: all 125ms ease-in-out;
             transform: scale(0);
+            max-width: 169px;
 
             .emoticon-name {
                 font-size: 16px;
@@ -462,6 +463,7 @@ main {
         }
 
         &:hover {
+            cursor: pointer;
             div {
                 svg {
                     width: 23.13px;
