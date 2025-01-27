@@ -29,15 +29,17 @@ export class SearchComponent {
   navigation = inject(NavigationService);
   getUserName = inject(GetUserNameService);
   search = inject(SearchService);
+  elementRef = inject(ElementRef);
   searchResults: SearchResult[] = [];
   userInput: string = "";
   selectedIndex: number = -1;
   dropDownIsOpen: boolean = false;
+  dropdownElement: HTMLElement | undefined;
 
   private searchSubject = new Subject<string>();
 
   @ViewChildren('resultItem') resultItems!: QueryList<ElementRef>;
-  
+
   /**
    * Creates an instance of SearchComponent and sets up the search debouncing.
    * @param sanitizer - The DomSanitizer service to safely bind HTML content.
@@ -53,7 +55,7 @@ export class SearchComponent {
       this.onInputSearch();
     });
   }
- 
+
   /**
    * Handles the input event from the search bar by emitting the current user input.
    */
@@ -83,7 +85,7 @@ export class SearchComponent {
    * Updates the search results based on the current user input.
    * Searches for channels, users, channel posts, and threads if the input length is sufficient.
    */
-  updateSearchResults(): void  {
+  updateSearchResults(): void {
     if (this.userInput.length >= 2) {
       this.updateFoundedChannelsAndUsers();
       this.updateFoundedThreads();
@@ -96,7 +98,7 @@ export class SearchComponent {
   /**
    * Aggregates search results by finding matching channels, users, and channel posts.
    */
-  updateFoundedChannelsAndUsers(): void  {
+  updateFoundedChannelsAndUsers(): void {
     if (this.userInput) {
       const channelMatches: SearchResultChannel[] = this.findChannels(this.userInput);
       const userMatches: SearchResultUser[] = this.findUser(this.userInput);
@@ -114,7 +116,7 @@ export class SearchComponent {
    */
   updateFoundedThreads(): void {
     const threads = this.storage.getAllThreads();
-    const threadMatches: SearchResultThread[] = threads.filter(({ thread }) => 
+    const threadMatches: SearchResultThread[] = threads.filter(({ thread }) =>
       thread.text.toLowerCase().includes(this.userInput.toLowerCase())
     ).map(({ thread, parent }) => ({
       type: 'thread',
@@ -122,7 +124,7 @@ export class SearchComponent {
       parentId: parent.id || '',
       thread
     }) as SearchResultThread);
-    
+
     this.searchResults = [...this.searchResults, ...threadMatches];
   }
 
@@ -165,7 +167,7 @@ export class SearchComponent {
     const channels: ChannelInterface[] = this.storage.CurrentUserChannel;
     const inputLower = userInput.toLowerCase();
     const matches: SearchResultChannelPost[] = [];
-  
+
     channels.forEach(channel => {
       if (channel.posts) {
         channel.posts.forEach(post => {
@@ -179,7 +181,7 @@ export class SearchComponent {
         });
       }
     });
-  
+
     return matches;
   }
 
@@ -275,7 +277,7 @@ export class SearchComponent {
         this.navigation.setChannel(threadResult.parentId);
         let postId = this.storage.findParentPostId(threadResult.parentId, threadResult.thread.id)
         this.openThread(postId!);
-        console.log('postId: ',this.storage.currentUser.postId);
+        console.log('postId: ', this.storage.currentUser.postId);
         this.viewService.setCurrentView('thread');
       } else {
         console.error('Parent ID des Threads ist undefiniert.');
@@ -291,7 +293,7 @@ export class SearchComponent {
    * @param event - The KeyboardEvent object.
    */
   async handleKeyboardEvent(event: KeyboardEvent): Promise<void> {
-    if (this.searchResults.length > 0) {
+    if (this.searchResults.length > 0 || this.dropDownIsOpen) {
       if (event.key === 'ArrowDown') {
         this.handleArrowDown(event)
       } else if (event.key === 'ArrowUp') {
@@ -308,9 +310,14 @@ export class SearchComponent {
    * @param event - The KeyboardEvent object.
    */
   handleArrowDown(event: KeyboardEvent): void {
-    event.preventDefault(); 
-    this.selectedIndex = (this.selectedIndex + 1) % this.searchResults.length;
-    this.scrollToSelected();
+    event.preventDefault();
+    if (this.dropDownIsOpen) {
+      this.dropdownElement = this.elementRef.nativeElement.querySelector('#result-dropdown');
+      this.dropdownElement!.focus();
+    } else {
+      this.selectedIndex = (this.selectedIndex + 1) % this.searchResults.length;
+      this.scrollToSelected();
+    }
   }
 
 
@@ -320,8 +327,13 @@ export class SearchComponent {
    */
   handleArrowUp(event: KeyboardEvent): void {
     event.preventDefault();
-    this.selectedIndex = (this.selectedIndex > 0 ? this.selectedIndex - 1 : this.searchResults.length - 1);
-    this.scrollToSelected();
+    if (this.dropDownIsOpen) {
+      this.dropdownElement = this.elementRef.nativeElement.querySelector('#result-dropdown');
+      this.dropdownElement!.focus();
+    } else {
+      this.selectedIndex = (this.selectedIndex > 0 ? this.selectedIndex - 1 : this.searchResults.length - 1);
+      this.scrollToSelected();
+    }
   }
 
 
@@ -339,7 +351,7 @@ export class SearchComponent {
       }
     }
   }
-  
+
 
   /**
    * Scrolls the view to the currently selected search result.
@@ -422,5 +434,5 @@ export class SearchComponent {
     const channel = this.storage.channel.find(ch => ch.id === channelId);
     return channel ? channel.name : '';
   }
-  
+
 }

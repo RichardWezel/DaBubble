@@ -1,4 +1,4 @@
-import { Component, Input, inject,  OnChanges, SimpleChanges, HostListener, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Input, inject, OnChanges, SimpleChanges, HostListener, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { NgFor, NgIf, } from '@angular/common';
 import { ChannelInterface } from '../../interfaces/channel.interface';
 import { UserInterface } from '../../interfaces/user.interface';
@@ -16,25 +16,23 @@ type SearchResult = ChannelInterface | UserInterface;
   templateUrl: './result-dropdown.component.html',
   styleUrl: './result-dropdown.component.scss'
 })
-export class ResultDropdownComponent implements OnChanges, AfterViewInit{
+export class ResultDropdownComponent implements OnChanges, AfterViewInit {
   protected storage = inject(FirebaseStorageService);
   navigationService = inject(NavigationService);
   search = inject(SearchService);
   searchResults: SearchResult[] = [];
   @Input() userInput: string = "";
   public isLargeScreen: boolean = window.innerWidth >= 1201;
-  selectedIndex: number = -1;
+  selectedIndex: number = 0;
   dropdownElement: HTMLElement | undefined;
 
   @ViewChild('dropdown') dropdown!: ElementRef;
 
-  constructor(private viewService: SetMobileViewService) {}
+  constructor(private viewService: SetMobileViewService) { }
 
   ngAfterViewInit() {
-    // Fokus auf das Dropdown setzen, wenn es angezeigt wird
     if (this.searchResults.length > 0) {
-      this.dropdownElement = this.dropdown.nativeElement;
-      this.dropdownElement!.focus();
+      this.scrollToSelected();
     }
   }
 
@@ -80,7 +78,9 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit{
   }
 
   scrollToSelected() {
+    this.dropdownElement = this.dropdown.nativeElement;
     if (this.dropdownElement) {
+      console.log(this.dropdownElement, this.selectedIndex);
       const selectedItem = this.dropdownElement.querySelectorAll('li')[this.selectedIndex] as HTMLElement;
       if (selectedItem) {
         selectedItem.scrollIntoView({ block: 'nearest' });
@@ -186,13 +186,13 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit{
   }
 
 
-   /**
-   * Sets the current view for the application based on the provided view type,
-   * aiding in responsive layout management.
-   * 
-   * @param {CurrentView} view - The view to set (e.g., 'workspaceMenu', 'channel', 'thread').
-   */
-   setView(view: CurrentView): void {
+  /**
+  * Sets the current view for the application based on the provided view type,
+  * aiding in responsive layout management.
+  * 
+  * @param {CurrentView} view - The view to set (e.g., 'workspaceMenu', 'channel', 'thread').
+  */
+  setView(view: CurrentView): void {
     this.viewService.setCurrentView(view);
   }
 }
