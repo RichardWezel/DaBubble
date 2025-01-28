@@ -37,7 +37,6 @@ export class MemberContainerComponent {
     if (userID !== this.storage.currentUser.id) {
       this.openCloseDialogService.changeProfileId(userID);
       this.openCloseDialogService.open('userProfile');
-      console.log('User ', userID, ' is clicked to open the respective dialogue!');
     }
   }
 
@@ -86,15 +85,14 @@ export class MemberContainerComponent {
       : this.cloud.openImage(avatar);
   }
 
-  
+
   /**
    * Fetches and returns the list of users associated with the current channel.
    * @returns {Array<string>} Array of user IDs or an empty array if no users are found.
    */
-  channelUser() {
+  channelUser(): Array<string> {
     let users = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.user;
     if (users) return users;
     else return [];
   }
-
 }
