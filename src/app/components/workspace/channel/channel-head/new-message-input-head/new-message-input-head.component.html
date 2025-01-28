@@ -5,5 +5,5 @@
     <input id="newMessageInput" #inputField type="text" [(ngModel)]="userInput" (input)="onInput()"
       (keydown)="onKeyDown($event)" autocomplete="off" placeholder="An: #channel, oder @jemand oder E-Mail Adresse">
   </div>
-  <app-result-dropdown *ngIf="dropDownIsOpen && userInput" [userInput]="userInput"></app-result-dropdown>
+  <app-result-dropdown *ngIf="dropDownIsOpen && userInput"></app-result-dropdown>
 </div>
