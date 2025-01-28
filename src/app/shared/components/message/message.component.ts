@@ -6,7 +6,7 @@ import { FirebaseStorageService } from '../../services/firebase-storage.service'
 import { NgStyle } from '@angular/common';
 import { EmojiSelectorComponent } from '../emoji-selector/emoji-selector.component';
 import { EmojiService } from '@ctrl/ngx-emoji-mart/ngx-emoji';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { CloudStorageService } from '../../services/cloud-storage.service';
 import { Subscription } from 'rxjs';
 import { SetMobileViewService, CurrentView } from '../../services/set-mobile-view.service';
@@ -50,6 +50,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor() { }
 
+
   /**
    * Lifecycle hook that is called after the component is initialized.
    * It resolves the author information from the post's author ID and updates the author status.
@@ -57,12 +58,10 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     this.resolveAuthor();
     this.updateAuthorStatus();
-    // Subscription für isLargeScreen
     const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
       this.isLargeScreen = isLarge;
     });
     this.subscriptions.add(screenSub);
-
   }
 
 
@@ -78,6 +77,11 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+
+  /**
+   * Lifecycle hook that is called when the component is destroyed.
+   * It unsubscribes from all active subscriptions to prevent memory leaks.
+   */
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
@@ -94,6 +98,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
       this.authorAvatar = user.avatar;
     });
   }
+
 
   /**
   * Updates the isAuthorCurrentUser property by comparing the post's author ID with the
@@ -113,7 +118,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    * @param {number} timestamp - The timestamp to convert.
    * @returns {string} The localized string representing the time of day.
    */
-  postTime(timestamp: number) {
+  postTime(timestamp: number): string {
     const date = new Date(timestamp);
     return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   }
@@ -126,7 +131,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    *
    * @returns {string} The localized string representing the time of day of the last message in the thread.
    */
-  lastThreadMsgTime() {
+  lastThreadMsgTime(): string {
     if (!this.post.threadMsg?.length) return '';
     const date = new Date(this.post.threadMsg[this.post.threadMsg.length - 1].timestamp);
     return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
@@ -140,7 +145,6 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    * @param {string} postId - The ID of the post to open or close the thread of.
    */
   openThread(postId: string) {
-    console.log('openThread() in message.c: ', postId);
     this.storage.currentUser.postId = postId;
     this.storage.currentUser.threadOpen = !this.storage.currentUser.threadOpen;
     this.viewService.setCurrentView('thread');
@@ -153,14 +157,22 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    * @param {string} id - The ID of the user whose name is to be found.
    * @returns {string} The name of the user if found, otherwise an empty string.
    */
-  getUserName(id: string) {
+  getUserName(id: string): string {
     const user = this.storage.user.find(user => user.id === id);
     if (user) return user.name;
     return '';
   }
 
 
-  getText(text: string) {
+  /**
+   * Converts the given text to a trusted HTML string by bypassing Angular's
+   * built-in sanitization of HTML content. This is useful for displaying
+   * formatted text in a component, such as a message with styled text.
+   *
+   * @param {string} text - The text to be converted.
+   * @returns {string} The trusted HTML string.
+   */
+  getText(text: string): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(text);
   }
 
@@ -174,7 +186,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    * @param {number} index - The index of the name to return.
    * @returns {string} The name at the given index, or 'Du' if the array is empty, or a string of the form 'User Name und Du'.
    */
-  filterEmoticonNameArray(names: string[], index: number) {
+  filterEmoticonNameArray(names: string[], index: number): string | null {
     let newNames = [...names];
     this.reactSelf = false;
     let self = newNames.findIndex(name => name === this.storage.currentUser?.id);
@@ -193,7 +205,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * Gets the last emoji the user selected. If the user has not selected any emoji
    * before, the default emoji '+1' is returned.
-   * @returns {EmoticonsInterface} The last emoji the user selected as an EmoticonsInterface object.
+   * @returns The last emoji the user selected as an EmoticonsInterface object.
    */
   getLastEmoji() {
     let last = localStorage.getItem('emoji-mart.last') || '';
@@ -209,24 +221,27 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    * It first attempts to return the most frequently used emoji that is different from the last used emoji.
    * If the most used emoji is the same as the last used emoji, it returns the second most used emoji.
    * If neither of these is different from the last used emoji, a default 'clap' emoji is returned.
-   * @returns {EmoticonsInterface} The most recent or most frequently used emoji as an EmoticonsInterface object.
+   * @returns The most recent or most frequently used emoji as an EmoticonsInterface object.
    */
   getMostRecentEmoji() {
     let recentEmojis = localStorage.getItem('emoji-mart.frequently') || '';
     let lastUsed = localStorage.getItem('emoji-mart.last') || '';
     let most = recentEmojis ? JSON.parse(recentEmojis) : '';
     if (!most) return this.emoticonObject(this.emoji.getData('clap')?.native);
-
     const allKeys = Object.keys(most);
     const mostUsed = allKeys.reduce((a, b) => most[a] > most[b] ? a : b);
     const secondMostUsed = allKeys.filter(key => key !== mostUsed).reduce((a, b) => most[a] > most[b] ? a : b);
-
     if (mostUsed !== lastUsed) return this.emoticonObject(this.emoji.getData(mostUsed)?.native);
     else if (secondMostUsed !== lastUsed) return this.emoticonObject(this.emoji.getData(secondMostUsed)?.native);
     else return this.emoticonObject(this.emoji.getData('clap')?.native);
   }
 
 
+  /**
+   * Returns an EmoticonsInterface object with the given emoticon.
+   * @param {string | undefined} emoticon - The emoticon to create the object for.
+   * @returns  An object with the given emoticon.
+   */
   emoticonObject(emoticon: string | undefined) {
     return {
       'emoji':
@@ -241,12 +256,20 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   }
 
 
+  /**
+   * Sets the postEdit flag to true, and sets the isSpecialMenuOpen flag to false.
+   * This is used to edit a post, and to close the special menu if it is open.
+   */
   editPost() {
     this.postEdit = true;
     this.isSpecialMenuOpen = false;
   }
 
 
+  /**
+   * Toggles the visibility of the emoji selector for post editing.
+   * If the emoji selector is visible, hides it, and if it is not visible, shows it.
+   */
   toggleEmojiSelector() {
     this.showEmojiSelectorEdit = !this.showEmojiSelectorEdit;
   }
@@ -270,6 +293,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+
   /**
    * Handels the click on thread-link and open the thread. If the mobile screen is shown, the view is set to thread.
    * 
@@ -282,6 +306,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
       this.storage.currentUser.threadOpen = true;
     }
   }
+
 
   /**
    * Sets the view of workspace in mobile mode.
