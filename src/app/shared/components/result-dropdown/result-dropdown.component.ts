@@ -20,8 +20,10 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
   protected storage = inject(FirebaseStorageService);
   navigationService = inject(NavigationService);
   search = inject(SearchService);
-  searchResults: SearchResult[] = [];
+
   @Input() userInput: string = "";
+
+  searchResults: SearchResult[] = [];
   public isLargeScreen: boolean = window.innerWidth >= 1201;
   selectedIndex: number = 0;
   dropdownElement: HTMLElement | undefined;
@@ -30,18 +32,49 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
 
   constructor(private viewService: SetMobileViewService) { }
 
+
+  /**
+   * Scrolls to the selected result in the dropdown after the component has finished rendering.
+   * This is needed because the dropdown is not yet rendered when the component is initialized,
+   * so setting the focus immediately does not work.
+   */
   ngAfterViewInit() {
     if (this.searchResults.length > 0) {
       this.scrollToSelected();
     }
   }
 
-  @HostListener('keydown', ['$event'])
-  handleKeyDown(event: KeyboardEvent) {
-    if (this.searchResults.length === 0) {
-      return;
-    }
 
+  /**
+   * Lifecycle hook for when the userInput input property changes.
+   * Updates the search results if the new value has a length of at least 1.
+   * Otherwise, resets the search results to an empty array.
+   * @param changes contains the current and previous values of the userInput input property
+   */
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['userInput']) {
+      const newValue = changes['userInput'].currentValue;
+      if (newValue.length >= 1) this.updateFoundedChannelsAndUsers(newValue);
+      else this.searchResults = [];
+    }
+  }
+
+
+  @HostListener('keydown', ['$event'])
+  /**
+   * Handles keyboard navigation within the search results dropdown.
+   * Intercepts ArrowUp, ArrowDown, Enter, and Escape key presses to manipulate
+   * the selection and interaction with the dropdown items.
+   * 
+   * - ArrowDown: Moves the selection down by one item.
+   * - ArrowUp: Moves the selection up by one item.
+   * - Enter: Executes the action associated with the currently selected item.
+   * - Escape: Clears the search results.
+   * 
+   * @param event - The KeyboardEvent object representing the user's key press.
+   */
+  handleKeyDown(event: KeyboardEvent) {
+    if (this.searchResults.length === 0) return;
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
@@ -58,7 +91,6 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
         }
         break;
       case 'Escape':
-        // Optional: Schließen Sie das Dropdown bei Escape
         this.searchResults = [];
         break;
       default:
@@ -66,6 +98,14 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
     }
   }
 
+
+  /**
+   * Moves the selection within the search results dropdown by the given delta.
+   * If the selection reaches the end of the list, it wraps around to the start.
+   * If the selection is moved before the start of the list, it wraps around to the end.
+   * After moving the selection, it scrolls the currently selected element into view.
+   * @param delta - The number of items to move the selection by.
+   */
   moveSelection(delta: number) {
     this.selectedIndex += delta;
     if (this.selectedIndex < 0) {
@@ -73,14 +113,20 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
     } else if (this.selectedIndex >= this.searchResults.length) {
       this.selectedIndex = 0;
     }
-
     this.scrollToSelected();
   }
 
+
+  /**
+   * Scrolls the currently selected element in the dropdown into view.
+   * This is done by retrieving the currently selected element from the dropdown
+   * and calling scrollIntoView on it with the option { block: 'nearest' }.
+   * This ensures that the selected element is scrolled into view without
+   * repositioning the entire dropdown.
+   */
   scrollToSelected() {
     this.dropdownElement = this.dropdown.nativeElement;
     if (this.dropdownElement) {
-      console.log(this.dropdownElement, this.selectedIndex);
       const selectedItem = this.dropdownElement.querySelectorAll('li')[this.selectedIndex] as HTMLElement;
       if (selectedItem) {
         selectedItem.scrollIntoView({ block: 'nearest' });
@@ -88,20 +134,12 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['userInput']) {
-      const neuesWert = changes['userInput'].currentValue;
-      if (neuesWert.length >= 1) {
-        this.updateFoundedChannelsAndUsers(neuesWert);
-      } else {
-        this.searchResults = [];
-      }
-    }
-  }
+
 
   /**
-   * Aktualisiert die Suchergebnisse basierend auf dem Präfix des Benutzereingabe.
-   * @param input - Der gesamte Benutzereingabe-String.
+   * Updates the search results based on the user input.
+   * Searches for channels if the input starts with '#', for users if the input starts with '@', and does nothing if the input does not start with either.
+   * @param input - The user input string.
    */
   updateFoundedChannelsAndUsers(input: string): void {
     if (input.startsWith('#')) {
@@ -110,16 +148,16 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
     } else if (input.startsWith('@')) {
       const searchTerm = input.substring(1);
       this.searchResults = this.findUsers(searchTerm);
-      console.log(this.searchResults);
     } else {
       this.searchResults = [];
     }
   }
 
+
   /**
-   * Sucht nach Channels, die den Suchbegriff enthalten.
-   * @param searchTerm - Der Suchbegriff ohne Präfix.
-   * @returns Ein Array von ChannelInterface Objekten.
+   * Searches for channels that include the user input in their names.
+   * @param searchTerm - The search term entered by the user.
+   * @returns An array of ChannelInterface objects matching the search term.
    */
   findChannels(searchTerm: string): ChannelInterface[] {
     const channels: ChannelInterface[] = this.storage.CurrentUserChannel;
@@ -128,10 +166,11 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
     );
   }
 
+
   /**
-   * Sucht nach Users, die den Suchbegriff enthalten.
-   * @param searchTerm - Der Suchbegriff ohne Präfix.
-   * @returns Ein Array von UserInterface Objekten.
+   * Searches for users that include the user input in their names.
+   * @param searchTerm - The search term entered by the user.
+   * @returns An array of UserInterface objects matching the search term.
    */
   findUsers(searchTerm: string): UserInterface[] {
     const users: UserInterface[] = this.storage.user;
@@ -140,13 +179,24 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
     );
   }
 
-  isChannel() {
+
+  /**
+   * Checks if the user input is a channel name, i.e. it starts with '#'.
+   * @returns {boolean} True if the input is a channel name, false otherwise.
+   */
+  isChannel(): boolean {
     return this.userInput.startsWith('#');
   }
 
-  isUser() {
+
+  /**
+   * Checks if the user input is a user name, i.e. it starts with '@'.
+   * @returns {boolean} True if the input is a user name, false otherwise.
+   */
+  isUser(): boolean {
     return this.userInput.startsWith('@');
   }
+
 
   /**
    * Handles the selection of a channel by setting the current channel in the navigation service,
@@ -165,6 +215,7 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
       this.setTypeUser(result);
     }
   }
+
 
   /**
    * Handles navigation when a user is selected from the search results.
