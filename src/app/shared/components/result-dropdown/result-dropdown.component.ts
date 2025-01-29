@@ -1,4 +1,4 @@
-import { Component, Input, Output, inject, OnChanges, SimpleChanges, HostListener, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Input, inject, OnChanges, SimpleChanges, HostListener, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { NgFor, NgIf, } from '@angular/common';
 import { ChannelInterface } from '../../interfaces/channel.interface';
 import { UserInterface } from '../../interfaces/user.interface';
@@ -6,9 +6,6 @@ import { FirebaseStorageService } from '../../services/firebase-storage.service'
 import { NavigationService } from '../../services/navigation.service';
 import { SetMobileViewService, CurrentView } from '../../services/set-mobile-view.service';
 import { SearchService } from '../../services/search.service';
-import { Subscription } from 'rxjs';
-import { UserinputSearchService } from '../../services/userinput-search.service';
-import { OpenCloseDialogService } from '../../services/open-close-dialog.service';
 
 type SearchResult = ChannelInterface | UserInterface;
 
@@ -23,11 +20,8 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
   protected storage = inject(FirebaseStorageService);
   navigationService = inject(NavigationService);
   search = inject(SearchService);
-  openCloseDialogService = inject(OpenCloseDialogService);
-  isOpen: boolean = false;
-  userInput: string = '';
 
-  private subscription!: Subscription;
+  @Input() userInput: string = "";
 
   searchResults: SearchResult[] = [];
   public isLargeScreen: boolean = window.innerWidth >= 1201;
@@ -36,41 +30,7 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
 
   @ViewChild('dropdown') dropdown!: ElementRef;
 
-  constructor(private viewService: SetMobileViewService ,private userInputService: UserinputSearchService) { }
-
-
-  ngOnInit(): void {
-    const sub = this.openCloseDialogService
-    .isDialogOpen('resultDropdown')
-    ?.subscribe((status) => {
-      this.isOpen = status;
-    });
-    if (sub) this.subscription.add(sub);
-
-    // Abonnieren des userInput Observables
-    this.subscription = this.userInputService.userInput$.subscribe(input => {
-      this.userInput = input;
-      this.handleUserInputChange(input);
-    });
-  }
-
-
-  ngOnDestroy(): void {
-    // Aufräumen der Subscription
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-  }
-
-
-  /**
-   * Methode zur Verarbeitung von Änderungen am Benutzerinput.
-   * @param input - Der aktuelle Benutzerinput.
-   */
-  handleUserInputChange(input: string): void {
-    // Implementieren Sie die gewünschte Logik hier
-    console.log('Aktueller Benutzerinput:', input);
-  }
+  constructor(private viewService: SetMobileViewService) { }
 
 
   /**

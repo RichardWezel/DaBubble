@@ -13,9 +13,6 @@ import { SetMobileViewService } from '../../../../shared/services/set-mobile-vie
 import { GetUserNameService } from '../../../../shared/services/get-user-name.service';
 import { ResultDropdownComponent } from '../../../../shared/components/result-dropdown/result-dropdown.component';
 import { SearchService } from '../../../../shared/services/search.service';
-import { UserinputSearchService } from '../../../../shared/services/userinput-search.service';
-import { Subscription } from 'rxjs';
-import { OpenCloseDialogService } from '../../../../shared/services/open-close-dialog.service';
 /**
  * SearchComponent handles the search functionality within the application,
  * including searching for channels, users, posts, and threads, and navigating to selected results.
@@ -33,12 +30,8 @@ export class SearchComponent {
   getUserName = inject(GetUserNameService);
   search = inject(SearchService);
   elementRef = inject(ElementRef);
-  sanitizer = inject(DomSanitizer);
-  viewService = inject(SetMobileViewService);
-  openCloseDialogService = inject(OpenCloseDialogService);
-  private subscription: Subscription = new Subscription();
-
   searchResults: SearchResult[] = [];
+  userInput: string = "";
   selectedIndex: number = -1;
   dropDownIsOpen: boolean = false;
   dropdownElement: HTMLElement | undefined;
@@ -48,70 +41,37 @@ export class SearchComponent {
   @ViewChildren('resultItem') resultItems!: QueryList<ElementRef>;
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
-
-  // Injektion des UserinputSearchService
-  private userInputService = inject(UserinputSearchService);
-
-
-  /**
-   * Getter für userInput, der den aktuellen Wert aus dem Service abruft.
-   */
-  get userInput(): string {
-    return this.userInputService.getUserInput();
-  }
-
-
-  /**
-   * Setter für userInput, der den neuen Wert im Service setzt und die Eingabe verarbeitet.
-   */
-  set userInput(value: string) {
-    this.userInputService.setUserInput(value);
-    this.onInput(); // Trigger die vorhandene onInput-Methode
-  }
-
   /**
    * Creates an instance of SearchComponent and sets up the search debouncing.
    * @param sanitizer - The DomSanitizer service to safely bind HTML content.
    */
-  constructor() {
+  constructor(
+    private sanitizer: DomSanitizer,
+    private viewService: SetMobileViewService
+  ) {
     this.searchSubject.pipe(
       debounceTime(300)
     ).subscribe(searchTerm => {
-      this.userInputService.setUserInput(searchTerm);
+      this.userInput = searchTerm;
       this.onInputSearch();
     });
-  }
-
-  /**
-   * Subscribes to the status of addChannelMember in the openCloseDialogService and equates isOpen with the status.
-   */
-  ngOnInit(): void {
-    const sub = this.openCloseDialogService
-      .isDialogOpen('resultDropdown')
-      ?.subscribe((status) => {
-        this.dropDownIsOpen = status;
-      });
-    if (sub) this.subscription.add(sub);
-  }
-
-
-  openResultDropdown() {
-    this.dropDownIsOpen = true;
   }
 
   /**
    * Handles the input event from the search bar by emitting the current user input.
    */
   onInput(): void {
-    
     if (this.userInput.startsWith('@') || this.userInput.startsWith('#')) {
-      this.openResultDropdown();
+      this.showDropdown();
     } else {
       this.searchSubject.next(this.userInput);
       this.selectedIndex = -1;
     }
   }
 
+  showDropdown() {
+    this.dropDownIsOpen = true;
+  }
 
   /**
    * Initiates the search process by resetting search results and updating them based on user input.
