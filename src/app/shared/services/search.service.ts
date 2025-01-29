@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { UserInterface } from '../interfaces/user.interface';
 import { FirebaseStorageService } from './firebase-storage.service';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,8 @@ import { FirebaseStorageService } from './firebase-storage.service';
 export class SearchService {
 
   protected storage = inject(FirebaseStorageService);
+  private userInputSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  public userInput$: Observable<string> = this.userInputSubject.asObservable();
 
   constructor() { }
 
@@ -78,5 +81,21 @@ export class SearchService {
       await this.storage.createNewEmptyDm(currentUserId, NewUserId);
       await this.storage.createNewEmptyDm(NewUserId, currentUserId);
     }
+  }
+
+  /**
+   * Setzt den aktuellen Benutzerinput und benachrichtigt alle Abonnenten.
+   * @param input - Der neue Benutzerinput.
+   */
+  setUserInput(input: string): void {
+    this.userInputSubject.next(input);
+  }
+  
+  /**
+   * Gibt den aktuellen Wert des Benutzerinputs zurück.
+   * @returns Der aktuelle Benutzerinput.
+   */
+  getUserInput(): string {
+    return this.userInputSubject.value;
   }
 }

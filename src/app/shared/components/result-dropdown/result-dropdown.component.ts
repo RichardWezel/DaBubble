@@ -91,7 +91,7 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
         if (this.selectedIndex >= 0 && this.selectedIndex < this.searchResults.length) {
           this.handleClick(this.searchResults[this.selectedIndex]);
           this.openCloseService.close("resultDropdown");
-          console.log('Enter');
+          this.search.setUserInput('')
         }
         break;
       case 'Escape':

@@ -34,9 +34,7 @@ export class SearchComponent {
   search = inject(SearchService);
   elementRef = inject(ElementRef);
   openCloseService = inject(OpenCloseDialogService)
-
   searchResults: SearchResult[] = [];
-  userInput: string = "";
   selectedIndex: number = -1;
   dropDownIsOpen: boolean = false;
   dropdownElement: HTMLElement | undefined;
@@ -45,6 +43,21 @@ export class SearchComponent {
   private subscriptions: Subscription = new Subscription();
 
   @ViewChildren('resultItem') resultItems!: QueryList<ElementRef>;
+
+  /**
+   * Getter für userInput, der den aktuellen Wert aus dem Service abruft.
+   */
+  get userInput(): string {
+    return this.search.getUserInput();
+  }
+
+  /**
+   * Setter für userInput, der den neuen Wert im Service setzt und die Eingabe verarbeitet.
+   */
+  set userInput(value: string) {
+    this.search.setUserInput(value);
+    this.onInput(); // Trigger die vorhandene onInput-Methode
+  }
 
   /**
    * Creates an instance of SearchComponent and sets up the search debouncing.
@@ -58,6 +71,13 @@ export class SearchComponent {
       debounceTime(300)
     ).subscribe(searchTerm => {
       this.userInput = searchTerm;
+      this.onInputSearch();
+    });
+
+    this.searchSubject.pipe(
+      debounceTime(300)
+    ).subscribe(searchTerm => {
+      this.search.setUserInput(searchTerm);
       this.onInputSearch();
     });
   }
