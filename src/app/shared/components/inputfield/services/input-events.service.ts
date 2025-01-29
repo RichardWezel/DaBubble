@@ -40,10 +40,8 @@ export class InputEventsService {
   isBackspaceAndMessage(event: KeyboardEvent): void {
     const selection = window.getSelection() as Selection;
     if (!this.isValidSelection(selection)) return;
-
     const { currentNode, offset } = this.getSelectionDetails(selection);
     if (!this.isValidTextNode(currentNode)) return;
-
     const previousElement = currentNode.previousSibling as HTMLElement;
     if ((this.isTagMessage(previousElement) || this.isThumbnailMessage(previousElement)) && this.isCursorAfterZeroWidthSpace(currentNode, offset)) {
       this.removeTag(previousElement, currentNode, offset);

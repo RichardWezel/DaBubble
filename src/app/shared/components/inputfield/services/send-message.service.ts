@@ -2,6 +2,7 @@ import { ElementRef, inject, Injectable } from '@angular/core';
 import { PostInterface } from '../../../interfaces/post.interface';
 import { FirebaseStorageService } from '../../../services/firebase-storage.service';
 import { UidService } from '../../../services/uid.service';
+import { UserInterface } from '../../../interfaces/user.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -165,39 +166,105 @@ export class SendMessageService {
   }
 
 
-  editMessage(post: PostInterface, thread: boolean) {
+  /**
+   * Edits a message in a channel or direct message (DM), depending on the value of the `thread` parameter.
+   * If the `thread` parameter is true, it edits a thread message; otherwise, it edits the main message.
+   * The function first determines the origin of the message (channel or DM) by checking if the current channel
+   * matches a DM in the current user's DM list. If the origin is a channel, it updates the thread message in the
+   * channel post. Otherwise, it updates the thread message in the DM post.
+   * @param post - The post object containing the updated text and the ID of the thread message to be updated.
+   * @param thread - A boolean indicating whether to update the thread message (true) or the main message (false).
+   */
+  editMessage(post: PostInterface, thread: boolean): void {
     if (!this.storage.currentUser.currentChannel || !this.storage.currentUser.id) return;
-    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
-    let origin = curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel) ? 'dm' : 'channel';
-    console.log(post);
-    let posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
-    let currentPost = posts?.find(post => post.id === this.storage.currentUser.postId);
-    let currentDm = curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
-    let dmPost = currentDm?.posts?.find(post => post.id === this.storage.currentUser.postId);
-    switch (true) {
-      case thread && origin === 'channel':
-        let threadMsg = currentPost?.threadMsg?.find(thread => thread.id === post.id);
-        if (threadMsg) threadMsg.text = post.text;
-        this.storage.updateChannelPost(this.storage.currentUser.currentChannel, this.storage.currentUser.postId!, currentPost!);
-        break;
-      case thread && origin === 'dm':
-        let dmThreadMsg = dmPost?.threadMsg?.find(thread => thread.id === post.id);
-        if (dmThreadMsg) dmThreadMsg.text = post.text;
-        this.storage.updateDmPost(this.storage.currentUser.id, currentDm?.contact!, this.storage.currentUser.postId!, dmPost!);
-        break;
-      case !thread && origin === 'channel':
-        currentPost = posts?.find(p => p.id === post.id);
-        if (currentPost) currentPost.text = post.text;
-        this.storage.updateChannelPost(this.storage.currentUser.currentChannel, post.id, currentPost!);
-        break;
-      case !thread && origin === 'dm':
-        console.log(this.storage.currentUser.id);
-        dmPost = currentDm!.posts?.find(p => p.id === post.id);
-        if (dmPost) dmPost.text = post.text;
-        this.storage.updateDmPost(this.storage.currentUser.id, currentDm?.contact!, post.id, dmPost!);
-        break;
+    const curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    const origin = this.getMessageOrigin(curUser);
+    const isChannel = origin === 'channel';
+    if (thread) this.updateThreadMessage(post, isChannel, curUser);
+    else this.updateMainMessage(post, isChannel, curUser);
+  }
+
+
+  /**
+   * Determines the origin of the message by checking if the current channel is a direct message (DM).
+   * If the current channel matches a DM in the current user's DM list, it returns 'dm'. Otherwise, it returns 'channel'.
+   * 
+   * @param curUser - The current user object, which may be undefined.
+   * @returns 'dm' if the current channel is a direct message; 'channel' otherwise.
+   */
+  private getMessageOrigin(curUser: UserInterface | undefined): 'dm' | 'channel' {
+    return curUser?.dm.some(dm => dm.id === this.storage.currentUser.currentChannel) ? 'dm' : 'channel';
+  }
+
+
+  /**
+   * Updates the text of a specific thread message within a channel or direct message (DM).
+   * 
+   * If the `isChannel` flag is true, it updates the thread message in the current channel post. 
+   * Otherwise, it updates the thread message in the current DM post.
+   * 
+   * @param post - The post object containing the updated text and the ID of the thread message to be updated.
+   * @param isChannel - A boolean indicating whether the update should be performed on a channel (true) or a DM (false).
+   * @param curUser - The current user object, which may be undefined, used to locate the DM post if `isChannel` is false.
+   */
+  private updateThreadMessage(post: PostInterface, isChannel: boolean, curUser: UserInterface | undefined): void {
+    if (isChannel) {
+      const currentPost = this.getChannelPost();
+      const threadMsg = currentPost?.threadMsg?.find(thread => thread.id === post.id);
+      if (threadMsg) threadMsg.text = post.text;
+      this.storage.updateChannelPost(this.storage.currentUser.currentChannel!, this.storage.currentUser.postId!, currentPost!);
+    } else {
+      const { currentDm, dmPost } = this.getDmPost(curUser);
+      const dmThreadMsg = dmPost?.threadMsg?.find(thread => thread.id === post.id);
+      if (dmThreadMsg) dmThreadMsg.text = post.text;
+      this.storage.updateDmPost(this.storage.currentUser.id!, currentDm?.contact!, this.storage.currentUser.postId!, dmPost!);
     }
   }
 
 
+  /**
+   * Updates the main post (i.e., not a thread message) associated with the current channel or direct message (DM) session.
+   * If the current user or channel information is not available, the function returns immediately.
+   *
+   * @param post - The updated post object with the new text.
+   * @param isChannel - A boolean indicating whether the post is from a channel (true) or DM (false).
+   * @param curUser - The current user object from the storage.
+   */
+  private updateMainMessage(post: PostInterface, isChannel: boolean, curUser: UserInterface | undefined): void {
+    if (isChannel) {
+      const currentPost = this.getChannelPost(post.id);
+      if (currentPost) currentPost.text = post.text;
+      this.storage.updateChannelPost(this.storage.currentUser.currentChannel!, post.id, currentPost!);
+    } else {
+      const { currentDm, dmPost } = this.getDmPost(curUser, post.id);
+      if (dmPost) dmPost.text = post.text;
+      this.storage.updateDmPost(this.storage.currentUser.id!, currentDm?.contact!, post.id, dmPost!);
+    }
+  }
+
+
+  /**
+   * Retrieves a specific post from the current channel based on the provided post ID.
+   * If no post ID is provided, it defaults to using the current post ID from the storage.
+   * 
+   * @param postId - The optional ID of the post to retrieve.
+   * @returns The post object if found, otherwise undefined.
+   */
+  private getChannelPost(postId?: string): PostInterface | undefined {
+    const posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
+    return posts?.find(p => p.id === (postId || this.storage.currentUser.postId));
+  }
+
+
+  /**
+   * Retrieves the direct message (DM) post object with the given post ID, or the current post ID if not provided.
+   * @param curUser - The UserInterface object of the current user.
+   * @param postId - The optional ID of the post to retrieve.
+   * @returns An object with the DM and the DM post, or { currentDm: undefined, dmPost: undefined } if not found.
+   */
+  private getDmPost(curUser: UserInterface | undefined, postId?: string) {
+    const currentDm = curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
+    const dmPost = currentDm?.posts?.find(p => p.id === (postId || this.storage.currentUser.postId));
+    return { currentDm, dmPost };
+  }
 }
