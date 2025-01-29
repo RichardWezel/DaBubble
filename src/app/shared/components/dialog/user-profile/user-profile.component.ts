@@ -50,7 +50,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
    * 
    * @param event - click escape Key
    */
-  @HostListener('document:keydown.escape', ['$event']) 
+  @HostListener('document:keydown.escape', ['$event'])
   handleEscape(event: KeyboardEvent) {
     if (this.isOpen) {
       this.closeDialog();
@@ -194,7 +194,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
    * Saves the updated profile to the storage and updates the current session information.
    */
   async saveProfile(): Promise<void> {
-    this.resetcheckForm();
+    this.resetCheckForm();
     if (this.avatarChanged && this.uploadFile && this.storage.currentUser.id) {
       this.avatar = await this.cloud.uploadProfilePicture(this.storage.currentUser.id, this.uploadFile);
       this.uploadFile = null;
@@ -287,9 +287,9 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
 
 
   /**
-   * Resets the inputFieldCheck varialbe, so that the error messages aren't showed.
+   * Resets the inputFieldCheck variable, so that the error messages aren't showed.
    */
-  resetcheckForm() {
+  resetCheckForm() {
     this.inputFieldCheck = false;
   }
 

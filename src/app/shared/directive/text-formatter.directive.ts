@@ -1,4 +1,4 @@
-import { Directive, ElementRef, inject } from '@angular/core';
+import { Directive, ElementRef, inject, input } from '@angular/core';
 import { InputfieldComponent } from '../components/inputfield/inputfield.component';
 import { UserInterface } from '../interfaces/user.interface';
 
@@ -27,7 +27,7 @@ export class TextFormatterDirective {
     message.innerHTML += formattedText + '';
     message.innerHTML = this.clearLineBreak(message);
     this.closeSearch();
-    this.inputElement.setFocus();
+    this.inputElement.helper.setFocus(this.inputElement.showTagSearch);
   }
 
 
