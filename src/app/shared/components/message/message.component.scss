@@ -213,68 +213,71 @@ main {
                 .inputfield-buttons {
                     .edit-buttons {
                         @media (max-width: $breakpoint1){
+                            height: 40px;
+                        
+                        }
+                        
+                    }
+
+                    .buttonSecondary {
+                        @media (max-width: $breakpoint1){
+                            padding: 0px 4px;
+                            border: 2px solid $secondaryColor;
                             height: 24px;
                         }
-                        .buttonSecondary {
+
+                        .normal {
+                            display: flex;
+
                             @media (max-width: $breakpoint1){
-                                padding: 0px 4px;
-                                border: 2px solid $secondaryColor;
-                                height: 24px;
-                            }
-
-                            .normal {
-                                display: flex;
-
-                                @media (max-width: $breakpoint1){
-                                    display: none;
-                                }
-
-                            }
-
-                            .mobile {
                                 display: none;
-                                svg {
-                                 
-                                    path {
-                                        fill: $secondaryColor;
-                                    }
-                                }
-
-                                @media (max-width: $breakpoint1){
-                                    display: flex;
-                                }
                             }
+
                         }
 
-                        .buttonPrimary {
-                            
+                        .mobile {
+                            display: none;
+                            svg {
+                             
+                                path {
+                                    fill: $secondaryColor;
+                                }
+                            }
+
                             @media (max-width: $breakpoint1){
-                                padding: 0px 5px;
-                                background-color: unset;
-                                height: 24px;
-                            }
-
-                            .normal {
                                 display: flex;
+                            }
+                        }
+                    }
 
-                                @media (max-width: $breakpoint1){
-                                    display: none;
-                                }
+                    .buttonPrimary {
+                        
+                        @media (max-width: $breakpoint1){
+                            padding: 0px 5px;
+                            background-color: unset;
+                            height: 24px;
+                        }
 
+                        .normal {
+                            display: flex;
+
+                            @media (max-width: $breakpoint1){
+                                display: none;
                             }
 
-                            .mobile {
-                                display: none;
-                                svg {
-                                 
-                                    path {
-                                        fill: $primaryColor;
-                                    }
-                                }
+                        }
 
-                                @media (max-width: $breakpoint1){
-                                    display: flex;
+                        .mobile {
+                            display: none;
+                            svg {
+                             
+                                path {
+                                    fill: $primaryColor;
                                 }
+                            }
+
+                            @media (max-width: $breakpoint1){
+                                display: flex;
                             }
                         }
                     }
@@ -311,6 +314,11 @@ main {
             display: flex;
             gap: 20px;
             align-items: center;
+
+            @media (max-width: 435px){
+                gap: 5px;
+                flex-direction: column-reverse;
+            }
 
             &.self {
                 justify-content: flex-end;
