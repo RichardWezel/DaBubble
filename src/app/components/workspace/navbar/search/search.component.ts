@@ -13,6 +13,9 @@ import { SetMobileViewService } from '../../../../shared/services/set-mobile-vie
 import { GetUserNameService } from '../../../../shared/services/get-user-name.service';
 import { ResultDropdownComponent } from '../../../../shared/components/result-dropdown/result-dropdown.component';
 import { SearchService } from '../../../../shared/services/search.service';
+import { OpenCloseDialogService } from '../../../../shared/services/open-close-dialog.service';
+import { Subscription } from 'rxjs';
+
 /**
  * SearchComponent handles the search functionality within the application,
  * including searching for channels, users, posts, and threads, and navigating to selected results.
@@ -30,6 +33,8 @@ export class SearchComponent {
   getUserName = inject(GetUserNameService);
   search = inject(SearchService);
   elementRef = inject(ElementRef);
+  openCloseService = inject(OpenCloseDialogService)
+
   searchResults: SearchResult[] = [];
   userInput: string = "";
   selectedIndex: number = -1;
@@ -37,6 +42,7 @@ export class SearchComponent {
   dropdownElement: HTMLElement | undefined;
 
   private searchSubject = new Subject<string>();
+  private subscriptions: Subscription = new Subscription();
 
   @ViewChildren('resultItem') resultItems!: QueryList<ElementRef>;
 
@@ -54,6 +60,43 @@ export class SearchComponent {
       this.userInput = searchTerm;
       this.onInputSearch();
     });
+  }
+
+  /**
+   * Subscribes to the open/close status of the dialog, setting visibility based on the status.
+   */
+  ngOnInit(): void {
+    const sub = this.openCloseService
+      .isDialogOpen('resultDropdown')
+      ?.subscribe((status) => {
+        this.dropDownIsOpen = status;
+      });
+
+    if (sub) this.subscriptions.add(sub);
+  }
+
+
+  /**
+   * Unsubscribes from all active subscriptions when the component is destroyed to prevent memory leaks.
+   */
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+
+  /**
+   * Opens the dialog for adding a new channel.
+   */
+  public openDialog() {
+    this.dropDownIsOpen = true;
+  }
+
+
+  /**
+   * Closes the dialog for adding a new channel.
+   */
+  public closeDialog() {
+    this.openCloseService.close('addChannel');
   }
 
   /**

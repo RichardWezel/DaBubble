@@ -6,6 +6,7 @@ import { FirebaseStorageService } from '../../services/firebase-storage.service'
 import { NavigationService } from '../../services/navigation.service';
 import { SetMobileViewService, CurrentView } from '../../services/set-mobile-view.service';
 import { SearchService } from '../../services/search.service';
+import { OpenCloseDialogService } from '../../services/open-close-dialog.service';
 
 type SearchResult = ChannelInterface | UserInterface;
 
@@ -20,6 +21,7 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
   protected storage = inject(FirebaseStorageService);
   navigationService = inject(NavigationService);
   search = inject(SearchService);
+  openCloseService = inject(OpenCloseDialogService)
 
   @Input() userInput: string = "";
 
@@ -88,6 +90,8 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
         event.preventDefault();
         if (this.selectedIndex >= 0 && this.selectedIndex < this.searchResults.length) {
           this.handleClick(this.searchResults[this.selectedIndex]);
+          this.openCloseService.close("resultDropdown");
+          console.log('Enter');
         }
         break;
       case 'Escape':

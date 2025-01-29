@@ -140,6 +140,7 @@ main {
                   position: relative;
                   margin-right: 10px;
                   transition: border-color 0.3s;
+                  min-width: 20px;
               
                   &:hover{
                     border-color: #1769aa;

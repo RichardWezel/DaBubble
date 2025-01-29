@@ -42,7 +42,7 @@ main {
         width: 100%;
         overflow-x: hidden;
         margin-top: 94px;
-
+        height: 100dvh;
         
         @media (max-width: $breakpoint1) {
             padding: 0;
