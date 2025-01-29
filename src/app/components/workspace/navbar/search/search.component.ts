@@ -1,5 +1,5 @@
 import { NgFor, NgIf, NgSwitch, NgSwitchCase, CommonModule } from '@angular/common';
-import { Component, inject, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, inject, ViewChildren, QueryList, ElementRef, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { ChannelInterface } from '../../../../shared/interfaces/channel.interface';
@@ -82,6 +82,21 @@ export class SearchComponent {
     });
   }
 
+  placeholderText: string = 'Standard Placeholder';
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.setPlaceholder(event.target.innerWidth);
+  }
+
+  setPlaceholder(width: number) {
+    if (width <= 333) {
+      this.placeholderText = 'durchsuchen';
+    } else {
+      this.placeholderText = 'Devspace durchsuchen';
+    }
+  }
+
   /**
    * Subscribes to the open/close status of the dialog, setting visibility based on the status.
    */
@@ -93,6 +108,8 @@ export class SearchComponent {
       });
 
     if (sub) this.subscriptions.add(sub);
+
+    this.setPlaceholder(window.innerWidth);
   }
 
 

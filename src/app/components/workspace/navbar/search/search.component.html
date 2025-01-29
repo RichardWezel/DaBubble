@@ -9,7 +9,7 @@
     <input 
       id="searchbar" 
       type="search" 
-      placeholder="Devspace durchsuchen" 
+      [placeholder]="placeholderText"
       [(ngModel)]="userInput" 
       (input)="onInput()"
       (keydown)="handleKeyboardEvent($event)"
