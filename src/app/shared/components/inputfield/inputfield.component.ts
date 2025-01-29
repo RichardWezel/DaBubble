@@ -71,6 +71,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * is initialized, so setting the focus immediately does not work.
    */
   ngAfterViewInit() {
+    this.helper.setElementRef(this.messageContent); 
     setTimeout(() => this.helper.setFocus(this.showTagSearch), 250);
   }
 

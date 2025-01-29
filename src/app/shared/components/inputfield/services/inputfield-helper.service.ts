@@ -9,7 +9,7 @@ import { UidService } from '../../../services/uid.service';
 })
 export class InputfieldHelperService {
   storage = inject(FirebaseStorageService);
-  elementRef = inject(ElementRef);
+  private elementRef!: ElementRef;
   uid = inject(UidService);
 
   excludedTags: string[] = ['messageContent', 'newMessageInput', 'searchbar', 'channel-name', 'channel-description', 'profile-name', 'profile-email', 'editMessage', 'newChannelMemberInput', 'result-dropdown'];
@@ -18,6 +18,10 @@ export class InputfieldHelperService {
   constructor() { }
 
 
+  setElementRef(elementRef: ElementRef) {
+    this.elementRef = elementRef;
+  }
+  
   /**
    * Generates a default channel tag object.
    * 
