@@ -1,5 +1,5 @@
 import { NgFor, NgIf, NgSwitch, NgSwitchCase, CommonModule } from '@angular/common';
-import { Component, inject, ViewChildren, ViewChild, QueryList, ElementRef } from '@angular/core';
+import { Component, inject, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { ChannelInterface } from '../../../../shared/interfaces/channel.interface';
@@ -39,7 +39,6 @@ export class SearchComponent {
   private searchSubject = new Subject<string>();
 
   @ViewChildren('resultItem') resultItems!: QueryList<ElementRef>;
-  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
   /**
    * Creates an instance of SearchComponent and sets up the search debouncing.
@@ -293,18 +292,14 @@ export class SearchComponent {
    * Supports ArrowUp, ArrowDown, and Enter keys.
    * @param event - The KeyboardEvent object.
    */
-  handleKeyboardEvent(event: KeyboardEvent): void {
+  async handleKeyboardEvent(event: KeyboardEvent): Promise<void> {
     if (this.searchResults.length > 0 || this.dropDownIsOpen) {
       if (event.key === 'ArrowDown') {
-        this.handleArrowDown(event);
+        this.handleArrowDown(event)
       } else if (event.key === 'ArrowUp') {
-        this.handleArrowUp(event);
+        this.handleArrowUp(event)
       } else if (event.key === 'Enter') {
-        this.handleEnter(event);
-      } else if (event.key === 'Escape') {
-        this.dropDownIsOpen = false;
-        this.selectedIndex = -1;
-        this.searchInput.nativeElement.focus(); // Optional: Fokus zurück auf das Eingabefeld
+        await this.handleEnter(event)
       }
     }
   }
@@ -332,14 +327,12 @@ export class SearchComponent {
    */
   handleArrowUp(event: KeyboardEvent): void {
     event.preventDefault();
-    if (this.searchResults.length > 0) {
-      if (this.selectedIndex > 0) {
-        this.selectedIndex--;
-        this.scrollToSelected();
-      } else if (this.selectedIndex === 0) {
-        this.selectedIndex = -1; // Keine Auswahl
-        this.searchInput.nativeElement.focus(); // Fokus zurück auf das Eingabefeld
-      }
+    if (this.dropDownIsOpen) {
+      this.dropdownElement = this.elementRef.nativeElement.querySelector('#result-dropdown');
+      this.dropdownElement!.focus();
+    } else {
+      this.selectedIndex = (this.selectedIndex > 0 ? this.selectedIndex - 1 : this.searchResults.length - 1);
+      this.scrollToSelected();
     }
   }
 
