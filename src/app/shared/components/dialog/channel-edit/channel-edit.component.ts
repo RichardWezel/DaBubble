@@ -36,33 +36,36 @@ export class ChannelEditComponent {
    * @param event - click escape Key
    */
   @HostListener('document:keydown.escape', ['$event']) 
-  handleEscape(event: KeyboardEvent) {
-    
+    handleEscape(event: KeyboardEvent) {
     this.closeDialog();
-    
   }
 
-
-  save(): void {
-    console.log('Channel gespeichert:', this.channelName, this.channelDescription);
-    this.close.emit(); 
-  }
   
+  /**
+   * Closes the Dialog
+   */
   closeDialog(): void {
     this.close.emit(); 
   }
 
+
+  /**
+   * Let appear the edit input to change the channel description.
+   */
   editDescription(): void {
     this.isEditingDescription = true; 
   }
   
+
+  /**
+   * Saves the channel description.
+   */
   saveDescription(): void {
     if (this.channelId) {
       this.firebaseStorageService
         .updateChannel(this.channelId, { description: this.channelDescription })
         .then(() => {
           this.isEditingDescription = false;
-          console.log('Channel-Beschreibung erfolgreich gespeichert:', this.channelDescription);
         })
         .catch((error) => {
           console.error('Fehler beim Speichern der Channel-Beschreibung:', error);
@@ -72,48 +75,62 @@ export class ChannelEditComponent {
     }
   }
 
+
+  /**
+   * Let appear the edit input to change the channel name.
+   */
   editChannelName(): void {
     this.isEditingChannelName = true; 
   }
 
-  // in channel-edit.component.ts
 
-async saveChannelName(): Promise<void> {
-  if (!this.channelId) {
-    console.error('Channel-ID fehlt. Änderungen können nicht gespeichert werden.');
-    return;
+  /**
+   * Checks whether the channel ID exists and whether the new channel name already exists for another channel. 
+   * If the check is successful, the channel information is updated
+   * 
+   * @returns void
+   */
+  async saveChannelName(): Promise<void> {
+    if (!this.channelId) {
+      console.error('Channel-ID fehlt. Änderungen können nicht gespeichert werden.');
+      return;
+    }
+
+    if (await this.firebaseStorageService.channelNameExists(this.channelId, this.channelName)) {
+      this.errorMessage = 'Der Channel-Name existiert bereits. Bitte wählen Sie einen anderen Namen.';
+      return;
+    }
+    this.saveChannelInformations();
   }
 
-  if (await this.firebaseStorageService.channelNameExists(this.channelId, this.channelName)) {
-    this.errorMessage = 'Der Channel-Name existiert bereits. Bitte wählen Sie einen anderen Namen.';
-    return;
+  /**
+   * Saves the new channel-informations on firebase.
+   */
+  saveChannelInformations() {
+    this.firebaseStorageService.updateChannel(this.channelId, {
+      name: this.channelName,
+      description: this.channelDescription
+    }).then(() => {
+      this.isEditingChannelName = false;
+      this.errorMessage = '';
+      console.log('Channel-Name erfolgreich gespeichert:', this.channelName);
+    }).catch((error) => {
+      console.error('Fehler beim Speichern des Channel-Namens:', error);
+    });
   }
-
-  // Wenn der Name nicht existiert, führe die Update-Operation durch
-  this.firebaseStorageService.updateChannel(this.channelId, {
-    name: this.channelName,
-    description: this.channelDescription
-  }).then(() => {
-    this.isEditingChannelName = false;
-    this.errorMessage = '';
-    console.log('Channel-Name erfolgreich gespeichert:', this.channelName);
-  }).catch((error) => {
-    console.error('Fehler beim Speichern des Channel-Namens:', error);
-  });
-}
-
 
 
    /**
-   * Überprüft, ob der Channel-Name bereits existiert.
+   * Checks whether the channel name already exists.
    * @returns boolean
    */
    isChannelNameTaken(): boolean {
     return !!this.findChannelName(this.channelName);
   }
 
+
   /**
-   * Sucht nach einem Channel mit dem angegebenen Namen.
+   * Searches for a channel with the specified name.
    * @param inputChannel string
    * @returns string | undefined
    */
@@ -125,26 +142,37 @@ async saveChannelName(): Promise<void> {
     return match?.name!;
   }
   
+
+  /**
+   * Performs a rewind of the channel in the program.
+   * 
+   * @returns void
+   */
   leaveChannel(): void {
     if (!this.channelId) {
       console.error('Channel-ID fehlt. Kann Channel nicht verlassen.');
       return;
     }
-  
     const currentUserId = this.firebaseStorageService.currentUser.id;
-  
-    // Entferne den Benutzer aus dem Channel
     this.firebaseStorageService.updateChannel(this.channelId, {
       user: this.firebaseStorageService.channel
         .find(channel => channel.id === this.channelId)?.user
         .filter(userId => userId !== currentUserId) || [],
     }).then(() => {
-      this.firebaseStorageService.currentUser.currentChannel = '';
-      sessionStorage.removeItem('currentChannel'); 
-      this.router.navigate(['/workspace']);
-      this.close.emit(); 
+     this.handelAfterDeleteChannelForUser();
     }).catch((error) => {
       console.error('Fehler beim Verlassen des Channels:', error);
     });
+  }
+
+  
+  /**
+   * Handels the todos after rewind the channel.
+   */
+  handelAfterDeleteChannelForUser() {
+    this.firebaseStorageService.currentUser.currentChannel = '';
+    sessionStorage.removeItem('currentChannel'); 
+    this.router.navigate(['/workspace']);
+    this.close.emit(); 
   }
 }

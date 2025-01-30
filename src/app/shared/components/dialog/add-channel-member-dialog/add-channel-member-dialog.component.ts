@@ -386,16 +386,11 @@ export class AddChannelMemberDialogComponent {
   clearMessages(): void {
     this.successMessage = '';
     this.errorMessage = '';
-
-    // Clear the success message timer if it exists
     if (this.successTimer) {
       clearTimeout(this.successTimer);
     }
-
-    // Clear the error message timer if it exists
     if (this.errorTimer) {
       clearTimeout(this.errorTimer);
     }
   }
-
 }
