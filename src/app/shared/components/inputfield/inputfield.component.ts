@@ -14,6 +14,7 @@ import { InputEventsService } from './services/input-events.service';
 import { UploadComponent } from "./components/upload/upload.component";
 import { NgIf } from '@angular/common';
 import { InputfieldHelperService } from './services/inputfield-helper.service';
+import { UidService } from '../../services/uid.service';
 
 
 @Component({
@@ -31,6 +32,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   sendMessageService = inject(SendMessageService);
   inputEvent = inject(InputEventsService);
   helper = inject(InputfieldHelperService);
+  uid = inject(UidService);
 
   @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective;
   @ViewChild('messageContent', { static: false }) messageContent!: ElementRef<HTMLDivElement>;
@@ -71,8 +73,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * is initialized, so setting the focus immediately does not work.
    */
   ngAfterViewInit() {
-    this.helper.setElementRef(this.messageContent); 
-    setTimeout(() => this.helper.setFocus(this.showTagSearch), 250);
+    setTimeout(() => this.setFocus(this.showTagSearch), 250);
   }
 
 
@@ -83,7 +84,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * is initialized, so setting the focus immediately does not work.
    */
   ngOnChanges(): void {
-    setTimeout(() => this.helper.setFocus(this.showTagSearch), 250);
+    setTimeout(() => this.setFocus(this.showTagSearch), 250);
   }
 
 
@@ -108,7 +109,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     const content = this.messageContent.nativeElement.innerHTML;
     this.message = content;
     this.startInput = content.trim() !== '' && content !== '<br>';
-    this.helper.setFocus(this.showTagSearch);
+    this.setFocus(this.showTagSearch);
   }
 
 
@@ -120,12 +121,8 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    */
   onKeyDown(event: KeyboardEvent) {
     const targetElement = event.target as HTMLElement;
-    if (this.inputEvent.isInsideTagSearch(targetElement)) {
-      this.handleTagSearch(event);
-    }
-    if (this.inputEvent.isInsideMessageContent(targetElement)) {
-      this.handleMessage(event);
-    }
+    if (this.inputEvent.isInsideTagSearch(targetElement)) this.handleTagSearch(event);
+    if (this.inputEvent.isInsideMessageContent(targetElement)) this.handleMessage(event);
   }
 
 
@@ -205,7 +202,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
     this.message = message.innerHTML;
     this.startInput = (message.innerHTML === '' || message.innerHTML === '<br>') ? false : true;
-    this.helper.setFocus(this.showTagSearch);
+    this.setFocus(this.showTagSearch);
   }
 
 
@@ -218,28 +215,13 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   sendMessage(): void {
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
     if (!message.innerHTML || !this.storage.currentUser.id || !this.storage.currentUser.currentChannel) return;
-    let newPost: PostInterface = this.helper.generateNewPost();
+    let newMessage = this.elementRef.nativeElement.querySelector('.message-content');
+    let newPost: PostInterface = this.helper.generateNewPost(newMessage.innerHTML);
     if (this.thread) this.sendMessageService.handleThreadPost(newPost);
     else this.sendMessageService.handleNormalPost(newPost);
     message.innerHTML = '';
     this.startInput = false;
-    this.scrollToPost(newPost.id);
-  }
-
-
-  /**
-   * Scrolls the view to the post element with the specified ID after a delay.
-   * If the element is found, it smoothly scrolls to its position at the start of the view.
-   * If the element is not found, a warning is logged to the console.
-   * 
-   * @param {string} postId - The ID of the post element to scroll to.
-   */
-  scrollToPost(postId: string) {
-    setTimeout(() => {
-      const postElement = document.getElementById(postId);
-      if (postElement) postElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      else console.warn(`Element mit ID ${postId} nicht gefunden.`);
-    }, 100);
+    this.helper.scrollToPost(newPost.id);
   }
 
 
@@ -271,7 +253,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     newMessage.innerHTML += emoji;
     newMessage.innerHTML = newMessage.innerHTML.replaceAll('<br>', '');
     this.startInput = true;
-    this.helper.setFocus(this.showTagSearch);
+    this.setFocus(this.showTagSearch);
     this.showEmojiSelector = false;
   }
 
@@ -289,7 +271,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     this.showTagSearch = !this.showTagSearch;
     this.showEmojiSelector = false;
     this.showUpload = false;
-    this.helper.setFocus(this.showTagSearch);
+    this.setFocus(this.showTagSearch);
   }
 
 
@@ -303,7 +285,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     this.showEmojiSelector = !this.showEmojiSelector;
     this.showTagSearch = false;
     this.showUpload = false;
-    this.helper.setFocus(this.showTagSearch);
+    this.setFocus(this.showTagSearch);
   }
 
 
@@ -315,7 +297,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   toggleAppendix() {
     this.showUpload = !this.showUpload;
     this.showEmojiSelector = false;
-    this.helper.setFocus(this.showTagSearch);
+    this.setFocus(this.showTagSearch);
   }
 
 
@@ -362,7 +344,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     this.showTagSearch = false;
     this.showEmojiSelector = false;
     this.showUpload = false;
-    this.helper.setFocus(this.showTagSearch);
+    this.setFocus(this.showTagSearch);
   }
 
 
@@ -373,5 +355,42 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   cancelPost() {
     this.edit = !this.edit;
     this.editChange.emit(this.edit);
+  }
+
+
+  /**
+ * Gets the element that should receive focus based on the showTagSearch parameter.
+ * If showTagSearch is true, the tag search input is returned. Otherwise, the message content
+ * is returned. If the thread is open, the IDs are 'tag-search-input-thread' and 'messageContentThread',
+ * otherwise, they are 'tag-search-input' and 'messageContent'.
+ * 
+ * @param showTagSearch If true, the tag search input is returned. Otherwise, the message content is returned.
+ * @returns The focus element or null if the element does not exist.
+ */
+  getFocusElement(showTagSearch: boolean): HTMLElement | null {
+    const isThreadOpen = this.storage.currentUser.threadOpen;
+    if (showTagSearch) return this.elementRef.nativeElement.querySelector(
+      isThreadOpen ? '#tag-search-input-thread' : '#tag-search-input'
+    );
+    return this.elementRef.nativeElement.querySelector(
+      isThreadOpen ? '#messageContentThread' : '#messageContent'
+    );
+  }
+
+
+  /**
+ * Sets the focus on either the tag search input or the message content based on the showTagSearch parameter.
+ * If the active element's ID is part of the excludedTags array, the focus is not set.
+ * @param showTagSearch If true, sets focus on the tag search input. Otherwise, sets focus on the message content.
+ */
+  setFocus(showTagSearch: boolean) {
+    let focusElement = this.getFocusElement(showTagSearch);
+    if (!focusElement) return;
+    if (this.helper.isExcludedId()) {
+      focusElement = document.activeElement as HTMLElement;
+    }
+    focusElement.focus();
+    if (focusElement.isContentEditable) this.helper.setFocusContentEditable(focusElement);
+    else if ('selectionStart' in focusElement) this.helper.setFocusInput(focusElement);
   }
 }

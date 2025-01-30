@@ -9,7 +9,6 @@ import { UidService } from '../../../services/uid.service';
 })
 export class InputfieldHelperService {
   storage = inject(FirebaseStorageService);
-  private elementRef!: ElementRef;
   uid = inject(UidService);
 
   excludedTags: string[] = ['messageContent', 'newMessageInput', 'searchbar', 'channel-name', 'channel-description', 'profile-name', 'profile-email', 'editMessage', 'newChannelMemberInput', 'result-dropdown'];
@@ -18,10 +17,6 @@ export class InputfieldHelperService {
   constructor() { }
 
 
-  setElementRef(elementRef: ElementRef) {
-    this.elementRef = elementRef;
-  }
-  
   /**
    * Generates a default channel tag object.
    * 
@@ -68,25 +63,6 @@ export class InputfieldHelperService {
   }
 
 
-
-
-  /**
-   * Sets the focus on either the tag search input or the message content based on the showTagSearch parameter.
-   * If the active element's ID is part of the excludedTags array, the focus is not set.
-   * @param showTagSearch If true, sets focus on the tag search input. Otherwise, sets focus on the message content.
-   */
-  setFocus(showTagSearch: boolean) {
-    let focusElement = this.getFocusElement(showTagSearch);
-    if (!focusElement) return;
-    if (this.isExcludedId()) {
-      focusElement = document.activeElement as HTMLElement;
-    }
-    focusElement.focus();
-    if (focusElement.isContentEditable) this.setFocusContentEditable(focusElement);
-    else if ('selectionStart' in focusElement) this.setFocusInput(focusElement);
-  }
-
-
   /**
    * Checks if the currently active element's ID is part of the excluded tags.
    * This prevents setting focus on elements with IDs that are in the excludedTags array.
@@ -98,24 +74,19 @@ export class InputfieldHelperService {
   }
 
 
-
   /**
-   * Gets the element that should receive focus based on the showTagSearch parameter.
-   * If showTagSearch is true, the tag search input is returned. Otherwise, the message content
-   * is returned. If the thread is open, the IDs are 'tag-search-input-thread' and 'messageContentThread',
-   * otherwise, they are 'tag-search-input' and 'messageContent'.
-   * 
-   * @param showTagSearch If true, the tag search input is returned. Otherwise, the message content is returned.
-   * @returns The focus element or null if the element does not exist.
-   */
-  getFocusElement(showTagSearch: boolean): HTMLElement | null {
-    const isThreadOpen = this.storage.currentUser.threadOpen;
-    if (showTagSearch) return this.elementRef.nativeElement.querySelector(
-      isThreadOpen ? '#tag-search-input-thread' : '#tag-search-input'
-    );
-    return this.elementRef.nativeElement.querySelector(
-      isThreadOpen ? '#messageContentThread' : '#messageContent'
-    );
+ * Scrolls the view to the post element with the specified ID after a delay.
+ * If the element is found, it smoothly scrolls to its position at the start of the view.
+ * If the element is not found, a warning is logged to the console.
+ * 
+ * @param {string} postId - The ID of the post element to scroll to.
+ */
+  scrollToPost(postId: string) {
+    setTimeout(() => {
+      const postElement = document.getElementById(postId);
+      if (postElement) postElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      else console.warn(`Element mit ID ${postId} nicht gefunden.`);
+    }, 100);
   }
 
 
@@ -124,10 +95,9 @@ export class InputfieldHelperService {
   * 
   * @returns {PostInterface} A new post object with the current message content.
   */
-  generateNewPost(): PostInterface {
-    let newMessage = this.elementRef.nativeElement.querySelector('.message-content');
+  generateNewPost(message: string): PostInterface {
     return {
-      text: newMessage.innerHTML,
+      text: message,
       timestamp: new Date().getTime(),
       author: this.storage.currentUser.id || '',
       id: this.uid.generateUid(),

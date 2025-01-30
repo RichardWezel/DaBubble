@@ -27,7 +27,7 @@ export class TextFormatterDirective {
     message.innerHTML += formattedText + '';
     message.innerHTML = this.clearLineBreak(message);
     this.closeSearch();
-    this.inputElement.helper.setFocus(this.inputElement.showTagSearch);
+    this.inputElement.setFocus(this.inputElement.showTagSearch);
   }
 
 

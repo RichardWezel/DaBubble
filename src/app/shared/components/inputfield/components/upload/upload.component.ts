@@ -231,7 +231,7 @@ export class UploadComponent implements OnChanges, OnInit {
     this.inputfield.startInput = true;
     this.inputfield.showUpload = false;
     this.inputfield.sendMessage();
-    this.inputfield.helper.setFocus(this.inputfield.showTagSearch);
+    this.inputfield.setFocus(this.inputfield.showTagSearch);
   }
 
 
