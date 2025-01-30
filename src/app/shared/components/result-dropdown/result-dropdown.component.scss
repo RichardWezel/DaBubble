@@ -30,7 +30,6 @@ main {
         height: 100px;
         overflow-y: auto;
 
-        
         ul {
             padding-right: 10px;
             &:focus-visible {
@@ -38,7 +37,6 @@ main {
                 outline: unset;
             }
     
-            
             li {
                 display: flex;
                 align-items: center;
@@ -63,7 +61,7 @@ main {
                 }
             }
 
-            li.selected {
+            li.selected{
                 background-color: $backgroundColor; 
                 cursor: pointer;
                 border-radius: 20px;
@@ -72,7 +70,6 @@ main {
             li:hover {
                 background-color: $backgroundColor;
             }
-
         }
     }
 }
