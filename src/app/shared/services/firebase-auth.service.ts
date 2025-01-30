@@ -297,5 +297,4 @@ export class FirebaseAuthService {
       console.error(`Error setting user ${this.storage.currentUser.id} online:`, error);
     }
   }
-
 }

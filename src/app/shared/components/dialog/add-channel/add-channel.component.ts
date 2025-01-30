@@ -17,14 +17,7 @@ import { ChannelInterface } from '../../../interfaces/channel.interface';
 export class AddChannelComponent implements OnInit, OnDestroy {
   protected storage = inject(FirebaseStorageService);
   isDialogVisible: boolean = false;
-  channelData = {
-    name: "",
-    description: "",
-    user: [this.storage.currentUser.id],
-    owner: this.storage.currentUser.id,
-    posts: [],
-    id: ""
-  };
+  channelData = this.setChannelData();
   navigation = inject(NavigationService);
   isChannelNameExists: boolean = false;
   errorMessage: string = '';
@@ -100,13 +93,19 @@ export class AddChannelComponent implements OnInit, OnDestroy {
     } else {
       this.isChannelNameExists = false;
     }
-
     if (this.isChannelNameExists === false) {
-      await this.takeChannelInfo();
-      this.navigation.setChannel(this.storage.lastCreatedChannel);
-      this.openCloseDialogService.open('SelectionOfAddingChannelMembers');
-      this.closeDialog();
+      await this.createNewDMChannelAndOpen();
     }
+  }
+
+  /**
+   * Creates a new dm Channel and navigate to it.
+   */
+  async createNewDMChannelAndOpen() {
+    await this.takeChannelInfo();
+    this.navigation.setChannel(this.storage.lastCreatedChannel);
+    this.openCloseDialogService.open('SelectionOfAddingChannelMembers');
+    this.closeDialog();
   }
 
 
@@ -130,17 +129,25 @@ export class AddChannelComponent implements OnInit, OnDestroy {
         owner: this.storage.currentUser.id || ""
       });
       this.closeDialog();
-      this.channelData = {
-        name: "",
-        description: "",
-        user: [this.storage.currentUser.id],
-        owner: this.storage.currentUser.id,
-        posts: [],
-        id: ""
-      };
+      this.channelData = this.setChannelData();
     } catch (error) {
       console.error("Fehler beim Hinzufügen des Channels:", error);
     }
+  }
+
+  /**
+   * 
+   * @returns channel-information of new dm
+   */
+  setChannelData() {
+    return  {
+      name: "",
+      description: "",
+      user: [this.storage.currentUser.id],
+      owner: this.storage.currentUser.id,
+      posts: [],
+      id: ""
+    };
   }
 
 

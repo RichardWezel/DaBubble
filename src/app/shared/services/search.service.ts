@@ -84,16 +84,16 @@ export class SearchService {
   }
 
   /**
-   * Setzt den aktuellen Benutzerinput und benachrichtigt alle Abonnenten.
-   * @param input - Der neue Benutzerinput.
+   * Sets the current user input and notifies all subscribers.
+   * @param input - The new user input.
    */
   setUserInput(input: string): void {
     this.userInputSubject.next(input);
   }
   
   /**
-   * Gibt den aktuellen Wert des Benutzerinputs zurück.
-   * @returns Der aktuelle Benutzerinput.
+   * Returns the current value of the user input.
+   * @returns The current user input.
    */
   getUserInput(): string {
     return this.userInputSubject.value;

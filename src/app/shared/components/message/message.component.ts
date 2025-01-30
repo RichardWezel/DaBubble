@@ -317,4 +317,3 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
     this.viewService.setCurrentView(view);
   }
 }
-
