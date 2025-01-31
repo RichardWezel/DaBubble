@@ -277,7 +277,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
     if (!this.isEmailValid()) return;
 
     try {
-      await this.changeUserEmail();
+      await this.changeUserEmail(this.email);
       this.handleSuccess();
     } catch (error) {
       this.handleError(error);
@@ -302,8 +302,8 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   /**
    * Attempts to change the user's email using the authentication service.
    */
-  private async changeUserEmail(): Promise<void> {
-    await this.auth.changeUserEmail(this.email);
+  private async changeUserEmail(newEmail: string): Promise<void> {
+    await this.auth.changeUserEmail(newEmail);
   }
 
 
