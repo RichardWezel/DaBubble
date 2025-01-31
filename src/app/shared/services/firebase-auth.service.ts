@@ -5,6 +5,7 @@ import { doc, Firestore, getDoc, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { CurrentUserInterface } from '../interfaces/current-user-interface';
 import { FirebaseError } from '@angular/fire/app';
+import { OpenCloseDialogService } from './open-close-dialog.service';
 
 
 @Injectable({
@@ -14,6 +15,7 @@ export class FirebaseAuthService {
   storage = inject(FirebaseStorageService);
   auth = inject(Auth);
   router = inject(Router);
+  openCloseDialogService = inject(OpenCloseDialogService);
   private firestore = inject(Firestore);
   errorMessage: string = '';
 
@@ -221,6 +223,12 @@ export class FirebaseAuthService {
     if (this.onlineTimer) clearTimeout(this.onlineTimer);
     if (status) this.onlineTimer = setTimeout(async () => {
       this.logout();
+      this.openCloseDialogService.close('userProfile');
+      this.openCloseDialogService.close('channelMember');
+      this.openCloseDialogService.close('addChannelMember');
+      this.openCloseDialogService.close('addChannel');
+      this.openCloseDialogService.close('SelectionOfAddingChannelMembers');
+      this.openCloseDialogService.close('resultDropdown');
       this.onlineTimer = null;
     }, 900000);
     else this.onlineTimer = null;
