@@ -262,6 +262,15 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
 
 
   /**
+   * Triggers a file explorer to select a file.
+   * @param {HTMLInputElement} fileInput - The file element to trigger. 
+   */
+  openFileExplorer(fileInput: HTMLInputElement) {
+    fileInput.click();
+  }
+
+
+  /**
   * Updates the user's email and handles related messages and logging.
   */
   async updateEmail(): Promise<void> {
