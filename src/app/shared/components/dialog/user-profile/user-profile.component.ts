@@ -191,34 +191,46 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
 
 
   /**
-   * Saves the updated profile to the storage and updates the current session information.
-   */
+  * Saves the updated profile and updates the session.
+  */
   async saveProfile(): Promise<void> {
     this.resetCheckForm();
+    await this.handleAvatarUpload();
+    const updatedUser: Partial<UserInterface> = {
+      name: this.name,
+      email: this.email,
+      avatar: this.avatar
+    };
+    await this.storage.updateUser(this.userId, updatedUser as UserInterface);
+    await this.updateEmail();
+    await this.auth.getCurrentUser();
+    this.updateLocalUser();
+    this.mode = "show";
+  }
+
+
+  /**
+   * Processes the upload of the avatar, if necessary.
+   */
+  private async handleAvatarUpload(): Promise<void> {
     if (this.avatarChanged && this.uploadFile && this.storage.currentUser.id) {
       this.avatar = await this.cloud.uploadProfilePicture(this.storage.currentUser.id, this.uploadFile);
       this.uploadFile = null;
     } else {
       this.avatar = this.storage.currentUser.avatar;
     }
+  }
 
-    const updatedUser: Partial<UserInterface> = {
-      name: this.name,
-      email: this.email,
-      avatar: this.avatar
-    };
 
-    await this.storage.updateUser(this.userId, updatedUser as UserInterface);
-    await this.updateEmail();
-    await this.auth.getCurrentUser();
-
+  /**
+   * Updates the local user data after saving.
+   */
+  private updateLocalUser(): void {
     if (this.user) {
       this.user.name = this.name;
       this.user.email = this.email;
       this.user.avatar = this.avatar;
     }
-
-    this.mode = "show";
   }
 
 
@@ -250,30 +262,57 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
 
 
   /**
-   * Triggers a file explorer to select a file.
-   * @param {HTMLInputElement} fileInput - The file input element to trigger.
-   */
-  openFileExplorer(fileInput: HTMLInputElement) {
-    fileInput.click();
-  }
-
-  async updateEmail() {
-    console.log(" updateEmail() wurde aufgerufen mit:", this.email);
-
-    if (!this.email) {
-      this.message = " Bitte eine gültige neue E-Mail eingeben.";
-      console.warn(" Keine neue E-Mail eingegeben.");
-      return;
-    }
+  * Updates the user's email and handles related messages and logging.
+  */
+  async updateEmail(): Promise<void> {
+    if (!this.isEmailValid()) return;
 
     try {
-      await this.auth.changeUserEmail(this.email);
-      this.message = " E-Mail wurde erfolgreich geändert! Bitte überprüfen Sie Ihre neue E-Mail.";
-      console.log("changeUserEmail wurde erfolgreich ausgeführt!");
-    } catch (error: any) {
-      this.message = " Fehler: " + error.message;
-      console.error(" Fehler beim Ändern der E-Mail:", error.message);
+      await this.changeUserEmail();
+      this.handleSuccess();
+    } catch (error) {
+      this.handleError(error);
     }
+  }
+
+
+  /**
+   * Validates the email input and sets appropriate messages.
+   * @returns {boolean} True if the email is valid, otherwise false.
+   */
+  private isEmailValid(): boolean {
+    if (!this.email) {
+      this.message = "Please enter a valid new email.";
+      console.warn("No new email entered.");
+      return false;
+    }
+    return true;
+  }
+
+
+  /**
+   * Attempts to change the user's email using the authentication service.
+   */
+  private async changeUserEmail(): Promise<void> {
+    await this.auth.changeUserEmail(this.email);
+  }
+
+
+  /**
+   * Handles successful email update by setting a success message and logging.
+   */
+  private handleSuccess(): void {
+    this.message = "Email successfully changed! Please verify your new email.";
+  }
+
+
+  /**
+   * Handles errors that occur during the email update process.
+   * @param {any} error - The error object caught during the email update.
+   */
+  private handleError(error: any): void {
+    this.message = "Error: " + error.message;
+    console.error("Error changing email:", error.message);
   }
 
 
