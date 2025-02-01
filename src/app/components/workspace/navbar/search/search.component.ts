@@ -33,11 +33,13 @@ export class SearchComponent {
   getUserName = inject(GetUserNameService);
   search = inject(SearchService);
   elementRef = inject(ElementRef);
-  openCloseService = inject(OpenCloseDialogService)
+  openCloseService = inject(OpenCloseDialogService);
+  private viewService = inject(SetMobileViewService);
   searchResults: SearchResult[] = [];
   selectedIndex: number = -1;
   dropDownIsOpen: boolean = false;
   dropdownElement: HTMLElement | undefined;
+  placeholderText: string = 'Standard Placeholder';
 
   private searchSubject = new Subject<string>();
   private subscriptions: Subscription = new Subscription();
@@ -63,10 +65,7 @@ export class SearchComponent {
    * Creates an instance of SearchComponent and sets up the search debouncing.
    * @param sanitizer - The DomSanitizer service to safely bind HTML content.
    */
-  constructor(
-    private sanitizer: DomSanitizer,
-    private viewService: SetMobileViewService
-  ) {
+  constructor( private sanitizer: DomSanitizer) {
     this.searchSubject.pipe(
       debounceTime(300)
     ).subscribe(searchTerm => {
@@ -82,13 +81,18 @@ export class SearchComponent {
     });
   }
 
-  placeholderText: string = 'Standard Placeholder';
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.setPlaceholder(event.target.innerWidth);
   }
 
+
+  /**
+   * Sets the placeholder depending on the screen size.
+   * 
+   * @param width - innerWidth of target.
+   */
   setPlaceholder(width: number) {
     if (width <= 333) {
       this.placeholderText = 'durchsuchen';
@@ -96,6 +100,7 @@ export class SearchComponent {
       this.placeholderText = 'Devspace durchsuchen';
     }
   }
+
 
   /**
    * Subscribes to the open/close status of the dialog, setting visibility based on the status.
@@ -106,9 +111,7 @@ export class SearchComponent {
       ?.subscribe((status) => {
         this.dropDownIsOpen = status;
       });
-
     if (sub) this.subscriptions.add(sub);
-
     this.setPlaceholder(window.innerWidth);
   }
 
@@ -148,9 +151,14 @@ export class SearchComponent {
     }
   }
 
+
+  /**
+   * Opens the result-dropdown-dialog
+   */
   showDropdown() {
     this.dropDownIsOpen = true;
   }
+
 
   /**
    * Initiates the search process by resetting search results and updating them based on user input.
@@ -160,6 +168,7 @@ export class SearchComponent {
     this.updateSearchResults();
     this.selectedIndex = -1;
   }
+
 
   /**
    * Updates the search results based on the current user input.
@@ -174,6 +183,7 @@ export class SearchComponent {
       this.selectedIndex = -1;
     }
   }
+
 
   /**
    * Aggregates search results by finding matching channels, users, and channel posts.
@@ -477,7 +487,6 @@ export class SearchComponent {
     console.log('openThread() in search.c: ', postId);
     this.storage.currentUser.postId = postId;
     this.storage.currentUser.threadOpen = !this.storage.currentUser.threadOpen;
-    // Optional: Emit an event or trigger UI update if necessary
   }
 
 
