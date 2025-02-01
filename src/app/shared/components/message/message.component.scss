@@ -205,28 +205,35 @@ main {
             flex-direction: column;
             gap: 8px;
 
-            ::ng-deep .inputfield {
+            ::ng-deep .inputfield{
                 padding: unset;
                 border: unset;
                 justify-content: space-between;
 
-                .inputfield-buttons {
-                    .edit-buttons {
+                .inputfield-buttons{
+                    .edit-buttons{
+                       
                         @media (max-width: $breakpoint1){
                             height: 40px;
-                        
                         }
-                        
                     }
 
-                    .buttonSecondary {
+                    .cancel{
+                        @media (min-width: $breakpoint1){
+                            position: absolute;
+                            right: 145px;
+                        }
+                    }
+                   
+
+                    .buttonSecondary{
                         @media (max-width: $breakpoint1){
                             padding: 0px 4px;
                             border: 2px solid $secondaryColor;
                             height: 24px;
                         }
 
-                        .normal {
+                        .normal{
                             display: flex;
 
                             @media (max-width: $breakpoint1){
@@ -235,7 +242,7 @@ main {
 
                         }
 
-                        .mobile {
+                        .mobile{
                             display: none;
                             svg {
                              
@@ -250,7 +257,7 @@ main {
                         }
                     }
 
-                    .buttonPrimary {
+                    .buttonPrimary{
                         
                         @media (max-width: $breakpoint1){
                             padding: 0px 5px;
@@ -258,7 +265,7 @@ main {
                             height: 24px;
                         }
 
-                        .normal {
+                        .normal{
                             display: flex;
 
                             @media (max-width: $breakpoint1){
