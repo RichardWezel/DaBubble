@@ -18,7 +18,9 @@ export class SearchService {
   private userInputSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
   public userInput$: Observable<string> = this.userInputSubject.asObservable();
   private viewService = inject(SetMobileViewService);
+
   constructor() { }
+
 
   /**
    * Finds the ID of the direct message (DM) channel for a given user.
@@ -39,6 +41,7 @@ export class SearchService {
     }
   }
 
+
   /**
   * Checks if a user is already in the current user's direct messages.
   * @param UserMatch - The UserInterface object to check.
@@ -48,6 +51,7 @@ export class SearchService {
     let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
     return curUser!.dm.some(dm => dm.contact === UserMatch.id);
   }
+
 
   /**
    * Retrieves the DM channel ID for a given user ID.
@@ -59,6 +63,7 @@ export class SearchService {
     const dm = curUser?.dm.find(dm => dm.contact === IdOfUser);
     return dm ? dm.id : undefined;
   }
+
 
   /**
    * Creates a new direct message channel with the specified user.
@@ -76,6 +81,7 @@ export class SearchService {
     }
   }
 
+
   /**
    * Creates empty DM channels between the current user and the specified user.
    * @param match - The UserInterface object representing the user to message.
@@ -89,6 +95,7 @@ export class SearchService {
     }
   }
 
+
   /**
    * Sets the current user input and notifies all subscribers.
    * @param input - The new user input.
@@ -96,7 +103,8 @@ export class SearchService {
   setUserInput(input: string): void {
     this.userInputSubject.next(input);
   }
-  
+
+
   /**
    * Returns the current value of the user input.
    * @returns The current user input.

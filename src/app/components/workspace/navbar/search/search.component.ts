@@ -66,17 +66,11 @@ export class SearchComponent {
    * Creates an instance of SearchComponent and sets up the search debouncing.
    * @param sanitizer - The DomSanitizer service to safely bind HTML content.
    */
-  constructor( private sanitizer: DomSanitizer) {
+  constructor(private sanitizer: DomSanitizer) {
     this.searchSubject.pipe(
       debounceTime(300)
     ).subscribe(searchTerm => {
       this.userInput = searchTerm;
-      this.onInputSearch();
-    });
-
-    this.searchSubject.pipe(
-      debounceTime(300)
-    ).subscribe(searchTerm => {
       this.search.setUserInput(searchTerm);
       this.onInputSearch();
     });
@@ -139,6 +133,7 @@ export class SearchComponent {
   public closeDialog() {
     this.openCloseService.close('addChannel');
   }
+
 
   /**
    * Handles the input event from the search bar by emitting the current user input.
