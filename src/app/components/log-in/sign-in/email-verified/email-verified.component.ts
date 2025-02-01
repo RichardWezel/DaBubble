@@ -34,6 +34,9 @@ export class EmailVerifiedComponent implements OnInit {
 
       if (mode === 'verifyEmail' && actionCode) {
         await this.handleValidMailVerification(auth, actionCode);
+      } else if (mode === 'verifiyAndChangeEmail' && actionCode) {
+        console.log("Email wird geändert");
+        await this.handleValidMailVerification(auth, actionCode);
       } else {
         this.handleInvalidMailVerification();
       }
@@ -73,6 +76,11 @@ export class EmailVerifiedComponent implements OnInit {
       await applyActionCode(auth, actionCode); // Verifying email
       this.message = 'Deine E-Mail-Adresse wurde erfolgreich bestätigt!';
       this.isLoading = false;
+
+      if (auth.currentUser) {
+        await auth.currentUser.reload();
+      }
+
       setTimeout(() => {
         this.router.navigate(['/login']); // Navigation to log-in page
       }, 3000);

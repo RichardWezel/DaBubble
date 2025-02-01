@@ -50,6 +50,9 @@ export class AppComponent implements OnInit {
       case 'verifyEmail':
         this.router.navigate(['/emailverified'], { queryParams: { oobCode } });
         break;
+      case 'verifyAndChangeEmail':
+        this.router.navigate(['/emailverified'], { queryParams: { oobCode } });
+        break;
       default:
         console.error('Unknown mode:', mode);
         this.router.navigate(['/']); // Navigate back to home page or default route
