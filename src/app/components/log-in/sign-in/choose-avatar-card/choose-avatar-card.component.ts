@@ -223,7 +223,7 @@ export class ChooseAvatarCardComponent {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       return userCredential.user.uid;
     } catch {
-      alert("Mit dieser E-Mail Adresse existiert bereits ein Benutzer.");
+      this.errorMessage = "Mit dieser E-Mail Adresse existiert bereits ein Benutzer.";
       this.goToGenerateAccount();
       this.clearSignInServiceData();
       return undefined; // Explicitly return undefined on failure

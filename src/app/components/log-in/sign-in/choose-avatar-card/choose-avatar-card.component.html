@@ -38,7 +38,7 @@
                 <p *ngIf="inputFieldCheck && (!avatarSelected || (uploadFile && uploadFile.size > 512000))" class="error-message error-text-input">Bitte wähle einen Avatar aus.</p>
                 <div class="btn-container">
                     <button #submitButton type="submit" class="mainButton buttonPrimary"
-                        [disabled]="!avatarSelected || successMessage || (uploadFile && uploadFile.size > 512000)">
+                        [disabled]="!avatarSelected || successMessage || (uploadFile && uploadFile.size > 512000) || isLoading">
                         {{ isLoading ? 'Wird geladen...' : 'Weiter' }}
                     </button>
                     @if (!avatarSelected || uploadFile && uploadFile.size > 512000) {
