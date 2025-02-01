@@ -145,19 +145,11 @@ export class SearchComponent {
    */
   onInput(): void {
     if (this.userInput.startsWith('@') || this.userInput.startsWith('#')) {
-      this.showDropdown();
+      this.openDialog();
     } else {
       this.searchSubject.next(this.userInput);
       this.selectedIndex = -1;
     }
-  }
-
-
-  /**
-   * Opens the result-dropdown-dialog
-   */
-  showDropdown() {
-    this.dropDownIsOpen = true;
   }
 
 

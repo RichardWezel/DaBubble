@@ -57,7 +57,8 @@ export class ResultDropdownComponent implements OnChanges {
     if (changes['userInput']) {
       const newValue = changes['userInput'].currentValue;
       if (newValue.length >= 1) this.updateFoundedChannelsAndUsers(newValue);
-      else this.searchResults = [];
+      else 
+      this.searchResults = [];
     }
   }
 
@@ -149,9 +150,15 @@ export class ResultDropdownComponent implements OnChanges {
     if (input.startsWith('#')) {
       const searchTerm = input.substring(1);
       this.searchResults = this.findChannels(searchTerm);
+      if (this.searchResults.length === 0) {
+        this.openCloseService.close('resultDropdown');
+      }
     } else if (input.startsWith('@')) {
       const searchTerm = input.substring(1);
       this.searchResults = this.findUsers(searchTerm);
+      if (this.searchResults.length === 0) {
+        this.openCloseService.close('resultDropdown');
+      }
     } else {
       this.searchResults = [];
     }

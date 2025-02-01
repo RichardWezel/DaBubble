@@ -118,11 +118,11 @@ main {
           }
         }
 
-        &:hover,
-        &.selected {
-          background-color: $backgroundColor;
-          border-radius: 32px;
-        }
+        // &:hover,
+        // &.selected {
+        //   // background-color: $backgroundColor;
+        //   // border-radius: 32px;
+        // }
 
         .result-info {
           ::ng-deep {
