@@ -59,7 +59,7 @@
               <span *ngSwitchCase="'user'">&#x40; &nbsp;</span>
             </ng-container>
             <span [innerHTML]="result.parentType === 'channel' 
-              ? highlightMatch(getChannelName(result.parentId)) 
+              ? highlightMatch(this.search.getChannelName(result.parentId)) 
               : highlightMatch((getUserName.getName(result.parentId) | async) || '')">
             </span>:
           </span>

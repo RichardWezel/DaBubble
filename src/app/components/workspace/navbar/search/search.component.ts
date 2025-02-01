@@ -35,6 +35,7 @@ export class SearchComponent {
   elementRef = inject(ElementRef);
   openCloseService = inject(OpenCloseDialogService);
   private viewService = inject(SetMobileViewService);
+
   searchResults: SearchResult[] = [];
   selectedIndex: number = -1;
   dropDownIsOpen: boolean = false;
@@ -190,9 +191,9 @@ export class SearchComponent {
    */
   updateFoundedChannelsAndUsers(): void {
     if (this.userInput) {
-      const channelMatches: SearchResultChannel[] = this.findChannels(this.userInput);
-      const userMatches: SearchResultUser[] = this.findUser(this.userInput);
-      const channelPostMatches: SearchResultChannelPost[] = this.findChannelsByPost(this.userInput);
+      const channelMatches: SearchResultChannel[] = this.search.findChannels(this.userInput);
+      const userMatches: SearchResultUser[] = this.search.findUser(this.userInput);
+      const channelPostMatches: SearchResultChannelPost[] = this.search.findChannelsByPost(this.userInput);
       this.searchResults = [...channelMatches, ...userMatches, ...channelPostMatches];
     } else {
       this.searchResults = [];
@@ -220,137 +221,19 @@ export class SearchComponent {
 
 
   /**
-   * Searches for channels that include the user input in their names.
-   * @param userInput - The search term entered by the user.
-   * @returns An array of SearchResultChannel objects matching the search term.
-   */
-  findChannels(userInput: string): SearchResultChannel[] {
-    const channels: ChannelInterface[] = this.storage.CurrentUserChannel;
-    const matches = channels.filter(channel =>
-      channel.name.toLowerCase().includes(userInput.toLowerCase())
-    ).map(channel => ({ type: 'channel', channel } as SearchResultChannel));
-    return matches;
-  }
-
-
-  /**
-   * Searches for users that include the user input in their names.
-   * @param userInput - The search term entered by the user.
-   * @returns An array of SearchResultUser objects matching the search term.
-   */
-  findUser(userInput: string): SearchResultUser[] {
-    const users: UserInterface[] = this.storage.user;
-    const lowerInput = userInput.toLowerCase();
-    const matches = users.filter(user =>
-      user.name && user.name.toLowerCase().includes(lowerInput)
-    ).map(user => ({ type: 'user', user } as SearchResultUser));
-    return matches;
-  }
-
-
-  /**
-   * Searches for channel posts that include the user input in their text.
-   * @param userInput - The search term entered by the user.
-   * @returns An array of SearchResultChannelPost objects matching the search term.
-   */
-  findChannelsByPost(userInput: string): SearchResultChannelPost[] {
-    const channels: ChannelInterface[] = this.storage.CurrentUserChannel;
-    const inputLower = userInput.toLowerCase();
-    const matches: SearchResultChannelPost[] = [];
-
-    channels.forEach(channel => {
-      if (channel.posts) {
-        channel.posts.forEach(post => {
-          if (post.text.toLowerCase().includes(inputLower)) {
-            matches.push({
-              type: 'channel-post',
-              channel,
-              post
-            } as SearchResultChannelPost);
-          }
-        });
-      }
-    });
-
-    return matches;
-  }
-
-
-  /**
    * Sets the channel, user, channel post, or thread based on the selected search result.
    * Navigates to the appropriate channel or direct message and opens the thread if applicable.
    * @param result - The selected SearchResult object.
    */
   async setChannel(result: SearchResult): Promise<void> {
-    this.setTypeChannel(result);
-    this.setTypeUser(result);
-    this.setTypeChannelPost(result);
+    this.search.setTypeChannel(result);
+    this.search.setTypeUser(result);
+    this.search.setTypeChannelPost(result);
     this.setTypeThread(result);
 
     this.userInput = "";
     this.searchResults = [];
     this.selectedIndex = -1;
-  }
-
-
-  /**
-   * Handles navigation when a channel is selected from the search results.
-   * @param result - The selected SearchResultChannel object.
-   */
-  setTypeChannel(result: SearchResult): void {
-    if (result.type === 'channel') {
-      const channel = result.channel;
-      if (channel.id) {
-        this.navigation.setChannel(channel.id);
-        this.viewService.setCurrentView('channel');
-      } else {
-        console.error('Channel id ist undefiniert.');
-        return;
-      }
-    }
-  }
-
-
-  /**
-   * Handles navigation when a user is selected from the search results.
-   * Initiates or navigates to a direct message channel with the user.
-   * @param result - The selected SearchResultUser object.
-   */
-  async setTypeUser(result: SearchResult): Promise<void> {
-    if (result.type === 'user') {
-      const user = result.user;
-      let dmId = await this.search.findIdOfDM(user);
-      if (dmId) {
-        this.navigation.setChannel(dmId);
-        this.viewService.setCurrentView('channel');
-      } else if (user.id === this.storage.currentUser.id) {
-        this.navigation.setChannel('');
-        this.viewService.setCurrentView('channel');
-      } else {
-        console.error('DM id ist undefiniert.');
-        return;
-      }
-    }
-  }
-
-
-  /**
-   * Handles navigation when a channel post is selected from the search results.
-   * Navigates to the specific channel and optionally to the specific post.
-   * @param result - The selected SearchResultChannelPost object.
-   */
-  setTypeChannelPost(result: SearchResult): void {
-    if (result.type === 'channel-post') {
-      const channel = result.channel;
-      const post = result.post;
-      if (channel.id) {
-        this.navigation.setChannel(channel.id);
-        this.viewService.setCurrentView('channel');
-      } else {
-        console.error('Channel id ist undefiniert.');
-        return;
-      }
-    }
   }
 
 
@@ -362,7 +245,6 @@ export class SearchComponent {
   async setTypeThread(result: SearchResult): Promise<void> {
     if (result.type === 'thread') {
       const threadResult = result as SearchResultThread;
-      console.log('setTypeThread in search.c: ', threadResult)
       if (threadResult.parentId) {
         this.navigation.setChannel(threadResult.parentId);
         let postId = this.storage.findParentPostId(threadResult.parentId, threadResult.thread.id)
@@ -484,7 +366,6 @@ export class SearchComponent {
    * @param postId - The ID of the post to open or close the thread of.
    */
   openThread(postId: string): void {
-    console.log('openThread() in search.c: ', postId);
     this.storage.currentUser.postId = postId;
     this.storage.currentUser.threadOpen = !this.storage.currentUser.threadOpen;
   }
@@ -498,30 +379,8 @@ export class SearchComponent {
   highlightMatch(text: string | undefined): SafeHtml {
     if (!text) return ''; // Fallback für undefined
     if (!this.userInput) return text;
-    const regex = new RegExp(`(${this.escapeRegExp(this.userInput)})`, 'gi');
+    const regex = new RegExp(`(${this.search.escapeRegExp(this.userInput)})`, 'gi');
     const highlighted = text.replace(regex, '<span class="highlight" style="color: #797EF3; font-weight: 100;">$1</span>');
     return this.sanitizer.bypassSecurityTrustHtml(highlighted);
   }
-
-
-  /**
-   * Escapes special characters in a string to safely use it within a regular expression.
-   * @param text - The text to escape.
-   * @returns The escaped text.
-   */
-  private escapeRegExp(text: string): string {
-    return text.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
-  }
-
-
-  /**
-   * Retrieves the channel name based on the channel ID.
-   * @param channelId - The ID of the channel.
-   * @returns The name of the channel or an empty string if not found.
-   */
-  getChannelName(channelId: string): string {
-    const channel = this.storage.channel.find(ch => ch.id === channelId);
-    return channel ? channel.name : '';
-  }
-
 }
