@@ -17,7 +17,7 @@ type SearchResult = ChannelInterface | UserInterface;
   templateUrl: './result-dropdown.component.html',
   styleUrl: './result-dropdown.component.scss'
 })
-export class ResultDropdownComponent implements OnChanges, AfterViewInit {
+export class ResultDropdownComponent implements OnChanges {
   protected storage = inject(FirebaseStorageService);
   navigationService = inject(NavigationService);
   search = inject(SearchService);
@@ -40,11 +40,11 @@ export class ResultDropdownComponent implements OnChanges, AfterViewInit {
    * This is needed because the dropdown is not yet rendered when the component is initialized,
    * so setting the focus immediately does not work.
    */
-  ngAfterViewInit() {
-    if (this.searchResults.length > 0) {
-      this.scrollToSelected();
-    }
-  }
+  // ngAfterViewInit() {
+  //   if (this.searchResults.length > 0) {
+  //     this.scrollToSelected();
+  //   }
+  // }
 
 
   /**
