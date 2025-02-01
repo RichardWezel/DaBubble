@@ -47,6 +47,15 @@ export class NavbarComponent {
   }
 
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
+      this.isLargeScreen = isLarge;
+    });
+    this.subscriptions.add(screenSub);
+  }
+
+
   /**
    * Cleans up all active subscriptions when the component is destroyed to prevent memory leaks.
    */

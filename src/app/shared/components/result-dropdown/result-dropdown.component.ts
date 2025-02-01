@@ -26,7 +26,7 @@ export class ResultDropdownComponent implements OnChanges {
   @Input() userInput: string = "";
 
   searchResults: SearchResult[] = [];
-  public isLargeScreen: boolean = window.innerWidth >= 1201;
+  public isLargeScreen: boolean = window.innerWidth >= 1300;
   selectedIndex: number = 0;
   dropdownElement: HTMLElement | undefined;
 

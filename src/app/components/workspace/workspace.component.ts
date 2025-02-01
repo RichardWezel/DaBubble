@@ -35,7 +35,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   authService = inject(FirebaseAuthService);
   wsmOpen: boolean = false;
   private subscriptions: Subscription = new Subscription();
-  public isLargeScreen: boolean = window.innerWidth >= 1201;
+  public isLargeScreen: boolean = window.innerWidth >= 1301;
   currentView: 'workspaceMenu' | 'channel' | 'thread' = 'channel'; // Default view
 
 
@@ -59,7 +59,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     if (dialogSub) this.subscriptions.add(dialogSub);
 
     // BreakpointObserver for Responsive Design
-    const breakpointSub = this.breakpointObserver.observe([`(min-width: 1201px)`]) // Corrected breakpoint for large screens
+    const breakpointSub = this.breakpointObserver.observe([`(min-width: 1300px)`]) 
       .subscribe(result => {
         const isLarge = result.matches;
         this.viewService.setIsLargeScreen(isLarge);

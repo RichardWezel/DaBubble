@@ -55,7 +55,7 @@ header {
     display: flex;
     justify-content: center;
 
-    @media (max-width: 1200px) {
+    @media (max-width: $breakpoint1) {
         padding-top: 10px;
         box-sizing: border-box;
     }

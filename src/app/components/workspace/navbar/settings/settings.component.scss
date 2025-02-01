@@ -102,7 +102,7 @@
         text-underline-position: from-font;
         text-decoration-skip-ink: none;
 
-        @media(max-width: 1200px){
+        @media(max-width: $breakpoint1){
           font-size: 20px;
           line-height: 27.28px;
         }
@@ -151,7 +151,7 @@
         text-underline-position: from-font;
         text-decoration-skip-ink: none;
 
-        @media(max-width: 1200px){
+        @media(max-width: $breakpoint1){
           font-size: 20px;
           line-height: 27.28px;
         }
