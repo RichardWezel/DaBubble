@@ -150,7 +150,7 @@
             </section>
         </form>
     </div>
-    <app-enter-password *ngIf="showPasswordDialog" (click)="$event.stopPropagation()" (abandonDialog)="handleDialogClose($event)" [newEmail]="email" [userId]="userId"></app-enter-password>
+    <app-enter-password *ngIf="showPasswordDialog" (click)="$event.stopPropagation()" (nextDialog)="handleDialogClose($event)" (abandonDialog)="handleDialogAbandon($event)" [newEmail]="email" [userId]="userId"></app-enter-password>
     <app-confirmation-modal *ngIf="showDialog" (close)="closeDialogConfirmation($event)">
         <h2>E-Mail versendet</h2>
         <p>

@@ -99,7 +99,6 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
         this.email = authUser.email;
         const updatedUser: Partial<UserInterface> = { email: authUser.email };
         this.storage.updateUser(this.userId, updatedUser as UserInterface)
-          .then(() => console.log("E-Mail erfolgreich aktualisiert"))
           .catch(error => console.error("Fehler beim Update:", error));
       }
     });
@@ -162,6 +161,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
    * Switches the component to edit mode, allowing the current user to update their profile.
    */
   changeToEditMode() {
+    this.inputFieldCheck = false;
     this.currentProfilePicture = this.storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + this.storage.currentUser.avatar : this.cloud.openImage(this.storage.currentUser.avatar);
     this.updateUser();
     this.mode = "edit";
@@ -367,9 +367,22 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   }
 
 
+  /**
+   * Handles the closing event of a dialog.
+   * @param event - Indicates whether the dialog should be shown or hidden.
+   */
   handleDialogClose(event: boolean) {
     this.showPasswordDialog = event;
     this.showDialog = true;
+  }
+
+
+  /**
+   * Handles the closing event of a dialog.
+   * @param event - Indicates wheter the dialog should be shown or hidden.
+   */
+  handleDialogAbandon(event: boolean) {
+    this.showPasswordDialog = event;
   }
 
 }

@@ -23,6 +23,7 @@ export class EnterPasswordComponent {
   @Input() newEmail!: string;
   @Input() userId!: string;
   @Output() abandonDialog: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() nextDialog: EventEmitter<boolean> = new EventEmitter<boolean>();
   message: string = '';
 
   /**
@@ -66,7 +67,7 @@ export class EnterPasswordComponent {
    * Handles successful email update by setting a success message and logging.
    */
     async handleSuccess() {
-      this.abandonDialog.emit(false);
+      this.nextDialog.emit(false);
             const updatedUser: Partial<UserInterface> = {
               email: this.newEmail
             };
