@@ -1,4 +1,4 @@
-import { Component, Input, inject, OnChanges, SimpleChanges, HostListener, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Input, inject, OnChanges, SimpleChanges, HostListener, ElementRef, ViewChild } from '@angular/core';
 import { NgFor, NgIf, } from '@angular/common';
 import { ChannelInterface } from '../../interfaces/channel.interface';
 import { UserInterface } from '../../interfaces/user.interface';
@@ -21,7 +21,8 @@ export class ResultDropdownComponent implements OnChanges {
   protected storage = inject(FirebaseStorageService);
   navigationService = inject(NavigationService);
   search = inject(SearchService);
-  openCloseService = inject(OpenCloseDialogService)
+  openCloseService = inject(OpenCloseDialogService);
+  elementRef = inject(ElementRef);
 
   @Input() userInput: string = "";
 
@@ -31,8 +32,6 @@ export class ResultDropdownComponent implements OnChanges {
   dropdownElement: HTMLElement | undefined;
 
   @ViewChild('dropdown') dropdown!: ElementRef;
-
-  inputfield = document.querySelector('searchbar') as HTMLElement;
 
   constructor(private viewService: SetMobileViewService) { }
 
@@ -84,11 +83,13 @@ export class ResultDropdownComponent implements OnChanges {
         }
         break;
       case 'Escape':
+        let inputfield = document.getElementById('searchbar') as HTMLInputElement;
         this.searchResults = [];
         this.openCloseService.close("resultDropdown");
-        if (this.inputfield) {
-          this.inputfield.focus();
-        }
+        inputfield.focus();
+
+
+
         break;
       default:
         break;
