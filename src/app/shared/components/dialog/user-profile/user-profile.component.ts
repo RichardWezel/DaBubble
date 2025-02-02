@@ -97,8 +97,6 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
       if (authUser?.email && this.user) {
         this.user.email = authUser.email;
         this.email = authUser.email;
-  
-        // Firestore Collection updaten mit then()
         const updatedUser: Partial<UserInterface> = { email: authUser.email };
         this.storage.updateUser(this.userId, updatedUser as UserInterface)
           .then(() => console.log("E-Mail erfolgreich aktualisiert"))
