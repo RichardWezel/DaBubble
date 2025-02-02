@@ -15,6 +15,7 @@ import { ResultDropdownComponent } from '../../../../shared/components/result-dr
 import { SearchService } from '../../../../shared/services/search.service';
 import { OpenCloseDialogService } from '../../../../shared/services/open-close-dialog.service';
 import { Subscription } from 'rxjs';
+import { ChangeDetectorRef } from '@angular/core';
 
 /**
  * SearchComponent handles the search functionality within the application,
@@ -35,7 +36,7 @@ export class SearchComponent {
   elementRef = inject(ElementRef);
   openCloseService = inject(OpenCloseDialogService);
   private viewService = inject(SetMobileViewService);
-
+  userInput: string = '';
   searchResults: SearchResult[] = [];
   selectedIndex: number = -1;
   dropDownIsOpen: boolean = false;
@@ -47,31 +48,16 @@ export class SearchComponent {
 
   @ViewChildren('resultItem') resultItems!: QueryList<ElementRef>;
 
-  /**
-   * Getter für userInput, der den aktuellen Wert aus dem Service abruft.
-   */
-  get userInput(): string {
-    return this.search.getUserInput();
-  }
-
-  /**
-   * Setter für userInput, der den neuen Wert im Service setzt und die Eingabe verarbeitet.
-   */
-  set userInput(value: string) {
-    this.search.setUserInput(value);
-    this.onInput(); // Trigger die vorhandene onInput-Methode
-  }
 
   /**
    * Creates an instance of SearchComponent and sets up the search debouncing.
    * @param sanitizer - The DomSanitizer service to safely bind HTML content.
    */
-  constructor(private sanitizer: DomSanitizer) {
+  constructor(private sanitizer: DomSanitizer, private cd: ChangeDetectorRef) {
     this.searchSubject.pipe(
       debounceTime(300)
     ).subscribe(searchTerm => {
       this.userInput = searchTerm;
-      this.search.setUserInput(searchTerm);
       this.onInputSearch();
     });
   }
@@ -120,6 +106,20 @@ export class SearchComponent {
 
 
   /**
+   * Handles the input event from the search bar by emitting the current user input.
+   */
+  onInput(): void {
+    if (this.userInput.startsWith('@') || this.userInput.startsWith('#')) {
+      this.openDialog();
+    } else {
+      this.searchSubject.next(this.userInput);
+      this.selectedIndex = -1;
+      this.closeDialog();
+    }
+  }
+
+
+  /**
    * Opens the dialog for adding a new channel.
    */
   public openDialog() {
@@ -131,20 +131,7 @@ export class SearchComponent {
    * Closes the dialog for adding a new channel.
    */
   public closeDialog() {
-    this.openCloseService.close('addChannel');
-  }
-
-
-  /**
-   * Handles the input event from the search bar by emitting the current user input.
-   */
-  onInput(): void {
-    if (this.userInput.startsWith('@') || this.userInput.startsWith('#')) {
-      this.openDialog();
-    } else {
-      this.searchSubject.next(this.userInput);
-      this.selectedIndex = -1;
-    }
+    this.dropDownIsOpen = false;
   }
 
 
@@ -182,6 +169,11 @@ export class SearchComponent {
       const userMatches: SearchResultUser[] = this.search.findUser(this.userInput);
       const channelPostMatches: SearchResultChannelPost[] = this.search.findChannelsByPost(this.userInput);
       this.searchResults = [...channelMatches, ...userMatches, ...channelPostMatches];
+
+      if (this.searchResults.length === 0) {
+        this.openCloseService.close('resultDropdown');
+        this.cd.detectChanges();
+      }
     } else {
       this.searchResults = [];
       this.selectedIndex = -1;
@@ -217,7 +209,6 @@ export class SearchComponent {
     this.search.setTypeUser(result);
     this.search.setTypeChannelPost(result);
     this.setTypeThread(result);
-
     this.userInput = "";
     this.searchResults = [];
     this.selectedIndex = -1;

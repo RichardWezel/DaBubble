@@ -15,8 +15,8 @@ export class SearchService {
   protected storage = inject(FirebaseStorageService);
   navigation = inject(NavigationService);
 
-  private userInputSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
-  public userInput$: Observable<string> = this.userInputSubject.asObservable();
+  // private userInputSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  // public userInput$: Observable<string> = this.userInputSubject.asObservable();
   private viewService = inject(SetMobileViewService);
 
   constructor() { }
@@ -100,18 +100,18 @@ export class SearchService {
    * Sets the current user input and notifies all subscribers.
    * @param input - The new user input.
    */
-  setUserInput(input: string): void {
-    this.userInputSubject.next(input);
-  }
+  // setUserInput(input: string): void {
+  //   this.userInputSubject.next(input);
+  // }
 
 
-  /**
-   * Returns the current value of the user input.
-   * @returns The current user input.
-   */
-  getUserInput(): string {
-    return this.userInputSubject.value;
-  }
+  // /**
+  //  * Returns the current value of the user input.
+  //  * @returns The current user input.
+  //  */
+  // getUserInput(): string {
+  //   return this.userInputSubject.value;
+  // }
 
 
   /**

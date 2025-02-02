@@ -36,18 +36,6 @@ export class ResultDropdownComponent implements OnChanges {
 
 
   /**
-   * Scrolls to the selected result in the dropdown after the component has finished rendering.
-   * This is needed because the dropdown is not yet rendered when the component is initialized,
-   * so setting the focus immediately does not work.
-   */
-  // ngAfterViewInit() {
-  //   if (this.searchResults.length > 0) {
-  //     this.scrollToSelected();
-  //   }
-  // }
-
-
-  /**
    * Lifecycle hook for when the userInput input property changes.
    * Updates the search results if the new value has a length of at least 1.
    * Otherwise, resets the search results to an empty array.
@@ -57,8 +45,7 @@ export class ResultDropdownComponent implements OnChanges {
     if (changes['userInput']) {
       const newValue = changes['userInput'].currentValue;
       if (newValue.length >= 1) this.updateFoundedChannelsAndUsers(newValue);
-      else 
-      this.searchResults = [];
+      else this.searchResults = [];
     }
   }
 
@@ -92,7 +79,6 @@ export class ResultDropdownComponent implements OnChanges {
         if (this.selectedIndex >= 0 && this.selectedIndex < this.searchResults.length) {
           this.handleClick(this.searchResults[this.selectedIndex]);
           this.openCloseService.close("resultDropdown");
-          this.search.setUserInput('')
         }
         break;
       case 'Escape':
@@ -151,13 +137,17 @@ export class ResultDropdownComponent implements OnChanges {
       const searchTerm = input.substring(1);
       this.searchResults = this.findChannels(searchTerm);
       if (this.searchResults.length === 0) {
-        this.openCloseService.close('resultDropdown');
+        setTimeout(() => {
+          this.openCloseService.close('resultDropdown');
+        }, 0);
       }
     } else if (input.startsWith('@')) {
       const searchTerm = input.substring(1);
       this.searchResults = this.findUsers(searchTerm);
       if (this.searchResults.length === 0) {
-        this.openCloseService.close('resultDropdown');
+        setTimeout(() => {
+          this.openCloseService.close('resultDropdown');
+        }, 0);
       }
     } else {
       this.searchResults = [];
