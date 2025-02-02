@@ -50,7 +50,11 @@ export class EnterPasswordComponent {
     const user = auth.currentUser;
     if (user && user.email) {
       const credential = EmailAuthProvider.credential(user.email, this.insertedPassword);
-      await reauthenticateWithCredential(user, credential);
+      try {
+        await reauthenticateWithCredential(user, credential);
+      } catch (e) {
+        this.authService.errorMessage = 'Erneutes einloggen hat nicht funktioniert. Versuche es später noch einmal.';
+      }
       await this.changeUserEmail(this.newEmail);
       this.handleSuccess();
     }
