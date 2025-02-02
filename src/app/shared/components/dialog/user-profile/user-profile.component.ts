@@ -325,8 +325,6 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   */
   async updateEmail(): Promise<void> {
     if (!this.isEmailValid()) return;
-    console.log('currentuseremail', this.storage.currentUser.email);
-    console.log('newEmail', this.email);
     if (this.email !== this.storage.currentUser.email) {
       try {
         this.showPasswordDialog = true;

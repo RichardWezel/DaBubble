@@ -111,7 +111,6 @@ export class EmailVerifiedComponent implements OnInit {
         this.router.navigate(['/login']);
       }, 3000);
     } catch (error: any) {
-      console.log('error message', error.code);
       this.isLoading = false;
       this.message = this.getErrorMessageRecoverEmail(error);
     }
