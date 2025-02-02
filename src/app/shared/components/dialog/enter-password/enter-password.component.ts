@@ -41,10 +41,18 @@ export class EnterPasswordComponent {
     this.inputFieldCheck = true;
   }
 
+
+  /**
+   * Emtis an event to indicate that the process should be abandoned.
+   */
   abandonProcess() {
     this.abandonDialog.emit(false);
   }
 
+
+  /**
+   * Reauthenticates the user using their password and updates their email address.
+   */
   async reauthenticateWithPassword() {
     const auth = getAuth();
     const user = auth.currentUser;
@@ -60,22 +68,22 @@ export class EnterPasswordComponent {
     }
   }
 
-    /**
+  /**
    * Attempts to change the user's email using the authentication service.
    */
-    private async changeUserEmail(newEmail: string): Promise<void> {
-      await this.auth.changeUserEmail(newEmail);
-    }
+  private async changeUserEmail(newEmail: string): Promise<void> {
+    await this.auth.changeUserEmail(newEmail);
+  }
 
   /**
    * Handles successful email update by setting a success message and logging.
    */
-    async handleSuccess() {
-      this.nextDialog.emit(false);
-            const updatedUser: Partial<UserInterface> = {
-              email: this.newEmail
-            };
-      await this.storage.updateUser(this.userId, updatedUser as UserInterface);
-    }
+  async handleSuccess() {
+    this.nextDialog.emit(false);
+    const updatedUser: Partial<UserInterface> = {
+      email: this.newEmail
+    };
+    await this.storage.updateUser(this.userId, updatedUser as UserInterface);
+  }
 
 }
