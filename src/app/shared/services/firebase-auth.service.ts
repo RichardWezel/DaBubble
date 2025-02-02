@@ -101,10 +101,14 @@ export class FirebaseAuthService {
   }
 
 
+  /**
+   * Changes the currently authenicated user's email address after verification.
+   * @param newEmail - The new email address to update.
+   * @returns - Resolves when the email update and user reload are complete.
+   */
   async changeUserEmail(newEmail: string): Promise<void> {
     const auth = getAuth();
     const user = auth.currentUser;
-
     if (!user || !user.email) {
       this.errorMessage = " Kein Benutzer angemeldet.";
       return;

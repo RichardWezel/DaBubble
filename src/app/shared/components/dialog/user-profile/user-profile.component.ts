@@ -89,20 +89,29 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
         this.isOpen = status;
       });
     const subscription = this.openCloseDialogService.profileId.subscribe((userId) => {
-      this.userId = userId;
-      this.user = this.storage.user.find(u => u.id === this.userId);
-      const auth = getAuth();
-      const authUser = auth.currentUser;
-  
-      if (authUser?.email && this.user) {
-        this.user.email = authUser.email;
-        this.email = authUser.email;
-        const updatedUser: Partial<UserInterface> = { email: authUser.email };
-        this.storage.updateUser(this.userId, updatedUser as UserInterface);
-      }
+      this.handleUserProfileChange(userId);
     });
     if (sub) this.subscriptions.add(sub);
     if (subscription) this.subscriptions.add(subscription);
+  }
+
+
+  /**
+   * Handles changes in the userprofile by updating the email from Firebase Authentication.
+   * @param userId 
+   */
+  handleUserProfileChange(userId: string): void {
+    this.userId = userId;
+    this.user = this.storage.user.find(u => u.id === this.userId);
+    const auth = getAuth();
+    const authUser = auth.currentUser;
+
+    if (authUser?.email && this.user) {
+      this.user.email = authUser.email;
+      this.email = authUser.email;
+      const updatedUser: Partial<UserInterface> = { email: authUser.email };
+      this.storage.updateUser(this.userId, updatedUser as UserInterface);
+    }
   }
 
 
@@ -319,7 +328,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
     console.log('currentuseremail', this.storage.currentUser.email);
     console.log('newEmail', this.email);
     if (this.email !== this.storage.currentUser.email) {
-      try { 
+      try {
         this.showPasswordDialog = true;
       } catch (error) {
         this.handleError(error);
