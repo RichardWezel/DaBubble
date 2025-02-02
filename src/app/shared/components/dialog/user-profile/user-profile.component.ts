@@ -98,8 +98,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
         this.user.email = authUser.email;
         this.email = authUser.email;
         const updatedUser: Partial<UserInterface> = { email: authUser.email };
-        this.storage.updateUser(this.userId, updatedUser as UserInterface)
-          .catch(error => console.error("Fehler beim Update:", error));
+        this.storage.updateUser(this.userId, updatedUser as UserInterface);
       }
     });
     if (sub) this.subscriptions.add(sub);
@@ -162,6 +161,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
    */
   changeToEditMode() {
     this.inputFieldCheck = false;
+    this.auth.errorMessage = '';
     this.currentProfilePicture = this.storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + this.storage.currentUser.avatar : this.cloud.openImage(this.storage.currentUser.avatar);
     this.updateUser();
     this.mode = "edit";
@@ -334,7 +334,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
    */
   private isEmailValid(): boolean {
     if (!this.email) {
-      this.message = "Please enter a valid new email.";
+      this.auth.errorMessage = "Bitte eine gültige E-Mail eingeben.";
       return false;
     }
     return true;
@@ -346,8 +346,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
    * @param {any} error - The error object caught during the email update.
    */
   private handleError(error: any): void {
-    this.message = "Error: " + error.message;
-    console.error("Error changing email:", error.message);
+    this.auth.errorMessage = "Fehler beim Wechseln der E-Mail-Adresse.";
   }
 
 

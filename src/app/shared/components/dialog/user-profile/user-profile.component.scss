@@ -439,6 +439,7 @@ main {
             }
 
             .button-section {
+                position: relative;
                 @include dja();
                 gap: 32px;
 
@@ -526,6 +527,8 @@ main {
     }
 }
 
-.error-text-input {
-    top: 90px;
+.error-text {
+    position: absolute;
+    top: -18px;
+    left: 0;
 }
