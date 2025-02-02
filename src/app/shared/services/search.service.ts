@@ -97,24 +97,6 @@ export class SearchService {
 
 
   /**
-   * Sets the current user input and notifies all subscribers.
-   * @param input - The new user input.
-   */
-  // setUserInput(input: string): void {
-  //   this.userInputSubject.next(input);
-  // }
-
-
-  // /**
-  //  * Returns the current value of the user input.
-  //  * @returns The current user input.
-  //  */
-  // getUserInput(): string {
-  //   return this.userInputSubject.value;
-  // }
-
-
-  /**
    * Searches for channels that include the user input in their names.
    * @param userInput - The search term entered by the user.
    * @returns An array of SearchResultChannel objects matching the search term.

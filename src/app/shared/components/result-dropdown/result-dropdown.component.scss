@@ -27,7 +27,7 @@ main {
     }
 
     .container {
-        height: 100px;
+        max-height: 300px;
         overflow-y: auto;
 
         ul {
@@ -40,7 +40,7 @@ main {
             li {
                 display: flex;
                 align-items: center;
-                padding: 6px 14px 6px 6px;
+                padding: 6px 14px 6px 4px;
                 width: fit-content;
                 gap: 10px;
 
