@@ -106,20 +106,14 @@ export class FirebaseAuthService {
     const user = auth.currentUser;
 
     if (!user || !user.email) {
-      console.error(" Kein Benutzer angemeldet.");
-      alert("Fehler: Kein Benutzer angemeldet.");
+      this.errorMessage = " Kein Benutzer angemeldet.";
       return;
     }
     try {
-      console.log(" Bestätigungs-E-Mail wird gesendet...");
       await verifyBeforeUpdateEmail(user, newEmail);
-      console.log(" Bestätigungs-E-Mail gesendet!");
-      alert("Eine Bestätigungs-Mail wurde an die neue Adresse gesendet. Bitte klicken Sie auf den Bestätigungslink, um die Änderung abzuschließen.");
       await user.reload();
-      console.log("🔄 Benutzerinformationen aktualisiert!");
     } catch (error: any) {
-      console.error(" Fehler beim Ändern der E-Mail:", error.message);
-      alert("Fehler: " + error.message);
+      this.errorMessage = "Es ist ein Fehler aufgetreten.";
     }
   }
 

@@ -1,9 +1,12 @@
+@import 'variables';
+
 .email-verified-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     text-align: center;
+    background-color: $backgroundColor;
   
     h2 {
       font-size: 24px;

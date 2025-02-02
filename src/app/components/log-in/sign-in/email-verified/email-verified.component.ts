@@ -32,7 +32,8 @@ export class EmailVerifiedComponent implements OnInit {
       const mode = this.gettingParameterModeFromURL(params);
       const actionCode = this.gettingOobCodeFromURL(params);
       if (mode === 'verifyEmail' && actionCode) await this.handleValidMailVerification(auth, actionCode);
-      else if (mode === 'verifiyAndChangeEmail' && actionCode) await this.handleValidMailVerification(auth, actionCode);
+      else if (mode === 'verifyAndChangeEmail' && actionCode) await this.handleValidMailVerification(auth, actionCode);
+      else if (mode === 'recoverEmail' && actionCode) await this.handleRecoverEmail(auth, actionCode);
       else this.handleInvalidMailVerification();
     });
   }
@@ -71,10 +72,6 @@ export class EmailVerifiedComponent implements OnInit {
       this.message = 'Deine E-Mail-Adresse wurde erfolgreich bestätigt!';
       this.isLoading = false;
 
-      if (auth.currentUser) {
-        await auth.currentUser.reload();
-      }
-
       setTimeout(() => {
         this.router.navigate(['/login']); // Navigation to log-in page
       }, 3000);
@@ -97,6 +94,30 @@ export class EmailVerifiedComponent implements OnInit {
   }
 
 
+  async handleRecoverEmail(auth: Auth, actionCode: string): Promise<void> {
+    try {
+      this.isLoading = true;
+      await applyActionCode(auth, actionCode);
+  
+      this.message = "Deine E-Mail-Adresse wurde erfolgreich zurückgesetzt.";
+  
+      this.isLoading = false;
+
+      if (auth.currentUser) {
+        await auth.currentUser.reload();
+      }
+  
+      setTimeout(() => {
+        this.router.navigate(['/login']);
+      }, 3000);
+    } catch (error: any) {
+      console.log('error message', error.code);
+      this.isLoading = false;
+      this.message = this.getErrorMessageRecoverEmail(error);
+    }
+  }
+
+
   /**
    * Gibt eine benutzerfreundliche Fehlermeldung basierend auf dem Firebase-Fehlercode zurück.
    * @param error - Das Fehlerobjekt von Firebase.
@@ -108,6 +129,19 @@ export class EmailVerifiedComponent implements OnInit {
         return 'Der Bestätigungslink ist abgelaufen. Bitte fordere eine neue E-Mail an.';
       case 'auth/invalid-action-code':
         return 'Der Bestätigungslink ist ungültig, da Ihre E-Mail bereits verifiziert wurde!';
+      case 'auth/user-disabled':
+        return 'Dein Konto wurde deaktiviert. Bitte kontaktiere den Support.';
+      default:
+        return 'Es ist ein unbekannter Fehler aufgetreten. Bitte versuche es erneut.';
+    }
+  }
+
+  getErrorMessageRecoverEmail(error: any): string {
+    switch (error.code) {
+      case 'auth/expired-action-code':
+        return 'Der Bestätigungslink ist abgelaufen. Bitte fordere eine neue E-Mail an.';
+      case 'auth/invalid-action-code':
+        return 'Der Bestätigungslink ist ungültig, da Ihre E-Mail bereits zurückgeändert wurde!';
       case 'auth/user-disabled':
         return 'Dein Konto wurde deaktiviert. Bitte kontaktiere den Support.';
       default:

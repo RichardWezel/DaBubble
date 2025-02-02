@@ -60,7 +60,7 @@ export class SendEmailCardComponent {
   async sendMail(): Promise<void> {
     this.authService.errorMessage = '';
     if (!this.mailData || !this.validator.validateEmail(this.mailData)) {
-      alert('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
+      this.authService.errorMessage = 'Bitte geben Sie eine gültige E-Mail-Adresse ein.';
       return;
     }
     try {
