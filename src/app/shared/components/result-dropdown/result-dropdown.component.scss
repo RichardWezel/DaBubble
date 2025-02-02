@@ -2,15 +2,15 @@
 @import 'mixins';
 
 main {
-    max-width: 400px;
-    max-height: 171px;
+    // max-width: 400px;
+    // max-height: 171px;
     width: 100%;
-    padding: 20px 21px;
-    border-radius: 0px 30px 30px 30px;
-    background-color: #FFFFFF;
-    box-shadow: 0px 6px 10px 0px rgba(0, 0, 0, 0.2);
+    // padding: 20px 21px;
+    // border-radius: 0px 30px 30px 30px;
+    // background-color: #FFFFFF;
+    // box-shadow: 0px 6px 10px 0px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-    border: 1px solid $dividerColor;
+    // border: 1px solid $dividerColor;
     overflow: hidden;
 
     @media (max-width: 450px){
@@ -40,7 +40,7 @@ main {
             li {
                 display: flex;
                 align-items: center;
-                padding: 6px 14px;
+                padding: 6px 14px 6px 6px;
                 width: fit-content;
                 gap: 10px;
 
