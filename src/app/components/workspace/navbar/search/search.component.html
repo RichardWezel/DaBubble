@@ -7,6 +7,7 @@
 >
   <section class="input">
     <input 
+      #inputfieldSearch
       id="searchbar" 
       type="search" 
       [placeholder]="placeholderText"
@@ -25,7 +26,7 @@
       </svg>
     </div>
   </section>
-  <section class="result-container" *ngIf="userInput.length >= 2 && searchResults.length > 0" id="search-results" role="listbox">
+  <section class="result-container" *ngIf="userInput.length >= 1" id="search-results" role="listbox">
     <ul>
       <li 
         *ngFor="let result of searchResults; let i = index"
@@ -33,7 +34,6 @@
         [class.selected]="i === selectedIndex"
         (click)="setChannel(result)"
         role="option"
-        [attr.aria-selected]="i === selectedIndex"
         tabindex="-1"
       >  
         <!-- Kanal -->
@@ -68,6 +68,7 @@
         </ng-container>
       </li>
     </ul>
+    <app-result-dropdown *ngIf="dropDownIsOpen && userInput.length >= 1" [userInput]="userInput" #resultDropdown></app-result-dropdown>
   </section>
 </main>
-<app-result-dropdown *ngIf="dropDownIsOpen && userInput.length >= 1" [userInput]="userInput"></app-result-dropdown>
+

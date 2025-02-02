@@ -15,7 +15,7 @@ main {
     height: fit-content;
     border: 1px solid $dividerColor;
     box-shadow: unset;
-    padding: 8px 24px;
+    padding: 10px 24px;
   }
 
   .input {
@@ -33,6 +33,7 @@ main {
       outline: none;
       background-position: right 32px center;
       display: flex;
+      padding-left: 6px;
 
       @media (max-width: $breakpoint1) {
         font-size: 18px;
@@ -85,7 +86,7 @@ main {
   .result-container {
     ul {
       gap: 10px;
-      margin-top: 18.5px;
+      margin-top: 10px;
       padding: 0;
       max-height: 300px;
       overflow-y: auto;
@@ -112,10 +113,20 @@ main {
           color: #444DF2;
         }
 
-        .text {
-          .searchTerm {
+        .text{
+          .searchTerm{
             color: $thirdColor;
           }
+        }
+
+        &.selected {
+          background-color: $backgroundColor; 
+          cursor: pointer;
+          border-radius: 20px;
+        }
+        
+        &:hover {
+          background-color: $backgroundColor;
         }
 
         // &:hover,
@@ -198,14 +209,14 @@ main {
 }
 
 app-result-dropdown {
-  left: 32px;
-  top: 53px;
-  position: absolute;
+  // left: 32px;
+  // top: 53px;
+  // position: absolute;
   z-index: 9;
   
   @media (max-width: $breakpoint1){
-    left: 55px;
-  top: 80px;
+  //   left: 55px;
+  // top: 80px;
   }
 
   
