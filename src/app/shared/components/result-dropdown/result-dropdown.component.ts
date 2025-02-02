@@ -32,6 +32,8 @@ export class ResultDropdownComponent implements OnChanges {
 
   @ViewChild('dropdown') dropdown!: ElementRef;
 
+  inputfield = document.querySelector('#inputfieldSearch') as HTMLElement;
+
   constructor(private viewService: SetMobileViewService) { }
 
 
@@ -83,6 +85,12 @@ export class ResultDropdownComponent implements OnChanges {
         break;
       case 'Escape':
         this.searchResults = [];
+        this.openCloseService.close("resultDropdown");
+        if (this.inputfield) {
+          this.inputfield.focus();
+        }
+        
+
         break;
       default:
         break;
