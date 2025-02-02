@@ -25,6 +25,7 @@ export class EnterPasswordComponent {
   @Output() abandonDialog: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() nextDialog: EventEmitter<boolean> = new EventEmitter<boolean>();
   message: string = '';
+  isLoading: boolean = false;
 
   /**
   * When you click on the lock image you can show or hide the password.
@@ -59,12 +60,15 @@ export class EnterPasswordComponent {
     if (user && user.email) {
       const credential = EmailAuthProvider.credential(user.email, this.insertedPassword);
       try {
+        this.isLoading = true;
         await reauthenticateWithCredential(user, credential);
+        await this.changeUserEmail(this.newEmail);
+        this.handleSuccess();
       } catch (e) {
-        this.authService.errorMessage = 'Erneutes einloggen hat nicht funktioniert. Versuche es später noch einmal.';
+        this.authService.errorMessage = 'Erneutes einloggen hat nicht funktioniert.';
       }
-      await this.changeUserEmail(this.newEmail);
-      this.handleSuccess();
+      this.isLoading = false;
+
     }
   }
 
