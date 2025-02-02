@@ -53,47 +53,48 @@ export class ResultDropdownComponent implements OnChanges {
 
   @HostListener('keydown', ['$event'])
   /**
-   * Handles keyboard navigation within the search results dropdown.
-   * Intercepts ArrowUp, ArrowDown, Enter, and Escape key presses to manipulate
-   * the selection and interaction with the dropdown items.
-   * 
-   * - ArrowDown: Moves the selection down by one item.
-   * - ArrowUp: Moves the selection up by one item.
-   * - Enter: Executes the action associated with the currently selected item.
-   * - Escape: Clears the search results.
-   * 
-   * @param event - The KeyboardEvent object representing the user's key press.
+   * Handles keydown events for the result dropdown.
+   * Prevents the default behavior for the ArrowDown, ArrowUp, Enter, and Escape keys.
+   * If the ArrowDown key is pressed, moves the selection down by one.
+   * If the ArrowUp key is pressed, moves the selection up by one.
+   * If the Enter key is pressed and the selection is valid, selects the currently highlighted search result and closes the dropdown.
+   * If the Escape key is pressed, closes the dropdown and resets the selection.
+   * @param event - The KeyboardEvent object.
    */
   handleKeyDown(event: KeyboardEvent) {
     if (this.searchResults.length === 0) return;
+    const keysToPrevent = ['ArrowDown', 'ArrowUp', 'Enter', 'Escape'];
+    if (keysToPrevent.includes(event.key)) event.preventDefault();
     switch (event.key) {
       case 'ArrowDown':
-        event.preventDefault();
         this.moveSelection(1);
         break;
       case 'ArrowUp':
-        event.preventDefault();
         this.moveSelection(-1);
         break;
       case 'Enter':
-        event.preventDefault();
         if (this.selectedIndex >= 0 && this.selectedIndex < this.searchResults.length) {
           this.handleClick(this.searchResults[this.selectedIndex]);
           this.openCloseService.close("resultDropdown");
         }
         break;
       case 'Escape':
-        let inputfield = document.getElementById('searchbar') as HTMLInputElement;
-        this.searchResults = [];
-        this.openCloseService.close("resultDropdown");
-        inputfield.focus();
-
-
-
-        break;
-      default:
+        this.handleEscape();
         break;
     }
+  }
+
+
+  /**
+   * Handles the Escape key press event to close the dropdown and reset the selection.
+   * Closes the dropdown and removes the search results.
+   * Sets focus to the search input field.
+   */
+  handleEscape() {
+    const inputfield = document.getElementById('searchbar') as HTMLInputElement;
+    this.searchResults = [];
+    this.openCloseService.close("resultDropdown");
+    inputfield.focus();
   }
 
 
