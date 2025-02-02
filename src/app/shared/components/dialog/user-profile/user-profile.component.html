@@ -104,7 +104,7 @@
                 @if (!newName.valid && inputFieldCheck) {
                     <span class="error-text-input">Bitte gebe deinen Vor- und Nachnamen ein.</span>
                 }
-                @if (newName.pristine && inputFieldCheck) {
+                @if (newName.pristine && inputFieldCheck || (originalName == name && newName.dirty)) {
                     <span class="error-text-input">Du hast deinen Namen noch nicht geändert.</span>
                 }
             </label>
@@ -132,7 +132,7 @@
                 @if (!mail.valid && inputFieldCheck) {
                     <span class="error-text-input">Diese E-Mail-Adresse ist leider ungültig.</span>
                 }
-                @if (mail.pristine && inputFieldCheck) {
+                @if (mail.pristine && inputFieldCheck || (originalEmail == email && mail.dirty)) {
                     <span class="error-text-input">Du hast die E-Mail-Adresse nicht geändert.</span>
                 }
             </label>
@@ -141,7 +141,7 @@
                 <button type="button" class="cancel-btn" (click)="mode = 'show'">Abbrechen</button>
                 <div class="btn-container">
                     <button
-                        [disabled]="profileForm.invalid || ( uploadFile && uploadFile.size > 2000000) || profileForm.pristine"
+                        [disabled]="profileForm.invalid || ( uploadFile && uploadFile.size > 2000000) || profileForm.pristine || originalEmail == email && originalName == name"
                         type="submit" class="save-btn">Speichern</button>
                     @if (profileForm.invalid || ( uploadFile && uploadFile.size > 2000000) || profileForm.pristine) {
                     <button type="button" class="ux-button" (click)="checkInputFields()"></button>
@@ -149,6 +149,13 @@
                 </div>
             </section>
         </form>
-
     </div>
+    <app-enter-password *ngIf="showPasswordDialog" (click)="$event.stopPropagation()" (abandonDialog)="handleDialogClose($event)" [newEmail]="email" [userId]="userId"></app-enter-password>
+    <app-confirmation-modal *ngIf="showDialog" (close)="closeDialogConfirmation($event)">
+        <h2>E-Mail versendet</h2>
+        <p>
+            Eine Bestätigungs-E-Mail wurde an <strong>{{ email }}</strong> gesendet.<br>
+            Bitte überprüfen Sie auch Ihren Spam-Ordner.
+        </p>
+    </app-confirmation-modal>
 </main>

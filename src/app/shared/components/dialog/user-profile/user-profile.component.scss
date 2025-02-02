@@ -474,8 +474,7 @@ main {
                     color: #FFFFFF;
                     background-color: $primaryColor;
 
-                    &:hover{
-
+                    &:not(:disabled):hover {
                         background-color: #ADB0D9;
                         cursor: pointer;
                     }
@@ -484,6 +483,7 @@ main {
                         filter: grayscale(100%);
                         cursor: unset;
                     }
+
                 }
 
                 @media (max-width: 460px) {

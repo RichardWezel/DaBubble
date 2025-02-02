@@ -1,4 +1,4 @@
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass, NgIf, NgStyle } from '@angular/common';
 import { Component, HostListener, inject, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { OpenUserProfileService } from '../../../services/open-user-profile.service';
@@ -8,11 +8,15 @@ import { CloudStorageService } from '../../../services/cloud-storage.service';
 import { OpenCloseDialogService } from '../../../services/open-close-dialog.service';
 import { FirebaseAuthService } from '../../../services/firebase-auth.service';
 import { FirebaseStorageService } from '../../../services/firebase-storage.service';
+import { EnterPasswordComponent } from "../enter-password/enter-password.component";
+import { ConfirmationModalComponent } from "../../confirmation-modal/confirmation-modal.component";
+import { NavigationService } from '../../../services/navigation.service';
+import { getAuth } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [NgIf, NgClass, FormsModule],
+  imports: [NgIf, NgClass, NgStyle, FormsModule, EnterPasswordComponent, ConfirmationModalComponent],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.scss'
 })
@@ -21,6 +25,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   cloud = inject(CloudStorageService);
   storage = inject(FirebaseStorageService);
   auth = inject(FirebaseAuthService);
+  navigationService = inject(NavigationService);
 
   isOpen: boolean = false;
   userId: string = "";
@@ -34,6 +39,10 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   uploadFile: File | null = null;
   avatarChanged: boolean = false;
   inputFieldCheck: boolean = false;
+  originalName: string | undefined = '';
+  originalEmail: string | undefined = '';
+  showPasswordDialog: boolean = false;
+  showDialog: boolean = false;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -82,6 +91,19 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
     const subscription = this.openCloseDialogService.profileId.subscribe((userId) => {
       this.userId = userId;
       this.user = this.storage.user.find(u => u.id === this.userId);
+      const auth = getAuth();
+      const authUser = auth.currentUser;
+  
+      if (authUser?.email && this.user) {
+        this.user.email = authUser.email;
+        this.email = authUser.email;
+  
+        // Firestore Collection updaten mit then()
+        const updatedUser: Partial<UserInterface> = { email: authUser.email };
+        this.storage.updateUser(this.userId, updatedUser as UserInterface)
+          .then(() => console.log("E-Mail erfolgreich aktualisiert"))
+          .catch(error => console.error("Fehler beim Update:", error));
+      }
     });
     if (sub) this.subscriptions.add(sub);
     if (subscription) this.subscriptions.add(subscription);
@@ -107,6 +129,24 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   closeDialog(): void {
     this.openCloseDialogService.close('userProfile');
     this.mode = 'show';
+    this.showPasswordDialog = false;
+  }
+
+  /**
+   * If the confirmation dialog gets closed, the user gets navigated to the login.
+   */
+  closeDialogConfirmation(event: boolean) {
+    this.showDialog = event;
+    this.navigationService.navigateTo('/login');
+  }
+
+
+  /**
+   * Saves the original values, that the new input can get compared to the old values.
+   */
+  saveOriginalValues(): void {
+    this.originalName = this.user?.name;
+    this.originalEmail = this.user?.email;
   }
 
 
@@ -126,7 +166,8 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   changeToEditMode() {
     this.currentProfilePicture = this.storage.currentUser.avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + this.storage.currentUser.avatar : this.cloud.openImage(this.storage.currentUser.avatar);
     this.updateUser();
-    this.mode = "edit"
+    this.mode = "edit";
+    this.saveOriginalValues();
   }
 
 
@@ -193,17 +234,20 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   /**
   * Saves the updated profile and updates the session.
   */
-  async saveProfile(): Promise<void> {
+  async saveProfile() {
     this.resetCheckForm();
-    await this.handleAvatarUpload();
-    const updatedUser: Partial<UserInterface> = {
-      name: this.name,
-      email: this.email,
-      avatar: this.avatar
-    };
-    await this.storage.updateUser(this.userId, updatedUser as UserInterface);
-    await this.updateEmail();
-    await this.auth.getCurrentUser();
+    try {
+      await this.handleAvatarUpload();
+      const updatedUser: Partial<UserInterface> = {
+        name: this.name,
+        avatar: this.avatar
+      };
+      await this.storage.updateUser(this.userId, updatedUser as UserInterface);
+      await this.updateEmail();
+      await this.auth.getCurrentUser();
+    } catch (e) {
+      this.auth.errorMessage = 'Beim Ändern der Daten ist etwas schief gelaufen.';
+    }
     this.updateLocalUser();
     this.mode = "show";
   }
@@ -228,7 +272,6 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   private updateLocalUser(): void {
     if (this.user) {
       this.user.name = this.name;
-      this.user.email = this.email;
       this.user.avatar = this.avatar;
     }
   }
@@ -275,12 +318,14 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   */
   async updateEmail(): Promise<void> {
     if (!this.isEmailValid()) return;
-
-    try {
-      await this.changeUserEmail(this.email);
-      this.handleSuccess();
-    } catch (error) {
-      this.handleError(error);
+    console.log('currentuseremail', this.storage.currentUser.email);
+    console.log('newEmail', this.email);
+    if (this.email !== this.storage.currentUser.email) {
+      try { 
+        this.showPasswordDialog = true;
+      } catch (error) {
+        this.handleError(error);
+      }
     }
   }
 
@@ -292,26 +337,9 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   private isEmailValid(): boolean {
     if (!this.email) {
       this.message = "Please enter a valid new email.";
-      console.warn("No new email entered.");
       return false;
     }
     return true;
-  }
-
-
-  /**
-   * Attempts to change the user's email using the authentication service.
-   */
-  private async changeUserEmail(newEmail: string): Promise<void> {
-    await this.auth.changeUserEmail(newEmail);
-  }
-
-
-  /**
-   * Handles successful email update by setting a success message and logging.
-   */
-  private handleSuccess(): void {
-    this.message = "Email successfully changed! Please verify your new email.";
   }
 
 
@@ -338,6 +366,12 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
    */
   resetCheckForm() {
     this.inputFieldCheck = false;
+  }
+
+
+  handleDialogClose(event: boolean) {
+    this.showPasswordDialog = event;
+    this.showDialog = true;
   }
 
 }
