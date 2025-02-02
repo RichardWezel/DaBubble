@@ -113,10 +113,20 @@ main {
           color: #444DF2;
         }
 
-        .text {
-          .searchTerm {
+        .text{
+          .searchTerm{
             color: $thirdColor;
           }
+        }
+
+        &.selected {
+          background-color: $backgroundColor; 
+          cursor: pointer;
+          border-radius: 20px;
+        }
+        
+        &:hover {
+          background-color: $backgroundColor;
         }
 
         // &:hover,

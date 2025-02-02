@@ -38,7 +38,7 @@ export class SearchComponent {
   private viewService = inject(SetMobileViewService);
   userInput: string = '';
   searchResults: SearchResult[] = [];
-  selectedIndex: number = -1;
+  selectedIndex: number = 0;
   dropDownIsOpen: boolean = false;
   dropdownElement: HTMLElement | undefined;
   placeholderText: string = 'Standard Placeholder';
