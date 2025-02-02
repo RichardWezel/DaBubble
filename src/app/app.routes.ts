@@ -7,20 +7,17 @@ import { ChooseAvatarCardComponent } from './components/log-in/sign-in/choose-av
 import { ImprintComponent } from './components/imprint/imprint.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 import { EmailVerifiedComponent } from './components/log-in/sign-in/email-verified/email-verified.component';
-import { ChannelEditComponent } from './shared/components/dialog/channel-edit/channel-edit.component';
 
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' }, // Redirection to log-in-page
     { path: 'login', component: LogInComponent },
     { path: 'signin', component: SignInComponent },
-    /* { path: 'auth/action', component: ResetPasswordCardComponent }, // Firebase-Link-Route */
     { path: 'resetpassword', component: ResetPasswordComponent },
     { path: 'workspace', component: WorkspaceComponent },
     { path: 'choose-avatar', component: ChooseAvatarCardComponent },
     { path: 'imprint', component: ImprintComponent },
     { path: 'privacy-policy', component: PrivacyPolicyComponent },
     { path: 'emailverified', component: EmailVerifiedComponent },
-    /* { path: 'channel-edit', component: ChannelEditComponent }, */
 ];
 

@@ -42,13 +42,16 @@ export class AppComponent implements OnInit {
   private handleFirebaseActions(mode: string, oobCode: string): void {
     switch (mode) {
       case 'resetPassword':
-        this.router.navigate(['/resetpassword'], { queryParams: { oobCode } });
+        this.router.navigate(['/resetpassword'], { queryParams: { oobCode, mode } });
         break;
       case 'verifyEmail':
-        this.router.navigate(['/emailverified'], { queryParams: { oobCode } });
+        this.router.navigate(['/emailverified'], { queryParams: { oobCode, mode } });
         break;
       case 'verifyAndChangeEmail':
-        this.router.navigate(['/emailverified'], { queryParams: { oobCode } });
+        this.router.navigate(['/emailverified'], { queryParams: { oobCode, mode } });
+        break;
+      case 'recoverEmail':
+        this.router.navigate(['/emailverified'], { queryParams: { oobCode, mode } });
         break;
       default:
         console.error('Unknown mode:', mode);
