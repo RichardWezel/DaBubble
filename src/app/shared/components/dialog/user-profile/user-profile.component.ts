@@ -16,7 +16,7 @@ import { getAuth } from '@angular/fire/auth';
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [NgIf, NgClass, NgStyle, FormsModule, EnterPasswordComponent, ConfirmationModalComponent],
+  imports: [NgIf, NgClass, FormsModule, EnterPasswordComponent, ConfirmationModalComponent],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.scss'
 })
