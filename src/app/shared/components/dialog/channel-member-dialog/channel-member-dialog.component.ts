@@ -30,7 +30,7 @@ export class ChannelMemberDialogComponent {
    * 
    * @param event - click escape Key
    */
-  @HostListener('document:keydown.escape', ['$event']) 
+  @HostListener('document:keydown.escape', ['$event'])
   handleEscape(event: KeyboardEvent) {
     if (this.isOpen) {
       this.closeDialog();
@@ -68,7 +68,6 @@ export class ChannelMemberDialogComponent {
     if (userID !== this.storage.currentUser.id) {
       this.openCloseDialogService.changeProfileId(userID);
       this.openCloseDialogService.open('userProfile');
-      console.log('User ', userID, ' is clicked to open the respective dialogue!');
     }
   }
 

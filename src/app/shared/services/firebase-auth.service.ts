@@ -100,6 +100,7 @@ export class FirebaseAuthService {
     }
   }
 
+
   async changeUserEmail(newEmail: string): Promise<void> {
     const auth = getAuth();
     const user = auth.currentUser;
@@ -109,7 +110,6 @@ export class FirebaseAuthService {
       alert("Fehler: Kein Benutzer angemeldet.");
       return;
     }
-
     try {
       console.log(" Bestätigungs-E-Mail wird gesendet...");
       await verifyBeforeUpdateEmail(user, newEmail);

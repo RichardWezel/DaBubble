@@ -236,8 +236,6 @@ export class NewMessageInputHeadComponent {
       this.userInput = this.suggestion;
     }
     this.suggestion = '';
-    console.log('acceptSuggestion(), userInput: ', this.userInput);
-    console.log('acceptSuggestion(), suggestion: ', this.suggestion);
   }
 
 
@@ -254,8 +252,6 @@ export class NewMessageInputHeadComponent {
       this.showSubmittedDirectMessage(searchTerm);
     } else if (prefix) {
       this.showSubmittedEmail()
-      console.log('showSuggestion(), userInput: ', this.userInput);
-      console.log('showSuggestion(), suggestion', this.suggestion);
     }
   }
 
@@ -336,7 +332,6 @@ export class NewMessageInputHeadComponent {
    * @param {UserInterface} userOfSuggestion - The user to create a new direct message session with based on email.
    */
   async showNewDmEmail(userOfSuggestion: UserInterface) {
-    console.log('showNewDmEmail(userOfSuggestion: UserInterface): ', userOfSuggestion)
     await this.createEmptyDms(userOfSuggestion);
     let dmWithUserOfSuggestion = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm.find(dm => dm.contact === userOfSuggestion.id);
     if (dmWithUserOfSuggestion) this.navigationService.setChannel(dmWithUserOfSuggestion!.id);

@@ -75,7 +75,7 @@ export class ChannelHeadComponent implements OnInit {
   channelCreator(): string {
     const currentChannel = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
     if (!currentChannel) {
-      return 'Unbekannt'; 
+      return 'Unbekannt';
     }
     const owner = this.storage.user.find(user => user.id === currentChannel.owner);
     return owner?.name || '';
@@ -89,7 +89,7 @@ export class ChannelHeadComponent implements OnInit {
   get currentChannelId(): string {
     return this.storage.currentUser.currentChannel || '';
   }
-  
+
 
   /**
    * Returns the description of the current channel.
@@ -109,7 +109,7 @@ export class ChannelHeadComponent implements OnInit {
     if (this.channelMemberDialog) {
       this.channelMemberDialog.openDialog();
     } else {
-      console.log("Error of call channelMemberDialog.openDialog()")
+      console.error("Error of call channelMemberDialog.openDialog()")
     }
   }
 
@@ -118,11 +118,9 @@ export class ChannelHeadComponent implements OnInit {
    * @returns {"channel" | "dm" | "newMessage" | ""}
    */
   findChannel(): "channel" | "dm" | "newMessage" | "" {
-    // findet den ersten Channel, deren id mit der currentChannel des currentUser übereinstimmt.
     let foundChannel = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
     let foundDM = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm
       .find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel);
-    // console.log('foundDM: ', foundDM)
     if (foundChannel) {
       this.storage.currentUser.currentChannelName = '#' + foundChannel.name;
       return 'channel';
@@ -195,7 +193,7 @@ export class ChannelHeadComponent implements OnInit {
     else return this.storage.user.find(user => user.id === foundUser)?.name;
   }
 
-  
+
   /**
    * Opens the dialog to add channel members.
    * @param {Event} event - The DOM event triggered by user interaction.
@@ -205,7 +203,7 @@ export class ChannelHeadComponent implements OnInit {
     if (this.addChannelMemberDialog) {
       this.addChannelMemberDialog.openDialog();
     } else {
-      console.log("Error of call channelMemberDialog.openDialog()")
+      console.error("Error of call channelMemberDialog.openDialog()")
     }
   }
 

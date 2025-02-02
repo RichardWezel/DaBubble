@@ -236,7 +236,6 @@ export class SearchComponent {
         this.navigation.setChannel(threadResult.parentId);
         let postId = this.storage.findParentPostId(threadResult.parentId, threadResult.thread.id)
         this.openThread(postId!);
-        console.log('postId: ', this.storage.currentUser.postId);
         this.viewService.setCurrentView('thread');
       } else {
         console.error('Parent ID des Threads ist undefiniert.');

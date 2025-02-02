@@ -1,4 +1,4 @@
-import { Component, inject, Renderer2, ElementRef, HostBinding, Input, Output, EventEmitter, OnInit, OnDestroy} from '@angular/core';
+import { Component, inject, Renderer2, ElementRef, HostBinding, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { FirebaseAuthService } from '../../../../shared/services/firebase-auth.service';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { OpenCloseDialogService } from '../../../../shared/services/open-close-dialog.service';
@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })
-export class SettingsComponent  implements OnInit, OnDestroy{
+export class SettingsComponent implements OnInit, OnDestroy {
 
   @Input() open: boolean = false;
   @Output() close = new EventEmitter<void>();
@@ -30,11 +30,11 @@ export class SettingsComponent  implements OnInit, OnDestroy{
   private subscriptions: Subscription = new Subscription();
 
 
-   constructor(
+  constructor(
     private viewService: SetMobileViewService
-   ) {}
+  ) { }
 
-  
+
   /**
    * Opens the user profile dialog and emits an event to close the settings dropdown.
    */
@@ -63,14 +63,13 @@ export class SettingsComponent  implements OnInit, OnDestroy{
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-  
+
 
   /**
    * Toggles the dropdown close state and emits an event to signal this change.
    */
   toggleDropdown(): void {
     this.close.emit(); // Emitiert das `close`-Ereignis
-    console.log('Dropdown closed via toggle.');
   }
 
 }

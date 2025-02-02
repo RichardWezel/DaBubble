@@ -17,12 +17,12 @@ export class SelectionOfAddingChannelMembersComponent {
   storage = inject(FirebaseStorageService);
 
   isOpen: boolean = false;
-  selectedOption: string = ''; 
+  selectedOption: string = '';
 
   private subscriptions: Subscription = new Subscription();
 
 
-  constructor(public openCloseDialogService: OpenCloseDialogService) {}
+  constructor(public openCloseDialogService: OpenCloseDialogService) { }
 
 
   /**
@@ -34,9 +34,8 @@ export class SelectionOfAddingChannelMembersComponent {
       ?.subscribe((status) => {
         this.isOpen = status;
       });
-    
+
     if (sub) this.subscriptions.add(sub);
-    console.log()
   }
 
 
@@ -88,7 +87,6 @@ export class SelectionOfAddingChannelMembersComponent {
    */
   checkSpecificUserHasBeenSelected() {
     if (this.selectedOption === "addSpecificUser") {
-      console.log('Navigation zum add-channel-member-dialog');
       this.openCloseDialogService.open('addChannelMember');
       this.closeDialog();
     }
@@ -101,14 +99,14 @@ export class SelectionOfAddingChannelMembersComponent {
    * @param allUserIds - A map of all users with sorting out of undefined ids and the currentUser, as this is automatically a member of the channel when the channel is created.
    * @param channelId - id of current channel. When a new channel is created, it is immediately set as the current channel.
    */
-  addAllUsersToNewChannel(allUserIds:string[], channelId: string) {
+  addAllUsersToNewChannel(allUserIds: string[], channelId: string) {
     this.storage.addUsersToChannel(channelId, allUserIds)
-    .then(() => {
-      this.closeDialog();
-    })
-    .catch(error => {
-      console.error(`Fehler beim Hinzufügen aller Benutzer zum Channel "${channelId}":`, error);
-    });
+      .then(() => {
+        this.closeDialog();
+      })
+      .catch(error => {
+        console.error(`Fehler beim Hinzufügen aller Benutzer zum Channel "${channelId}":`, error);
+      });
   }
 
   /**
@@ -118,10 +116,10 @@ export class SelectionOfAddingChannelMembersComponent {
    */
   defineAllUserIds() {
     return this.storage.user
-    .map(user => user.id)
-    .filter((id): id is string => id !== undefined && id !== this.storage.currentUser.id);
+      .map(user => user.id)
+      .filter((id): id is string => id !== undefined && id !== this.storage.currentUser.id);
   }
-  
+
 
   /**
    * Retrieves the name of a channel based on its ID.
@@ -129,8 +127,8 @@ export class SelectionOfAddingChannelMembersComponent {
    * @returns {string} The name of the channel, or an empty string if the channel is not found.
    */
   getChannelName(channelId: string): string {
-   const channel = this.storage.channel.find(ch => ch.id === channelId);
-   return channel ? channel.name : '';
+    const channel = this.storage.channel.find(ch => ch.id === channelId);
+    return channel ? channel.name : '';
   }
 
 }

@@ -1,33 +1,33 @@
-import { Component, Input, inject ,Output, EventEmitter, HostListener } from '@angular/core';
+import { Component, Input, inject, Output, EventEmitter, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../services/firebase-storage.service';
 import { Router } from '@angular/router';
 import { ChannelInterface } from '../../../interfaces/channel.interface';
-import { MemberContainerComponent } from '../../member-container/member-container.component'; 
+import { MemberContainerComponent } from '../../member-container/member-container.component';
 
 @Component({
   selector: 'app-channel-edit',
-  standalone: true, 
+  standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
     FormsModule,
-    MemberContainerComponent],  
+    MemberContainerComponent],
   templateUrl: './channel-edit.component.html',
   styleUrls: ['./channel-edit.component.scss']
 })
 export class ChannelEditComponent {
   @Input() channelId: string = '';
-  @Input() channelName: string = ''; 
-  @Input() channelDescription: string = ''; 
-  @Input() creatorName: string = ''; 
-  @Output() close = new EventEmitter<void>(); 
+  @Input() channelName: string = '';
+  @Input() channelDescription: string = '';
+  @Input() creatorName: string = '';
+  @Output() close = new EventEmitter<void>();
   protected storage = inject(FirebaseStorageService);
   isEditingDescription: boolean = false;
-  isEditingChannelName: boolean = false; 
-  errorMessage: string = ""; 
+  isEditingChannelName: boolean = false;
+  errorMessage: string = "";
 
-  constructor(private firebaseStorageService: FirebaseStorageService,  private router: Router) {}
+  constructor(private firebaseStorageService: FirebaseStorageService, private router: Router) { }
 
 
   /**
@@ -35,17 +35,17 @@ export class ChannelEditComponent {
    * 
    * @param event - click escape Key
    */
-  @HostListener('document:keydown.escape', ['$event']) 
-    handleEscape(event: KeyboardEvent) {
+  @HostListener('document:keydown.escape', ['$event'])
+  handleEscape(event: KeyboardEvent) {
     this.closeDialog();
   }
 
-  
+
   /**
    * Closes the Dialog
    */
   closeDialog(): void {
-    this.close.emit(); 
+    this.close.emit();
   }
 
 
@@ -53,9 +53,9 @@ export class ChannelEditComponent {
    * Let appear the edit input to change the channel description.
    */
   editDescription(): void {
-    this.isEditingDescription = true; 
+    this.isEditingDescription = true;
   }
-  
+
 
   /**
    * Saves the channel description.
@@ -80,7 +80,7 @@ export class ChannelEditComponent {
    * Let appear the edit input to change the channel name.
    */
   editChannelName(): void {
-    this.isEditingChannelName = true; 
+    this.isEditingChannelName = true;
   }
 
 
@@ -113,18 +113,17 @@ export class ChannelEditComponent {
     }).then(() => {
       this.isEditingChannelName = false;
       this.errorMessage = '';
-      console.log('Channel-Name erfolgreich gespeichert:', this.channelName);
     }).catch((error) => {
       console.error('Fehler beim Speichern des Channel-Namens:', error);
     });
   }
 
 
-   /**
-   * Checks whether the channel name already exists.
-   * @returns boolean
-   */
-   isChannelNameTaken(): boolean {
+  /**
+  * Checks whether the channel name already exists.
+  * @returns boolean
+  */
+  isChannelNameTaken(): boolean {
     return !!this.findChannelName(this.channelName);
   }
 
@@ -138,10 +137,9 @@ export class ChannelEditComponent {
     let channels: ChannelInterface[] = this.storage.CurrentUserChannel;
     let match = channels.find(channel =>
       channel.name.toLowerCase() === inputChannel.toLowerCase());
-    console.log('inputChannel: ', inputChannel, 'foundChannel: ', match?.name!);
     return match?.name!;
   }
-  
+
 
   /**
    * Performs a rewind of the channel in the program.
@@ -159,20 +157,20 @@ export class ChannelEditComponent {
         .find(channel => channel.id === this.channelId)?.user
         .filter(userId => userId !== currentUserId) || [],
     }).then(() => {
-     this.handelAfterDeleteChannelForUser();
+      this.handelAfterDeleteChannelForUser();
     }).catch((error) => {
       console.error('Fehler beim Verlassen des Channels:', error);
     });
   }
 
-  
+
   /**
    * Handels the todos after rewind the channel.
    */
   handelAfterDeleteChannelForUser() {
     this.firebaseStorageService.currentUser.currentChannel = '';
-    sessionStorage.removeItem('currentChannel'); 
+    sessionStorage.removeItem('currentChannel');
     this.router.navigate(['/workspace']);
-    this.close.emit(); 
+    this.close.emit();
   }
 }

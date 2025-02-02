@@ -32,9 +32,6 @@ export class AppComponent implements OnInit {
         this.handleFirebaseActions(mode, oobCode);
       }
     });
-
-    // Log the call of ngOnInit for AppComponent
-    (window as any).status = this.status.bind(this);
   }
 
   /**
@@ -58,13 +55,5 @@ export class AppComponent implements OnInit {
         this.router.navigate(['/']); // Navigate back to home page or default route
         break;
     }
-  }
-
-  /**
-   * Logs the current user details and channel to the console.
-   */
-  status() {
-    console.log('Current User: ', this.storage.currentUser);
-    console.log('Current channel of Current User', this.storage.currentUser.currentChannel);
   }
 }

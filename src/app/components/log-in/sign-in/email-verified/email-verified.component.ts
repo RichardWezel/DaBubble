@@ -20,7 +20,7 @@ export class EmailVerifiedComponent implements OnInit {
    * @param route - The ActivatedRouteService that provides access to URL parameters and the route state.
    * @param router - The Router service responsible for navigating between pages.
    */
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(private route: ActivatedRoute, private router: Router) { }
 
 
   /**
@@ -31,15 +31,9 @@ export class EmailVerifiedComponent implements OnInit {
     this.route.queryParams.subscribe(async (params) => {
       const mode = this.gettingParameterModeFromURL(params);
       const actionCode = this.gettingOobCodeFromURL(params);
-
-      if (mode === 'verifyEmail' && actionCode) {
-        await this.handleValidMailVerification(auth, actionCode);
-      } else if (mode === 'verifiyAndChangeEmail' && actionCode) {
-        console.log("Email wird geändert");
-        await this.handleValidMailVerification(auth, actionCode);
-      } else {
-        this.handleInvalidMailVerification();
-      }
+      if (mode === 'verifyEmail' && actionCode) await this.handleValidMailVerification(auth, actionCode);
+      else if (mode === 'verifiyAndChangeEmail' && actionCode) await this.handleValidMailVerification(auth, actionCode);
+      else this.handleInvalidMailVerification();
     });
   }
 
@@ -51,7 +45,7 @@ export class EmailVerifiedComponent implements OnInit {
    * @returns - The value of the 'mode' parameter or 'verifyEmail' if not found.
    */
   gettingParameterModeFromURL(params: Params): string {
-    return params['mode'] ? params['mode'] : 'verifyEmail'; 
+    return params['mode'] ? params['mode'] : 'verifyEmail';
   }
 
 
@@ -113,7 +107,7 @@ export class EmailVerifiedComponent implements OnInit {
       case 'auth/expired-action-code':
         return 'Der Bestätigungslink ist abgelaufen. Bitte fordere eine neue E-Mail an.';
       case 'auth/invalid-action-code':
-        return 'Der Bestätigungslink ist ungültig, da Ihre E-Mail bereits verifiziert wurde!'; 
+        return 'Der Bestätigungslink ist ungültig, da Ihre E-Mail bereits verifiziert wurde!';
       case 'auth/user-disabled':
         return 'Dein Konto wurde deaktiviert. Bitte kontaktiere den Support.';
       default:
