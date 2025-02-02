@@ -53,48 +53,49 @@ export class ResultDropdownComponent implements OnChanges {
 
   @HostListener('keydown', ['$event'])
   /**
-   * Handles keydown events for the result dropdown.
-   * Prevents the default behavior for the ArrowDown, ArrowUp, Enter, and Escape keys.
-   * If the ArrowDown key is pressed, moves the selection down by one.
-   * If the ArrowUp key is pressed, moves the selection up by one.
-   * If the Enter key is pressed and the selection is valid, selects the currently highlighted search result and closes the dropdown.
-   * If the Escape key is pressed, closes the dropdown and resets the selection.
-   * @param event - The KeyboardEvent object.
+   * Handles keydown events for navigating through and selecting search results.
+   * Prevents default actions for ArrowDown, ArrowUp, Enter, and Escape keys.
+   * Moves the selection up or down, selects the highlighted result,
+   * or closes the dropdown based on the pressed key.
+   * 
+   * @param event - The KeyboardEvent object encapsulating the keydown event.
    */
   handleKeyDown(event: KeyboardEvent) {
     if (this.searchResults.length === 0) return;
     const keysToPrevent = ['ArrowDown', 'ArrowUp', 'Enter', 'Escape'];
     if (keysToPrevent.includes(event.key)) event.preventDefault();
-    switch (event.key) {
-      case 'ArrowDown':
-        this.moveSelection(1);
-        break;
-      case 'ArrowUp':
-        this.moveSelection(-1);
-        break;
-      case 'Enter':
-        if (this.selectedIndex >= 0 && this.selectedIndex < this.searchResults.length) {
-          this.handleClick(this.searchResults[this.selectedIndex]);
-          this.openCloseService.close("resultDropdown");
-        }
-        break;
-      case 'Escape':
-        this.handleEscape();
-        break;
+    const keyActions: { [key: string]: () => void } = {
+      ArrowDown: () => this.moveSelection(1),
+      ArrowUp: () => this.moveSelection(-1),
+      Enter: () => this.handleEnter(),
+      Escape: () => this.handleEscape(),
+    };
+    keyActions[event.key]?.();
+  }
+
+
+  /**
+   * Handles the Enter key event.
+   * Selects the currently highlighted search result by calling `handleClick` and
+   * closes the dropdown by calling `close` on the `openCloseService`.
+   */
+  private handleEnter(): void {
+    if (this.selectedIndex >= 0 && this.selectedIndex < this.searchResults.length) {
+      this.handleClick(this.searchResults[this.selectedIndex]);
+      this.openCloseService.close("resultDropdown");
     }
   }
 
 
   /**
-   * Handles the Escape key press event to close the dropdown and reset the selection.
-   * Closes the dropdown and removes the search results.
-   * Sets focus to the search input field.
+   * Handles the Escape key event.
+   * Resets the search results to an empty array and closes the dropdown by calling `close` on the `openCloseService`.
+   * Additionally, it focuses the search input field by calling `focus` on the element with id 'searchbar'.
    */
-  handleEscape() {
-    const inputfield = document.getElementById('searchbar') as HTMLInputElement;
+  private handleEscape(): void {
     this.searchResults = [];
     this.openCloseService.close("resultDropdown");
-    inputfield.focus();
+    (document.getElementById('searchbar') as HTMLInputElement)?.focus();
   }
 
 
@@ -134,31 +135,33 @@ export class ResultDropdownComponent implements OnChanges {
   }
 
 
-
   /**
-   * Updates the search results based on the user input.
-   * Searches for channels if the input starts with '#', for users if the input starts with '@', and does nothing if the input does not start with either.
-   * @param input - The user input string.
+   * Updates the search results based on the current user input.
+   * Searches for channels if the input starts with '#', and for users if the input starts with '@'.
+   * Resets the search results if the input does not start with either of these prefixes.
+   * Closes the dropdown if the search results are empty.
+   * @param input - The input string entered by the user.
    */
   updateFoundedChannelsAndUsers(input: string): void {
-    if (input.startsWith('#')) {
-      const searchTerm = input.substring(1);
-      this.searchResults = this.findChannels(searchTerm);
-      if (this.searchResults.length === 0) {
-        setTimeout(() => {
-          this.openCloseService.close('resultDropdown');
-        }, 0);
-      }
-    } else if (input.startsWith('@')) {
-      const searchTerm = input.substring(1);
-      this.searchResults = this.findUsers(searchTerm);
-      if (this.searchResults.length === 0) {
-        setTimeout(() => {
-          this.openCloseService.close('resultDropdown');
-        }, 0);
-      }
-    } else {
+    if (!input.startsWith('#') && !input.startsWith('@')) {
       this.searchResults = [];
+      return;
+    }
+    const searchTerm = input.substring(1);
+    this.searchResults = input.startsWith('#') ? this.findChannels(searchTerm) : this.findUsers(searchTerm);
+    this.closeDropdownIfEmpty();
+  }
+
+
+  /**
+   * Closes the dropdown if the search results are empty.
+   * This function is called at the end of updateFoundedChannelsAndUsers.
+   * It checks if the search results are empty, and if so, calls openCloseService.close('resultDropdown')
+   * after a timeout of 0 milliseconds to close the dropdown.
+   */
+  private closeDropdownIfEmpty(): void {
+    if (this.searchResults.length === 0) {
+      setTimeout(() => this.openCloseService.close('resultDropdown'), 0);
     }
   }
 
