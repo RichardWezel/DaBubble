@@ -45,7 +45,7 @@
                 </div>
 
                 <div class="online">
-                    <div class="dott" [ngClass]="{'offline-dott': user?.online === false}"></div>
+                    <div class="dot" [ngClass]="{'offline-dot': user?.online === false}"></div>
                     <div class="status" [ngClass]="{'offline-status': user?.online === false}">{{ user?.online === false
                         ? 'Abwesend' : 'Aktiv' }}
                     </div>

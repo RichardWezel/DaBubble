@@ -1,5 +1,5 @@
 import { NgFor, NgIf, NgStyle } from '@angular/common';
-import { Component, HostListener,inject, } from '@angular/core';
+import { Component, HostListener, inject, } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../services/firebase-storage.service';
 import { CloudStorageService } from '../../../services/cloud-storage.service';
@@ -25,8 +25,8 @@ export class AddChannelMemberDialogComponent {
   isOpen: boolean = true;
   private subscriptions: Subscription = new Subscription();
   addedUser: UserInterface[] = [];
-  isLoading: boolean = false; 
-  errorMessage: string = ''; 
+  isLoading: boolean = false;
+  errorMessage: string = '';
   successMessage: string = '';
 
   // Timer-References
@@ -43,7 +43,7 @@ export class AddChannelMemberDialogComponent {
    * 
    * @param event - click escape Key
    */
-  @HostListener('document:keydown.escape', ['$event']) 
+  @HostListener('document:keydown.escape', ['$event'])
   handleEscape(event: KeyboardEvent) {
     if (this.isOpen) {
       this.closeDialog();
@@ -77,7 +77,7 @@ export class AddChannelMemberDialogComponent {
 
 
   /**
-   * Destroys all subscribtions and clears timer.
+   * Destroys all subscriptions and clears timer.
    */
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
@@ -124,7 +124,7 @@ export class AddChannelMemberDialogComponent {
 
   /**
    * If there is an input from the user, 
-   * the setSearchresult function will return all users that match the input by name or e-mail address.
+   * the setSearchResult function will return all users that match the input by name or e-mail address.
    * 
    * @returns any
    */
@@ -134,21 +134,21 @@ export class AddChannelMemberDialogComponent {
       this.searchResult = [];
       return;
     }
-    this.setSearchresult(trimmedInput);
+    this.setSearchResult(trimmedInput);
   }
 
 
   /**
-   * Sets the property searchResult with matched usern of user input.
+   * Sets the property searchResult with matched user of user input.
    * 
    * @param trimmedInput - User input trimmed
    */
-  setSearchresult(trimmedInput: any) {
+  setSearchResult(trimmedInput: any) {
     const searchTerm = trimmedInput.toLowerCase();
     this.searchResult = this.storage.user.filter(user => {
       const isAlreadyMember = this.channelUsers.includes(user.id!);
       return (
-        !isAlreadyMember && 
+        !isAlreadyMember &&
         (
           user.name?.toLowerCase().includes(searchTerm) ||
           user.email?.toLowerCase().includes(searchTerm)
@@ -302,7 +302,7 @@ export class AddChannelMemberDialogComponent {
     }
     this.isLoading = false;
   }
-  
+
 
   /**
    * Removes a user from the `addedUser` list.

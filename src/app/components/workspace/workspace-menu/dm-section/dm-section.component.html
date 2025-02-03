@@ -29,7 +29,7 @@
                         [ngClass]="{'active': dm.id == storage.currentUser.currentChannel}">
                         <div class="member-profile-icon">
                             <img [src]="getDmAvatar(dm)" alt="">
-                            <div [class.online]="storage.isUserOnline(dm.contact)" class="status-dott"></div>
+                            <div [class.online]="storage.isUserOnline(dm.contact)" class="status-dot"></div>
                         </div>
                         <div class="member-name">
                             <div>{{ dmIndex(dm) }}</div>

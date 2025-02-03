@@ -95,13 +95,13 @@ export class ChannelEditComponent {
       console.error('Channel-ID fehlt. Änderungen können nicht gespeichert werden.');
       return;
     }
-
     if (await this.firebaseStorageService.channelNameExists(this.channelId, this.channelName)) {
       this.errorMessage = 'Der Channel-Name existiert bereits. Bitte wählen Sie einen anderen Namen.';
       return;
     }
     this.saveChannelInformations();
   }
+
 
   /**
    * Saves the new channel-informations on firebase.

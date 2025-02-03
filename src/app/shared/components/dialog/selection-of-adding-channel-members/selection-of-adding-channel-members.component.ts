@@ -64,6 +64,7 @@ export class SelectionOfAddingChannelMembersComponent {
     this.checkSpecificUserHasBeenSelected();
   }
 
+
   /**
    * Checks whether all users have been selected as an option and first defines all users and then adds them to the new channel.
    * 
@@ -109,6 +110,7 @@ export class SelectionOfAddingChannelMembersComponent {
       });
   }
 
+
   /**
    * Creates a map of all users with sorting out of undefined ids and the currentUser, as this is automatically a member of the channel when the channel is created.
    * 
@@ -130,5 +132,4 @@ export class SelectionOfAddingChannelMembersComponent {
     const channel = this.storage.channel.find(ch => ch.id === channelId);
     return channel ? channel.name : '';
   }
-
 }

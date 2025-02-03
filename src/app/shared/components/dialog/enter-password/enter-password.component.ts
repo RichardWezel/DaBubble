@@ -27,6 +27,10 @@ export class EnterPasswordComponent {
   message: string = '';
   isLoading: boolean = false;
 
+
+  constructor() { }
+
+
   /**
   * When you click on the lock image you can show or hide the password.
   */
@@ -44,7 +48,7 @@ export class EnterPasswordComponent {
 
 
   /**
-   * Emtis an event to indicate that the process should be abandoned.
+   * Emits an event to indicate that the process should be abandoned.
    */
   abandonProcess() {
     this.abandonDialog.emit(false);
@@ -52,7 +56,7 @@ export class EnterPasswordComponent {
 
 
   /**
-   * Reauthenticates the user using their password and updates their email address.
+   * Reauthenticate the user using their password and updates their email address.
    */
   async reauthenticateWithPassword() {
     const auth = getAuth();

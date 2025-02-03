@@ -97,7 +97,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
 
 
   /**
-   * Handles changes in the userprofile by updating the email from Firebase Authentication.
+   * Handles changes in the user profile by updating the email from Firebase Authentication.
    * @param userId 
    */
   handleUserProfileChange(userId: string): void {
@@ -386,7 +386,7 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * Handles the closing event of a dialog.
-   * @param event - Indicates wheter the dialog should be shown or hidden.
+   * @param event - Indicates whether the dialog should be shown or hidden.
    */
   handleDialogAbandon(event: boolean) {
     this.showPasswordDialog = event;

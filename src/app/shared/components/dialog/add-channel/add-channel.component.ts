@@ -35,7 +35,7 @@ export class AddChannelComponent implements OnInit, OnDestroy {
    * 
    * @param event - click escape Key
    */
-  @HostListener('document:keydown.escape', ['$event']) 
+  @HostListener('document:keydown.escape', ['$event'])
   handleEscape(event: KeyboardEvent) {
     if (this.isDialogVisible) {
       this.closeDialog();
@@ -85,7 +85,7 @@ export class AddChannelComponent implements OnInit, OnDestroy {
    * Handles the submission of the channel creation form.
    * Checks if the channel name exists and, if not, proceeds to create the channel and navigate to it.
    */
-  async openAddChannelMemberChoiseDialog() {
+  async openAddChannelMemberChoiceDialog() {
     if (this.isChannelNameTaken()) {
       this.isChannelNameExists = true;
       this.errorMessage = 'Der Channel-Name existiert bereits. Bitte wählen Sie einen anderen Namen.';
@@ -140,7 +140,7 @@ export class AddChannelComponent implements OnInit, OnDestroy {
    * @returns channel-information of new dm
    */
   setChannelData() {
-    return  {
+    return {
       name: "",
       description: "",
       user: [this.storage.currentUser.id],

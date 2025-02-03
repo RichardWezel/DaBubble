@@ -106,6 +106,7 @@ export class ChannelMemberDialogComponent {
     this.openCloseDialogService.close('addChannelMember');
   }
 
+
   /**
    * Retrieves a user's name, or returns 'Unbekannt' if the user is not found.
    *
@@ -130,6 +131,7 @@ export class ChannelMemberDialogComponent {
       ? `assets/img/profile-pictures/${avatar}`
       : this.cloud.openImage(avatar);
   }
+
 
   /**
    * Fetches and returns the list of users associated with the current channel.
