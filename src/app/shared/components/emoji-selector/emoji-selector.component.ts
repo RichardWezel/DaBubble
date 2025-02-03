@@ -5,7 +5,6 @@ import { InputfieldComponent } from '../inputfield/inputfield.component';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { EmoticonsInterface } from '../../interfaces/emoticons.interface';
 import { PostInterface } from '../../interfaces/post.interface';
-import { UserInterface } from '../../interfaces/user.interface';
 
 
 @Component({
@@ -115,92 +114,49 @@ export class EmojiSelectorComponent {
 
 
   /**
-   * Handles the posting of a reaction to a post or a DM.
-   * If the user is in a channel, it checks if the post is a thread and calls updateThreadReaction
-   * or updateMainReaction accordingly.
-   * If the user is in a DM, it calls updateThreadReaction or updateMainReaction depending on whether the post is a thread.
-   * @param event - The event that triggered the posting of the reaction.
+   * Updates the reaction of a post in the local storage.
+   * This function is called when a user adds or removes a reaction to a post.
+   * It uses the current user's channel and post ID to find the current post in the local storage.
+   * If the post is a thread, it updates the thread message with the new reaction.
+   * If the post is a regular post, it updates the post with the new reaction.
+   * @param event - The event containing the emoji to be added as a reaction.
    */
-  postReaction(event: any): void {
+  postReaction(event: any) {
     if (!this.storage.currentUser.currentChannel || !this.storage.currentUser.id) return;
-    const curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
-    const { currentPost, dmPost, currentDm } = this.getPostData(curUser);
-    if (this.isThread) this.updateThreadReaction(currentPost, dmPost, currentDm);
-    else this.updateMainReaction(currentPost, dmPost, currentDm);
-    this.resetReactionState(event);
-  }
-
-
-  /**
-   * Retrieves the current post and DM post based on the current channel and post ID
-   * from the storage. It returns an object containing the current post, DM post, and DM.
-   * @param curUser - The current user object from the storage.
-   * @returns An object containing the current post, DM post, and DM.
-   */
-  private getPostData(curUser: UserInterface | undefined) {
-    const posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
-    const currentPost = posts?.find(post => post.id === this.storage.currentUser.postId);
-    const currentDm = curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
-    const dmPost = currentDm?.posts?.find(post => post.id === this.storage.currentUser.postId);
-    return { currentPost, dmPost, currentDm };
-  }
-
-
-  /**
-   * Updates the reaction of a thread message in a channel or DM.
-   * It uses the origin, post ID, and isThread properties to determine whether to update a channel or DM post.
-   * If the post is a thread message, it updates the thread message in the channel or DM post.
-   * It then updates the channel or DM post in the storage.
-   * @param currentPost - The current post object from the channel.
-   * @param dmPost - The current DM post object from the DM.
-   * @param currentDm - The current DM object from the storage.
-   */
-  private updateThreadReaction(currentPost?: PostInterface, dmPost?: PostInterface, currentDm?: any): void {
-    if (this.origin === 'channel') {
-      const threadMsg = currentPost?.threadMsg?.find(thread => thread.id === this.post.id);
-      if (threadMsg) threadMsg.emoticons = this.post.emoticons;
-      this.storage.updateChannelPost(this.storage.currentUser.currentChannel!, this.storage.currentUser.postId!, currentPost!);
-    } else {
-      const dmThreadMsg = dmPost?.threadMsg?.find(thread => thread.id === this.post.id);
-      if (dmThreadMsg) dmThreadMsg.emoticons = this.post.emoticons;
-      this.storage.updateDmPost(this.storage.currentUser.id!, currentDm?.contact!, this.storage.currentUser.postId!, dmPost!);
+    let posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
+    let currentPost = posts?.find(post => post.id === this.storage.currentUser.postId);
+    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
+    let currentDm = curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
+    let dmPost = currentDm?.posts?.find(post => post.id === this.storage.currentUser.postId);
+    switch (true) {
+      case this.isThread && this.origin === 'channel':
+        let threadMsg = currentPost?.threadMsg?.find(thread => thread.id === this.post.id);
+        if (threadMsg) threadMsg.emoticons = this.post.emoticons;
+        this.storage.updateChannelPost(this.storage.currentUser.currentChannel, this.storage.currentUser.postId!, currentPost!);
+        break;
+      case this.isThread && this.origin === 'dm':
+        let dmThreadMsg = dmPost?.threadMsg?.find(thread => thread.id === this.post.id);
+        if (dmThreadMsg) dmThreadMsg.emoticons = this.post.emoticons;
+        this.storage.updateDmPost(this.storage.currentUser.id, currentDm?.contact!, this.storage.currentUser.postId!, dmPost!);
+        break;
+      case !this.isThread && this.origin === 'channel':
+        currentPost = posts?.find(post => post.id === this.post.id);
+        if (currentPost) currentPost.emoticons = this.post.emoticons;
+        this.storage.updateChannelPost(this.storage.currentUser.currentChannel, this.post.id, currentPost!);
+        break;
+      case !this.isThread && this.origin === 'dm':
+        dmPost = currentDm!.posts?.find(post => post.id === this.post.id);
+        if (dmPost) dmPost.emoticons = this.post.emoticons;
+        this.storage.updateDmPost(this.storage.currentUser.id, currentDm?.contact!, this.post.id, dmPost!);
+        break;
     }
-  }
-
-
-  /**
-   * Updates the emoticons of the main post (i.e., not a thread message) associated with the current channel or direct message (DM).
-   * It uses the origin to determine whether to update a channel or DM post.
-   * Updates the channel or DM post in the storage with the new emoticons.
-   * 
-   * @param currentPost - The current post object from the channel.
-   * @param dmPost - The current DM post object from the DM.
-   * @param currentDm - The current DM object from the storage.
-   */
-  private updateMainReaction(currentPost?: PostInterface, dmPost?: PostInterface, currentDm?: any): void {
-    if (this.origin === 'channel') {
-      if (currentPost) currentPost.emoticons = this.post.emoticons;
-      this.storage.updateChannelPost(this.storage.currentUser.currentChannel!, this.post.id, currentPost!);
-    } else {
-      if (dmPost) dmPost.emoticons = this.post.emoticons;
-      this.storage.updateDmPost(this.storage.currentUser.id!, currentDm?.contact!, this.post.id, dmPost!);
-    }
-  }
-
-
-  /**
-   * Resets the component state after a reaction has been added to a post.
-   * It resets the post object, origin and isThread properties to their initial values.
-   * This is necessary because the component is not destroyed when a reaction is added, so
-   * the state needs to be reset to prepare for the next reaction.
-   * The function is called when the emoji selector emits a click event.
-   * @param event - The event object emitted by the emoji selector.
-   */
-  private resetReactionState(event: any): void {
     if (event.emoji.post || event.emoji.isThread) {
       this.post = { text: '', author: '', timestamp: 0, thread: false, id: '' };
       this.origin = '';
       this.isThread = false;
     }
   }
+
+
+
 }

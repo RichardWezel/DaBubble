@@ -24,7 +24,7 @@ export class FirebaseAuthService {
 
   /**
  * Initializes a new instance and checks if an authentication UID is present in the session storage.
- * If an autehntication UID is found, it sets the 'authUid' in the storage and retrieves the current user.
+ * If an authentication UID is found, it sets the 'authUid' in the storage and retrieves the current user.
  */
   constructor() {
     if (sessionStorage.getItem("authUid")) {
@@ -72,7 +72,7 @@ export class FirebaseAuthService {
   /**
    * Processes the Google Login errors.
    * It differs between the Firebase errors and other errors.
-   * @param error - The error object that occured during the Google Login process.
+   * @param error - The error object that occurred during the Google Login process.
    */
   processGoogleLoginError(error: any) {
     if (error instanceof FirebaseError) {
@@ -102,7 +102,7 @@ export class FirebaseAuthService {
 
 
   /**
-   * Changes the currently authenicated user's email address after verification.
+   * Changes the currently authenticated user's email address after verification.
    * @param newEmail - The new email address to update.
    * @returns - Resolves when the email update and user reload are complete.
    */
@@ -120,7 +120,6 @@ export class FirebaseAuthService {
       this.errorMessage = "Es ist ein Fehler aufgetreten.";
     }
   }
-
 
 
   /**
@@ -222,17 +221,10 @@ export class FirebaseAuthService {
     if (this.onlineTimer) clearTimeout(this.onlineTimer);
     if (status) this.onlineTimer = setTimeout(async () => {
       this.logout();
-      this.openCloseDialogService.close('userProfile');
-      this.openCloseDialogService.close('channelMember');
-      this.openCloseDialogService.close('addChannelMember');
-      this.openCloseDialogService.close('addChannel');
-      this.openCloseDialogService.close('SelectionOfAddingChannelMembers');
-      this.openCloseDialogService.close('resultDropdown');
       this.onlineTimer = null;
     }, 900000);
     else this.onlineTimer = null;
   }
-
 
 
   /**

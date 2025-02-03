@@ -10,6 +10,7 @@ export class StorageHelperService {
 
   constructor() { }
 
+
   /**
    * Creates a new post with the same properties as the given post, but with new text, emoticons, threadMsg, and thread properties.
    * @param post - The post to clone.

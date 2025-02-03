@@ -21,7 +21,7 @@ export class ValidatorService {
 
   /**
    * Validates the inserted password with a regex.
-   * @param password - The isnerted password.
+   * @param password - The inserted password.
    * @returns - True, if the password matches the regex, otherwise false.
    */
   validatePassword(password: string): boolean {

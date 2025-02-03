@@ -31,7 +31,7 @@ export class CloudStorageService {
 
 
   /**
-   * Uploads a list of files and returns their corresponding URLs after succesful upload.
+   * Uploads a list of files and returns their corresponding URLs after successful upload.
    * @param files - A list of files selected for upload.
    * @param channelId - The ID of the channel to which the files will be uploaded.
    * @returns - A promise that resolves to an array of objects.
@@ -51,13 +51,12 @@ export class CloudStorageService {
   }
 
 
-
   /**
    * Generates a new file name, uploads the file, and appends the file details to the uploaded URLs array.
    * @param file - The file to be uploaded.
-   * @param channelId - The ID of the channel where the file wiill be uploaded.
+   * @param channelId - The ID of the channel where the file will be uploaded.
    * @param uploadedUrls - The array of uploaded file details to which new file info will be added.
-   * @returns - A promise that resolves to an updated arrray of uploaded file details.
+   * @returns - A promise that resolves to an updated array of uploaded file details.
    */
   async generateAppendixNameAndUpload(file: File, channelId: string, uploadedUrls: { name: string; url: string }[]) {
     const newFileName = this.getAppendixNewFileName(file);
@@ -147,7 +146,7 @@ export class CloudStorageService {
    * Fetches an image from a URL in the upload line and processes it.
    * The method retrieves the image as a blob and if a user with a matching avatar URL is found,
    * the image is copied to storage.
-   * @returns - A promise that resolves when the image is usccessfully fetched and processed, or silently fails if an error occurs.
+   * @returns - A promise that resolves when the image is successfully fetched and processed, or silently fails if an error occurs.
    */
   async getGoogleImage(): Promise<void> {
     const url = this.uploadLine[0];
@@ -167,7 +166,7 @@ export class CloudStorageService {
   /**
    * Uploads an image blob to the storage and updates the user's avatar with the uploaded image's URL.
    * @param blob - The image blob to be uploaded.
-   * @param user - The user whose avatar will be upadated with the uploaded image URL.
+   * @param user - The user whose avatar will be updated with the uploaded image URL.
    * @returns - A promise that resolves when the image is uploaded an the user's avatar is updated.
    */
   async copyGoogleImageToStorage(blob: Blob, user: UserInterface): Promise<void> {

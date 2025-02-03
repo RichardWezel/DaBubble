@@ -112,7 +112,7 @@ export class UploadComponent implements OnChanges, OnInit {
    * Handles the dragover event.
    * @param {DragEvent} event The event that triggered this function.
    * @description
-   * This function prevents the default behaviour of the dragover event and stops the event from propagating.
+   * This function prevents the default behavior of the dragover event and stops the event from propagating.
    * It then toggles the drop zone on.
    */
   handleDragOver(event: DragEvent) {
@@ -126,7 +126,7 @@ export class UploadComponent implements OnChanges, OnInit {
    * Handles the dragleave event.
    * @param {DragEvent} event The event that triggered this function.
    * @description
-   * This function prevents the default behaviour of the dragleave event and stops the event from propagating.
+   * This function prevents the default behavior of the dragleave event and stops the event from propagating.
    * It then toggles the drop zone off.
    */
 

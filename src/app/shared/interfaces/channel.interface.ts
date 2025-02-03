@@ -1,7 +1,7 @@
 import { PostInterface } from "./post.interface";
 
 export interface ChannelInterface {
-  type: 'channel'; // Typen-Discriminator
+  type: 'channel',
   name: string,
   description: string,
   user: string[],

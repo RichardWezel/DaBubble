@@ -14,9 +14,6 @@ export class SearchService {
 
   protected storage = inject(FirebaseStorageService);
   navigation = inject(NavigationService);
-
-  // private userInputSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
-  // public userInput$: Observable<string> = this.userInputSubject.asObservable();
   private viewService = inject(SetMobileViewService);
 
   constructor() { }
@@ -148,7 +145,6 @@ export class SearchService {
         });
       }
     });
-
     return matches;
   }
 

@@ -20,6 +20,9 @@ export class MemberContainerComponent {
   @Input() dialog: boolean = false;
 
 
+  constructor() { }
+
+
   /**
    * Closes the channel member dialog.
    */

@@ -23,16 +23,16 @@ export class AppComponent implements OnInit {
    * Initializes the component by subscribing to route query parameters and setting up window status.
    */
   ngOnInit() {
-    // Checking URL parameters at the start of the application
     this.route.queryParams.subscribe((params) => {
-      const mode = params['mode']; // Type of action (verifyEmail, resetPassword)
-      const oobCode = params['oobCode']; // Firebase action code
+      const mode = params['mode'];
+      const oobCode = params['oobCode'];
 
       if (mode && oobCode) {
         this.handleFirebaseActions(mode, oobCode);
       }
     });
   }
+
 
   /**
    * Processes Firebase-specific actions based on the mode provided in the URL parameters.
