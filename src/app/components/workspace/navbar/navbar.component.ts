@@ -19,7 +19,7 @@ export class NavbarComponent {
   storage = inject(FirebaseStorageService);
   cloud = inject(CloudStorageService);
   dropDownOpen: boolean = false;
-
+  backToWsMenuIcon: boolean = false;
   isLargeScreen: boolean = false;
   currentView: CurrentView = 'workspaceMenu';
 
@@ -42,15 +42,16 @@ export class NavbarComponent {
       this.isLargeScreen = isLarge;
     });
     this.subscriptions.add(screenSub);
+    
   }
 
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
-    const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
-      this.isLargeScreen = isLarge;
-    });
-    this.subscriptions.add(screenSub);
+    if (event) {
+      this.isLargeScreen = window.innerWidth >= 1300;
+    }
+   
   }
 
 
@@ -95,6 +96,17 @@ export class NavbarComponent {
    */
   setView(view: CurrentView): void {
     this.viewService.setCurrentView(view);
+  }
+
+
+  /**
+   * Condition for displaying backToWs-menu-btn.
+   * 
+   * @returns 
+   */
+  displayCondition(): boolean {
+    let condition = !this.isLargeScreen && (this.currentView === 'channel' || this.currentView === 'thread');
+    return condition;
   }
 
 }
