@@ -192,7 +192,7 @@ export class ChooseAvatarCardComponent {
 
 
   /**
-   * Sends a verification email to the proviced user.
+   * Sends a verification email to the provided user.
    * @param user - The user object to whom the verification email should be sent.
    * @returns - Returns true if the email was sent successfully, otherwise false.
    */
@@ -233,7 +233,7 @@ export class ChooseAvatarCardComponent {
 
   /**
    * Returns the name, email and avatar from the signInData from the signInService to create a new user document.
-   * @returns - An object with the insereted name, email and selected avatar.
+   * @returns - An object with the inserted name, email and selected avatar.
    */
   getSignInData(): any {
     return {

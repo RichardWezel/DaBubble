@@ -61,19 +61,19 @@ export class EmailVerifiedComponent implements OnInit {
 
 
   /**
-   * Handles the email verfification process when the action code is valid.
+   * Handles the email verification process when the action code is valid.
    * @param auth - The authentication instance used to verify the action code.
-   * @param actionCode - The verification code sent to the user's email, used to verifiy the email address.
+   * @param actionCode - The verification code sent to the user's email, used to verify the email address.
    * @returns - A promise that resolves when the email verification process is complete.
    */
   async handleValidMailVerification(auth: Auth, actionCode: string): Promise<void> {
     try {
-      await applyActionCode(auth, actionCode); // Verifying email
+      await applyActionCode(auth, actionCode);
       this.message = 'Deine E-Mail-Adresse wurde erfolgreich bestätigt!';
       this.isLoading = false;
 
       setTimeout(() => {
-        this.router.navigate(['/login']); // Navigation to log-in page
+        this.router.navigate(['/login']);
       }, 3000);
     } catch (error: any) {
       this.isLoading = false;
@@ -89,7 +89,7 @@ export class EmailVerifiedComponent implements OnInit {
     this.isLoading = false;
     this.message = 'Ungültiger oder fehlender Bestätigungslink.';
     setTimeout(() => {
-      this.router.navigate(['/login']); // Fallback-Weiterleitung
+      this.router.navigate(['/login']);
     }, 3000);
   }
 
@@ -98,15 +98,15 @@ export class EmailVerifiedComponent implements OnInit {
     try {
       this.isLoading = true;
       await applyActionCode(auth, actionCode);
-  
+
       this.message = "Deine E-Mail-Adresse wurde erfolgreich zurückgesetzt.";
-  
+
       this.isLoading = false;
 
       if (auth.currentUser) {
         await auth.currentUser.reload();
       }
-  
+
       setTimeout(() => {
         this.router.navigate(['/login']);
       }, 3000);
@@ -140,7 +140,7 @@ export class EmailVerifiedComponent implements OnInit {
       case 'auth/expired-action-code':
         return 'Der Bestätigungslink ist abgelaufen. Bitte fordere eine neue E-Mail an.';
       case 'auth/invalid-action-code':
-        return 'Der Bestätigungslink ist ungültig, da Ihre E-Mail bereits zurückgeändert wurde!';
+        return 'Der Bestätigungslink ist ungültig, da Ihre E-Mail bereits geändert wurde!';
       case 'auth/user-disabled':
         return 'Dein Konto wurde deaktiviert. Bitte kontaktiere den Support.';
       default:

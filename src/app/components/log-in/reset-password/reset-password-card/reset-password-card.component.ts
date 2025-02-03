@@ -50,7 +50,7 @@ export class ResetPasswordCardComponent implements OnInit {
 
 
   /**
-   * When the component is intialized the component subscribes to the query parameters from the current route.
+   * When the component is initialized the component subscribes to the query parameters from the current route.
    * Extracts the 'oobCode' from the URL and reacts accordingly.
    */
   ngOnInit() {
@@ -75,7 +75,7 @@ export class ResetPasswordCardComponent implements OnInit {
 
 
   /**
-   * Verifies the OobCode from the acitvated route.
+   * Verifies the OobCode from the activated route.
    */
   verifyOobCode() {
     verifyPasswordResetCode(this.auth, this.oobCode)
@@ -89,7 +89,7 @@ export class ResetPasswordCardComponent implements OnInit {
 
 
   /**
-   * Toggles the visiblitiy of the inserted password.
+   * Toggles the visibility of the inserted password.
    */
   togglePasswordVisibility() {
     this.passwordVisible = !this.passwordVisible;
@@ -105,7 +105,7 @@ export class ResetPasswordCardComponent implements OnInit {
 
 
   /**
-   * Resets the Password when there is an OobCode and a valid passsword.
+   * Resets the Password when there is an OobCode and a valid password.
    */
   resetPassword() {
     if (!this.oobCode) {
@@ -113,7 +113,7 @@ export class ResetPasswordCardComponent implements OnInit {
     } else if (!this.validator.validatePassword(this.passwordData)) {
       this.errorMessageInvalidPassword();
     } else {
-      this.tryResetingPassword();
+      this.tryResetPassword();
     }
   }
 
@@ -135,11 +135,11 @@ export class ResetPasswordCardComponent implements OnInit {
 
 
   /**
-   * Attempts to reset the user's passwordusing the provided reset code and new password.
-   * If the password reset is successfull, a confirmation dialog is shown.
+   * Attempts to reset the user's password using the provided reset code and new password.
+   * If the password reset is successful, a confirmation dialog is shown.
    * If an error occurs, an appropriate error message is displayed.
    */
-  tryResetingPassword() {
+  tryResetPassword() {
     this.isLoading = true;
     confirmPasswordReset(this.auth, this.oobCode, this.passwordData)
       .then(() => {

@@ -25,18 +25,17 @@ export class ThreadHeadComponent extends ChannelHeadComponent {
    * @returns {string} The formatted name of the current channel or direct message.
    * For channels, it removes the prefix hash ('#'), and for DMs, it prefixes the name with '@'.
    */
-  channelNameThread() {
+  channelNameThread(): string {
     let currentChannel = this.storage.currentUser.currentChannelName;
-    
-    if (currentChannel?.startsWith('#')) {
-        // Entfernt die ersten zwei Zeichen ('# ')
-        return currentChannel.slice(1);
-    } else {
-        // Fügt '@ ' vor dem aktuellen Channel-Namen hinzu
-        return '@ ' + currentChannel;
-    }
+    if (currentChannel?.startsWith('#')) return currentChannel.slice(1);
+    else return '@ ' + currentChannel;
   }
 
+
+  /**
+   * Closes the thread and navigates the user back to the channel view if on a small screen.
+   * On a large screen, it simply closes the thread.
+   */
   closeThread() {
     if (this.isLargeScreen) {
       this.storage.currentUser.threadOpen = false
@@ -44,5 +43,5 @@ export class ThreadHeadComponent extends ChannelHeadComponent {
       this.viewService.setCurrentView('channel');
     }
   }
-  
+
 }

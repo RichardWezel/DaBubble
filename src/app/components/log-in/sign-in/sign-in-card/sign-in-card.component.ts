@@ -31,7 +31,9 @@ export class SignInCardComponent {
 
 
   /**
-   * Verifies ifan email address already exists and performs corresponding actions.
+   * Checks whether the email in the form already exists in the database.
+   * If so, shows an error message; if not, navigates to the choose avatar page.
+   * @returns - No return value; navigates or shows an error message.
    */
   async checkForm() {
     this.resetCheckForm();
@@ -41,7 +43,7 @@ export class SignInCardComponent {
         this.showErrorMessageIfMailExists();
       } else {
         this.goToChooseAvatar();
-      } 
+      }
     } catch (error) {
       this.authService.errorMessage = "Es gab ein Problem bei der Überprüfung der E-Mail-Adresse.";
     } finally {
@@ -68,10 +70,10 @@ export class SignInCardComponent {
     this.signInService.resetSignInData();
   }
 
-  
+
   /**
    * Checks if an email address already exists in the Firestore "user" collection.
-   * @returns - A proise that resolves to 'true' if the email exists, or 'false' if it does not.
+   * @returns - A promise that resolves to 'true' if the email exists, or 'false' if it does not.
    */
   async checkIfEmailExists(): Promise<boolean> {
     try {

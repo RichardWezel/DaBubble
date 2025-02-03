@@ -11,5 +11,5 @@ import { ChooseAvatarCardComponent } from "./choose-avatar-card/choose-avatar-ca
   styleUrl: './sign-in.component.scss'
 })
 export class SignInComponent {
-  generateAccount: boolean = true; // Initial state: Create account, sign-in-card
+  generateAccount: boolean = true;
 }

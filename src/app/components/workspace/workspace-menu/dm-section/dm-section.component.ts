@@ -126,7 +126,12 @@ export class DmSectionComponent {
   }
 
 
-  findContact(dm: { contact: string, id: string, posts: any[] }) {
+  /**
+   * Checks if a direct message (DM) contact exists in the user list.
+   * @param {object} dm - The direct message object containing contact details.
+   * @returns {boolean} True if the contact exists, false otherwise.
+   */
+  findContact(dm: { contact: string, id: string, posts: any[] }): boolean {
     let contact = this.storage.user.find(user => user.id === dm.contact);
     if (contact) return true;
     else return false;

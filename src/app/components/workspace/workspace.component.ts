@@ -50,36 +50,25 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
    * Subscribes to dialog, breakpoint, and view state changes to manage the workspace layout and functionality.
    */
   ngOnInit(): void {
-    // Subscribe to workspace menu dialog status
-    const dialogSub = this.openCloseDialogService
-      .isDialogOpen('workspaceMenu')
-      ?.subscribe((status) => {
-        this.wsmOpen = status;
-      });
+    const dialogSub = this.openCloseDialogService.isDialogOpen('workspaceMenu')?.subscribe(
+      status => this.wsmOpen = status
+    );
     if (dialogSub) this.subscriptions.add(dialogSub);
 
-    // BreakpointObserver for Responsive Design
-    const breakpointSub = this.breakpointObserver.observe([`(min-width: 1300px)`]) 
-      .subscribe(result => {
-        const isLarge = result.matches;
-        this.viewService.setIsLargeScreen(isLarge);
-        if (!isLarge) {
-          this.viewService.setCurrentView('workspaceMenu');
-        }
-      });
-    this.subscriptions.add(breakpointSub);
+    this.subscriptions.add(
+      this.breakpointObserver.observe([`(min-width: 1300px)`]).subscribe(result => {
+        this.viewService.setIsLargeScreen(result.matches);
+        if (!result.matches) this.viewService.setCurrentView('workspaceMenu');
+      })
+    );
 
-    // Subscribe to currentView changes
-    const viewSub = this.viewService.currentView$.subscribe(view => {
-      this.currentView = view;
-    });
-    this.subscriptions.add(viewSub);
+    this.subscriptions.add(
+      this.viewService.currentView$.subscribe(view => this.currentView = view)
+    );
 
-    // Subscribe to isLargeScreen changes and update local variable
-    const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
-      this.isLargeScreen = isLarge; // Update local isLargeScreen
-    });
-    this.subscriptions.add(screenSub);
+    this.subscriptions.add(
+      this.viewService.isLargeScreen$.subscribe(isLarge => this.isLargeScreen = isLarge)
+    );
   }
 
 

@@ -1,23 +1,9 @@
-<main 
-  class="searchbar" 
-  tabindex="0" 
-  aria-haspopup="listbox"
-  aria-owns="search-results"
-  [attr.aria-expanded]="searchResults.length > 0"
->
+<main class="searchbar" tabindex="0" aria-haspopup="listbox" aria-owns="search-results"
+  [attr.aria-expanded]="searchResults.length > 0">
   <section class="input">
-    <input 
-      #inputfieldSearch
-      id="searchbar" 
-      type="search" 
-      [placeholder]="placeholderText"
-      [(ngModel)]="userInput" 
-      (input)="onInput()"
-      (keydown)="handleKeyboardEvent($event)"
-      aria-autocomplete="list"
-      aria-controls="search-results"
-      [attr.aria-activedescendant]="selectedIndex >= 0 ? 'result-' + selectedIndex : ''"
-      >
+    <input #inputfieldSearch id="searchbar" type="search" [placeholder]="placeholderText" [(ngModel)]="userInput"
+      (input)="onInput()" (keydown)="handleKeyboardEvent($event)" aria-autocomplete="list"
+      aria-controls="search-results" [attr.aria-activedescendant]="selectedIndex >= 0 ? 'result-' + selectedIndex : ''">
     <div class="search">
       <svg width="35" height="36" viewBox="0 0 35 36" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -28,30 +14,23 @@
   </section>
   <section class="result-container" *ngIf="userInput.length >= 1" id="search-results" role="listbox">
     <ul>
-      <li 
-        *ngFor="let result of searchResults; let i = index"
-        [id]="'result-' + i"
-        [class.selected]="i === selectedIndex"
-        (click)="setChannel(result)"
-        role="option"
-        tabindex="-1"
-      >  
-        <!-- Kanal -->
+      <li *ngFor="let result of searchResults; let i = index" [id]="'result-' + i"
+        [class.selected]="i === selectedIndex" (click)="setChannel(result)" role="option" tabindex="-1">
+
         <ng-container *ngIf="result.type === 'channel'">
           <span class="prefix-channel">#&nbsp;<span [innerHTML]="highlightMatch(result.channel.name)"></span>:</span>
         </ng-container>
 
-        <!-- Benutzer -->
         <ng-container *ngIf="result.type === 'user'">
           <span class="prefix-user">&#x40;&nbsp;<span [innerHTML]="highlightMatch(result.user.name)"></span>:</span>
         </ng-container>
 
-        <!-- Kanal mit gefundener Post -->
         <ng-container *ngIf="result.type === 'channel-post'">
-          <span class="prefix-channel-post">#&nbsp;<span [innerHTML]="highlightMatch(result.channel.name)"></span>:</span>&nbsp;<span class="result-info" [innerHTML]="highlightMatch(result.post.text)"></span>
+          <span class="prefix-channel-post">#&nbsp;<span
+              [innerHTML]="highlightMatch(result.channel.name)"></span>:</span>&nbsp;<span class="result-info"
+            [innerHTML]="highlightMatch(result.post.text)"></span>
         </ng-container>
 
-        <!-- Thread -->
         <ng-container *ngIf="result.type === 'thread'">
           <span class="prefix-thread">
             <ng-container [ngSwitch]="result.parentType">
@@ -68,7 +47,7 @@
         </ng-container>
       </li>
     </ul>
-    <app-result-dropdown *ngIf="dropDownIsOpen && userInput.length >= 1" [userInput]="userInput" #resultDropdown></app-result-dropdown>
+    <app-result-dropdown *ngIf="dropDownIsOpen && userInput.length >= 1" [userInput]="userInput"
+      #resultDropdown></app-result-dropdown>
   </section>
 </main>
-

@@ -29,7 +29,7 @@ export class SendEmailCardComponent {
 
 
   /**
-   * Initializes the component an injects the rquired services.
+   * Initializes the component an injects the required services.
    * @param navigationService - Service used to handle navigation within the application.
    */
   constructor(public navigationService: NavigationService) { }
@@ -81,9 +81,9 @@ export class SendEmailCardComponent {
   }
 
 
-/**
- * Checks if the input fields are valid by setting the focus of the input fields to true.
- */
+  /**
+   * Checks if the input fields are valid by setting the focus of the input fields to true.
+   */
   checkInputFields() {
     this.authService.errorMessage = '';
     this.inputFieldCheck = true;

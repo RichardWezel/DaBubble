@@ -19,9 +19,10 @@ export class NewMessageInputHeadComponent {
 
   protected storage = inject(FirebaseStorageService);
   navigationService: NavigationService = inject(NavigationService);
-  userInput: string = ''; // Binding to input value
-  suggestion: string = ''; // saves the current autocomplete
+  userInput: string = '';
+  suggestion: string = '';
   dropDownIsOpen: boolean = false;
+
 
   /**
    * Handles the input change event and updates the autocomplete suggestion.
@@ -105,6 +106,7 @@ export class NewMessageInputHeadComponent {
     }
   }
 
+
   /**
    * Searches for emails matching the user input.
    * @param userInput - The user input string.
@@ -142,6 +144,7 @@ export class NewMessageInputHeadComponent {
     return match?.name;
   }
 
+
   /**
    * Finds the first matching email from the storage based on the search term.
    * @param searchTerm - The search term provided by the user.
@@ -168,6 +171,16 @@ export class NewMessageInputHeadComponent {
   }
 
 
+  /**
+   * Constructs the full text for the suggestion box by combining user input with the suggestion.
+   * 
+   * If the user input starts with a prefix ('#' or '@'), it either:
+   * - Only contains the prefix and appends the suggestion to it.
+   * - Contains the prefix and more text, in which case it appends the suggestion to the input
+   *   after removing the prefix.
+   * If the user input does not start with a prefix, the suggestion is returned as is.
+   * @returns The full text to be displayed in the suggestion box.
+   */
   handleUserInputForSuggestionText() {
     const prefix = this.userInput.charAt(0);
     const inputHasOnlyPrefix = this.userInput.length === 1;
@@ -195,9 +208,6 @@ export class NewMessageInputHeadComponent {
     const remainingTerm = this.suggestion.slice(searchTerm.length);
     return `${this.userInput}${remainingTerm}`;
   }
-
-
-  // FUNCTIONS FOR TRANSFERRING THE SUGGESTION TO THE CHANNEL DISPLAY
 
 
   /**

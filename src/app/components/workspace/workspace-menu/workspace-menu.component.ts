@@ -23,7 +23,7 @@ export class WorkspaceMenuComponent {
   isLargeScreen: boolean = false;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private viewService: SetMobileViewService) {}
+  constructor(private viewService: SetMobileViewService) { }
 
   /**
    * Initializes by subscribing to the screen size state to adapt the UI based on device size.
@@ -54,6 +54,7 @@ export class WorkspaceMenuComponent {
       this.setView('channel')
     }
   }
+
 
   /**
    * Changes the current view of the application based on the given view type.

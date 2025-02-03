@@ -20,14 +20,12 @@ export class NavbarComponent {
   cloud = inject(CloudStorageService);
   dropDownOpen: boolean = false;
 
-  // State variables for UI responsiveness and current view management
   isLargeScreen: boolean = false;
-  currentView: CurrentView = 'workspaceMenu'; // Standardwert
+  currentView: CurrentView = 'workspaceMenu';
 
   private subscriptions: Subscription = new Subscription();
 
   constructor(private viewService: SetMobileViewService) {
-    
   }
 
 
@@ -39,7 +37,7 @@ export class NavbarComponent {
       this.currentView = view;
     });
     this.subscriptions.add(viewSub);
-    
+
     const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
       this.isLargeScreen = isLarge;
     });
@@ -63,7 +61,7 @@ export class NavbarComponent {
     this.subscriptions.unsubscribe();
   }
 
-  
+
   /**
    * Closes the user dropdown menu if a click event occurs outside of the dropdown area.
    * @param {MouseEvent} event - The mouse event triggered when clicking in the document.
@@ -75,15 +73,21 @@ export class NavbarComponent {
     }
   }
 
+
+  /**
+   * Manages the navigation of the workspace based on the current view.
+   * If the current view is the channel view, it navigates to the workspace menu.
+   * If the current view is the thread view, it navigates to the channel view.
+   */
   handleSetView() {
     if (this.currentView === 'channel') {
       this.setView('workspaceMenu');
-    } 
+    }
     if (this.currentView === 'thread') {
       this.setView('channel');
     }
-    
   }
+
 
   /**
    * Sets the current view using the view service, facilitating state management across different components.

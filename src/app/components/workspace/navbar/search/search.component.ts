@@ -64,6 +64,11 @@ export class SearchComponent {
 
 
   @HostListener('window:resize', ['$event'])
+  /**
+   * Listens for the window resize event and updates the placeholder text accordingly.
+   * This is necessary because the placeholder text changes depending on the screen size.
+   * @param event The window resize event.
+   */
   onResize(event: any) {
     this.setPlaceholder(event.target.innerWidth);
   }

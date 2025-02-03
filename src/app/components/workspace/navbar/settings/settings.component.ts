@@ -49,7 +49,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
    * Initializes subscriptions to manage UI responsiveness based on screen size.
    */
   ngOnInit(): void {
-
     const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
       this.isLargeScreen = isLarge;
     });
@@ -69,7 +68,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
    * Toggles the dropdown close state and emits an event to signal this change.
    */
   toggleDropdown(): void {
-    this.close.emit(); // Emitiert das `close`-Ereignis
+    this.close.emit();
   }
 
 }
