@@ -47,6 +47,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/angular-projects/dabubble/",
               "budgets": [
                 {
                   "type": "initial",
@@ -62,6 +63,7 @@
               "outputHashing": "all"
             },
             "development": {
+              "baseHref": "/",
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,

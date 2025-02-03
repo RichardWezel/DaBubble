@@ -141,9 +141,9 @@
                 <button type="button" class="cancel-btn" (click)="mode = 'show'">Abbrechen</button>
                 <div class="btn-container">
                     <button
-                        [disabled]="profileForm.invalid || ( uploadFile && uploadFile.size > 2000000) || profileForm.pristine || originalEmail == email && originalName == name"
+                        [disabled]="profileForm.invalid || ( uploadFile && uploadFile.size > 2000000) || (profileForm.pristine && !uploadFile ) || (originalEmail == email && originalName == name && !uploadFile)"
                         type="submit" class="save-btn">Speichern</button>
-                    @if (profileForm.invalid || ( uploadFile && uploadFile.size > 2000000) || profileForm.pristine) {
+                    @if (profileForm.invalid || ( uploadFile && uploadFile.size > 2000000) || (profileForm.pristine && !uploadFile ) || (originalEmail == email && originalName == name && !uploadFile)) {
                         <button type="button" class="ux-button" (click)="checkInputFields()"></button>
                     }
                 </div>
