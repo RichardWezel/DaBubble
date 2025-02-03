@@ -128,10 +128,11 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
 
   @HostListener('document:click', ['$event'])
   /**
-   * Handles clicks outside of the emoji selector component.
-   * Stops the event from propagating and checks if the click target is outside the emoji selector.
-   * If the target is outside, hides the emoji selector by setting the showEmojiSelector flag to false.
-   * 
+   * Handles clicks outside of the emoji selector and tag search components.
+   * Stops the event from propagating and checks if the click target is outside the
+   * emoji selector or tag search.
+   * If the target is outside, hides the emoji selector or tag search by setting
+   * the showEmojiSelector or showTagSearch flag to false.
    * @param {MouseEvent} event - The event object representing the click.
    */
   outsideClick(event: any): void {
@@ -139,6 +140,9 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     const path = event.path || (event.composedPath && event.composedPath());
     if (!path.includes(this.elementRef.nativeElement.querySelector('.active, .smileys-container'))) {
       this.showEmojiSelector = false;
+    }
+    if (!path.includes(this.elementRef.nativeElement.querySelector('.active, .tag-search'))) {
+      this.showTagSearch = false;
     }
   }
 

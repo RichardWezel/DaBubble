@@ -58,7 +58,7 @@
 
   <section class="avatar">
     <img
-      [src]="authorAvatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + authorAvatar : cloud.openImage(authorAvatar)"
+      [src]="postAuthorAvatar(post.author).startsWith('profile-') ? 'assets/img/profile-pictures/' + postAuthorAvatar(post.author) : cloud.openImage(postAuthorAvatar(post.author))"
       alt="avatar">
   </section>
 
@@ -66,7 +66,7 @@
   <section class="message-section" [class.self]="isAuthorCurrentUser">
 
     <div class="author-section" [class.self]="isAuthorCurrentUser">
-      <div class="author" [innerHTML]="authorName"></div>
+      <div class="author" [innerHTML]="postAuthor(post.author)"></div>
       <div class="post-time" [innerHTML]="postTime(post.timestamp) + ' Uhr'"></div>
     </div>
 

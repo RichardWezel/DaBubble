@@ -36,8 +36,6 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   @Input() threadHead: boolean = false;
   @Input() origin: string = '';
   @Input() isThread: boolean = false;
-  authorName: string = '';
-  authorAvatar: string = '';
   showEmojiSelector: boolean = false;
   showEmojiSelectorEdit: boolean = false;
   reactSelf: boolean = false;
@@ -56,7 +54,6 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    * It resolves the author information from the post's author ID and updates the author status.
    */
   ngOnInit() {
-    this.resolveAuthor();
     this.updateAuthorStatus();
     const screenSub = this.viewService.isLargeScreen$.subscribe(isLarge => {
       this.isLargeScreen = isLarge;
@@ -72,7 +69,6 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    */
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['post']) {
-      this.resolveAuthor();
       this.updateAuthorStatus();
     }
   }
@@ -84,19 +80,6 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    */
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-  }
-
-
-  /**
-   * Resolves the author information from the post's author ID.
-   * It uses the AuthorService to get the author's name and avatar from the author ID and updates the component's
-   * authorName and authorAvatar properties.
-   */
-  private resolveAuthor() {
-    this.authorService.getAuthorNameById(this.post.author).subscribe((user: UserInterface) => {
-      this.authorName = user.name;
-      this.authorAvatar = user.avatar;
-    });
   }
 
 
@@ -315,5 +298,33 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    */
   setView(view: CurrentView): void {
     this.viewService.setCurrentView(view);
+  }
+
+
+  /**
+   * Retrieves the name of the post's author based on the provided author ID.
+   * Searches the user storage for a user with a matching ID.
+   * If a user is found, their name is returned; otherwise, 'Unbekannt' is returned.
+   * 
+   * @param {string} postAuthor - The ID of the post author.
+   * @returns {string} The name of the post author or 'Unbekannt' if not found.
+   */
+  postAuthor(postAuthor: string): string {
+    let userName = this.storage.user.find(u => u.id === postAuthor);
+    return userName ? userName.name : 'Unbekannt';
+  }
+
+
+  /**
+   * Retrieves the avatar of the post's author based on the provided author ID.
+   * Searches the user storage for a user with a matching ID.
+   * If a user is found, their avatar is returned; otherwise, 'profile-unknown' is returned.
+   * 
+   * @param {string} postAuthor - The ID of the post author.
+   * @returns {string} The avatar of the post author or 'profile-unknown' if not found.
+   */
+  postAuthorAvatar(postAuthor: string): string {
+    let avatar = this.storage.user.find(u => u.id === postAuthor);
+    return avatar ? avatar.avatar : 'profile-unknown';
   }
 }
