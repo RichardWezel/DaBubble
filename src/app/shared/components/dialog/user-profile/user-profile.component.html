@@ -22,7 +22,7 @@
                 <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*">
                 <img [src]="currentProfilePicture">
                 @if (uploadFile && uploadFile.size > 512000) {
-                <div class="overlay">Bild zu groß Max 500 kB</div>
+                    <div class="overlay">Bild zu groß Max 500 kB</div>
                 }
             </div>
         </section>
@@ -126,9 +126,9 @@
                     </div>
                     <div class="label-name">E-Mail-Adresse</div>
                 </div>
-                <input id="profile-email" type="email" placeholder="E-Mail Adresse"
-                    pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}" class="edit-name-input" name="email"
-                    #mail="ngModel" [(ngModel)]="email">
+                <input id="profile-email" type="text" placeholder="E-Mail Adresse"
+                    pattern="[a-zA-Z0-9._%+\-]{1,256}@[a-zA-Z0-9.\-]{1,256}\.[a-zA-Z]{2,}" class="edit-name-input"
+                    name="email" #mail="ngModel" [(ngModel)]="email" aria-label="E-Mail-Adresse" inputmode="email">
                 @if (!mail.valid && inputFieldCheck) {
                     <span class="error-text-input">Diese E-Mail-Adresse ist leider ungültig.</span>
                 }
@@ -144,14 +144,16 @@
                         [disabled]="profileForm.invalid || ( uploadFile && uploadFile.size > 2000000) || profileForm.pristine || originalEmail == email && originalName == name"
                         type="submit" class="save-btn">Speichern</button>
                     @if (profileForm.invalid || ( uploadFile && uploadFile.size > 2000000) || profileForm.pristine) {
-                    <button type="button" class="ux-button" (click)="checkInputFields()"></button>
+                        <button type="button" class="ux-button" (click)="checkInputFields()"></button>
                     }
                 </div>
                 <div class="error-text-input error-text">{{ auth.errorMessage }}</div>
             </section>
         </form>
     </div>
-    <app-enter-password *ngIf="showPasswordDialog" (click)="$event.stopPropagation()" (nextDialog)="handleDialogClose($event)" (abandonDialog)="handleDialogAbandon($event)" [newEmail]="email" [userId]="userId"></app-enter-password>
+    <app-enter-password *ngIf="showPasswordDialog" (click)="$event.stopPropagation()"
+        (nextDialog)="handleDialogClose($event)" (abandonDialog)="handleDialogAbandon($event)" [newEmail]="email"
+        [userId]="userId"></app-enter-password>
     <app-confirmation-modal *ngIf="showDialog" (close)="closeDialogConfirmation($event)">
         <h2>E-Mail versendet</h2>
         <p>

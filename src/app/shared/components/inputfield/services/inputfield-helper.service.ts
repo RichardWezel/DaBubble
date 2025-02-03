@@ -11,7 +11,7 @@ export class InputfieldHelperService {
   storage = inject(FirebaseStorageService);
   uid = inject(UidService);
 
-  excludedTags: string[] = ['messageContent', 'newMessageInput', 'searchbar', 'channel-name', 'channel-description', 'profile-name', 'profile-email', 'editMessage', 'newChannelMemberInput', 'result-dropdown', 'emoji-mart-search-1'];
+  excludedTags: string[] = ['messageContent', 'newMessageInput', 'searchbar', 'channel-name', 'channel-description', 'profile-name', 'profile-email', 'editMessage', 'newChannelMemberInput', 'result-dropdown', 'emoji-mart-search-1', 'password'];
 
 
   constructor() { }

@@ -140,8 +140,9 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   /**
    * If the confirmation dialog gets closed, the user gets navigated to the login.
    */
-  closeDialogConfirmation(event: boolean) {
+  async closeDialogConfirmation(event: boolean) {
     this.showDialog = event;
+    await this.auth.logout();
     this.navigationService.navigateTo('/login');
   }
 

@@ -51,6 +51,19 @@ export class OpenCloseDialogService {
 
 
   /**
+   * Closes all dialogs except the workspace menu.
+   */
+  closeAll(): void {
+    for (const dialogName in this.dialogs) {
+      const dialog = this.dialogs[dialogName as keyof typeof this.dialogs];
+      if (dialog && dialogName !== 'workspaceMenu') {
+        dialog.next(false);
+      }
+    }
+  }
+
+
+  /**
    * Observable to subscribe the dialog status-
    * @param dialogName - The name of the dialog.
    * @returns - An Observable<boolean> that emits the open/close status of the dialog if it exists.

@@ -14,7 +14,7 @@ main {
     align-items: center;
     z-index: 1000;
 
-    @media(max-width: $breakpoint1){
+    @media(max-width: $breakpoint1) {
         padding: 16px;
     }
 
@@ -33,13 +33,13 @@ main {
         overflow-y: auto;
 
 
-        @media(max-width: $breakpoint1){
+        @media(max-width: $breakpoint1) {
 
             max-height: unset;
             overflow-y: unset;
-          
 
-            .head{
+
+            .head {
 
                 div {
                     font-size: 20px !important;
@@ -54,7 +54,7 @@ main {
                     align-items: center;
                     background-color: unset;
                     border: unset;
-    
+
                     svg {
                         width: 17.16px !important;
                         height: 16.67px !important;
@@ -63,13 +63,13 @@ main {
             }
         }
 
-        &.currentUserPosition{
+        &.currentUserPosition {
             position: fixed;
             right: 20px;
             top: 119px;
             border-radius: 30px 0 30px 30px;
 
-            @media(max-width: $breakpoint1){
+            @media(max-width: $breakpoint1) {
                 position: unset;
                 border-radius: 30px 30px 30px 30px;
             }
@@ -99,7 +99,7 @@ main {
                 background-color: unset;
                 border: unset;
 
-                &:hover{
+                &:hover {
                     background-color: $backgroundColor;
                     border-radius: 20px;
                     cursor: pointer;
@@ -128,13 +128,14 @@ main {
                 aspect-ratio: 1;
                 object-fit: cover;
                 width: auto;
-                @media(max-width: $breakpoint1){
+
+                @media(max-width: $breakpoint1) {
                     width: 200px;
                     height: 200px;
                 }
             }
 
-            input[type="file"]{
+            input[type="file"] {
                 display: none;
             }
         }
@@ -145,10 +146,10 @@ main {
             @include dja;
             position: relative;
 
-            &:hover{
+            &:hover {
                 cursor: pointer;
 
-                &::before{
+                &::before {
                     content: 'Avatar ändern';
                     position: absolute;
                     top: 0;
@@ -227,7 +228,7 @@ main {
                         background: unset;
                         border: unset;
 
-                        &:hover{
+                        &:hover {
                             font-weight: 700;
                             cursor: pointer;
                         }
@@ -241,11 +242,11 @@ main {
                     align-items: center;
                     gap: 15px;
 
-                    .offline-status{
+                    .offline-status {
                         color: $textGrey !important;
                     }
 
-                    .offline-dott{
+                    .offline-dott {
                         background-color: $textGrey !important;
                     }
 
@@ -322,7 +323,7 @@ main {
                     color: #FFFFFF;
                     border: unset;
 
-                    &:hover{
+                    &:hover {
                         cursor: pointer;
                         background-color: $secondaryColor;
                     }
@@ -370,7 +371,7 @@ main {
                         font-family: "Nunito";
                         font-size: 20px;
                         font-weight: 700;
-                        line-height:  30.28px;
+                        line-height: 30.28px;
                         text-align: left;
                         text-underline-position: from-font;
                         text-decoration-skip-ink: none;
@@ -443,8 +444,8 @@ main {
                 @include dja();
                 gap: 32px;
 
-                @media(max-width: $breakpoint1){
-                   margin-top: 29px;
+                @media(max-width: $breakpoint1) {
+                    margin-top: 29px;
                 }
 
                 button {
@@ -464,7 +465,7 @@ main {
                 .cancel-btn {
                     color: #797EF3;
 
-                    &:hover{
+                    &:hover {
                         color: #FFFFFF;
                         background-color: #797EF3;
                         cursor: pointer;
@@ -480,7 +481,7 @@ main {
                         cursor: pointer;
                     }
 
-                    &:disabled{
+                    &:disabled {
                         filter: grayscale(100%);
                         cursor: unset;
                     }
@@ -530,5 +531,11 @@ main {
 .error-text {
     position: absolute;
     top: -18px;
+    left: 0;
+}
+
+.error-text-input {
+    top: unset;
+    bottom: -18px;
     left: 0;
 }

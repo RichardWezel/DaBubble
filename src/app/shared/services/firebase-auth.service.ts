@@ -172,10 +172,11 @@ export class FirebaseAuthService {
     const user = this.storage.user.find(user => user.id === this.storage.currentUser.id);
     if (user && user.id) {
       user.online = false;
-      await this.setCurrentUserOffline(user.id); // Stelle sicher, dass das Setzen des Status erfolgreich ist
+      await this.setCurrentUserOffline(user.id);
       await this.auth.currentUser?.reload();
       await signOut(this.auth);
       this.deleteLocalData();
+      this.openCloseDialogService.closeAll();
     }
   }
 
