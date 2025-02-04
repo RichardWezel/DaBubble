@@ -16,6 +16,17 @@
     animation: fadeOutBackground 1s ease-in-out forwards 3s;
 }
 
+.logo-limiter {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    max-width: 1920px;
+    background: unset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .logo-container {
     position: absolute;
     top: 50%;
@@ -57,10 +68,11 @@
     }
 
     100% {
-        top: 30px;
+        top: 75px;
         /* Position im Header */
         left: 30px;
         transform: translate(0, 0) scale(0.5);
+        transform-origin: top left;
         color: black;
         font-size: 64px;
     }

@@ -14,7 +14,7 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./log-in.component.scss']
 })
 export class LogInComponent {
- 
+
   login: boolean = true;
   showLoading: boolean = true;
 
@@ -25,7 +25,7 @@ export class LogInComponent {
    */
   constructor(private route: ActivatedRoute) { }
 
-  
+
   /**
    * When the component gets initialized, the overlay is shown for 3 seconds.
    */
