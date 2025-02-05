@@ -27,7 +27,7 @@ export class TextFormatterDirective {
     message.innerHTML += formattedText + '';
     message.innerHTML = this.clearLineBreak(message);
     this.closeSearch();
-    this.inputElement.setFocus(this.inputElement.showTagSearch);
+    this.inputElement.setFocus();
   }
 
 
@@ -50,7 +50,7 @@ export class TextFormatterDirective {
    */
   closeSearch() {
     this.inputElement.startInput = true;
-    this.inputElement.toggleTagSearch();
+    this.inputElement.toggleTagSearch(false);
   }
 
 }

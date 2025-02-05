@@ -35,7 +35,10 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   uid = inject(UidService);
 
   @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective;
-  @ViewChild('messageContent', { static: false }) messageContent!: ElementRef<HTMLDivElement>;
+  @ViewChild('tagSearchInput') tagSearchInput!: ElementRef;
+  @ViewChild('tagSearchInputThread') tagSearchInputThread!: ElementRef;
+  @ViewChild('messageContent') messageContent!: ElementRef;
+  @ViewChild('messageContentThread') messageContentThread!: ElementRef;
 
   @Input() thread: boolean = false;
   @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
@@ -73,7 +76,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * is initialized, so setting the focus immediately does not work.
    */
   ngAfterViewInit() {
-    setTimeout(() => this.setFocus(this.showTagSearch), 250);
+    setTimeout(() => this.setFocus(), 350);
   }
 
 
@@ -84,7 +87,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * is initialized, so setting the focus immediately does not work.
    */
   ngOnChanges(): void {
-    setTimeout(() => this.setFocus(this.showTagSearch), 250);
+    setTimeout(() => this.setFocus(), 350);
   }
 
 
@@ -96,33 +99,6 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
-  }
-
-
-  /**
-   * Handles keyup events for the input field.
-   * Updates the message value and whether or not the user has started typing.
-   * Sets focus on the input field to ensure that the caret is visible.
-   * @param event The KeyboardEvent object.
-   */
-  onKeyUp(event: KeyboardEvent) {
-    const content = this.messageContent.nativeElement.innerHTML;
-    this.message = content;
-    this.startInput = content.trim() !== '' && content !== '<br>';
-    this.setFocus(this.showTagSearch);
-  }
-
-
-  /**
-   * Handles keydown events for the input field.
-   * If the event occurs in the tag search, it calls the handleTagSearch method.
-   * If the event occurs in the message content, it calls the handleMessage method.
-   * @param event The KeyboardEvent object.
-   */
-  onKeyDown(event: KeyboardEvent) {
-    const targetElement = event.target as HTMLElement;
-    if (this.inputEvent.isInsideTagSearch(targetElement)) this.handleTagSearch(event);
-    if (this.inputEvent.isInsideMessageContent(targetElement)) this.handleMessage(event);
   }
 
 
@@ -173,7 +149,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    */
   handleTagSearch(event: KeyboardEvent) {
     if (this.inputEvent.isSendButtonAndTagSearch(event) && this.suggestion) this.formatter.addTag(this.suggestion);
-    if (event.key === 'Escape') this.toggleTagSearch();
+    if (event.key === 'Escape') this.toggleTagSearch(false);
   }
 
 
@@ -190,6 +166,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
       event.preventDefault();
       this.sendMessage();
     }
+    if (event.key === '@' || event.key === '#') this.toggleTagSearch(true);
     if (event.key === 'Backspace') this.inputEvent.isBackspaceAndMessage(event);
   }
 
@@ -206,7 +183,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
     this.message = message.innerHTML;
     this.startInput = (message.innerHTML === '' || message.innerHTML === '<br>') ? false : true;
-    this.setFocus(this.showTagSearch);
+    this.setFocus();
   }
 
 
@@ -257,7 +234,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     newMessage.innerHTML += emoji;
     newMessage.innerHTML = newMessage.innerHTML.replaceAll('<br>', '');
     this.startInput = true;
-    this.setFocus(this.showTagSearch);
+    this.setFocus();
     this.showEmojiSelector = false;
   }
 
@@ -268,14 +245,14 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * Disables the emoji selector and file upload options.
    * Sets focus to the appropriate element based on the new state.
    */
-  toggleTagSearch() {
+  toggleTagSearch(state: boolean) {
     this.tagSearch = '';
     this.matchingUsers = [];
     this.suggestion = undefined;
-    this.showTagSearch = !this.showTagSearch;
+    this.showTagSearch = state;
     this.showEmojiSelector = false;
     this.showUpload = false;
-    this.setFocus(this.showTagSearch);
+    this.setFocus();
   }
 
 
@@ -289,7 +266,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     this.showEmojiSelector = !this.showEmojiSelector;
     this.showTagSearch = false;
     this.showUpload = false;
-    this.setFocus(this.showTagSearch);
+    this.setFocus();
   }
 
 
@@ -301,7 +278,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   toggleAppendix() {
     this.showUpload = !this.showUpload;
     this.showEmojiSelector = false;
-    this.setFocus(this.showTagSearch);
+    this.setFocus();
   }
 
 
@@ -310,7 +287,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * If the input field contains text, it initiates a tag search.
    * If the input field is empty, it resets the suggestion to a channel tag.
    */
-  tagSearchInput() {
+  tagSearchKeyInput() {
     this.matchingUsers = [];
     if (this.tagSearch && this.tagSearch.length > 0) this.initiateTagSearch();
     else this.suggestion = this.helper.generateChannelTag();
@@ -348,7 +325,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     this.showTagSearch = false;
     this.showEmojiSelector = false;
     this.showUpload = false;
-    this.setFocus(this.showTagSearch);
+    this.setFocus();
   }
 
 
@@ -371,14 +348,10 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
  * @param showTagSearch If true, the tag search input is returned. Otherwise, the message content is returned.
  * @returns The focus element or null if the element does not exist.
  */
-  getFocusElement(showTagSearch: boolean): HTMLElement | null {
-    const isThreadOpen = this.storage.currentUser.threadOpen;
-    if (showTagSearch) return this.elementRef.nativeElement.querySelector(
-      isThreadOpen ? '#tag-search-input-thread' : '#tag-search-input'
-    );
-    return this.elementRef.nativeElement.querySelector(
-      isThreadOpen ? '#messageContentThread' : '#messageContent'
-    );
+  getFocusElement(): HTMLElement {
+    let thread = this.storage.currentUser.threadOpen || false;
+    if (this.showTagSearch) return thread ? this.tagSearchInputThread?.nativeElement : this.tagSearchInput?.nativeElement;
+    else return thread ? this.messageContentThread?.nativeElement : this.messageContent?.nativeElement;
   }
 
 
@@ -387,12 +360,10 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
  * If the active element's ID is part of the excludedTags array, the focus is not set.
  * @param showTagSearch If true, sets focus on the tag search input. Otherwise, sets focus on the message content.
  */
-  setFocus(showTagSearch: boolean) {
-    let focusElement = this.getFocusElement(showTagSearch);
-    if (!focusElement) return;
-    if (this.helper.isExcludedId()) {
-      focusElement = document.activeElement as HTMLElement;
-    }
+  setFocus() {
+    let focusElement = this.getFocusElement();
+    if (!focusElement) focusElement = document.activeElement as HTMLElement;
+    if (this.helper.isExcludedId()) focusElement = document.activeElement as HTMLElement;
     focusElement.focus();
     if (focusElement.isContentEditable) this.helper.setFocusContentEditable(focusElement);
     else if ('selectionStart' in focusElement) this.helper.setFocusInput(focusElement);
