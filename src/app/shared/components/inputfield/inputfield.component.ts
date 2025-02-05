@@ -238,7 +238,7 @@ export class InputfieldComponent implements OnChanges, AfterViewInit, OnDestroy 
     const hasThreadInPath = this.helper.hasThreadInPath(path);
     this.showTagSearch = hasThreadInPath ? false : state;
     this.showTagSearchThread = hasThreadInPath ? state : false;
-    this.resetAll();
+    this.resetAll(true, false, true);
     this.setFocus(event);
   }
 
@@ -251,8 +251,7 @@ export class InputfieldComponent implements OnChanges, AfterViewInit, OnDestroy 
    */
   toggleEmojiSelector() {
     this.showEmojiSelector = !this.showEmojiSelector;
-    this.showTagSearch = false;
-    this.showUpload = false;
+    this.resetAll(true, true, false);
     this.setFocus();
   }
 
@@ -264,8 +263,7 @@ export class InputfieldComponent implements OnChanges, AfterViewInit, OnDestroy 
    */
   toggleAppendix() {
     this.showUpload = !this.showUpload;
-    console.log('toggleAppendix' + this.showUpload);
-    this.showEmojiSelector = false;
+    this.resetAll(false, true, true);
     this.setFocus();
   }
 
@@ -335,8 +333,6 @@ export class InputfieldComponent implements OnChanges, AfterViewInit, OnDestroy 
   reset() {
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
     message.innerHTML = '';
-    this.showTagSearch = false;
-    this.showTagSearchThread = false;
     this.resetAll();
     this.setFocus();
   }
@@ -347,12 +343,16 @@ export class InputfieldComponent implements OnChanges, AfterViewInit, OnDestroy 
    * Sets the tag search input to an empty string, clears the matching search results,
    * resets the suggestion to undefined, and hides the emoji selector and the upload button.
    */
-  resetAll() {
-    this.tagSearch = '';
-    this.matchingSearch = [];
-    this.suggestion = undefined;
-    this.showEmojiSelector = false;
-    this.showUpload = false;
+  resetAll(openAppendix: boolean = true, openTagSearch: boolean = true, openEmoji: boolean = true) {
+    if (openAppendix) this.showUpload = false;
+    if (openTagSearch) {
+      this.showTagSearch = false;
+      this.showTagSearchThread = false;
+      this.tagSearch = '';
+      this.matchingSearch = [];
+      this.suggestion = undefined;
+    }
+    if (openEmoji) this.showEmojiSelector = false;
   }
 
 
