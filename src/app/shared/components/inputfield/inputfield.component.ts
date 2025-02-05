@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, inject, Input, OnChanges, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, inject, Input, OnChanges, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { PostInterface } from '../../interfaces/post.interface';
@@ -14,7 +14,6 @@ import { InputEventsService } from './services/input-events.service';
 import { UploadComponent } from "./components/upload/upload.component";
 import { NgIf } from '@angular/common';
 import { InputfieldHelperService } from './services/inputfield-helper.service';
-import { UidService } from '../../services/uid.service';
 import { ChannelInterface } from '../../interfaces/channel.interface';
 
 
@@ -25,7 +24,7 @@ import { ChannelInterface } from '../../interfaces/channel.interface';
   templateUrl: './inputfield.component.html',
   styleUrl: './inputfield.component.scss'
 })
-export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class InputfieldComponent implements OnChanges, AfterViewInit, OnDestroy {
   elementRef: ElementRef = inject(ElementRef);
   storage = inject(FirebaseStorageService);
   navigationService = inject(NavigationService);
@@ -33,7 +32,6 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   sendMessageService = inject(SendMessageService);
   inputEvent = inject(InputEventsService);
   helper = inject(InputfieldHelperService);
-  uid = inject(UidService);
 
   @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective;
   @ViewChild('tagSearchInput') tagSearchInput!: ElementRef;
@@ -62,22 +60,14 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
 
 
   /**
-   * Initializes the component by subscribing to channel changes and resetting the input field.
-   * This is needed to clear the input field when the user navigates to another channel.
-   */
-  ngOnInit() {
-    this.subscription = this.navigationService.channelChanged.subscribe((channelId) => {
-      this.reset();
-    });
-  }
-
-
-  /**
    * Sets the focus on the input field after the component has finished rendering.
    * This is needed because the input field is not yet rendered when the component
    * is initialized, so setting the focus immediately does not work.
    */
   ngAfterViewInit() {
+    this.subscription = this.navigationService.channelChanged.subscribe((channelId) => {
+      this.reset();
+    });
     setTimeout(() => this.setFocus(), 350);
   }
 
@@ -98,9 +88,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * This is necessary to prevent memory leaks.
    */
   ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    if (this.subscription) this.subscription.unsubscribe();
   }
 
 
@@ -116,12 +104,8 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   outsideClick(event: any): void {
     event.stopPropagation();
     const path = event.path || (event.composedPath && event.composedPath());
-    if (!path.includes(this.elementRef.nativeElement.querySelector('.active, .smileys-container'))) {
-      this.showEmojiSelector = false;
-    }
-    if (!path.includes(this.elementRef.nativeElement.querySelector('.active, .tag-search'))) {
-      this.showTagSearch = false;
-    }
+    if (!path.includes(this.elementRef.nativeElement.querySelector('.active, .smileys-container'))) this.showEmojiSelector = false;
+    if (!path.includes(this.elementRef.nativeElement.querySelector('.active, .tag-search'))) this.toggleTagSearch(event, false);
   }
 
 
@@ -242,21 +226,19 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
 
 
   /**
-   * Toggles the visibility of the tag search input.
-   * Resets the tag search, matching users, and suggestion when toggled.
-   * Disables the emoji selector and file upload options.
-   * Sets focus to the appropriate element based on the new state.
+   * Toggles the visibility of the tag search or tag search thread based on the event path.
+   * Determines whether the event path includes a thread and toggles the appropriate search
+   * visibility flags accordingly.
+   * 
+   * @param {any} event - The event object to determine the path.
+   * @param {boolean} state - The desired visibility state for the tag search when no thread is in the path.
    */
   toggleTagSearch(event: any, state: boolean) {
     let path = event.path || (event.composedPath && event.composedPath());
     const hasThreadInPath = this.helper.hasThreadInPath(path);
-    this.tagSearch = '';
-    this.matchingSearch = [];
-    this.suggestion = undefined;
     this.showTagSearch = hasThreadInPath ? false : state;
     this.showTagSearchThread = hasThreadInPath ? state : false;
-    this.showEmojiSelector = false;
-    this.showUpload = false;
+    this.resetAll();
     this.setFocus(event);
   }
 
@@ -352,13 +334,24 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   reset() {
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
     message.innerHTML = '';
+    this.showTagSearch = false;
+    this.showTagSearchThread = false;
+    this.resetAll();
+    this.setFocus();
+  }
+
+
+  /**
+   * Resets all properties related to the tag search and the emoji selector.
+   * Sets the tag search input to an empty string, clears the matching search results,
+   * resets the suggestion to undefined, and hides the emoji selector and the upload button.
+   */
+  resetAll() {
     this.tagSearch = '';
     this.matchingSearch = [];
     this.suggestion = undefined;
-    this.showTagSearch = false;
     this.showEmojiSelector = false;
     this.showUpload = false;
-    this.setFocus();
   }
 
 
@@ -373,19 +366,18 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
 
 
   /**
- * Gets the element that should receive focus based on the showTagSearch parameter.
- * If showTagSearch is true, the tag search input is returned. Otherwise, the message content
- * is returned. If the thread is open, the IDs are 'tag-search-input-thread' and 'messageContentThread',
- * otherwise, they are 'tag-search-input' and 'messageContent'.
- * 
- * @param showTagSearch If true, the tag search input is returned. Otherwise, the message content is returned.
- * @returns The focus element or null if the element does not exist.
- */
+   * Returns the element that should receive focus based on the current state of the input field.
+   * If the tag search is visible, returns the tag search input element.
+   * If the emoji selector is visible, returns the emoji selector input element.
+   * If the user is currently in a thread, returns the thread's input field element.
+   * Otherwise, returns the main input field element.
+   * @param event The event that triggered the focus request.
+   * @returns The element that should receive focus.
+   */
   getFocusElement(event?: any): HTMLElement {
     let path;
     if (event) path = event.path || (event.composedPath && event.composedPath());
     let thread = event ? this.helper.hasThreadInPath(path) : this.storage.currentUser.threadOpen || false;
-    console.log(thread);
     if (this.showTagSearch || this.showTagSearchThread) return thread ? this.tagSearchInputThread?.nativeElement : this.tagSearchInput?.nativeElement;
     else return thread ? this.messageContentThread?.nativeElement : this.messageContent?.nativeElement;
   }
