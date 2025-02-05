@@ -19,7 +19,7 @@ main {
         .reaction-bar {
             opacity: 1;
             visibility: visible;
-            transform: translateX(-3px); 
+            transform: translateX(-3px);
         }
     }
 
@@ -41,7 +41,7 @@ main {
         display: flex;
         background-color: #fff;
         transition: opacity 100ms ease-out, visibility 100ms ease-out, transform 100ms ease-out;
-        z-index: 1; 
+        z-index: 1;
 
         .reaction-bar-icon {
             width: 40px;
@@ -116,7 +116,7 @@ main {
                 transition: transform 125ms ease-out;
                 z-index: 1;
 
-                @media (max-width: 485px){
+                @media (max-width: 485px) {
                     left: unset;
                     right: 100%;
                     border-radius: 25px 0px 25px 25px;
@@ -205,70 +205,38 @@ main {
             flex-direction: column;
             gap: 8px;
 
-            ::ng-deep .inputfield{
+            ::ng-deep .inputfield {
                 padding: unset;
                 border: unset;
                 justify-content: space-between;
 
-                .inputfield-buttons{
-                    .edit-buttons{
-                       
-                        @media (max-width: $breakpoint1){
+                .inputfield-buttons {
+                    .edit-buttons {
+
+                        @media (max-width: $breakpoint1) {
                             height: 40px;
                         }
                     }
 
-                    .cancel{
-                        @media (min-width: $breakpoint1){
+                    .cancel {
+                        @media (min-width: $breakpoint1) {
                             position: absolute;
                             right: 145px;
                         }
                     }
-                   
 
-                    .buttonSecondary{
-                        @media (max-width: $breakpoint1){
+
+                    .buttonSecondary {
+                        @media (max-width: $breakpoint1) {
                             padding: 0px 4px;
                             border: 2px solid $secondaryColor;
                             height: 24px;
                         }
 
-                        .normal{
+                        .normal {
                             display: flex;
 
-                            @media (max-width: $breakpoint1){
-                                display: none;
-                            }
-
-                        }
-
-                        .mobile{
-                            display: none;
-                            svg {
-                             
-                                path {
-                                    fill: $secondaryColor;
-                                }
-                            }
-
-                            @media (max-width: $breakpoint1){
-                                display: flex;
-                            }
-                        }
-                    }
-
-                    .buttonPrimary{
-                        
-                        @media (max-width: $breakpoint1){
-                            padding: 0px 5px;
-                            background-color: unset;
-                            height: 24px;
-                        }
-
-                        .normal{
-                            display: flex;
-
-                            @media (max-width: $breakpoint1){
+                            @media (max-width: $breakpoint1) {
                                 display: none;
                             }
 
@@ -276,14 +244,48 @@ main {
 
                         .mobile {
                             display: none;
+
                             svg {
-                             
+
+                                path {
+                                    fill: $secondaryColor;
+                                }
+                            }
+
+                            @media (max-width: $breakpoint1) {
+                                display: flex;
+                            }
+                        }
+                    }
+
+                    .buttonPrimary {
+
+                        @media (max-width: $breakpoint1) {
+                            padding: 0px 5px;
+                            background-color: unset;
+                            height: 24px;
+                        }
+
+                        .normal {
+                            display: flex;
+
+                            @media (max-width: $breakpoint1) {
+                                display: none;
+                            }
+
+                        }
+
+                        .mobile {
+                            display: none;
+
+                            svg {
+
                                 path {
                                     fill: $primaryColor;
                                 }
                             }
 
-                            @media (max-width: $breakpoint1){
+                            @media (max-width: $breakpoint1) {
                                 display: flex;
                             }
                         }
@@ -322,7 +324,7 @@ main {
             gap: 20px;
             align-items: center;
 
-            @media (max-width: 435px){
+            @media (max-width: 435px) {
                 gap: 5px;
                 flex-direction: column-reverse;
             }
@@ -479,6 +481,7 @@ main {
 
         &:hover {
             cursor: pointer;
+
             div {
                 svg {
                     width: 23.13px;
@@ -556,6 +559,10 @@ main {
         overflow: hidden;
         white-space: nowrap;
         max-width: 80px;
+    }
+
+    li {
+        list-style-type: none;
     }
 
 }

@@ -130,6 +130,8 @@ export class FirebaseAuthService {
   async loginWithGoogleNewUser(user: any) {
     const userData = this.generateUserData(user);
     await this.storage.addUser(user.uid, userData);
+    await this.storage.addUsersToChannel('17tpdlhZoSBUIsS0XdO3', [user.uid]);
+    await this.storage.addUsersToChannel('MKlkEBaw0KMgQBnuzTtR', [user.uid]);
     await this.loginWithGoogleExistingUser(user);
   }
 

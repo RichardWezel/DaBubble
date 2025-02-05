@@ -1,12 +1,14 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { PostInterface } from '../interfaces/post.interface';
 import { ChannelInterface } from '../interfaces/channel.interface';
 import { UserInterface } from '../interfaces/user.interface';
+import { UidService } from './uid.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StorageHelperService {
+  uid = inject(UidService);
 
   constructor() { }
 
@@ -75,9 +77,38 @@ export class StorageHelperService {
         contact: authUid,
         id: uid,
         posts: [],
-      },],
+      },
+      this.generateNewUserDM('vGSV3WkolpaARg1JP13q', true, userData.name),
+      this.generateNewUserDM('Z6y2sAEfa4oUXENZHFC3', false, userData.name),
+      ],
     };
+  }
 
+  generateNewUserDM(contact: string, post: boolean = false, name: string): { contact: string, id: string, posts: any[] } {
+    return {
+      contact: contact,
+      id: this.uid.generateUid(),
+      posts: post ? [{
+        author: contact,
+        emoticons: [],
+        id: this.uid.generateUid(),
+        text: `<h3>🎉 Willkommen in unserem Team, ${name}!</h3>
+        <p>Wir freuen uns, dass du uns beigetreten bist. Wir warten auf dich und freuen uns auf deine erste Nachricht!</p><br>
+        <p>🚀 Erste Schritte:</p>
+        <ul>
+        <li>Stöbere durch die #Testchannel oder #Lobby, um dich vorzustellen.</li>
+        <li>Passe dein Profil unter Einstellungen → Profil an.</li>
+        </ul><br>
+        <p>Brauchst du Hilfe? Schreib einfach in #Lobby oder sende mir eine direkte Nachricht.</p><br>
+        <p>Viel Spaß beim Vernetzen!</p><br>
+        <p>Dein <b>DA Bubble-Team</b> 🌟</p>
+        ` ,
+        thread: false,
+        threadMsg: [],
+        timestamp: new Date().getTime(),
+      },
+      ] : [],
+    };
   }
 
 
