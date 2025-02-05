@@ -348,11 +348,11 @@ export class InputfieldComponent implements OnChanges, AfterViewInit, OnDestroy 
     if (openTagSearch) {
       this.showTagSearch = false;
       this.showTagSearchThread = false;
-      this.tagSearch = '';
-      this.matchingSearch = [];
-      this.suggestion = undefined;
     }
     if (openEmoji) this.showEmojiSelector = false;
+    this.tagSearch = '';
+    this.matchingSearch = [];
+    this.suggestion = undefined;
   }
 
 
