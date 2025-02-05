@@ -264,6 +264,7 @@ export class InputfieldComponent implements OnChanges, AfterViewInit, OnDestroy 
    */
   toggleAppendix() {
     this.showUpload = !this.showUpload;
+    console.log('toggleAppendix' + this.showUpload);
     this.showEmojiSelector = false;
     this.setFocus();
   }

@@ -30,7 +30,7 @@
 
   <div class="inputfield-buttons">
     <div class="tags">
-      <div *ngIf="!edit" class="icon appendix" (click)="toggleAppendix()">
+      <div *ngIf="!edit" class="icon appendix" (click)="$event.stopPropagation(); toggleAppendix()">
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g clip-path="url(#clip0_813_12245)">
             <mask id="mask0_813_12245" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="3" y="3" width="24"
