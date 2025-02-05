@@ -15,6 +15,7 @@ import { UploadComponent } from "./components/upload/upload.component";
 import { NgIf } from '@angular/common';
 import { InputfieldHelperService } from './services/inputfield-helper.service';
 import { UidService } from '../../services/uid.service';
+import { ChannelInterface } from '../../interfaces/channel.interface';
 
 
 @Component({
@@ -49,10 +50,11 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
   startInput: boolean = false;
   showEmojiSelector: boolean = false;
   showTagSearch: boolean = false;
+  showTagSearchThread: boolean = false;
   showUpload: boolean = false;
   tagSearch: string = '';
-  suggestion: UserInterface | undefined = undefined;
-  matchingUsers: UserInterface[] = [];
+  suggestion: UserInterface | ChannelInterface | undefined = undefined;
+  matchingSearch: UserInterface[] | ChannelInterface[] = [];
   private subscription!: Subscription;
 
 
@@ -148,8 +150,8 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * @param {KeyboardEvent} event - The keyboard event to handle.
    */
   handleTagSearch(event: KeyboardEvent) {
-    if (this.inputEvent.isSendButtonAndTagSearch(event) && this.suggestion) this.formatter.addTag(this.suggestion);
-    if (event.key === 'Escape') this.toggleTagSearch(false);
+    if (this.inputEvent.isSendButtonAndTagSearch(event) && this.suggestion) this.formatter.addTag(event, this.suggestion);
+    if (event.key === 'Escape') this.toggleTagSearch(event, false);
   }
 
 
@@ -166,7 +168,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
       event.preventDefault();
       this.sendMessage();
     }
-    if (event.key === '@' || event.key === '#') this.toggleTagSearch(true);
+    if (event.key === '@' || event.key === '#') this.toggleTagSearch(event, true);
     if (event.key === 'Backspace') this.inputEvent.isBackspaceAndMessage(event);
   }
 
@@ -183,7 +185,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
     this.message = message.innerHTML;
     this.startInput = (message.innerHTML === '' || message.innerHTML === '<br>') ? false : true;
-    this.setFocus();
+    this.setFocus(event);
   }
 
 
@@ -245,14 +247,17 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * Disables the emoji selector and file upload options.
    * Sets focus to the appropriate element based on the new state.
    */
-  toggleTagSearch(state: boolean) {
+  toggleTagSearch(event: any, state: boolean) {
+    let path = event.path || (event.composedPath && event.composedPath());
+    const hasThreadInPath = this.helper.hasThreadInPath(path);
     this.tagSearch = '';
-    this.matchingUsers = [];
+    this.matchingSearch = [];
     this.suggestion = undefined;
-    this.showTagSearch = state;
+    this.showTagSearch = hasThreadInPath ? false : state;
+    this.showTagSearchThread = hasThreadInPath ? state : false;
     this.showEmojiSelector = false;
     this.showUpload = false;
-    this.setFocus();
+    this.setFocus(event);
   }
 
 
@@ -288,25 +293,53 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
    * If the input field is empty, it resets the suggestion to a channel tag.
    */
   tagSearchKeyInput() {
-    this.matchingUsers = [];
+    this.matchingSearch = [];
     if (this.tagSearch && this.tagSearch.length > 0) this.initiateTagSearch();
     else this.suggestion = this.helper.generateChannelTag();
   }
 
 
   /**
-   * Initiates the tag search by filtering users within the current channel
-   * whose names include the provided tag search string. Updates the
-   * matchingUsers array with the filtered users. If there is a match,
-   * sets the suggestion to the first matching user; otherwise, generates
-   * a channel tag as the suggestion.
+   * Initiates a tag search based on the tag search input.
+   * Determines whether to initiate a user or channel tag search 
+   * based on the prefix of the input ('@' for user and '#' for channel).
+   * If neither prefix is present, it defaults the suggestion to a channel tag.
    */
+
   initiateTagSearch() {
+    if (this.tagSearch.startsWith('@')) this.initiateUserTagSearch();
+    else if (this.tagSearch.startsWith('#')) this.initiateChannelTagSearch();
+    else this.suggestion = this.helper.generateChannelTag();
+  }
+
+
+  /**
+   * Initiates a user tag search based on the user's input.
+   * Filters through the channel's users and returns matches that include the user's input.
+   * Sets the suggestion to the first match if there are multiple matches, otherwise resets the suggestion to a channel tag.
+   */
+  initiateUserTagSearch() {
     let match: UserInterface | undefined;
     let channelUsers: string[] = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.user || [];
     let users: UserInterface[] = channelUsers.length > 0 ? this.storage.user.filter(user => channelUsers.includes(user.id!)) : [];
-    this.matchingUsers = users.filter(user => user.name.toLowerCase().includes(this.tagSearch.toLowerCase()));
-    match = this.matchingUsers.length > 0 ? this.matchingUsers[0] : undefined;
+    this.matchingSearch = users.filter(user => user.name.toLowerCase().includes(this.tagSearch.slice(1).toLowerCase()));
+    match = this.matchingSearch.length > 1 ? this.matchingSearch[0] : undefined;
+    if (match) this.suggestion = match;
+    else this.suggestion = this.helper.generateChannelTag();
+  }
+
+
+
+  /**
+   * Initiates a channel tag search based on the user's input.
+   * Filters through the user's channels and returns matches that include the user's input.
+   * Sets the suggestion to the first match if there are multiple matches, otherwise resets the suggestion to a channel tag.
+   */
+  initiateChannelTagSearch() {
+    let match: ChannelInterface | undefined;
+    let userChannels: ChannelInterface[] = this.storage.channel.filter(channel => channel.user.includes(this.storage.currentUser.id!)) || [];
+    this.matchingSearch = userChannels.filter(channel => channel.name.toLowerCase().includes(this.tagSearch.slice(1).toLowerCase()));
+    match = this.matchingSearch.length > 1 ? this.matchingSearch[0] : undefined;
     if (match) this.suggestion = match;
     else this.suggestion = this.helper.generateChannelTag();
   }
@@ -320,7 +353,7 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
     message.innerHTML = '';
     this.tagSearch = '';
-    this.matchingUsers = [];
+    this.matchingSearch = [];
     this.suggestion = undefined;
     this.showTagSearch = false;
     this.showEmojiSelector = false;
@@ -348,9 +381,12 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
  * @param showTagSearch If true, the tag search input is returned. Otherwise, the message content is returned.
  * @returns The focus element or null if the element does not exist.
  */
-  getFocusElement(): HTMLElement {
-    let thread = this.storage.currentUser.threadOpen || false;
-    if (this.showTagSearch) return thread ? this.tagSearchInputThread?.nativeElement : this.tagSearchInput?.nativeElement;
+  getFocusElement(event?: any): HTMLElement {
+    let path;
+    if (event) path = event.path || (event.composedPath && event.composedPath());
+    let thread = event ? this.helper.hasThreadInPath(path) : this.storage.currentUser.threadOpen || false;
+    console.log(thread);
+    if (this.showTagSearch || this.showTagSearchThread) return thread ? this.tagSearchInputThread?.nativeElement : this.tagSearchInput?.nativeElement;
     else return thread ? this.messageContentThread?.nativeElement : this.messageContent?.nativeElement;
   }
 
@@ -360,8 +396,8 @@ export class InputfieldComponent implements OnInit, OnChanges, AfterViewInit, On
  * If the active element's ID is part of the excludedTags array, the focus is not set.
  * @param showTagSearch If true, sets focus on the tag search input. Otherwise, sets focus on the message content.
  */
-  setFocus() {
-    let focusElement = this.getFocusElement();
+  setFocus(event?: any) {
+    let focusElement = event ? this.getFocusElement(event) : this.getFocusElement();
     if (!focusElement) focusElement = document.activeElement as HTMLElement;
     if (this.helper.isExcludedId()) focusElement = document.activeElement as HTMLElement;
     focusElement.focus();

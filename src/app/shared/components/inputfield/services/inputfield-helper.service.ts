@@ -106,4 +106,25 @@ export class InputfieldHelperService {
       threadMsg: [],
     }
   }
+
+
+  /**
+   * Checks if any element in the given path has an ID or a class name that includes the string 'thread'.
+   * 
+   * @param {any} path - The path to check, which is an array of elements.
+   * @returns {boolean} True if any element in the path has an ID or class name that includes 'thread', otherwise false.
+   */
+  hasThreadInPath(path: any): boolean {
+    const hasThreadInPath = path.some((element: any) => {
+      let thread;
+      if (!thread && element.id && element.id.toLowerCase().includes('thread')) thread = true;
+      if (!thread && element.classList) element.classList.forEach((className: string) => {
+        if (className.toLowerCase().includes('thread')) {
+          thread = true;
+        }
+      })
+      return thread;
+    });
+    return hasThreadInPath;
+  }
 }

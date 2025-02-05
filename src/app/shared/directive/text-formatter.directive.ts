@@ -1,6 +1,7 @@
 import { Directive, ElementRef, inject, input } from '@angular/core';
 import { InputfieldComponent } from '../components/inputfield/inputfield.component';
 import { UserInterface } from '../interfaces/user.interface';
+import { ChannelInterface } from '../interfaces/channel.interface';
 
 
 @Directive({
@@ -21,13 +22,17 @@ export class TextFormatterDirective {
    *
    * @param user The user to be tagged
    */
-  addTag(user: UserInterface) {
-    const formattedText = `<span contentEditable="false" class="tagMessage">&#64;${user.name}</span>&#8203`;
+  addTag(event: any, suggestion: UserInterface | ChannelInterface) {
+    event.preventDefault();
+    event.stopPropagation();
+    let formattedText;
+    if (suggestion.type === 'user') formattedText = `<span contentEditable="false" class="tagMessage">&#64;${suggestion.name}</span>&#8203`;
+    else if (suggestion.type === 'channel') formattedText = `<span contentEditable="false" class="tagMessage">&#35;${suggestion.name}</span>&#8203`;
     let message = this.elementRef.nativeElement.classList.contains('message-content') ? this.elementRef.nativeElement : this.elementRef.nativeElement.querySelector('.message-content');
     message.innerHTML += formattedText + '';
     message.innerHTML = this.clearLineBreak(message);
-    this.closeSearch();
-    this.inputElement.setFocus();
+    this.closeSearch(event);
+    this.inputElement.setFocus(event);
   }
 
 
@@ -48,9 +53,8 @@ export class TextFormatterDirective {
    * Closes the search bar and sets startInput to true, which will re-enable
    * the input field.
    */
-  closeSearch() {
+  closeSearch(event: any) {
     this.inputElement.startInput = true;
-    this.inputElement.toggleTagSearch(false);
+    this.inputElement.toggleTagSearch(event, false);
   }
-
 }

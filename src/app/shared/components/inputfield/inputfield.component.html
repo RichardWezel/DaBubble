@@ -1,8 +1,8 @@
 <section class="inputfield">
   @if(!edit) {
     @if(thread) {
-      <div [class.op]="showTagSearch" id="inputfieldThread" class="inputfield-textarea">
-        <span [class.op]="showTagSearch" class="placeholder" [class.disabled]="startInput"
+      <div [class.op]="showTagSearchThread" id="inputfieldThread" class="inputfield-textarea">
+        <span [class.op]="showTagSearchThread" class="placeholder" [class.disabled]="startInput"
           [innerHTML]="'Antworten...'"></span>
         <div #messageContentThread id="messageContentThread" (keyup)="checkInput($event)" (keydown)="checkKey($event)"
           class="message-content" contentEditable="true" appTextFormatter>
@@ -69,7 +69,8 @@
           <app-emoji-selector [isInput]="true" [inputField]="this"></app-emoji-selector>
         </div>
       }
-      <div *ngIf="!edit" class="icon at" (click)="$event.stopPropagation(); toggleTagSearch(!showTagSearch)">
+      <div *ngIf="!edit" class="icon at"
+        (click)="$event.stopPropagation(); toggleTagSearch($event, thread ? !showTagSearchThread : !showTagSearch)">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <mask id="mask0_813_12157" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24"
             height="24">
@@ -83,47 +84,75 @@
         </svg>
         @if(!thread) {
           <div class="tag-search" [class.active]="showTagSearch" (click)="$event.stopPropagation()">
-            <input #tagSearchInput id="tag-search-input" class="tag-search-input" placeholder="User erwähnen"
+            <input #tagSearchInput id="tag-search-input" class="tag-search-input" placeholder="@ User | # Channel"
               type="search" [(ngModel)]="tagSearch" (input)="tagSearchKeyInput()" (keydown)="checkKey($event)">
-            @if (matchingUsers.length >= 0) {
+            @if (matchingSearch.length >= 0) {
               <div class="tag-search-results">
-                @if (matchingUsers.length > 3) {
-                  <span class="suggestion" [innerHTML]="'+' + (matchingUsers.length - 3) + ' weitere'"></span>
+                @if (matchingSearch.length > 3) {
+                  <span class="suggestion" [innerHTML]="'+' + (matchingSearch.length - 3) + ' weitere'"></span>
                 }
                 <div class="suggestion-container">
-                  @for (user of matchingUsers; track $index) {
+                  @for (suggestion of matchingSearch; track $index) {
                     @if ($index <= 3) {
-                      <span class="suggestion" (click)="formatter.addTag(user)" [innerHTML]="user.name"></span>
+                      @if (suggestion.type === 'user') {
+                        <span class="suggestion" (click)="formatter.addTag($event, suggestion)"
+                          [innerHTML]="'@'+suggestion.name"></span>
+                      }
+                      @else if (suggestion.type === 'channel') {
+                        <span class="suggestion" (click)="formatter.addTag($event, suggestion)"
+                          [innerHTML]="'#'+suggestion.name"></span>
+                      }
                     }
                   }
                 </div>
-                <span class="suggestion"
-                  (click)="formatter.addTag({ type: 'user', name: 'Channel', id: 'channel', email: '', online: false, avatar: '', dm: []  })"
-                  [innerHTML]="'@Channel'"></span>
+                @if(!tagSearch.startsWith('#')) {
+                  <span class="suggestion"
+                    (click)="formatter.addTag($event, { type: 'user', name: 'Everyone', id: 'channel', email: '', online: false, avatar: '', dm: []  })"
+                    [innerHTML]="'@Everyone'"></span>
+                }
+                @if (!tagSearch.startsWith('@')) {
+                  <span class="suggestion"
+                    (click)="formatter.addTag($event, { type: 'channel', name: 'Channel', description: '', user: [], owner: '', id: 'channel'  })"
+                    [innerHTML]="'#Channel'"></span>
+                }
               </div>
             }
           </div>
         }
         @else if (thread) {
-          <div class="tag-search" [class.active]="showTagSearch" (click)="$event.stopPropagation()">
+          <div class="tag-search" [class.active]="showTagSearchThread" (click)="$event.stopPropagation()">
             <input #tagSearchInputThread id="tag-search-input-thread" class="tag-search-input"
               placeholder="User erwähnen" type="search" [(ngModel)]="tagSearch" (input)="tagSearchKeyInput()"
               (keydown)="checkKey($event)">
-            @if (matchingUsers.length >= 0) {
+            @if (matchingSearch.length >= 0) {
               <div class="tag-search-results">
-                @if (matchingUsers.length > 3) {
-                  <span class="suggestion" [innerHTML]="'+' + (matchingUsers.length - 3) + ' weitere'"></span>
+                @if (matchingSearch.length > 3) {
+                  <span class="suggestion" [innerHTML]="'+' + (matchingSearch.length - 3) + ' weitere'"></span>
                 }
                 <div class="suggestion-container">
-                  @for (user of matchingUsers; track $index) {
+                  @for (suggestion of matchingSearch; track $index) {
                     @if ($index <= 3) {
-                      <span class="suggestion" (click)="formatter.addTag(user)" [innerHTML]="user.name"></span>
+                      @if (suggestion.type === 'user') {
+                        <span class="suggestion" (click)="formatter.addTag($event, suggestion)"
+                          [innerHTML]="'@'+suggestion.name"></span>
+                      }
+                      @else if (suggestion.type === 'channel') {
+                        <span class="suggestion" (click)="formatter.addTag($event, suggestion)"
+                          [innerHTML]="'#'+suggestion.name"></span>
+                      }
                     }
                   }
                 </div>
-                <span class="suggestion"
-                  (click)="formatter.addTag({ type: 'user', name: 'Channel', id: 'channel', email: '', online: false, avatar: '', dm: []  })"
-                  [innerHTML]="'@Channel'"></span>
+                @if(!tagSearch.startsWith('#')) {
+                  <span class="suggestion"
+                    (click)="formatter.addTag($event, { type: 'user', name: 'Everyone', id: 'channel', email: '', online: false, avatar: '', dm: []  })"
+                    [innerHTML]="'@Everyone'"></span>
+                }
+                @if (!tagSearch.startsWith('@')) {
+                  <span class="suggestion"
+                    (click)="formatter.addTag($event, { type: 'channel', name: 'Channel', description: '', user: [], owner: '', id: 'channel'  })"
+                    [innerHTML]="'#Channel'"></span>
+                }
               </div>
             }
           </div>
