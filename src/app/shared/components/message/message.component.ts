@@ -311,7 +311,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    */
   postAuthor(postAuthor: string): string {
     let userName = this.storage.user.find(u => u.id === postAuthor);
-    return userName ? userName.name : 'Unbekannt';
+    return userName ? userName.name : 'Gelöschter Nutzer';
   }
 
 
@@ -325,6 +325,6 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    */
   postAuthorAvatar(postAuthor: string): string {
     let avatar = this.storage.user.find(u => u.id === postAuthor);
-    return avatar ? avatar.avatar : 'profile-unknown';
+    return avatar ? avatar.avatar : 'assets/img/profile-pictures/del-user.png';
   }
 }

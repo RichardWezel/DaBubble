@@ -84,6 +84,15 @@ export class StorageHelperService {
     };
   }
 
+
+  /**
+   * Generates a new DM with the given contact, or a new user welcome message if `post` is true.
+   * The generated DM has a contact of the given `contact`, a new ID, and an empty posts array except for the welcome message if `post` is true.
+   * @param contact - The ID of the contact to generate the DM for.
+   * @param post - Whether to generate a new user welcome message or not.
+   * @param name - The name of the new user to welcome.
+   * @returns The generated DM object.
+   */
   generateNewUserDM(contact: string, post: boolean = false, name: string): { contact: string, id: string, posts: any[] } {
     return {
       contact: contact,

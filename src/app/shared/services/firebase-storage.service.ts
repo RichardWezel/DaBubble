@@ -108,14 +108,36 @@ export class FirebaseStorageService implements OnDestroy {
 
 
   /**
+   * Iterates over the channel collection and removes users from channels that are no longer existing in the user collection.
+   * This is a safety feature to ensure that deleted users are removed from all channels.
+   * @returns A Promise that resolves when all channels have been processed.
+   */
+  async removeUsersFromChannels(): Promise<void> {
+    const { user: currentUsers, channel } = this;
+    const currentUserIds = new Set(currentUsers.map(u => u.id));
+    for (const channel of this.channel) {
+      const filteredUserIds = channel.user.filter(id => currentUserIds.has(id));
+      if (filteredUserIds.length === channel.user.length || !channel.id) continue;
+      try {
+        await updateDoc(doc(this.firestore, "channel", channel.id), { user: filteredUserIds });
+        channel.user = filteredUserIds;
+      } catch (error) {
+        console.error("Channel Update fehlgeschlagen:", channel.id, error);
+      }
+    }
+  }
+
+
+  /**
    * Filters the channel collection according to which channel contains the current user and uses it to fill currentUserChannel.
    * 
    * @returns 
    */
-  getCurrentUserChannelCollection() {
+  async getCurrentUserChannelCollection() {
     this.CurrentUserChannel = this.channel.filter(channel =>
       this.checkCurrentUserIsMemberOfChannel(channel.user)
     );
+    await this.removeUsersFromChannels();
     this.doneLoading = true;
   }
 
