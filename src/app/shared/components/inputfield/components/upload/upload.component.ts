@@ -268,6 +268,5 @@ export class UploadComponent implements OnChanges, OnInit {
       inputElement.value = '';
     }
     this.inputfield.showUpload = false;
-    console.log('Upload abgebrochen');
   }
 }
