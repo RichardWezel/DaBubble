@@ -200,6 +200,7 @@ export class ChannelHeadComponent implements OnInit {
    */
   openAddChannelMemberDialog(event: Event) {
     event.stopPropagation();
+    event.preventDefault();
     if (this.addChannelMemberDialog) {
       this.addChannelMemberDialog.openDialog();
     } else {
