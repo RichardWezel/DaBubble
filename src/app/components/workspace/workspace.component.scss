@@ -55,7 +55,7 @@ main {
             top: 0;
             left: -24px;
             transform: translateX(-100%);
-            transition: all 125ms ease-in-out;
+            transition: all 10ms ease;
 
             @media (max-width: $breakpoint1) {
                 width: 100%;
@@ -65,12 +65,13 @@ main {
                 position: relative;
                 left: 0;
                 transform: translateX(0);
+                transition: all 125ms ease;
             }
         }
 
         app-channel {
             flex: 1;
-            transition: all 125ms ease-in-out;
+            transition: all 125ms ease;
         }
 
         app-thread {
