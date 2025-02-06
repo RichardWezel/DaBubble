@@ -78,8 +78,8 @@ export class StorageHelperService {
         id: uid,
         posts: [],
       },
-      this.generateNewUserDM('vGSV3WkolpaARg1JP13q', true, userData.name),
-      this.generateNewUserDM('Z6y2sAEfa4oUXENZHFC3', false, userData.name),
+      this.generateNewUserDM('W9KgJ5N5ghBMuSpBa3T4', true, userData.name),
+      this.generateNewUserDM('ZRYJ8UqWXCJhBnYKGw9o', false, userData.name),
       ],
     };
   }

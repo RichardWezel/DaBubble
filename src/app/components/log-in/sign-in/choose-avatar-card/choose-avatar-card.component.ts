@@ -188,8 +188,8 @@ export class ChooseAvatarCardComponent {
       email: this.signInService.signInData.email,
       avatar: this.signInService.signInData.img,
     });
-    await this.storage.addUsersToChannel('17tpdlhZoSBUIsS0XdO3', [uid]);
-    await this.storage.addUsersToChannel('MKlkEBaw0KMgQBnuzTtR', [uid]);
+    await this.storage.addUsersToChannel('C7rB2OZJ48L8iLxbQRJ7', [uid]);
+    await this.storage.addUsersToChannel('ZI3mXLel2lqYbDLe4mxl', [uid]);
   }
 
 

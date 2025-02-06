@@ -39,8 +39,8 @@ export class FirebaseAuthService {
    * Updates the current user information and navigates to the workspace route with a reload option.
    */
   async guestLogin() {
-    sessionStorage.setItem("authUid", 't3O7pW0P7QrjD26Bd6DZ');
-    this.storage.authUid = 't3O7pW0P7QrjD26Bd6DZ';
+    sessionStorage.setItem("authUid", 'OZh1lRrCp4yn81Rw0KWh');
+    this.storage.authUid = 'OZh1lRrCp4yn81Rw0KWh';
     await this.getCurrentUser();
     this.router.navigate(['/workspace'], { reload: true } as any);
   }
@@ -130,8 +130,8 @@ export class FirebaseAuthService {
   async loginWithGoogleNewUser(user: any) {
     const userData = this.generateUserData(user);
     await this.storage.addUser(user.uid, userData);
-    await this.storage.addUsersToChannel('17tpdlhZoSBUIsS0XdO3', [user.uid]);
-    await this.storage.addUsersToChannel('MKlkEBaw0KMgQBnuzTtR', [user.uid]);
+    await this.storage.addUsersToChannel('C7rB2OZJ48L8iLxbQRJ7', [user.uid]);
+    await this.storage.addUsersToChannel('ZI3mXLel2lqYbDLe4mxl', [user.uid]);
     await this.loginWithGoogleExistingUser(user);
   }
 
