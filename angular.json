@@ -109,9 +109,14 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/style/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/style"
+              ]
+            }
           }
         },
         "deploy": {
