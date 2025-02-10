@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -10,9 +10,12 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideStorage, getStorage } from '@angular/fire/storage';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes), provideRouter(routes),
-  importProvidersFrom(provideFirebaseApp(() => initializeApp(environment.firebase))),
-  importProvidersFrom(provideAuth(() => getAuth())),
-  importProvidersFrom(provideFirestore(() => getFirestore())), provideAnimationsAsync(),
-  importProvidersFrom(provideStorage(() => getStorage())),],
+  providers: [
+    provideRouter(routes),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore()),
+    provideAnimationsAsync(),
+    provideStorage(() => getStorage()),
+  ],
 };
