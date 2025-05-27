@@ -1,0 +1,71 @@
+"user": {
+    "oYhCXFUTy11sm1uKLK4l": {
+        "avatar": "profile-6.png",
+        "email": "user1@example.com",
+        "name": "User1",
+        "status": "online",
+        "dm": [
+            {
+                "contact": "BnmpU2U2CzA671AY4tms",
+                "id": "5df3c0de-a242-472b-8de7-dbc44b072743",
+                "posts": [
+                    {
+                        "author": "BnmpU2U2CzA671AY4tms",
+                        "emoticons": [],
+                        "id": "6ed83a2f-96fe-44dd-9367-09cdcda5394d",
+                        "text": "Hey User 1! Wie läuft es bei dir? Bis wann bist du mit deiner Aufgabe fertig?",
+                        "thread": true,
+                        "threadMsg": [],
+                        "timestamp": 1731297024434
+                    },
+                    {
+                        "author": "oYhCXFUTy11sm1uKLK4l",
+                        "emoticons": [],
+                        "id": "833d642e-19c8-482d-94d0-2133f81f407d",
+                        "text": "Hey Elias, ich muss nur noch ein paar Kleinigkeiten erledigen, dann müsste ich Ende der Woche soweit sein. Wie läuft es bei dir?",
+                        "thread": false,
+                        "threadMsg": [],
+                        "timestamp": 1731297024434
+                    },
+                    {
+                        "author": "BnmpU2U2CzA671AY4tms",
+                        "emoticons": [],
+                        "id": "d16b38c3-c6ed-48e9-a9f0-38e66d2b7967",
+                        "text": "Ich komme gerade mit der Datenstruktur nicht klar. Kannst du mir da noch behilflich sein?",
+                        "thread": false,
+                        "threadMsg": [],
+                        "timestamp": 1731297152050
+                    },
+                    {
+                        "author": "BnmpU2U2CzA671AY4tms",
+                        "emoticons": [],
+                        "id": "c70cff87-346b-4862-bcc0-70de505acf64",
+                        "text": "Also zum Beispiel wüsste ich gerne, wie die posts im dm Array des Users organisiert sind.",
+                        "thread": false,
+                        "threadMsg": [],
+                        "timestamp": 1731297790319
+                    },
+                    {
+                        "author": "oYhCXFUTy11sm1uKLK4l",
+                        "emoticons": [],
+                        "id": "70398c3c-1b52-4b09-9374-711b5cf252df",
+                        "text": "Ja, kein Ding! Sollen wir uns heute Nachmittag kurz treffen im Konferenzraum 3?",
+                        "thread": false,
+                        "threadMsg": [],
+                        "timestamp": 1731298199115
+                    },
+                ]
+            },
+            {
+                ...
+            },
+            {
+                ...
+            },
+            {
+                ...
+            }
+        ]
+    }
+       
+}
