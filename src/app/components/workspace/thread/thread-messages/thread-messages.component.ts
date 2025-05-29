@@ -6,7 +6,7 @@ import { MessageComponent } from '../../../../shared/components/message/message.
 @Component({
   selector: 'app-thread-messages',
   standalone: true,
-  imports: [DateSeparatorComponent, MessageComponent, ChannelMessagesComponent],
+  imports: [DateSeparatorComponent, MessageComponent],
   templateUrl: './thread-messages.component.html',
   styleUrl: './thread-messages.component.scss'
 })
