@@ -1,26 +1,26 @@
 rules_version = '2';
 
 // ---------------------------------------------------------------------------
-// PLACEHOLDER - DO NOT DEPLOY BEFORE READING THIS
+// BASELINE - this is what is live on dabubble-1fb72, copied from the Firebase
+// console on 2026-09-27. It is unrestricted on purpose: guestLogin() does not
+// authenticate (it only writes a user document id into sessionStorage), so
+// request.auth is null for guests and access cannot be tied to an identity.
 //
-// Until now this project had no firestore.rules in the repository, which means
-// the rules that are actually live exist ONLY in the Firebase console.
-// Deploying this file would overwrite them.
+// The practical consequence: anyone who reads the Firebase config out of the
+// published bundle can write, overwrite or delete any document without ever
+// opening the app.
 //
-// Before the first `firebase deploy --only firestore:rules`:
-//   1. Open console.firebase.google.com -> dabubble-1fb72 -> Firestore -> Rules
-//   2. Copy what is there into this file
-//   3. Commit that as the baseline, THEN start changing it
-//
-// The rules below only mirror what the app needs today so the emulator can
-// run: full access without authentication, because guestLogin() does not
-// authenticate (it only writes a user document id into sessionStorage).
-// They are deliberately permissive and get replaced in stage 5, once posts
-// live in subcollections and documents carry an isSeed flag.
+// Stage 5 of the restructuring replaces this, once posts live in
+// subcollections and documents carry an isSeed flag. Rules can then enforce
+// document shape even without authentication:
+//   - isSeed documents are not deletable and their name/owner is immutable
+//   - post text length is capped
+//   - non-seed posts must carry an expiresAt timestamp (for the TTL policy)
 // ---------------------------------------------------------------------------
 
 service cloud.firestore {
   match /databases/{database}/documents {
+
     match /{document=**} {
       allow read, write: if true;
     }
