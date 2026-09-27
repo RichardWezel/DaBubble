@@ -1,28 +1,128 @@
 rules_version = '2';
 
-// ---------------------------------------------------------------------------
-// BASELINE - this is what is live on dabubble-1fb72, copied from the Firebase
-// console on 2026-09-27. It is unrestricted on purpose: guestLogin() does not
-// authenticate (it only writes a user document id into sessionStorage), so
-// request.auth is null for guests and access cannot be tied to an identity.
+// Guests are not authenticated - guestLogin() only writes a user document id
+// into sessionStorage - so request.auth is null for most traffic and access
+// cannot be tied to an identity. These rules therefore constrain WHAT a
+// document may look like, not WHO writes it.
 //
-// The practical consequence: anyone who reads the Firebase config out of the
-// published bundle can write, overwrite or delete any document without ever
-// opening the app.
+// Two ideas carry the whole file:
 //
-// Stage 5 of the restructuring replaces this, once posts live in
-// subcollections and documents carry an isSeed flag. Rules can then enforce
-// document shape even without authentication:
-//   - isSeed documents are not deletable and their name/owner is immutable
-//   - post text length is capped
-//   - non-seed posts must carry an expiresAt timestamp (for the TTL policy)
-// ---------------------------------------------------------------------------
-
+//   isSeed == true   the demo content written by seed/seed.mjs. Its identity
+//                    is frozen: names, owners and message texts cannot be
+//                    changed and nothing can be deleted. Visitors can still
+//                    join channels and react to messages.
+//
+//   expiresAt        every message a visitor writes must carry one. The TTL
+//                    policies on the `posts` and `thread` collection groups
+//                    (see firestore.indexes.json) delete them roughly a day
+//                    later, so nothing unwanted stays for long.
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    match /{document=**} {
-      allow read, write: if true;
+    // Collection group queries are matched against collection group rules, not
+    // against the nested paths below - without these, search's
+    // collectionGroup('thread') query is rejected outright. Read only: writes
+    // stay governed by the specific rules further down.
+    match /{path=**}/posts/{postId} {
+      allow read: if true;
+    }
+
+    match /{path=**}/thread/{replyId} {
+      allow read: if true;
+    }
+
+    function isSeed() {
+      return resource.data.isSeed == true;
+    }
+
+    function createdAsVisitorContent() {
+      return request.resource.data.isSeed == false;
+    }
+
+    function changes() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    function keepsFlag() {
+      return request.resource.data.isSeed == resource.data.isSeed;
+    }
+
+    function textWithinLimit() {
+      return request.resource.data.text is string
+        && request.resource.data.text.size() <= 5000;
+    }
+
+    function expires() {
+      return request.resource.data.expiresAt is timestamp;
+    }
+
+    match /user/{userId} {
+      allow read: if true;
+      allow create: if createdAsVisitorContent();
+      // Demo personas may only go on- and offline. Without that restriction a
+      // visitor could rename or re-avatar them for everyone, permanently.
+      allow update: if isSeed()
+        ? changes().hasOnly(['online'])
+        : keepsFlag();
+      allow delete: if !isSeed();
+    }
+
+    match /channel/{channelId} {
+      allow read: if true;
+      allow create: if createdAsVisitorContent();
+      // Seed channels keep their name, description and owner; only the member
+      // list moves, so visitors can still join and leave.
+      allow update: if isSeed()
+        ? changes().hasOnly(['user'])
+        : keepsFlag();
+      allow delete: if !isSeed();
+
+      match /posts/{postId} {
+        allow read: if true;
+        allow create: if createdAsVisitorContent() && expires() && textWithinLimit();
+        // A seeded message keeps its text: only reactions and the denormalised
+        // thread counters may move.
+        allow update: if isSeed()
+          ? changes().hasOnly(['emoticons', 'threadCount', 'lastThreadTimestamp'])
+          : keepsFlag() && textWithinLimit();
+        allow delete: if !isSeed();
+
+        match /thread/{replyId} {
+          allow read: if true;
+          allow create: if createdAsVisitorContent() && expires() && textWithinLimit();
+          allow update: if isSeed()
+            ? changes().hasOnly(['emoticons'])
+            : keepsFlag() && textWithinLimit();
+          allow delete: if !isSeed();
+        }
+      }
+    }
+
+    match /dm/{dmId} {
+      allow read: if true;
+      allow create: if createdAsVisitorContent();
+      // A conversation document only holds its participants, and those are
+      // baked into its id - there is nothing legitimate to change.
+      allow update: if false;
+      allow delete: if !isSeed();
+
+      match /posts/{postId} {
+        allow read: if true;
+        allow create: if createdAsVisitorContent() && expires() && textWithinLimit();
+        allow update: if isSeed()
+          ? changes().hasOnly(['emoticons', 'threadCount', 'lastThreadTimestamp'])
+          : keepsFlag() && textWithinLimit();
+        allow delete: if !isSeed();
+
+        match /thread/{replyId} {
+          allow read: if true;
+          allow create: if createdAsVisitorContent() && expires() && textWithinLimit();
+          allow update: if isSeed()
+            ? changes().hasOnly(['emoticons'])
+            : keepsFlag() && textWithinLimit();
+          allow delete: if !isSeed();
+        }
+      }
     }
   }
 }

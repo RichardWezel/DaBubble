@@ -15,8 +15,11 @@
  *   npm run seed                  -> emulator
  *   npm run seed:clear            -> wipe the emulator
  *   SEED_ALLOW_PRODUCTION=yes npm run seed -- --target=production
+ *
+ * Runs through the Admin SDK: the security rules forbid clients from
+ * creating isSeed documents, which is the point of the flag.
  */
-import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase-admin/firestore';
 import { connect, dmId } from './target.mjs';
 import { clearAll } from './clear.mjs';
 import { users, channels, dms, at, SEED_IDS } from './seed-data.mjs';
@@ -41,12 +44,12 @@ function postDocument(post) {
 /** Writes one post plus its thread replies under the given parent path. */
 async function writePost(firestore, parentPath, index, post) {
   const postId = `p${String(index + 1).padStart(2, '0')}`;
-  await setDoc(doc(firestore, `${parentPath}/posts/${postId}`), postDocument(post));
+  await firestore.doc(`${parentPath}/posts/${postId}`).set(postDocument(post));
 
   let replies = 0;
   for (const [replyIndex, reply] of (post.thread ?? []).entries()) {
     const replyId = `r${String(replyIndex + 1).padStart(2, '0')}`;
-    await setDoc(doc(firestore, `${parentPath}/posts/${postId}/thread/${replyId}`), {
+    await firestore.doc(`${parentPath}/posts/${postId}/thread/${replyId}`).set({
       text: reply.text,
       author: reply.author,
       timestamp: at(reply.daysAgo, reply.time),
@@ -63,12 +66,12 @@ async function seed(firestore) {
 
   for (const user of users) {
     const { id, ...fields } = user;
-    await setDoc(doc(firestore, 'user', id), { type: 'user', ...fields, ...seedBase });
+    await firestore.doc(`user/${id}`).set({ type: 'user', ...fields, ...seedBase });
   }
   console.log(`  user: ${users.length}`);
 
   for (const channel of channels) {
-    await setDoc(doc(firestore, 'channel', channel.id), {
+    await firestore.doc(`channel/${channel.id}`).set({
       type: 'channel',
       name: channel.name,
       description: channel.description,
@@ -86,7 +89,7 @@ async function seed(firestore) {
 
   for (const dm of dms) {
     const id = dmId(...dm.participants);
-    await setDoc(doc(firestore, 'dm', id), {
+    await firestore.doc(`dm/${id}`).set({
       participants: [...new Set(dm.participants)],
       createdAt,
       ...seedBase,
@@ -113,8 +116,8 @@ async function verifyLoadBearingIds(firestore) {
   ];
   const missing = [];
   for (const [path, id, role] of required) {
-    const snapshot = await getDoc(doc(firestore, path, id));
-    if (!snapshot.exists()) missing.push(`${path}/${id} (${role})`);
+    const snapshot = await firestore.doc(`${path}/${id}`).get();
+    if (!snapshot.exists) missing.push(`${path}/${id} (${role})`);
   }
   if (missing.length) {
     console.error('\nSeed is missing load-bearing documents:');

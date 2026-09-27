@@ -63,17 +63,19 @@ export class SearchService {
 
 
   /**
-   * Searches for channel posts that include the user input in their text.
+   * Searches the messages of every channel the user is in. Backed by the
+   * storage service's search index, which is fetched once and reused - the
+   * messages are no longer all in memory, and Firestore cannot match
+   * substrings server-side.
    * @param userInput - The search term entered by the user.
-   * @returns An array of SearchResultChannelPost objects matching the search term.
+   * @returns The matching messages with the channel they belong to.
    */
-  findChannelsByPost(userInput: string): SearchResultChannelPost[] {
+  async findChannelsByPost(userInput: string): Promise<SearchResultChannelPost[]> {
     const inputLower = userInput.toLowerCase();
-    const openChannel = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
-    if (!openChannel) return [];
-    return this.storage.posts
-      .filter(post => post.text.toLowerCase().includes(inputLower))
-      .map(post => ({ type: 'channel-post', channel: openChannel, post } as SearchResultChannelPost));
+    const { channelPosts } = await this.storage.loadSearchIndex();
+    return channelPosts
+      .filter(({ post }) => post.text.toLowerCase().includes(inputLower))
+      .map(({ post, channel }) => ({ type: 'channel-post', channel, post } as SearchResultChannelPost));
   }
 
 

@@ -43,6 +43,8 @@ export class SearchComponent {
   selectedIndex: number = 0;
   dropDownIsOpen: boolean = false;
   dropdownElement: HTMLElement | undefined;
+  /** Counts searches so a late response can tell it has been superseded. */
+  private latestSearch = 0;
   placeholderText: string = 'Standard Placeholder';
 
   private searchSubject = new Subject<string>();
@@ -157,44 +159,35 @@ export class SearchComponent {
    * Searches for channels, users, channel posts, and threads if the input length is sufficient.
    */
   updateSearchResults(): void {
-    if (this.userInput.length >= 2) {
-      this.updateFoundedChannelsAndUsers();
-      this.updateFoundedThreads();
-    } else {
+    if (this.userInput.length < 2) {
       this.searchResults = [];
       this.selectedIndex = -1;
+      return;
     }
+    const input = this.userInput;
+    const search = ++this.latestSearch;
+    // Channels and users are already in memory, so show them straight away.
+    this.searchResults = [...this.search.findChannels(input), ...this.search.findUser(input)];
+    this.appendMessageResults(search, input);
   }
 
 
   /**
-   * Aggregates search results by finding matching channels, users, and channel posts.
+   * Adds the results that need a fetch - channel messages and thread replies.
+   * A response is dropped when the user has typed again since it was asked
+   * for, so a slow answer cannot push stale hits into a newer search.
+   * @param search - the number of the search this response belongs to
+   * @param input - the term that was searched for
    */
-  updateFoundedChannelsAndUsers(): void {
-    if (this.userInput) {
-      const channelMatches: SearchResultChannel[] = this.search.findChannels(this.userInput);
-      const userMatches: SearchResultUser[] = this.search.findUser(this.userInput);
-      const channelPostMatches: SearchResultChannelPost[] = this.search.findChannelsByPost(this.userInput);
-      this.searchResults = [...channelMatches, ...userMatches, ...channelPostMatches];
+  private async appendMessageResults(search: number, input: string): Promise<void> {
+    const [postMatches, index] = await Promise.all([
+      this.search.findChannelsByPost(input),
+      this.storage.loadSearchIndex(),
+    ]);
+    if (search !== this.latestSearch) return;
 
-      if (this.searchResults.length === 0) {
-        this.openCloseService.close('resultDropdown');
-        this.cd.detectChanges();
-      }
-    } else {
-      this.searchResults = [];
-      this.selectedIndex = -1;
-    }
-  }
-
-
-  /**
-   * Aggregates search results by finding matching threads.
-   */
-  async updateFoundedThreads(): Promise<void> {
-    const threads = await this.storage.getAllThreads();
-    const threadMatches: SearchResultThread[] = threads
-      .filter(({ thread }) => thread.text.toLowerCase().includes(this.userInput.toLowerCase()))
+    const threadMatches: SearchResultThread[] = index.threads
+      .filter(({ thread }) => thread.text.toLowerCase().includes(input.toLowerCase()))
       .map(({ thread, parentType, conversationId, parentPostId }) => ({
         type: 'thread',
         parentType,
@@ -203,7 +196,9 @@ export class SearchComponent {
         thread
       }) as SearchResultThread);
 
-    this.searchResults = [...this.searchResults, ...threadMatches];
+    this.searchResults = [...this.searchResults, ...postMatches, ...threadMatches];
+    if (this.searchResults.length === 0) this.openCloseService.close('resultDropdown');
+    this.cd.detectChanges();
   }
 
 

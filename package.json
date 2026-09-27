@@ -9,7 +9,7 @@
     "test": "ng test",
     "start:emu": "ng serve --configuration emulator",
     "emulators": "FIREBASE_CLI_EXPERIMENTS=webframeworks PATH=\"$(brew --prefix openjdk)/bin:$PATH\" firebase emulators:start --only auth,firestore,storage",
-    "test:rules": "node tools/check-storage-rules.mjs",
+    "test:rules": "node tools/check-storage-rules.mjs && node tools/check-firestore-rules.mjs",
     "seed": "node seed/seed.mjs",
     "seed:clear": "node seed/clear.mjs"
   },
@@ -38,6 +38,7 @@
     "@angular/compiler-cli": "^17.0.0",
     "@types/jasmine": "~5.1.0",
     "@types/uuid": "^10.0.0",
+    "firebase-admin": "^13.10.0",
     "firebase-tools": "^13.35.1",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",

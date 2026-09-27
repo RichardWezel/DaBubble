@@ -2,7 +2,7 @@ import { inject, Injectable, OnDestroy } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
 import {
   collection, collectionGroup, doc, addDoc, onSnapshot, setDoc, updateDoc,
-  getDocs, query, where, orderBy, increment, arrayUnion, Timestamp
+  getDoc, getDocs, query, where, orderBy, increment, arrayUnion, Timestamp
 } from "firebase/firestore";
 import { UserInterface } from '../interfaces/user.interface';
 import { ChannelInterface } from '../interfaces/channel.interface';
@@ -25,6 +25,23 @@ export interface ThreadSearchHit {
   parentType: ConversationType;
   conversationId: string;
   parentPostId: string;
+}
+
+/** A channel message found by search, together with its channel. */
+export interface ChannelPostSearchHit {
+  post: PostInterface;
+  channel: ChannelInterface;
+}
+
+/**
+ * Everything search can look through. Firestore has no "contains" query, so
+ * matching happens in memory - which means the messages have to be fetched
+ * first. They are no longer loaded on page load, so this is built on the
+ * first keystroke in the search field and reused until something is written.
+ */
+export interface SearchIndex {
+  channelPosts: ChannelPostSearchHit[];
+  threads: ThreadSearchHit[];
 }
 
 @Injectable({
@@ -54,6 +71,9 @@ export class FirebaseStorageService implements OnDestroy {
 
   private userSubject: BehaviorSubject<UserInterface[]> = new BehaviorSubject<UserInterface[]>([]);
   public users$: Observable<UserInterface[]> = this.userSubject.asObservable();
+
+  /** Cached search index; null until the first search, dropped on every write. */
+  private searchIndex: Promise<SearchIndex> | null = null;
 
   /** Resolves once the channel collection has arrived for the first time. */
   channelsReady: Promise<void>;
@@ -304,20 +324,72 @@ export class FirebaseStorageService implements OnDestroy {
 
 
   /**
-   * Collects every thread reply from the channels and conversations the
-   * current user can see, together with the conversation it belongs to.
+   * The search index, fetched on first use and reused afterwards. Concurrent
+   * callers share one fetch.
    */
-  async getAllThreads(): Promise<ThreadSearchHit[]> {
+  loadSearchIndex(): Promise<SearchIndex> {
+    if (!this.searchIndex) {
+      // A rejected promise must not stay in the cache, or one failed fetch
+      // would break search for the rest of the session.
+      this.searchIndex = this.buildSearchIndex().catch((error) => {
+        this.searchIndex = null;
+        throw error;
+      });
+    }
+    return this.searchIndex;
+  }
+
+
+  /**
+   * Drops the cached index so the next search picks up what was just written.
+   */
+  invalidateSearchIndex() {
+    this.searchIndex = null;
+  }
+
+
+  /**
+   * Fetches the messages of every channel the current user is in, plus every
+   * thread reply they can see.
+   */
+  private async buildSearchIndex(): Promise<SearchIndex> {
+    const myChannels = this.channel.filter(entry => entry.user.includes(this.currentUser.id ?? ''));
+    const [postsPerChannel, threads] = await Promise.all([
+      Promise.all(myChannels.map(channel => this.fetchChannelPosts(channel))),
+      this.fetchVisibleThreads(),
+    ]);
+    return { channelPosts: postsPerChannel.flat(), threads };
+  }
+
+
+  /**
+   * All messages of one channel, paired with the channel for the result list.
+   * @param channel - the channel to read
+   */
+  private async fetchChannelPosts(channel: ChannelInterface): Promise<ChannelPostSearchHit[]> {
+    const snapshot = await getDocs(collection(this.firestore, `channel/${channel.id}/posts`));
+    return snapshot.docs.map(entry => ({
+      post: { ...entry.data(), id: entry.id } as PostInterface,
+      channel,
+    }));
+  }
+
+
+  /**
+   * Every thread reply from the channels and conversations the current user
+   * can see, with the conversation and parent post taken from the path.
+   */
+  private async fetchVisibleThreads(): Promise<ThreadSearchHit[]> {
     const replies = await getDocs(collectionGroup(this.firestore, 'thread'));
-    const visible = new Map<string, ChannelInterface | DmInterface>();
-    this.channel.filter(entry => entry.user.includes(this.authUid)).forEach(entry => visible.set(entry.id!, entry));
-    this.dms.forEach(entry => visible.set(entry.id!, entry));
+    const visible = new Set<string>([
+      ...this.channel.filter(entry => entry.user.includes(this.currentUser.id ?? '')).map(entry => entry.id!),
+      ...this.dms.map(entry => entry.id!),
+    ]);
 
     return replies.docs.flatMap((entry) => {
       // channel|dm / {conversationId} / posts / {parentPostId} / thread / {replyId}
       const [conversationType, conversationId, , parentPostId] = entry.ref.path.split('/');
-      const parent = visible.get(conversationId);
-      if (!parent) return [];
+      if (!visible.has(conversationId)) return [];
       return [{
         thread: { ...entry.data(), id: entry.id } as PostInterface,
         parentType: conversationType as ConversationType,
@@ -380,6 +452,26 @@ export class FirebaseStorageService implements OnDestroy {
     const dmId = this.dms.find(dm => dm.participants.includes(userData.id!))?.id;
     if (dmId) sessionStorage.setItem("currentChannel", dmId);
     return dmId;
+  }
+
+
+  /**
+   * Whether a user belongs to the seeded demo data. The security rules freeze
+   * the name and avatar of those, so the UI should not offer to edit them.
+   * @param userId - the user to check
+   */
+  isSeedUser(userId: string | undefined): boolean {
+    return this.user.find(entry => entry.id === userId)?.isSeed === true;
+  }
+
+
+  /**
+   * Whether a channel belongs to the seeded demo data. Its name, description
+   * and owner are frozen by the security rules; only membership may change.
+   * @param channelId - the channel to check
+   */
+  isSeedChannel(channelId: string | undefined): boolean {
+    return this.channel.find(entry => entry.id === channelId)?.isSeed === true;
   }
 
 
@@ -459,8 +551,13 @@ export class FirebaseStorageService implements OnDestroy {
    */
   async ensureDm(userA: string, userB: string): Promise<string> {
     const id = this.buildDmId(userA, userB);
-    const participants = [...new Set([userA, userB])];
-    await setDoc(doc(this.firestore, "dm", id), { participants, isSeed: false }, { merge: true });
+    if (this.dms.some(entry => entry.id === id)) return id;
+
+    const reference = doc(this.firestore, "dm", id);
+    // Only write when it is really missing: writing over a seeded conversation
+    // would flip its isSeed flag, and the rules reject that.
+    if ((await getDoc(reference)).exists()) return id;
+    await setDoc(reference, { participants: [...new Set([userA, userB])], isSeed: false });
     return id;
   }
 
@@ -481,6 +578,7 @@ export class FirebaseStorageService implements OnDestroy {
       lastThreadTimestamp: null,
       ...this.visitorFields(),
     });
+    this.invalidateSearchIndex();
   }
 
 
@@ -500,6 +598,7 @@ export class FirebaseStorageService implements OnDestroy {
       threadCount: increment(1),
       lastThreadTimestamp: newPost.timestamp,
     });
+    this.invalidateSearchIndex();
   }
 
 
@@ -513,6 +612,7 @@ export class FirebaseStorageService implements OnDestroy {
    */
   async updatePostText(type: ConversationType, id: string, postId: string, text: string, parentPostId?: string) {
     await updateDoc(doc(this.firestore, this.postPath(type, id, postId, parentPostId)), { text });
+    this.invalidateSearchIndex();
   }
 
 

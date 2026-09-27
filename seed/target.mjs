@@ -1,32 +1,20 @@
 /**
  * Picks which Firestore the seed scripts talk to.
  *
- * Default is the local emulator. Production needs BOTH an explicit
+ * The seed writes documents marked `isSeed: true`, which the security rules
+ * forbid any client from creating - otherwise a visitor could mint content
+ * that cannot be deleted. Seeding is an administrative job, so these scripts
+ * use the Admin SDK, which bypasses rules.
+ *
+ * Default target is the local emulator. Production needs BOTH an explicit
  * `--target=production` flag and SEED_ALLOW_PRODUCTION=yes in the
  * environment, so it cannot happen by a stray keystroke.
  */
 import { readFileSync } from 'node:fs';
-import { initializeApp } from 'firebase/app';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { initializeApp, applicationDefault } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
 
-const ENV_FILE = 'src/environments/environment.development.ts';
-
-/** Pulls the firebase config out of the (gitignored) Angular environment file. */
-function readFirebaseConfig() {
-  let source;
-  try {
-    source = readFileSync(ENV_FILE, 'utf8');
-  } catch {
-    throw new Error(`${ENV_FILE} not found. It is gitignored - copy it from the Firebase console.`);
-  }
-  const config = Object.fromEntries(
-    [...source.matchAll(/(\w+)\s*:\s*"([^"]+)"/g)].map(([, key, value]) => [key, value])
-  );
-  if (!config['apiKey'] || !config['projectId']) {
-    throw new Error(`Could not read apiKey/projectId from ${ENV_FILE}.`);
-  }
-  return config;
-}
+const PROJECT_ID = JSON.parse(readFileSync('.firebaserc', 'utf8')).projects.default;
 
 export function connect(argv) {
   const production = argv.includes('--target=production');
@@ -39,18 +27,29 @@ export function connect(argv) {
     process.exit(1);
   }
 
-  const config = readFirebaseConfig();
-  const firestore = getFirestore(initializeApp(config));
-
-  if (!production) {
-    const port = JSON.parse(readFileSync('firebase.json', 'utf8')).emulators.firestore.port;
-    connectFirestoreEmulator(firestore, '127.0.0.1', port);
-    console.log(`Target: EMULATOR (127.0.0.1:${port})\n`);
+  if (production) {
+    if (!process.env['GOOGLE_APPLICATION_CREDENTIALS']) {
+      console.error(
+        'Seeding production needs admin credentials.\n' +
+        'Create a service account key in the Firebase console\n' +
+        '(Project settings -> Service accounts -> Generate new private key)\n' +
+        'and point GOOGLE_APPLICATION_CREDENTIALS at the downloaded file.\n' +
+        'Keep that file out of the repository.'
+      );
+      process.exit(1);
+    }
+    initializeApp({ credential: applicationDefault(), projectId: PROJECT_ID });
+    console.log(`Target: PRODUCTION (${PROJECT_ID})\n`);
   } else {
-    console.log(`Target: PRODUCTION (${config['projectId']})\n`);
+    const port = JSON.parse(readFileSync('firebase.json', 'utf8')).emulators.firestore.port;
+    // The Admin SDK talks to the emulator when this is set, and needs no
+    // credentials in that case.
+    process.env['FIRESTORE_EMULATOR_HOST'] = `127.0.0.1:${port}`;
+    initializeApp({ projectId: PROJECT_ID });
+    console.log(`Target: EMULATOR (127.0.0.1:${port})\n`);
   }
 
-  return firestore;
+  return getFirestore();
 }
 
 /** A direct message lives under one deterministic id shared by both sides. */

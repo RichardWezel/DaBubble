@@ -169,6 +169,16 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   /**
    * Switches the component to edit mode, allowing the current user to update their profile.
    */
+  /**
+   * Whether the shown profile may be edited. Seeded demo personas are frozen
+   * by the security rules, so offering the button would only produce a failed
+   * write.
+   */
+  canEditProfile(): boolean {
+    return !this.storage.isSeedUser(this.userId);
+  }
+
+
   changeToEditMode() {
     this.inputFieldCheck = false;
     this.auth.errorMessage = '';

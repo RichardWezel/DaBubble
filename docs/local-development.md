@@ -87,6 +87,11 @@ direct message threads, 53 messages with reactions and threads. Timestamps are
 relative to the run (`daysAgo` + time of day), so the conversations never read
 as stale.
 
+The scripts run through the **Admin SDK**, which bypasses security rules. They
+have to: the rules forbid any client from creating a document with
+`isSeed: true`, since otherwise a visitor could mint content that cannot be
+deleted.
+
 The seed writes the **new** subcollection layout, which the app does not use
 yet:
 
@@ -122,8 +127,12 @@ verifies all four at the end of every run.
 Deliberately awkward - it needs the flag *and* the environment variable:
 
 ```bash
-SEED_ALLOW_PRODUCTION=yes npm run seed -- --target=production
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json \
+  SEED_ALLOW_PRODUCTION=yes npm run seed -- --target=production
 ```
+
+The key comes from the Firebase console under Project settings -> Service
+accounts -> Generate new private key. Keep the file out of the repository.
 
 This wipes and rewrites the live data, so it belongs in stage 6 and nowhere
 else. Note that it does not clear Cloud Storage: the storage rules deny
