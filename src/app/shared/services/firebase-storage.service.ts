@@ -17,6 +17,9 @@ import { StorageHelperService } from './storage-helper.service';
 /** How long a post written by a visitor survives before the TTL policy removes it. */
 const VISITOR_POST_LIFETIME_MS = 24 * 60 * 60 * 1000;
 
+/** Fixed document id of the welcome message; the rules key their exemption on it. */
+const WELCOME_POST_ID = 'welcome';
+
 export type ConversationType = 'channel' | 'dm';
 
 /** A thread reply found by search, together with where it lives. */
@@ -577,6 +580,29 @@ export class FirebaseStorageService implements OnDestroy {
       threadCount: 0,
       lastThreadTimestamp: null,
       ...this.visitorFields(),
+    });
+    this.invalidateSearchIndex();
+  }
+
+
+  /**
+   * Writes the welcome message a newly registered account finds in its inbox.
+   *
+   * This is the one message that must not expire, so it is written under a
+   * fixed id and marked `isWelcome`. The security rules accept exactly that
+   * combination without an `expiresAt`, and refuse to let it be edited
+   * afterwards.
+   * @param dmId - the conversation with the welcome persona
+   * @param post - the message
+   */
+  async addWelcomePost(dmId: string, post: PostInterface) {
+    const { id: _ignored, ...fields } = post;
+    await setDoc(doc(this.firestore, `dm/${dmId}/posts/${WELCOME_POST_ID}`), {
+      ...fields,
+      threadCount: 0,
+      lastThreadTimestamp: null,
+      isSeed: false,
+      isWelcome: true,
     });
     this.invalidateSearchIndex();
   }

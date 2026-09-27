@@ -52,8 +52,26 @@ service cloud.firestore {
         && request.resource.data.text.size() <= 5000;
     }
 
-    function expires() {
-      return request.resource.data.expiresAt is timestamp;
+    // Not just "has an expiry" but "expires soon". Checking only for a
+    // timestamp would let a client set the year 3000 and keep a message
+    // forever, which is the thing this is supposed to prevent. The app writes
+    // 24h; the window allows for clock skew and a slow write.
+    function expiresSoon() {
+      return request.resource.data.expiresAt is timestamp
+        && request.resource.data.expiresAt > request.time
+        && request.resource.data.expiresAt < request.time + duration.value(48, 'h');
+    }
+
+    // The welcome message a newly registered account finds in its inbox. It is
+    // the one message allowed to outlive the TTL, so it is pinned down hard:
+    // one fixed document id per conversation, attributed to the welcome
+    // persona (users.steffen in src/config/seed-ids.json), and never editable
+    // afterwards.
+    function isWelcomePost(postId) {
+      return postId == 'welcome'
+        && request.resource.data.isWelcome == true
+        && request.resource.data.author == 'W9KgJ5N5ghBMuSpBa3T4'
+        && textWithinLimit();
     }
 
     match /user/{userId} {
@@ -79,7 +97,7 @@ service cloud.firestore {
 
       match /posts/{postId} {
         allow read: if true;
-        allow create: if createdAsVisitorContent() && expires() && textWithinLimit();
+        allow create: if createdAsVisitorContent() && expiresSoon() && textWithinLimit();
         // A seeded message keeps its text: only reactions and the denormalised
         // thread counters may move.
         allow update: if isSeed()
@@ -89,7 +107,7 @@ service cloud.firestore {
 
         match /thread/{replyId} {
           allow read: if true;
-          allow create: if createdAsVisitorContent() && expires() && textWithinLimit();
+          allow create: if createdAsVisitorContent() && expiresSoon() && textWithinLimit();
           allow update: if isSeed()
             ? changes().hasOnly(['emoticons'])
             : keepsFlag() && textWithinLimit();
@@ -108,15 +126,20 @@ service cloud.firestore {
 
       match /posts/{postId} {
         allow read: if true;
-        allow create: if createdAsVisitorContent() && expires() && textWithinLimit();
-        allow update: if isSeed()
-          ? changes().hasOnly(['emoticons', 'threadCount', 'lastThreadTimestamp'])
-          : keepsFlag() && textWithinLimit();
+        allow create: if createdAsVisitorContent()
+          && (expiresSoon() || isWelcomePost(postId));
+        // The welcome message cannot be rewritten - it is the only text here
+        // that does not expire on its own.
+        allow update: if resource.data.get('isWelcome', false) == true
+          ? false
+          : (isSeed()
+              ? changes().hasOnly(['emoticons', 'threadCount', 'lastThreadTimestamp'])
+              : keepsFlag() && textWithinLimit());
         allow delete: if !isSeed();
 
         match /thread/{replyId} {
           allow read: if true;
-          allow create: if createdAsVisitorContent() && expires() && textWithinLimit();
+          allow create: if createdAsVisitorContent() && expiresSoon() && textWithinLimit();
           allow update: if isSeed()
             ? changes().hasOnly(['emoticons'])
             : keepsFlag() && textWithinLimit();

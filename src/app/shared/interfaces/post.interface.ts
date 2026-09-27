@@ -18,4 +18,6 @@ export interface PostInterface {
   threadCount?: number,
   lastThreadTimestamp?: number | null,
   isSeed?: boolean,
+  /** Set on the welcome message, the one post that does not expire. */
+  isWelcome?: boolean,
 }

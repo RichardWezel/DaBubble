@@ -61,17 +61,20 @@ export class StorageHelperService {
     await storage.ensureDm(authUid, SECOND_DM_CONTACT_ID);
 
     const welcomeDmId = await storage.ensureDm(authUid, WELCOME_DM_SENDER_ID);
-    await storage.addPost('dm', welcomeDmId, this.generateWelcomePost(name));
+    await storage.addWelcomePost(welcomeDmId, this.generateWelcomePost(name));
   }
 
 
   /**
-   * The welcome message a new user finds in their inbox.
+   * The welcome message a new user finds in their inbox. Unlike everything
+   * else a client writes, this one does not expire - see
+   * FirebaseStorageService.addWelcomePost.
    * @param name - the new user's display name
    */
   generateWelcomePost(name: string): PostInterface {
     return {
       id: this.uid.generateUid(),
+      isWelcome: true,
       author: WELCOME_DM_SENDER_ID,
       timestamp: Date.now(),
       emoticons: [],

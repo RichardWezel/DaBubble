@@ -22,7 +22,16 @@ connectFirestoreEmulator(db, '127.0.0.1', FIRESTORE_PORT);
 
 const LOBBY = IDS.channels.lobby;
 const SOFIA = IDS.users.sofia;
+const STEFFEN = IDS.users.steffen;
+const TEST_DM = `${IDS.users.frederik}_${IDS.users.steffen}`;
 const hour = (n) => Timestamp.fromMillis(Date.now() + n * 3600_000);
+
+/** The welcome message shape: no expiry, fixed id, attributed to the persona. */
+const welcomePost = (overrides = {}) => ({
+  text: '<h3>Willkommen!</h3>', author: STEFFEN, timestamp: Date.now(),
+  emoticons: [], threadCount: 0, lastThreadTimestamp: null,
+  isSeed: false, isWelcome: true, ...overrides,
+});
 
 /** A well-formed message written by a visitor. */
 const visitorPost = (text = 'hallo') => ({
@@ -67,6 +76,17 @@ const cases = [
   ['write a thread reply with expiry', 'allow', () => setDoc(doc(db, `channel/${LOBBY}/posts/${seedPostId}/thread/visitor-ok`), visitorPost())],
   ['write a thread reply without expiry', 'deny', () => setDoc(doc(db, `channel/${LOBBY}/posts/${seedPostId}/thread/visitor-no-ttl`), { ...visitorPost(), expiresAt: null })],
 
+  // --- an expiry has to be a real one, not the year 3000 ---
+  ['write a message expiring in a year', 'deny', () => setDoc(doc(db, `channel/${LOBBY}/posts/visitor-far`), { ...visitorPost(), expiresAt: hour(24 * 365) })],
+  ['write a message that already expired', 'deny', () => setDoc(doc(db, `channel/${LOBBY}/posts/visitor-past`), { ...visitorPost(), expiresAt: hour(-1) })],
+
+  // --- the welcome message is the one exemption ---
+  ['write the welcome message', 'allow', () => setDoc(doc(db, `dm/${TEST_DM}/posts/welcome`), welcomePost())],
+  ['rewrite the welcome message', 'deny', () => updateDoc(doc(db, `dm/${TEST_DM}/posts/welcome`), { text: 'gekapert' })],
+  ['claim the exemption under another id', 'deny', () => setDoc(doc(db, `dm/${TEST_DM}/posts/not-welcome`), welcomePost())],
+  ['claim the exemption as someone else', 'deny', () => setDoc(doc(db, `dm/${TEST_DM}/posts/welcome2`), welcomePost({ author: SOFIA }))],
+  ['claim the exemption in a channel', 'deny', () => setDoc(doc(db, `channel/${LOBBY}/posts/welcome`), welcomePost())],
+
   // --- visitor content stays editable ---
   ['edit an own message', 'allow', () => updateDoc(doc(db, `channel/${LOBBY}/posts/visitor-ok`), { text: 'korrigiert' })],
   ['promote an own message to seed', 'deny', () => updateDoc(doc(db, `channel/${LOBBY}/posts/visitor-ok`), { isSeed: true })],
@@ -90,6 +110,7 @@ for (const [label, expected, run] of cases) {
 // Put the seeded data back the way it was.
 await updateDoc(seedPostRef, { emoticons: originalEmoticons });
 await deleteDoc(doc(db, `channel/${LOBBY}/posts/${seedPostId}/thread/visitor-ok`));
+await deleteDoc(doc(db, `dm/${TEST_DM}/posts/welcome`));
 
 console.log(failed === 0 ? '\nAll cases behave as expected.' : `\n${failed} case(s) differ.`);
 process.exit(failed === 0 ? 0 : 1);
