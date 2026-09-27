@@ -1,0 +1,46 @@
+rules_version = '2';
+
+// Storage layout used by cloud-storage.service.ts:
+//   appendix/{channelId}/{timestamp}.{ext}   message attachments
+//   profilePic/{userId}/{userId}.{ext}       avatars
+//
+// Guests are not authenticated (see firebase-auth.service.ts guestLogin),
+// so request.auth is null for them and cannot be required here.
+// These rules therefore restrict WHAT may be uploaded, not WHO uploads it.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isImage() {
+      return request.resource.contentType is string
+        && request.resource.contentType.matches('image/(png|jpeg|jpg|gif|webp|bmp|svg\\+xml)');
+    }
+
+    function isPdf() {
+      return request.resource.contentType is string
+        && request.resource.contentType == 'application/pdf';
+    }
+
+    function underMegabytes(max) {
+      return request.resource.size > 0
+        && request.resource.size < max * 1024 * 1024;
+    }
+
+    // Message attachments. Download URLs are embedded in post texts,
+    // so reading has to stay public.
+    match /appendix/{channelId}/{fileName} {
+      allow read: if true;
+      allow write: if (isImage() || isPdf()) && underMegabytes(5);
+    }
+
+    // Avatars. The file name is derived from the user id, so a user
+    // replacing their picture overwrites the same path - write covers that.
+    match /profilePic/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if isImage() && underMegabytes(2);
+    }
+
+    // Any path not matched above is denied by default - no catch-all needed.
+    // (In Storage rules a catch-all `if false` would not override the
+    //  allows above anyway, since matching rules are OR-ed.)
+  }
+}
