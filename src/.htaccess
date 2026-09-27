@@ -1,0 +1,14 @@
+# Angular is a single page app: every route has to be served by index.html,
+# but real files (js, css, images) must still be served directly.
+#
+# Copied into the build output by the `assets` entry in angular.json, so a
+# full upload can no longer lose it - without this, reloading any page other
+# than / returns a 404 on Apache.
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} -s [OR]
+RewriteCond %{REQUEST_FILENAME} -l [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^.*$ - [NC,L]
+
+RewriteRule ^(.*) /index.html [NC,L]

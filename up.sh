@@ -6,8 +6,14 @@
 #   ./up.sh --check    verify only, deploy nothing
 #   ./up.sh --yes      verify and deploy without asking
 #
-# What it deploys: the TTL policies, the app, and the security rules - in
-# that order, which is the order docs/deploy.md explains.
+# What it deploys: the TTL policies and the security rules to Firebase, and
+# the built app to the All-Inkl webspace over FTPS - in the order
+# docs/deploy.md explains.
+#
+# The frontend does NOT live on Firebase Hosting. dabubble.richard-wezel.de is
+# served by Apache at All-Inkl, so the app is uploaded, not `firebase deploy`d.
+# Credentials go in deploy.config.sh (gitignored); without it the script
+# builds and tells you what to upload by hand.
 #
 # What it does NOT do: seed. Seeding deletes every user, channel and
 # conversation and writes the demo data fresh. That is a one-time migration
@@ -31,6 +37,12 @@ fi
 
 FIREBASE="./node_modules/.bin/firebase"
 NG="./node_modules/.bin/ng"
+DIST="dist/dabubble/browser"
+
+# Optional: FTP credentials for the All-Inkl webspace. See
+# deploy.config.sh.example.
+# shellcheck disable=SC1091
+[ -f deploy.config.sh ] && . ./deploy.config.sh
 
 CHECK_ONLY=false
 ASSUME_YES=false
@@ -62,6 +74,34 @@ quietly() {
 }
 
 
+# Mirrors the build output onto the webspace. --delete removes what is no
+# longer in the build; Angular hashes its filenames, so without it every old
+# bundle would pile up on the server forever.
+upload_app() {
+  if [ -z "${FTP_HOST:-}" ] || [ -z "${FTP_USER:-}" ] || [ -z "${FTP_PASS:-}" ]; then
+    printf '    \033[33m%s\033[0m\n' "No deploy.config.sh - skipping the upload."
+    cat <<MANUAL
+    Upload the contents of $DIST to the subdomain directory yourself,
+    including the .htaccess. To let this script do it, copy
+    deploy.config.sh.example to deploy.config.sh and fill it in.
+MANUAL
+    return 0
+  fi
+
+  local tls="set ftp:ssl-force true; set ssl:verify-certificate true;"
+  [ "${FTP_USE_TLS:-true}" = true ] || tls="set ftp:ssl-allow false;"
+
+  lftp -c "
+    $tls
+    open -u '$FTP_USER','$FTP_PASS' '$FTP_HOST';
+    mirror --reverse --delete --parallel=4 --verbose \
+      --exclude-glob .git-ftp.log \
+      '$DIST' '${FTP_DIR:-/}';
+  "
+  ok "uploaded to ${FTP_HOST}${FTP_DIR:-/}"
+}
+
+
 # ---------------------------------------------------------------- preflight
 
 step "Preflight"
@@ -70,6 +110,9 @@ step "Preflight"
 [ -x "$NG" ]       || fail "The Angular CLI is missing. Run: npm ci"
 [ -f src/environments/environment.development.ts ] \
   || fail "src/environments/environment.development.ts is missing (it is gitignored). Copy it from the Firebase console."
+if [ -n "${FTP_HOST:-}" ] && ! command -v lftp >/dev/null 2>&1; then
+  fail "deploy.config.sh is set up but lftp is missing. Run: brew install lftp"
+fi
 
 if [ -n "$(git status --porcelain)" ]; then
   fail "The working tree has uncommitted changes. Commit or stash them first - a release should be reproducible from a commit."
@@ -119,6 +162,14 @@ quietly "The rule checks (reproduce with: npm run emulators, then npm run seed &
 ok "storage and firestore rules behave as expected"
 
 if [ "$CHECK_ONLY" = true ]; then
+  if [ -n "${FTP_HOST:-}" ] && [ -n "${FTP_PASS:-}" ]; then
+    step "Upload preview"
+    lftp -c "
+      set ftp:ssl-force true; set ssl:verify-certificate true;
+      open -u '$FTP_USER','$FTP_PASS' '$FTP_HOST';
+      mirror --reverse --delete --dry-run --verbose '$DIST' '${FTP_DIR:-/}';
+    " || fail "Could not reach the FTP server."
+  fi
   printf '\n\033[32mAll checks passed. Nothing deployed (--check).\033[0m\n'
   exit 0
 fi
@@ -133,7 +184,8 @@ cat <<SUMMARY
     project   $PROJECT
     commit    $(git rev-parse --short HEAD)  $(git log -1 --pretty=%s)
 
-    will deploy   TTL policies, the app, the security rules
+    will deploy   TTL policies and rules to Firebase
+                  the build in $DIST to ${FTP_HOST:-<no deploy.config.sh - manual upload>}${FTP_DIR:-}
     will NOT do   seeding - production data stays as it is
 SUMMARY
 
@@ -150,10 +202,9 @@ step "Deploying TTL policies"
 "$FIREBASE" deploy --only firestore:indexes
 ok "indexes deployed"
 
-step "Deploying the app"
+step "Uploading the app"
 # Before the rules, so the newly deployed rules never face the previous build.
-"$NG" deploy
-ok "hosting deployed"
+upload_app
 
 step "Deploying security rules"
 "$FIREBASE" deploy --only firestore:rules,storage

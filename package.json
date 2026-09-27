@@ -14,8 +14,7 @@
     "seed:clear": "node seed/clear.mjs",
     "inspect": "node seed/inspect.mjs",
     "deploy:rules": "firebase deploy --only firestore:rules,storage",
-    "deploy:indexes": "firebase deploy --only firestore:indexes",
-    "deploy:app": "ng deploy"
+    "deploy:indexes": "firebase deploy --only firestore:indexes"
   },
   "private": true,
   "dependencies": {

@@ -51,3 +51,6 @@ Thumbs.db
 .emulator-data/
 
 .codegpt
+
+# Deployment credentials
+deploy.config.sh

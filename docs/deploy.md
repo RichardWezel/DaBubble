@@ -50,11 +50,28 @@ data carries that field, so nothing is affected yet.
 Firestore is not punctual about TTL - expect hours of lag after a document
 expires, not minutes.
 
-## 3. Deploy the app
+## 3. Upload the app
+
+The frontend is **not** on Firebase Hosting. `dabubble.richard-wezel.de` is
+served by Apache at All-Inkl, so the build gets uploaded to the webspace.
 
 ```bash
-npm run build && npm run deploy:app
+npm run build
 ```
+
+Then upload everything in `dist/dabubble/browser/` into the subdomain's
+directory - **including the `.htaccess`**, which is what makes reloading a
+route other than `/` work instead of returning a 404. It is generated into
+the build now (see the `assets` entry in `angular.json`), so it can no longer
+be forgotten.
+
+`./up.sh` does this step over FTPS once `deploy.config.sh` is filled in; see
+deploy.config.sh.example.
+
+`git-ftp` is the wrong tool here even though it is installed: it uploads what
+is tracked in git, and `dist/` is generated and gitignored. `lftp mirror`
+compares the local folder against the server and transfers the difference,
+which is what a build directory needs.
 
 The new app against the old data shows an empty workspace: the `posts`
 subcollections and the `dm` collection do not exist yet. Nothing breaks, it

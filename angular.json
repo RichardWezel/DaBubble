@@ -32,6 +32,11 @@
                 "glob": "**/*",
                 "input": "node_modules/path-to-noto-font",
                 "output": "assets/fonts"
+              },
+              {
+                "glob": ".htaccess",
+                "input": "src",
+                "output": "/"
               }
             ],
             "styles": [

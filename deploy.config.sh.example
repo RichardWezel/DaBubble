@@ -1,0 +1,24 @@
+# Copy this to deploy.config.sh and fill it in. deploy.config.sh is gitignored
+# - it holds a password, so it must never be committed or pasted anywhere.
+#
+#   cp deploy.config.sh.example deploy.config.sh
+#   chmod 600 deploy.config.sh
+#
+# All-Inkl details are in KAS: Domains -> the subdomain shows its directory,
+# FTP -> FTP accounts shows the host and user.
+
+# Usually ftp.<your-domain> or wXXXXXXX.kasserver.com
+FTP_HOST="ftp.richard-wezel.de"
+
+# The FTP account, typically something like ftp1234567
+FTP_USER=""
+
+FTP_PASS=""
+
+# The directory the subdomain points at, as seen over FTP.
+# For a subdomain All-Inkl normally creates a folder of the same name.
+FTP_DIR="/dabubble.richard-wezel.de"
+
+# Leave this on. All-Inkl supports FTP over TLS, and plain FTP would send the
+# password and the whole upload unencrypted.
+FTP_USE_TLS=true
