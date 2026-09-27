@@ -73,10 +73,13 @@ AHEAD="$(git rev-list --count origin/main..HEAD 2>/dev/null || echo 0)"
 [ "$AHEAD" = "0" ] || printf '    \033[33m%s\033[0m\n' "$AHEAD commit(s) not pushed yet - the release will contain them"
 [ "$AHEAD" = "0" ] && ok "in sync with origin/main"
 
-if ! "$FIREBASE" projects:list >/dev/null 2>&1; then
-  fail "Not authenticated. Run: npx firebase login"
+# Only needed to deploy; --check has nothing to authenticate for.
+if [ "$CHECK_ONLY" != true ]; then
+  if ! "$FIREBASE" projects:list >/dev/null 2>&1; then
+    fail "Not authenticated. Run: npx firebase login"
+  fi
+  ok "firebase cli authenticated"
 fi
-ok "firebase cli authenticated"
 
 
 # ------------------------------------------------------------------- verify
