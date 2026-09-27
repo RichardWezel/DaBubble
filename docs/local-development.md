@@ -74,3 +74,58 @@ file and commit that as the baseline *before* ever running
 `storage.rules` is complete and restricts uploads to images (plus PDF for
 message attachments) with a size cap — 5 MB under `appendix/`, 2 MB under
 `profilePic/`.
+
+## Seeding the demo data
+
+```bash
+npm run seed          # wipe the emulator and write the demo chats
+npm run seed:clear    # wipe only
+```
+
+The content lives in `seed/seed-data.mjs` - six people, four channels, four
+direct message threads, 53 messages with reactions and threads. Timestamps are
+relative to the run (`daysAgo` + time of day), so the conversations never read
+as stale.
+
+The seed writes the **new** subcollection layout, which the app does not use
+yet:
+
+```
+user/{uid}
+channel/{channelId}/posts/{postId}/thread/{replyId}
+dm/{dmId}/posts/{postId}/thread/{replyId}
+```
+
+`dmId` is both participant ids sorted and joined with `_`, so one conversation
+has exactly one document that both sides read and write.
+
+Everything written by the seed carries `isSeed: true` and `expiresAt: null`.
+Visitor content will carry the opposite, which is what lets the TTL policies
+(stage 5) clear it away without touching the demo.
+
+### Load-bearing ids
+
+Four document ids are referenced from application code and must exist, or
+guest login and signup break. They live in `src/config/seed-ids.json`, are
+re-exported as named constants from `src/config/seed-ids.ts`, and the seed
+verifies all four at the end of every run.
+
+| Constant | Used for |
+|---|---|
+| `GUEST_USER_ID` | the account behind the "Gäste-Login" button |
+| `WELCOME_DM_SENDER_ID` | sender of the welcome DM every new user receives |
+| `SECOND_DM_CONTACT_ID` | second DM contact every new user receives |
+| `DEFAULT_CHANNEL_ID` | channel every new signup is added to |
+
+### Seeding production
+
+Deliberately awkward - it needs the flag *and* the environment variable:
+
+```bash
+SEED_ALLOW_PRODUCTION=yes npm run seed -- --target=production
+```
+
+This wipes and rewrites the live data, so it belongs in stage 6 and nowhere
+else. Note that it does not clear Cloud Storage: the storage rules deny
+deletes on purpose, so old attachments under `appendix/` have to go via the
+Firebase console or the Admin SDK.

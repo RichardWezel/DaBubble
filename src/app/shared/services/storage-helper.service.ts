@@ -3,6 +3,7 @@ import { PostInterface } from '../interfaces/post.interface';
 import { ChannelInterface } from '../interfaces/channel.interface';
 import { UserInterface } from '../interfaces/user.interface';
 import { UidService } from './uid.service';
+import { SECOND_DM_CONTACT_ID, WELCOME_DM_SENDER_ID } from '../../../config/seed-ids';
 
 @Injectable({
   providedIn: 'root'
@@ -78,8 +79,8 @@ export class StorageHelperService {
         id: uid,
         posts: [],
       },
-      this.generateNewUserDM('W9KgJ5N5ghBMuSpBa3T4', true, userData.name),
-      this.generateNewUserDM('ZRYJ8UqWXCJhBnYKGw9o', false, userData.name),
+      this.generateNewUserDM(WELCOME_DM_SENDER_ID, true, userData.name),
+      this.generateNewUserDM(SECOND_DM_CONTACT_ID, false, userData.name),
       ],
     };
   }

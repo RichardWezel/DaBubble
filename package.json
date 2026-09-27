@@ -9,7 +9,9 @@
     "test": "ng test",
     "start:emu": "ng serve --configuration emulator",
     "emulators": "FIREBASE_CLI_EXPERIMENTS=webframeworks PATH=\"$(brew --prefix openjdk)/bin:$PATH\" firebase emulators:start --only auth,firestore,storage",
-    "test:rules": "node tools/check-storage-rules.mjs"
+    "test:rules": "node tools/check-storage-rules.mjs",
+    "seed": "node seed/seed.mjs",
+    "seed:clear": "node seed/clear.mjs"
   },
   "private": true,
   "dependencies": {

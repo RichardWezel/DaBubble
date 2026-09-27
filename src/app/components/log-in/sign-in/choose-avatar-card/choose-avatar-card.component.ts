@@ -8,6 +8,7 @@ import { Auth, createUserWithEmailAndPassword, getAuth, sendEmailVerification, U
 import { NavigationService } from '../../../../shared/services/navigation.service';
 import { CloudStorageService } from '../../../../shared/services/cloud-storage.service';
 import { ConfirmationModalComponent } from "../../../../shared/components/confirmation-modal/confirmation-modal.component";
+import { DEFAULT_CHANNEL_ID } from '../../../../../config/seed-ids';
 
 
 @Component({
@@ -189,7 +190,7 @@ export class ChooseAvatarCardComponent {
       avatar: this.signInService.signInData.img,
     });
     // Add the user to the default channel
-    await this.storage.addUsersToChannel('ZI3mXLel2lqYbDLe4mxl', [uid]);
+    await this.storage.addUsersToChannel(DEFAULT_CHANNEL_ID, [uid]);
   }
 
 

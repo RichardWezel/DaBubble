@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { CurrentUserInterface } from '../interfaces/current-user-interface';
 import { FirebaseError } from '@angular/fire/app';
 import { OpenCloseDialogService } from './open-close-dialog.service';
+import { DEFAULT_CHANNEL_ID, GUEST_USER_ID } from '../../../config/seed-ids';
 
 
 @Injectable({
@@ -39,8 +40,8 @@ export class FirebaseAuthService {
    * Updates the current user information and navigates to the workspace route with a reload option.
    */
   async guestLogin() {
-    sessionStorage.setItem("authUid", 'OZh1lRrCp4yn81Rw0KWh');
-    this.storage.authUid = 'OZh1lRrCp4yn81Rw0KWh';
+    sessionStorage.setItem("authUid", GUEST_USER_ID);
+    this.storage.authUid = GUEST_USER_ID;
     await this.getCurrentUser();
     this.router.navigate(['/workspace'], { reload: true } as any);
   }
@@ -130,7 +131,7 @@ export class FirebaseAuthService {
   async loginWithGoogleNewUser(user: any) {
     const userData = this.generateUserData(user);
     await this.storage.addUser(user.uid, userData);
-    await this.storage.addUsersToChannel('ZI3mXLel2lqYbDLe4mxl', [user.uid]);
+    await this.storage.addUsersToChannel(DEFAULT_CHANNEL_ID, [user.uid]);
     await this.loginWithGoogleExistingUser(user);
   }
 
