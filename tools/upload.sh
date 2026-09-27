@@ -44,28 +44,35 @@ TLS="set ftp:ssl-force true; set ssl:verify-certificate true;"
 
 connect="$TLS open -u '$FTP_USER','$FTP_PASS' '$FTP_HOST';"
 
+# lftp echoes the full ftp://user:password@host URL for every single file it
+# touches. Everything it prints goes through here so the password cannot end
+# up in a terminal scrollback, a log file, or a pasted bug report.
+redact() {
+  sed -E 's|://[^/@[:space:]]+:[^/@[:space:]]+@|://***:***@|g'
+}
+
 case "$MODE" in
   list)
     # Handy when you do not yet know which directory the subdomain points at.
     echo "Remote root:"
-    lftp -c "$connect cls -l /;"
+    lftp -c "$connect cls -l /;" 2>&1 | redact
     if [ -n "${FTP_DIR:-}" ] && [ "$FTP_DIR" != "/" ]; then
       echo
       echo "$FTP_DIR:"
-      lftp -c "$connect cls -l '$FTP_DIR';" || echo "  (does not exist)"
+      lftp -c "$connect cls -l '$FTP_DIR';" 2>&1 | redact || echo "  (does not exist)"
     fi
     ;;
   dry-run)
     [ -d "$DIST" ] || { echo "$DIST does not exist. Run: npm run build" >&2; exit 1; }
     echo "Dry run - nothing is transferred."
-    lftp -c "$connect mirror --reverse --delete --dry-run --verbose '$DIST' '${FTP_DIR:-/}';"
+    lftp -c "$connect mirror --reverse --delete --dry-run --verbose '$DIST' '${FTP_DIR:-/}';" 2>&1 | redact
     ;;
   upload)
     [ -d "$DIST" ] || { echo "$DIST does not exist. Run: npm run build" >&2; exit 1; }
     echo "Uploading $DIST -> ${FTP_HOST}${FTP_DIR:-/}"
     # --delete removes what is no longer in the build; Angular hashes its
     # filenames, so without it every old bundle would pile up forever.
-    lftp -c "$connect mirror --reverse --delete --parallel=4 --verbose '$DIST' '${FTP_DIR:-/}';"
+    lftp -c "$connect mirror --reverse --delete --parallel=4 --verbose '$DIST' '${FTP_DIR:-/}';" 2>&1 | redact
     echo "Done."
     ;;
 esac

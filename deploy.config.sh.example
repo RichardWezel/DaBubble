@@ -14,12 +14,12 @@
 # which case FTP_DIR is simply "/".
 
 # Usually ftp.<your-domain> or wXXXXXXX.kasserver.com
-FTP_HOST="ftp.richard-wezel.de"
+FTP_HOST="w01f7b32.kasserver.com"
 
 # The FTP account, typically something like ftp1234567
-FTP_USER=""
+FTP_USER="801962"
 
-FTP_PASS=""
+FTP_PASS="94R_:TRJ3SJ2dqKN"
 
 # The directory the subdomain points at, as seen over FTP.
 # For a subdomain All-Inkl normally creates a folder of the same name.

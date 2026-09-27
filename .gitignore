@@ -54,3 +54,4 @@ Thumbs.db
 
 # Deployment credentials
 deploy.config.sh
+deploy.config.sh.example
