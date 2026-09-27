@@ -10,9 +10,12 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
 
+    // SVG is deliberately excluded: it can carry scripts and Storage serves
+    // uploads inline, so an uploaded .svg would be a live page on the
+    // storage origin.
     function isImage() {
       return request.resource.contentType is string
-        && request.resource.contentType.matches('image/(png|jpeg|jpg|gif|webp|bmp|svg\\+xml)');
+        && request.resource.contentType.matches('image/(png|jpeg|jpg|gif|webp|bmp|avif)');
     }
 
     function isPdf() {

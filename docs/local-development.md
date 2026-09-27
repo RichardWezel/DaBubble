@@ -9,8 +9,8 @@ untouched.
 
 | Tool | Why | Install |
 |---|---|---|
-| Firebase CLI | runs the emulators, deploys rules | `npm i -g firebase-tools` |
-| Java 11+ | the Firestore and Storage emulators are Java processes | `brew install --cask temurin` |
+| Firebase CLI | runs the emulators, deploys rules | already a devDependency (`firebase-tools`) |
+| Java | the Firestore and Storage emulators are Java processes | `brew install openjdk` |
 | `src/environments/environment.development.ts` | holds the Firebase config; **gitignored**, so a fresh clone has to recreate it | copy from the Firebase console |
 
 ## Running
@@ -18,9 +18,24 @@ untouched.
 Two terminals:
 
 ```bash
-npm run emulators     # firebase emulators:start  -> UI on http://localhost:4000
+npm run emulators     # emulators + UI on http://localhost:4000
 npm run start:emu     # ng serve --configuration emulator -> app on http://localhost:4200
 ```
+
+Homebrew installs `openjdk` keg-only, so `java` is not on the global PATH.
+`npm run emulators` prepends it itself via `$(brew --prefix openjdk)/bin`, so
+there is nothing to add to `~/.zshrc`. On a machine without Homebrew, put
+`java` on the PATH and drop that prefix from the script.
+
+The script also carries two flags that are not obvious:
+
+- `--only auth,firestore,storage` - the Hosting emulator is not needed,
+  `ng serve` handles that.
+- `FIREBASE_CLI_EXPERIMENTS=webframeworks` - `firebase.json` uses the
+  web-frameworks style hosting config (`"source": "."`), and the CLI refuses to
+  read that config at all without this experiment, even when Hosting is
+  excluded. Passing it as an env var keeps the experiment out of the global CLI
+  config.
 
 The emulators start with an **empty** database. That is intentional: the seed
 script (stage 1) fills it with a defined data set in seconds.
