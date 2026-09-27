@@ -8,7 +8,8 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The appli
 
 To develop against local Firebase emulators instead of the live project, see
 [docs/local-development.md](docs/local-development.md). For releasing to the
-live project, see [docs/deploy.md](docs/deploy.md).
+live project, see [docs/deploy.md](docs/deploy.md) - after the one-time
+migration described there, `./up.sh` verifies and releases in one step.
 
 ## Code scaffolding
 

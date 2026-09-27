@@ -125,6 +125,21 @@ the emulator does not run it.
   not after. If the demo data itself gets damaged, re-run step 4 - that is
   the whole point of keeping the seed in the repository.
 
+## Afterwards: releasing again
+
+Once the one-time migration above is done, later releases are one command:
+
+```bash
+./up.sh
+```
+
+It verifies before it deploys - production build, the unit tests, and both
+rule suites against a throwaway emulator - then deploys the indexes, the app
+and the rules in the order described above, asking first. `./up.sh --check`
+runs the verification and stops.
+
+It never seeds. That stays the separate, deliberate command below.
+
 ## Afterwards: the recurring reset
 
 The original reason for all of this was unwanted content sticking around
