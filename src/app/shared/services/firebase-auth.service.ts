@@ -259,14 +259,15 @@ export class FirebaseAuthService {
     const docSnapshot = await getDoc(userDocRef);
     if (!docSnapshot.exists()) {
       console.error("User nicht gefunden");
+      this.storage.doneLoading = true;
       return;
     }
-    // The channels and direct messages have to be there before the current
-    // conversation can be resolved - its id alone does not say which it is.
-    await Promise.all([this.storage.channelsReady, this.storage.subscribeToDms(docSnapshot.id)]);
     this.storage.currentUser = this.extractUserData(docSnapshot);
-    this.storage.openCurrentConversation();
-    this.finalizeCurrentUser();
+    // Deliberately not awaited: the caller navigates as soon as this resolves,
+    // and the workspace has a loader for the rest. Waiting here for the
+    // channel and conversation snapshots meant two more round trips before
+    // anything appeared - on a phone long enough that the button looked dead.
+    this.loadWorkspaceData(docSnapshot.id);
   }
 
 
@@ -280,10 +281,33 @@ export class FirebaseAuthService {
   extractUserData(snapshot: any): CurrentUserInterface {
     let userData = snapshot.data() as CurrentUserInterface;
     userData.id = snapshot.id;
-    userData.currentChannel = this.storage.determineCurrentChannel(userData);
+    // Only what is known without a round trip. Picking a conversation needs
+    // the channel list, which loadWorkspaceData fills in once it arrives.
+    userData.currentChannel = sessionStorage.getItem('currentChannel') ?? undefined;
     userData.threadOpen = this.storage.currentUser.threadOpen || false;
     userData.postId = this.storage.currentUser.postId || '';
     return userData;
+  }
+
+
+  /**
+   * Finishes signing in once the channel list and the user's conversations
+   * have arrived: picks the conversation to show, starts its message
+   * listener, and takes the workspace out of its loading state.
+   * @param userId - the signed-in user's id
+   */
+  private async loadWorkspaceData(userId: string): Promise<void> {
+    try {
+      await Promise.all([this.storage.channelsReady, this.storage.subscribeToDms(userId)]);
+      if (!this.storage.currentUser.currentChannel) {
+        this.storage.currentUser.currentChannel = this.storage.determineCurrentChannel(this.storage.currentUser);
+      }
+      this.storage.openCurrentConversation();
+      await this.finalizeCurrentUser();
+    } catch (error) {
+      console.error('Error loading the workspace:', error);
+      this.storage.doneLoading = true;
+    }
   }
 
 

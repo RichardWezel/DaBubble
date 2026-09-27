@@ -28,7 +28,15 @@ export class LogInCardComponent {
     password: '',
   };
   passwordVisible: boolean = false;
-  isLoading: boolean = false;
+  /**
+   * Which sign-in is currently waiting on the network, if any.
+   *
+   * Every sign-in loads the user document, the channels and the conversations
+   * before it can show the workspace - on a phone long enough that an
+   * unmarked button looks broken. Tracking which one is running lets the
+   * button that was tapped say so, while the others only grey out.
+   */
+  busy: '' | 'email' | 'google' | 'guest' = '';
   mailInputIsFocused: boolean = false;
   passwordInputIsFocused: boolean = false;
   inputFieldCheck: boolean = false;
@@ -62,14 +70,49 @@ export class LogInCardComponent {
    */
   checkLogin(ngForm: NgForm) {
     this.checkIfFormValid(ngForm);
+    if (ngForm.invalid) return;
     this.authService.errorMessage = ''; // Reset error messagee
+    this.busy = 'email';
     signInWithEmailAndPassword(this.auth, this.loginData.email, this.loginData.password)
       .then(async (userCredential) => {
         await this.loginAsUser(userCredential);
       })
       .catch((error) => {
         this.showCorrectErrorMessage(error);
+      })
+      .finally(() => {
+        this.busy = '';
       });
+  }
+
+
+  /**
+   * Signs in as the demo guest.
+   *
+   * Everything the workspace needs is loaded before it navigates, so on a
+   * slow connection there are a few seconds between the tap and the screen
+   * changing - hence the busy state.
+   */
+  async loginAsGuest(): Promise<void> {
+    this.busy = 'guest';
+    try {
+      await this.authService.guestLogin();
+    } finally {
+      this.busy = '';
+    }
+  }
+
+
+  /**
+   * Signs in with Google. Busy state as above.
+   */
+  async loginWithGoogle(): Promise<void> {
+    this.busy = 'google';
+    try {
+      await this.authService.googleLogin();
+    } finally {
+      this.busy = '';
+    }
   }
 
 
