@@ -16,6 +16,7 @@ import { join } from 'node:path';
 import { initializeApp, applicationDefault } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
+import { getAuth } from 'firebase-admin/auth';
 
 const PROJECT_ID = JSON.parse(readFileSync('.firebaserc', 'utf8')).projects.default;
 
@@ -42,8 +43,10 @@ export function connect(argv) {
     // The Admin SDK talks to the emulator when this is set, and needs no
     // credentials in that case.
     const storagePort = JSON.parse(readFileSync('firebase.json', 'utf8')).emulators.storage.port;
+    const authPort = JSON.parse(readFileSync('firebase.json', 'utf8')).emulators.auth.port;
     process.env['FIRESTORE_EMULATOR_HOST'] = `127.0.0.1:${port}`;
     process.env['STORAGE_EMULATOR_HOST'] = `http://127.0.0.1:${storagePort}`;
+    process.env['FIREBASE_AUTH_EMULATOR_HOST'] = `127.0.0.1:${authPort}`;
     initializeApp({ projectId: PROJECT_ID, storageBucket: STORAGE_BUCKET });
     console.log(`Target: EMULATOR (firestore 127.0.0.1:${port}, storage 127.0.0.1:${storagePort})\n`);
   }
@@ -98,6 +101,34 @@ export async function verifyAccess(firestore) {
 /** The Cloud Storage bucket of the connected target. */
 export function bucket() {
   return getStorage().bucket();
+}
+
+
+/**
+ * Deletes every Firebase Auth account.
+ *
+ * Opt-in, never automatic: the seeded personas need no Auth accounts at all
+ * (the guest login does not authenticate), so the only thing this can remove
+ * is a real person's ability to sign in. A routine reset should leave that
+ * alone; a deliberate `--with-auth` is how you say otherwise.
+ */
+export async function deleteAllAuthUsers() {
+  const auth = getAuth();
+  let removed = 0;
+  let pageToken;
+  do {
+    const page = await auth.listUsers(1000, pageToken);
+    const uids = page.users.map(user => user.uid);
+    if (uids.length) {
+      const result = await auth.deleteUsers(uids);
+      removed += result.successCount;
+      if (result.failureCount) {
+        console.warn(`  ${result.failureCount} auth account(s) could not be deleted`);
+      }
+    }
+    pageToken = page.pageToken;
+  } while (pageToken);
+  return removed;
 }
 
 

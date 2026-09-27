@@ -5,12 +5,16 @@
  * it - deleting a document on its own would leave its posts and threads
  * behind as orphans.
  *
+ * Pass --with-auth to also delete every Firebase Auth account. That is not
+ * the default: the demo needs no Auth accounts, so the only thing it can
+ * remove is a real person's ability to sign in.
+ *
  * Also clears the uploads: message attachments under appendix/ and avatars
  * under profilePic/. The seeded personas use avatars shipped in src/assets,
  * so nothing in Storage belongs to the demo - everything there was uploaded
  * by a visitor and goes with the user documents it belonged to.
  */
-import { bucket, connect, verifyAccess } from './target.mjs';
+import { bucket, connect, deleteAllAuthUsers, verifyAccess } from './target.mjs';
 
 /** Deletes every document of a collection, subcollections included. */
 async function deleteCollection(firestore, name) {
@@ -28,7 +32,7 @@ async function deleteUploads(prefix) {
   return files.length;
 }
 
-export async function clearAll(firestore) {
+export async function clearAll(firestore, { withAuth = false } = {}) {
   let total = 0;
   for (const name of ['channel', 'dm', 'user']) {
     const count = await deleteCollection(firestore, name);
@@ -42,6 +46,9 @@ export async function clearAll(firestore) {
       console.warn(`  could not clear ${prefix}: ${error?.message ?? error}`);
     }
   }
+  if (withAuth) {
+    console.log(`  cleared auth: ${await deleteAllAuthUsers()} account(s)`);
+  }
   return total;
 }
 
@@ -49,7 +56,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const firestore = connect(process.argv);
   await verifyAccess(firestore);
   console.log('Clearing...');
-  const total = await clearAll(firestore);
+  const total = await clearAll(firestore, { withAuth: process.argv.includes('--with-auth') });
   console.log(`\nDone. ${total} top-level document(s) removed.`);
   process.exit(0);
 }

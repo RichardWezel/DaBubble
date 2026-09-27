@@ -84,12 +84,18 @@ exists, and that throws.
 ## 4. Clear and seed
 
 ```bash
-SEED_ALLOW_PRODUCTION=yes npm run seed -- --target=production
+SEED_ALLOW_PRODUCTION=yes npm run seed -- --target=production --with-auth
 ```
 
 This deletes the `user`, `channel` and `dm` collections including all
 subcollections, deletes the uploads under `appendix/` and `profilePic/`, and
-writes the demo data. It goes through the Admin SDK and so is not affected by
+writes the demo data.
+
+`--with-auth` additionally wipes Firebase Authentication. It is right for this
+one-time migration, where the only accounts are old test logins, and wrong as
+a habit: the demo needs no Auth accounts at all - the guest login does not
+authenticate - so later on the only thing that flag can remove is a real
+person's ability to sign in. Leave it off for the recurring reset. It goes through the Admin SDK and so is not affected by
 the security rules - which is necessary, because the rules forbid clients
 from creating `isSeed` documents.
 
@@ -174,6 +180,14 @@ A full reset clears those:
 ```bash
 SEED_ALLOW_PRODUCTION=yes npm run seed -- --target=production
 ```
+
+Without `--with-auth`, so people who registered keep being able to sign in.
+
+One rough edge to know about: the reset deletes their profile document, and
+only the Google login rebuilds a missing one. Someone who registered with an
+email address would sign in successfully and land without a profile, because
+`getCurrentUser` only logs "User nicht gefunden". Worth fixing before the
+first recurring reset that happens with real users on the system.
 
 Monthly by hand is fine. It only takes the one command, and step 1 tells you
 beforehand whether anyone would lose an account. Automating it later means a

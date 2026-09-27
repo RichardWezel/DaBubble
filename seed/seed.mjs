@@ -14,6 +14,7 @@
  *
  *   npm run seed                  -> emulator
  *   npm run seed:clear            -> wipe the emulator
+ *   ... --with-auth               -> also delete every Firebase Auth account
  *   SEED_ALLOW_PRODUCTION=yes npm run seed -- --target=production
  *
  * Runs through the Admin SDK: the security rules forbid clients from
@@ -130,7 +131,7 @@ async function verifyLoadBearingIds(firestore) {
 const firestore = connect(process.argv);
 await verifyAccess(firestore);
 console.log('Clearing existing data...');
-await clearAll(firestore);
+await clearAll(firestore, { withAuth: process.argv.includes('--with-auth') });
 console.log('\nSeeding...');
 await seed(firestore);
 await verifyLoadBearingIds(firestore);
