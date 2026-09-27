@@ -47,6 +47,20 @@ step()  { printf '\n\033[1m==> %s\033[0m\n' "$1"; }
 ok()    { printf '    \033[32m%s\033[0m\n' "$1"; }
 fail()  { printf '\n\033[31m%s\033[0m\n' "$1" >&2; exit 1; }
 
+LOG="$(mktemp -t up-sh)"
+trap 'rm -f "$LOG"' EXIT
+
+# Runs a command with its output hidden, and shows the output only if it
+# fails - progress bars are noise, a stack trace is not.
+quietly() {
+  local description="$1"; shift
+  if ! "$@" >"$LOG" 2>&1; then
+    printf '\n\033[31m%s failed:\033[0m\n\n' "$description" >&2
+    cat "$LOG" >&2
+    exit 1
+  fi
+}
+
 
 # ---------------------------------------------------------------- preflight
 
@@ -85,23 +99,23 @@ fi
 # ------------------------------------------------------------------- verify
 
 step "Build"
-"$NG" build --configuration production >/dev/null
+quietly "The production build" "$NG" build --configuration production
 ok "production build succeeded"
 
 step "Unit tests"
 # Only the specs that actually assert something. The rest of the suite is
 # still the generated ng-generate scaffolding and fails on missing providers.
-CHROME_BIN="${CHROME_BIN:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}" \
-  "$NG" test --watch=false --browsers=ChromeHeadless \
-  --include='**/message-sanitizer.service.spec.ts' >/dev/null
+export CHROME_BIN="${CHROME_BIN:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
+quietly "The unit tests" "$NG" test --watch=false --browsers=ChromeHeadless \
+  --include='**/message-sanitizer.service.spec.ts'
 ok "message sanitizer: 14 passing"
 
 step "Security rules"
 # Seeds a throwaway emulator and runs both rule suites against it, so a rule
 # that would lock the app out never reaches the live project.
-"$FIREBASE" emulators:exec --only auth,firestore,storage --log-verbosity QUIET \
-  'node seed/seed.mjs > /dev/null && node tools/check-storage-rules.mjs > /dev/null && node tools/check-firestore-rules.mjs > /dev/null' \
-  >/dev/null 2>&1 || fail "Rule checks failed. Reproduce with: npm run emulators, then npm run seed && npm run test:rules"
+quietly "The rule checks (reproduce with: npm run emulators, then npm run seed && npm run test:rules)" \
+  "$FIREBASE" emulators:exec --only auth,firestore,storage --log-verbosity QUIET \
+  'node seed/seed.mjs && node tools/check-storage-rules.mjs && node tools/check-firestore-rules.mjs'
 ok "storage and firestore rules behave as expected"
 
 if [ "$CHECK_ONLY" = true ]; then
