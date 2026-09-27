@@ -74,31 +74,18 @@ quietly() {
 }
 
 
-# Mirrors the build output onto the webspace. --delete removes what is no
-# longer in the build; Angular hashes its filenames, so without it every old
-# bundle would pile up on the server forever.
+# Mirrors the build output onto the webspace, or says how to do it by hand.
 upload_app() {
-  if [ -z "${FTP_HOST:-}" ] || [ -z "${FTP_USER:-}" ] || [ -z "${FTP_PASS:-}" ]; then
+  if [ ! -f deploy.config.sh ]; then
     printf '    \033[33m%s\033[0m\n' "No deploy.config.sh - skipping the upload."
     cat <<MANUAL
     Upload the contents of $DIST to the subdomain directory yourself,
-    including the .htaccess. To let this script do it, copy
-    deploy.config.sh.example to deploy.config.sh and fill it in.
+    including the .htaccess. To let this script do it:
+      cp deploy.config.sh.example deploy.config.sh && chmod 600 deploy.config.sh
 MANUAL
     return 0
   fi
-
-  local tls="set ftp:ssl-force true; set ssl:verify-certificate true;"
-  [ "${FTP_USE_TLS:-true}" = true ] || tls="set ftp:ssl-allow false;"
-
-  lftp -c "
-    $tls
-    open -u '$FTP_USER','$FTP_PASS' '$FTP_HOST';
-    mirror --reverse --delete --parallel=4 --verbose \
-      --exclude-glob .git-ftp.log \
-      '$DIST' '${FTP_DIR:-/}';
-  "
-  ok "uploaded to ${FTP_HOST}${FTP_DIR:-/}"
+  ./tools/upload.sh
 }
 
 
@@ -162,13 +149,9 @@ quietly "The rule checks (reproduce with: npm run emulators, then npm run seed &
 ok "storage and firestore rules behave as expected"
 
 if [ "$CHECK_ONLY" = true ]; then
-  if [ -n "${FTP_HOST:-}" ] && [ -n "${FTP_PASS:-}" ]; then
+  if [ -f deploy.config.sh ]; then
     step "Upload preview"
-    lftp -c "
-      set ftp:ssl-force true; set ssl:verify-certificate true;
-      open -u '$FTP_USER','$FTP_PASS' '$FTP_HOST';
-      mirror --reverse --delete --dry-run --verbose '$DIST' '${FTP_DIR:-/}';
-    " || fail "Could not reach the FTP server."
+    ./tools/upload.sh --dry-run || fail "Could not reach the FTP server."
   fi
   printf '\n\033[32mAll checks passed. Nothing deployed (--check).\033[0m\n'
   exit 0

@@ -4,8 +4,14 @@
 #   cp deploy.config.sh.example deploy.config.sh
 #   chmod 600 deploy.config.sh
 #
-# All-Inkl details are in KAS: Domains -> the subdomain shows its directory,
-# FTP -> FTP accounts shows the host and user.
+# Where to find the values in the All-Inkl KAS:
+#   FTP -> FTP-Zugaenge      host and user name
+#   Domains                  the directory the subdomain points at
+#
+# If you are unsure about FTP_DIR, leave it and run `npm run ftp:ls` - it
+# lists what the account actually sees, which is the quickest way to find the
+# right folder. Many All-Inkl FTP accounts are locked to one directory, in
+# which case FTP_DIR is simply "/".
 
 # Usually ftp.<your-domain> or wXXXXXXX.kasserver.com
 FTP_HOST="ftp.richard-wezel.de"

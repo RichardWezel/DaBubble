@@ -14,7 +14,10 @@
     "seed:clear": "node seed/clear.mjs",
     "inspect": "node seed/inspect.mjs",
     "deploy:rules": "firebase deploy --only firestore:rules,storage",
-    "deploy:indexes": "firebase deploy --only firestore:indexes"
+    "deploy:indexes": "firebase deploy --only firestore:indexes",
+    "upload": "tools/upload.sh",
+    "upload:check": "tools/upload.sh --dry-run",
+    "ftp:ls": "tools/upload.sh --list"
   },
   "private": true,
   "dependencies": {

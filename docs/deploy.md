@@ -65,8 +65,13 @@ route other than `/` work instead of returning a 404. It is generated into
 the build now (see the `assets` entry in `angular.json`), so it can no longer
 be forgotten.
 
-`./up.sh` does this step over FTPS once `deploy.config.sh` is filled in; see
-deploy.config.sh.example.
+From the terminal, once `deploy.config.sh` is filled in:
+
+```bash
+npm run ftp:ls        # what does the FTP account see? finds the right FTP_DIR
+npm run upload:check  # dry run - lists what would change, transfers nothing
+npm run upload        # the real thing
+```
 
 `git-ftp` is the wrong tool here even though it is installed: it uploads what
 is tracked in git, and `dist/` is generated and gitignored. `lftp mirror`
