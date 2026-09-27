@@ -26,10 +26,9 @@ export class InputfieldHelperService {
    * - email: ''
    * - online: false
    * - avatar: ''
-   * - dm: []
    */
   generateChannelTag(): UserInterface {
-    return { type: 'user', name: 'Channel', id: 'channel', email: '', online: false, avatar: '', dm: [] };
+    return { type: 'user', name: 'Channel', id: 'channel', email: '', online: false, avatar: '' };
   }
 
 
@@ -101,9 +100,7 @@ export class InputfieldHelperService {
       timestamp: new Date().getTime(),
       author: this.storage.currentUser.id || '',
       id: this.uid.generateUid(),
-      thread: false,
       emoticons: [],
-      threadMsg: [],
     }
   }
 

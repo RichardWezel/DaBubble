@@ -107,7 +107,7 @@
                 </div>
                 @if(!tagSearch.startsWith('#')) {
                   <span class="suggestion"
-                    (click)="formatter.addTag($event, { type: 'user', name: 'Everyone', id: 'channel', email: '', online: false, avatar: '', dm: []  })"
+                    (click)="formatter.addTag($event, { type: 'user', name: 'Everyone', id: 'channel', email: '', online: false, avatar: '' })"
                     [innerHTML]="'@Everyone'"></span>
                 }
                 @if (!tagSearch.startsWith('@')) {
@@ -145,7 +145,7 @@
                 </div>
                 @if(!tagSearch.startsWith('#')) {
                   <span class="suggestion"
-                    (click)="formatter.addTag($event, { type: 'user', name: 'Everyone', id: 'channel', email: '', online: false, avatar: '', dm: []  })"
+                    (click)="formatter.addTag($event, { type: 'user', name: 'Everyone', id: 'channel', email: '', online: false, avatar: '' })"
                     [innerHTML]="'@Everyone'"></span>
                 }
                 @if (!tagSearch.startsWith('@')) {

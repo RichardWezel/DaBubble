@@ -1,14 +1,48 @@
-import { inject, Injectable, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { inject, Injectable, OnDestroy } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
-import { collection, doc, addDoc, onSnapshot, setDoc, updateDoc, getDocs } from "firebase/firestore";
+import {
+  collection, collectionGroup, doc, addDoc, onSnapshot, setDoc, updateDoc,
+  getDoc, getDocs, query, where, orderBy, increment, arrayUnion, Timestamp
+} from "firebase/firestore";
 import { UserInterface } from '../interfaces/user.interface';
 import { ChannelInterface } from '../interfaces/channel.interface';
+import { DmInterface } from '../interfaces/dm.interface';
 import { PostInterface } from '../interfaces/post.interface';
+import { EmoticonsInterface } from '../interfaces/emoticons.interface';
 import { CurrentUserInterface } from '../interfaces/current-user-interface';
 import { UidService } from './uid.service';
-import { arrayUnion, arrayRemove } from 'firebase/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { StorageHelperService } from './storage-helper.service';
+
+/** How long a post written by a visitor survives before the TTL policy removes it. */
+const VISITOR_POST_LIFETIME_MS = 24 * 60 * 60 * 1000;
+
+export type ConversationType = 'channel' | 'dm';
+
+/** A thread reply found by search, together with where it lives. */
+export interface ThreadSearchHit {
+  thread: PostInterface;
+  parentType: ConversationType;
+  conversationId: string;
+  parentPostId: string;
+}
+
+/** A channel message found by search, together with its channel. */
+export interface ChannelPostSearchHit {
+  post: PostInterface;
+  channel: ChannelInterface;
+}
+
+/**
+ * Everything search can look through. Firestore has no "contains" query, so
+ * matching happens in memory - which means the messages have to be fetched
+ * first. They are no longer loaded on page load, so this is built on the
+ * first keystroke in the search field and reused until something is written.
+ */
+export interface SearchIndex {
+  channelPosts: ChannelPostSearchHit[];
+  threads: ThreadSearchHit[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -17,10 +51,19 @@ export class FirebaseStorageService implements OnDestroy {
   firestore: Firestore = inject(Firestore);
   uid = inject(UidService);
   storageHelper = inject(StorageHelperService);
+
   user: UserInterface[] = [];
   channel: ChannelInterface[] = [];
   CurrentUserChannel: ChannelInterface[] = [];
-  currentUser: CurrentUserInterface = { type: 'user', name: '', email: '', avatar: '', online: false, dm: [], id: '' };
+
+  /** Direct message conversations the current user takes part in. */
+  dms: DmInterface[] = [];
+  /** Messages of the conversation that is currently open. */
+  posts: PostInterface[] = [];
+  /** Replies of the thread that is currently open. */
+  threadPosts: PostInterface[] = [];
+
+  currentUser: CurrentUserInterface = { type: 'user', name: '', email: '', avatar: '', online: false, id: '' };
   profileId: string = '';
   authUid: string = '';
   doneLoading: boolean = true;
@@ -29,109 +72,337 @@ export class FirebaseStorageService implements OnDestroy {
   private userSubject: BehaviorSubject<UserInterface[]> = new BehaviorSubject<UserInterface[]>([]);
   public users$: Observable<UserInterface[]> = this.userSubject.asObservable();
 
+  /** Cached search index; null until the first search, dropped on every write. */
+  private searchIndex: Promise<SearchIndex> | null = null;
+
+  /** Resolves once the channel collection has arrived for the first time. */
+  channelsReady: Promise<void>;
+  private markChannelsReady: () => void = () => { };
+
   unsubUsers: () => void = () => { };
   unsubChannels: () => void = () => { };
+  unsubDms: () => void = () => { };
+  unsubPosts: () => void = () => { };
+  unsubThread: () => void = () => { };
 
   /**
-   * Initializes the service by subscribing to channel and user collections
-   * and fetching the current user.
-  */
+   * Subscribes to the collections that are needed globally. Posts and thread
+   * replies are subscribed to on demand, see openConversation/openThread.
+   */
   constructor() {
+    this.channelsReady = new Promise<void>((resolve) => { this.markChannelsReady = resolve; });
     this.unsubChannels = this.getChannelCollection();
     this.unsubUsers = this.getUserCollection();
   }
 
 
   /**
- * Cleans up all active subscriptions when the service is destroyed.
- */
+   * Cleans up all active subscriptions when the service is destroyed.
+   */
   ngOnDestroy(): void {
     this.unsubUsers();
     this.unsubChannels();
+    this.unsubDms();
+    this.unsubPosts();
+    this.unsubThread();
   }
 
 
+  // ---------------------------------------------------------------- paths
+
   /**
-   * Retrieves all threads the user is currently in. This function goes through all the channels the user is in and
-   * all the direct messages the user has and aggregates all the thread messages into a single array of objects.
-   * Each object contains the thread message and the parent channel or user object.
-   * 
-   * @returns An array of objects with the thread message and the parent channel or user.
+   * Builds the id of the conversation between two users. Sorting makes it the
+   * same id no matter who opens it; a conversation with yourself passes the
+   * same id twice.
+   * @param userA - one participant
+   * @param userB - the other participant
    */
-  getAllThreads(): { thread: PostInterface, parent: ChannelInterface | UserInterface }[] {
-    const threads: { thread: PostInterface, parent: ChannelInterface | UserInterface }[] = [];
-    const userChannel = this.channel.filter(channel => channel.user.includes(this.authUid));
-    const user = this.user.find(user => user.id === this.authUid);
-    threads.push(...this.storageHelper.getThreadsFromChannels(userChannel));
-    threads.push(...this.storageHelper.getThreadsFromDirectMessages(user?.dm, this.currentUser));
-    return threads;
+  buildDmId(userA: string, userB: string): string {
+    return [userA, userB].sort().join('_');
   }
 
 
   /**
-   * Funktion, um die Parent-Post-ID für einen gegebenen Channel und Thread zu finden.
-   * @param channelId - Die ID des Channels.
-   * @param threadId - Die ID des Threads.
-   * @returns Die ID des übergeordneten Posts oder undefined, wenn nicht gefunden.
+   * The two collections share one document layout, so most operations only
+   * need to know the parent path.
+   * @param type - whether the conversation is a channel or a direct message
+   * @param id - the channel or dm id
    */
-  findParentPostId(channelId: string, threadId: string): string | undefined {
-    const targetChannel = this.CurrentUserChannel.find(channel => channel.id === channelId);
-    if (!targetChannel) {
-      console.error(`Channel mit ID ${channelId} nicht gefunden.`);
-      return undefined;
-    }
-    for (const post of targetChannel?.posts!) {
-      if (post.threadMsg && post.threadMsg.length > 0) {
-        const foundThread = post.threadMsg.find(threadPost => threadPost.id === threadId);
-        if (foundThread) return post.id;
-      }
-    }
-    console.warn(`Thread mit ID ${threadId} im Channel ${channelId} nicht gefunden.`);
-    return undefined;
+  conversationPath(type: ConversationType, id: string): string {
+    return `${type}/${id}`;
   }
 
 
   /**
-   * Subscribes to the "channel" collection in Firestore and updates the local channel array.
+   * Whether the currently open conversation is a channel, a direct message,
+   * the "new message" screen, or nothing yet.
+   */
+  get currentConversationType(): ConversationType | 'newMessage' | '' {
+    const id = this.currentUser.currentChannel;
+    if (id && this.channel.some(channel => channel.id === id)) return 'channel';
+    if (id && this.dms.some(dm => dm.id === id)) return 'dm';
+    if (sessionStorage.getItem('currentChannel') === 'newMessage') return 'newMessage';
+    return '';
+  }
+
+
+  /** Path of the conversation that is currently open, or null if none is. */
+  get currentConversationPath(): string | null {
+    const type = this.currentConversationType;
+    if (type !== 'channel' && type !== 'dm') return null;
+    return this.conversationPath(type, this.currentUser.currentChannel!);
+  }
+
+
+  /**
+   * The other participant of a direct message. For a conversation with
+   * yourself that is the current user.
+   * @param dmId - the conversation id
+   */
+  dmContact(dmId: string | undefined): string {
+    const dm = this.dms.find(entry => entry.id === dmId);
+    if (!dm) return '';
+    return dm.participants.find(participant => participant !== this.currentUser.id) ?? this.currentUser.id ?? '';
+  }
+
+
+  // --------------------------------------------------------- subscriptions
+
+  /**
+   * Subscribes to the "channel" collection. Only channel metadata - the
+   * messages live in the posts subcollection.
    * @returns A function to unsubscribe from the snapshot listener.
    */
   getChannelCollection() {
     return onSnapshot(collection(this.firestore, "channel"), (snapshot) => {
-      this.channel = [];
-      snapshot.forEach((doc) => {
-        const channelData = doc.data() as ChannelInterface;
-        channelData.id = doc.id;
-        this.channel.push(channelData);
+      this.channel = snapshot.docs.map((entry) => ({ ...entry.data(), id: entry.id } as ChannelInterface));
+      this.markChannelsReady();
+    });
+  }
+
+
+  /**
+   * Subscribes to the "user" collection and updates the local user array.
+   * @returns A function to unsubscribe from the snapshot listener.
+   */
+  getUserCollection() {
+    return onSnapshot(collection(this.firestore, "user"), (snapshot) => {
+      this.user = snapshot.docs.map((entry) => ({ ...entry.data(), id: entry.id } as UserInterface));
+      this.userSubject.next(this.user);
+    });
+  }
+
+
+  /**
+   * Subscribes to the direct message conversations the given user is part of.
+   * @param userId - the current user's id
+   */
+  subscribeToDms(userId: string): Promise<void> {
+    this.unsubDms();
+    const conversations = query(
+      collection(this.firestore, "dm"),
+      where('participants', 'array-contains', userId)
+    );
+    return new Promise<void>((resolve) => {
+      this.unsubDms = onSnapshot(conversations, (snapshot) => {
+        this.dms = snapshot.docs.map((entry) => ({ ...entry.data(), id: entry.id } as DmInterface));
+        resolve();
       });
     });
   }
 
 
   /**
-   * Iterates over the channel collection and removes users from channels that are no longer existing in the user collection.
-   * This is a safety feature to ensure that deleted users are removed from all channels.
-   * @returns A Promise that resolves when all channels have been processed.
+   * Points the message listener at whatever conversation is currently open,
+   * and reopens the thread if one was open before a reload.
    */
-  async removeUsersFromChannels(): Promise<void> {
-    const { user: currentUsers, channel } = this;
-    const currentUserIds = new Set(currentUsers.map(u => u.id));
-    for (const channel of this.channel) {
-      const filteredUserIds = channel.user.filter(id => currentUserIds.has(id));
-      if (filteredUserIds.length === channel.user.length || !channel.id) continue;
-      try {
-        await updateDoc(doc(this.firestore, "channel", channel.id), { user: filteredUserIds });
-        channel.user = filteredUserIds;
-      } catch (error) {
-        console.error("Channel Update fehlgeschlagen:", channel.id, error);
-      }
+  openCurrentConversation() {
+    const type = this.currentConversationType;
+    const id = this.currentUser.currentChannel;
+    if (!id || (type !== 'channel' && type !== 'dm')) {
+      this.closeConversation();
+      this.closeThread();
+      return;
     }
+    this.openConversation(type, id);
+    if (this.currentUser.threadOpen && this.currentUser.postId) this.openThread(this.currentUser.postId);
+    else this.closeThread();
   }
 
 
   /**
-   * Filters the channel collection according to which channel contains the current user and uses it to fill currentUserChannel.
-   * 
-   * @returns 
+   * Swaps the posts listener over to another conversation. Called whenever the
+   * open channel or direct message changes.
+   * @param type - whether the conversation is a channel or a direct message
+   * @param id - the channel or dm id
+   */
+  openConversation(type: ConversationType, id: string) {
+    this.unsubPosts();
+    this.posts = [];
+    const messages = query(
+      collection(this.firestore, `${this.conversationPath(type, id)}/posts`),
+      orderBy('timestamp')
+    );
+    this.unsubPosts = onSnapshot(messages, (snapshot) => {
+      this.posts = snapshot.docs.map((entry) => ({ ...entry.data(), id: entry.id } as PostInterface));
+    });
+  }
+
+
+  /** Stops listening to the current conversation's posts. */
+  closeConversation() {
+    this.unsubPosts();
+    this.unsubPosts = () => { };
+    this.posts = [];
+  }
+
+
+  /**
+   * Swaps the thread listener over to another post.
+   * @param postId - the post whose replies should be loaded
+   */
+  openThread(postId: string) {
+    this.unsubThread();
+    this.threadPosts = [];
+    const path = this.currentConversationPath;
+    if (!path) return;
+    const replies = query(
+      collection(this.firestore, `${path}/posts/${postId}/thread`),
+      orderBy('timestamp')
+    );
+    this.unsubThread = onSnapshot(replies, (snapshot) => {
+      this.threadPosts = snapshot.docs.map((entry) => ({ ...entry.data(), id: entry.id } as PostInterface));
+    });
+  }
+
+
+  /**
+   * Opens the thread of the given post: remembers it on the current user and
+   * starts listening to its replies.
+   * @param postId - the post whose thread should be shown
+   */
+  showThread(postId: string) {
+    this.currentUser.postId = postId;
+    this.currentUser.threadOpen = true;
+    this.openThread(postId);
+  }
+
+
+  /** Closes the open thread and stops listening to it. */
+  hideThread() {
+    this.currentUser.threadOpen = false;
+    this.closeThread();
+  }
+
+
+  /**
+   * Shows the given post's thread, or closes it when it is already the one on
+   * screen.
+   * @param postId - the post whose thread was clicked
+   */
+  toggleThread(postId: string) {
+    const alreadyOpen = this.currentUser.threadOpen && this.currentUser.postId === postId;
+    if (alreadyOpen) this.hideThread();
+    else this.showThread(postId);
+  }
+
+
+  /** Stops listening to the open thread. */
+  closeThread() {
+    this.unsubThread();
+    this.unsubThread = () => { };
+    this.threadPosts = [];
+  }
+
+
+  // ------------------------------------------------------------- reading
+
+  /** The post the currently open thread belongs to. */
+  getThreadParentPost(): PostInterface | undefined {
+    return this.posts.find(post => post.id === this.currentUser.postId);
+  }
+
+
+  /**
+   * The search index, fetched on first use and reused afterwards. Concurrent
+   * callers share one fetch.
+   */
+  loadSearchIndex(): Promise<SearchIndex> {
+    if (!this.searchIndex) {
+      // A rejected promise must not stay in the cache, or one failed fetch
+      // would break search for the rest of the session.
+      this.searchIndex = this.buildSearchIndex().catch((error) => {
+        this.searchIndex = null;
+        throw error;
+      });
+    }
+    return this.searchIndex;
+  }
+
+
+  /**
+   * Drops the cached index so the next search picks up what was just written.
+   */
+  invalidateSearchIndex() {
+    this.searchIndex = null;
+  }
+
+
+  /**
+   * Fetches the messages of every channel the current user is in, plus every
+   * thread reply they can see.
+   */
+  private async buildSearchIndex(): Promise<SearchIndex> {
+    const myChannels = this.channel.filter(entry => entry.user.includes(this.currentUser.id ?? ''));
+    const [postsPerChannel, threads] = await Promise.all([
+      Promise.all(myChannels.map(channel => this.fetchChannelPosts(channel))),
+      this.fetchVisibleThreads(),
+    ]);
+    return { channelPosts: postsPerChannel.flat(), threads };
+  }
+
+
+  /**
+   * All messages of one channel, paired with the channel for the result list.
+   * @param channel - the channel to read
+   */
+  private async fetchChannelPosts(channel: ChannelInterface): Promise<ChannelPostSearchHit[]> {
+    const snapshot = await getDocs(collection(this.firestore, `channel/${channel.id}/posts`));
+    return snapshot.docs.map(entry => ({
+      post: { ...entry.data(), id: entry.id } as PostInterface,
+      channel,
+    }));
+  }
+
+
+  /**
+   * Every thread reply from the channels and conversations the current user
+   * can see, with the conversation and parent post taken from the path.
+   */
+  private async fetchVisibleThreads(): Promise<ThreadSearchHit[]> {
+    const replies = await getDocs(collectionGroup(this.firestore, 'thread'));
+    const visible = new Set<string>([
+      ...this.channel.filter(entry => entry.user.includes(this.currentUser.id ?? '')).map(entry => entry.id!),
+      ...this.dms.map(entry => entry.id!),
+    ]);
+
+    return replies.docs.flatMap((entry) => {
+      // channel|dm / {conversationId} / posts / {parentPostId} / thread / {replyId}
+      const [conversationType, conversationId, , parentPostId] = entry.ref.path.split('/');
+      if (!visible.has(conversationId)) return [];
+      return [{
+        thread: { ...entry.data(), id: entry.id } as PostInterface,
+        parentType: conversationType as ConversationType,
+        conversationId,
+        parentPostId,
+      }];
+    });
+  }
+
+
+  /**
+   * Filters the channel collection down to the ones the current user is a
+   * member of.
    */
   async getCurrentUserChannelCollection() {
     this.CurrentUserChannel = this.channel.filter(channel =>
@@ -145,7 +416,6 @@ export class FirebaseStorageService implements OnDestroy {
   /**
    * Checks if the current user is a member of the given channel.
    * @param users - An array of user IDs representing the members of the channel.
-   * @returns - 'true' if the current user's ID is included in the 'users' array, otherwise 'false'.
    */
   checkCurrentUserIsMemberOfChannel(users: string[]) {
     return users.includes(this.currentUser.id || '');
@@ -153,83 +423,88 @@ export class FirebaseStorageService implements OnDestroy {
 
 
   /**
-   * Subscribes to the "user" collection in Firestore and updates the local user array.
-   * @returns A function to unsubscribe from the snapshot listener.
+   * Removes users from channels that no longer exist in the user collection.
    */
-  getUserCollection() {
-    return onSnapshot(collection(this.firestore, "user"), (snapshot) => {
-      this.user = [];
-      snapshot.forEach((doc) => {
-        const userData = doc.data() as UserInterface;
-        userData.id = doc.id;
-        this.user.push(userData);
-      });
-      this.userSubject.next(this.user);
-    });
+  async removeUsersFromChannels(): Promise<void> {
+    const currentUserIds = new Set(this.user.map(entry => entry.id));
+    for (const channel of this.channel) {
+      const filteredUserIds = channel.user.filter(id => currentUserIds.has(id));
+      if (filteredUserIds.length === channel.user.length || !channel.id) continue;
+      await updateDoc(doc(this.firestore, "channel", channel.id), { user: filteredUserIds });
+    }
   }
 
 
   /**
-  * Determines the current channel for the user based on session storage, channels, or DMs.
-  * @param userData - The current user's data.
-  * @returns The ID of the current channel or undefined if none found.
-  */
+   * Determines the conversation to open, from session storage, the user's
+   * channels or their direct messages.
+   * @param userData - The current user's data.
+   */
   determineCurrentChannel(userData: CurrentUserInterface): string | undefined {
     const sessionChannel = sessionStorage.getItem("currentChannel");
     if (sessionChannel) return sessionChannel;
-    if (userData.id) {
-      const channelId = this.findUserChannel(userData.id);
-      if (channelId) {
-        sessionStorage.setItem("currentChannel", channelId);
-        return channelId;
-      }
-      return this.findUserDm(userData);
+    if (!userData.id) return undefined;
+    const channelId = this.channel.find(channel => channel.user.includes(userData.id!))?.id;
+    if (channelId) {
+      sessionStorage.setItem("currentChannel", channelId);
+      return channelId;
     }
-    return undefined;
+    const dmId = this.dms.find(dm => dm.participants.includes(userData.id!))?.id;
+    if (dmId) sessionStorage.setItem("currentChannel", dmId);
+    return dmId;
   }
 
 
   /**
-   * Finds a channel that includes the specified user ID.
-   * @param userId - The ID of the user to search for in channels.
-   * @returns The ID of the found channel or undefined if not found.
+   * Whether a user belongs to the seeded demo data. The security rules freeze
+   * the name and avatar of those, so the UI should not offer to edit them.
+   * @param userId - the user to check
    */
-  private findUserChannel(userId: string): string | undefined {
-    const channel = this.channel.find(channel => channel.user.includes(userId));
-    return channel?.id;
+  isSeedUser(userId: string | undefined): boolean {
+    return this.user.find(entry => entry.id === userId)?.isSeed === true;
   }
 
 
   /**
-  * Finds a direct message (DM) that includes the specified user ID as a contact.
-  * @param userData - The current user's data.
-  * @returns The ID of the found DM or undefined if not found.
-  */
-  private findUserDm(userData: CurrentUserInterface): string | undefined {
-    const dm = userData.dm.find(dm => dm.contact === userData.id);
-    sessionStorage.setItem("currentChannel", dm?.id || '');
-    return dm?.id;
+   * Whether a channel belongs to the seeded demo data. Its name, description
+   * and owner are frozen by the security rules; only membership may change.
+   * @param channelId - the channel to check
+   */
+  isSeedChannel(channelId: string | undefined): boolean {
+    return this.channel.find(entry => entry.id === channelId)?.isSeed === true;
   }
 
 
   /**
-   * Adds a new user to the Firestore "user" collection after Firebase Auth registration.
+   * Checks whether a user is online, based on the locally cached user list.
+   * @param userId - the user to check
+   */
+  isUserOnline(userId: string): boolean {
+    return this.user.find(entry => entry.id === userId)?.online ?? false;
+  }
+
+
+  // ------------------------------------------------------------- writing
+
+  /**
+   * Adds a new user after Firebase Auth registration, and creates the two
+   * direct messages every new user starts with.
    * @param authUid - The authenticated user's UID.
-   * @param userData - An object containing the user's name, email, and avatar.
+   * @param userData - name, email and avatar of the new user.
    */
   async addUser(authUid: string, userData: { name: string, email: string, avatar: string }) {
-    await setDoc(doc(this.firestore, "user", authUid), this.storageHelper.generateUser(authUid, userData, this.uid.generateUid()));
+    await setDoc(doc(this.firestore, "user", authUid), this.storageHelper.generateUser(userData));
+    await this.storageHelper.createStarterDms(this, authUid, userData.name);
   }
 
 
   /**
-  * Adds a new channel to the Firestore "channel" collection after sending the new channel form.
-  * @param channelData - An object containing the channel's name, description, and owner.
-  */
+   * Adds a new channel.
+   * @param channelData - name, description and owner of the new channel.
+   */
   async addChannel(channelData: { name: string, description: string, owner: string }) {
     try {
-      const channelsCollection = collection(this.firestore, "channel");
-      const docRef = await addDoc(channelsCollection, this.storageHelper.generateChannel(channelData));
+      const docRef = await addDoc(collection(this.firestore, "channel"), this.storageHelper.generateChannel(channelData));
       this.lastCreatedChannel = docRef.id;
       return docRef;
     } catch (error) {
@@ -240,19 +515,19 @@ export class FirebaseStorageService implements OnDestroy {
 
 
   /**
-    * Updates an existing user's profile in the Firestore "user" collection after sending the edit user profile form.
-    * @param userId - The ID of the user to update.
-    * @param userData - An object containing the updated user data.
-    */
+   * Updates an existing user's profile.
+   * @param userId - The ID of the user to update.
+   * @param userData - the fields to change.
+   */
   async updateUser(userId: string, userData: Partial<UserInterface>) {
     await updateDoc(doc(this.firestore, "user", userId), userData);
   }
 
 
   /**
-   * Updates an existing channel in the Firestore "channel" collection after sending the edit channel form.
+   * Updates an existing channel.
    * @param channelId - The ID of the channel to update.
-   * @param channelData - An object containing the updated channel data.
+   * @param channelData - the fields to change.
    */
   async updateChannel(channelId: string, channelData: Partial<ChannelInterface>) {
     try {
@@ -268,124 +543,100 @@ export class FirebaseStorageService implements OnDestroy {
 
 
   /**
-  * Überprüft, ob ein bestimmter Benutzer online ist, basierend auf den lokal gespeicherten Benutzerdaten.
-  * @param userId - Die ID des Benutzers, der überprüft werden soll.
-  * @returns `true` wenn der Benutzer online ist, `false` ansonsten.
-  */
-  isUserOnline(userId: string): boolean {
-    const user = this.user.find(u => u.id === userId);
-    return user ? user.online : false;
+   * Makes sure the conversation between two users exists and returns its id.
+   * Safe to call repeatedly - the id is derived from the participants, so a
+   * second call just rewrites the same document.
+   * @param userA - one participant
+   * @param userB - the other participant
+   */
+  async ensureDm(userA: string, userB: string): Promise<string> {
+    const id = this.buildDmId(userA, userB);
+    if (this.dms.some(entry => entry.id === id)) return id;
+
+    const reference = doc(this.firestore, "dm", id);
+    // Only write when it is really missing: writing over a seeded conversation
+    // would flip its isSeed flag, and the rules reject that.
+    if ((await getDoc(reference)).exists()) return id;
+    await setDoc(reference, { participants: [...new Set([userA, userB])], isSeed: false });
+    return id;
   }
 
 
   /**
-   * Writes a direct message (DM) post for a user and updates the Firestore "user" collection.
-   * @param userId - The ID of the user sending the DM.
-   * @param contact - The ID of the contact receiving the DM.
-   * @param newPost - The new post to add to the DM.
+   * Appends a message to a conversation. The id generated on the client
+   * becomes the document id, so the view can scroll to the message it just
+   * sent without waiting for the write to come back.
+   * @param type - whether the conversation is a channel or a direct message
+   * @param id - the channel or dm id
+   * @param newPost - the message to write
    */
-  async writeDm(userId: string, contact: string, newPost: PostInterface) {
-    let sendUser = this.user[this.user.findIndex(user => user.id === userId)];
-    let newDm = sendUser.dm ? sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)] : null;
-    if (newDm) {
-      newDm.posts.push(newPost);
-    } else {
-      if (!sendUser.dm) sendUser.dm = [this.storageHelper.generateDM(contact, this.uid.generateUid(), newPost)];
-      else sendUser.dm.push(this.storageHelper.generateDM(contact, this.uid.generateUid(), newPost));
-    }
-    await updateDoc(doc(this.firestore, "user", userId), {
-      dm: sendUser.dm
+  async addPost(type: ConversationType, id: string, newPost: PostInterface) {
+    const { id: postId, ...fields } = newPost;
+    await setDoc(doc(this.firestore, `${this.conversationPath(type, id)}/posts/${postId}`), {
+      ...fields,
+      threadCount: 0,
+      lastThreadTimestamp: null,
+      ...this.visitorFields(),
     });
-  };
+    this.invalidateSearchIndex();
+  }
 
 
   /**
-   * Creates a new empty direct message (DM) for a user and updates the Firestore "user" collection.
-   * @param contact - The ID of the contact receiving the DM.
+   * Appends a reply to a post's thread and keeps the parent's reply counter
+   * and last-reply timestamp in step.
+   * @param type - whether the conversation is a channel or a direct message
+   * @param id - the channel or dm id
+   * @param postId - the post being replied to
+   * @param newPost - the reply
    */
-  async createNewEmptyDm(user1: string, contact: string) {
-    let sendUser = this.user[this.user.findIndex(user => user.id === user1)];
-    if (!sendUser.dm) sendUser.dm = [this.storageHelper.generateDM(contact, this.uid.generateUid())];
-    else sendUser.dm.push(this.storageHelper.generateDM(contact, this.uid.generateUid()));
-    await updateDoc(doc(this.firestore, "user", user1), {
-      dm: sendUser.dm
+  async addThreadReply(type: ConversationType, id: string, postId: string, newPost: PostInterface) {
+    const parentPath = `${this.conversationPath(type, id)}/posts/${postId}`;
+    const { id: replyId, ...fields } = newPost;
+    await setDoc(doc(this.firestore, `${parentPath}/thread/${replyId}`), { ...fields, ...this.visitorFields() });
+    await updateDoc(doc(this.firestore, parentPath), {
+      threadCount: increment(1),
+      lastThreadTimestamp: newPost.timestamp,
     });
+    this.invalidateSearchIndex();
   }
 
 
   /**
-   * Writes a new post to a channel and updates the Firestore "channel" collection.
-   * @param channelId - The ID of the channel to add the post to.
-   * @param newPost - The new post to add.
+   * Changes the text of a message or of a thread reply.
+   * @param type - whether the conversation is a channel or a direct message
+   * @param id - the channel or dm id
+   * @param postId - the message to change
+   * @param text - the new text
+   * @param parentPostId - set when the message is a thread reply
    */
-  async writePosts(channelId: string, newPost: PostInterface) {
-    let currentChannel = this.channel[this.channel.findIndex(channel => channel.id === channelId)];
-    if (currentChannel) {
-      await updateDoc(doc(this.firestore, "channel", channelId), {
-        posts: [
-          ...currentChannel.posts ?? [],
-          newPost
-        ]
-      });
-    };
+  async updatePostText(type: ConversationType, id: string, postId: string, text: string, parentPostId?: string) {
+    await updateDoc(doc(this.firestore, this.postPath(type, id, postId, parentPostId)), { text });
+    this.invalidateSearchIndex();
   }
 
 
   /**
-   * Updates a specific post within a channel in the Firestore "channel" collection.
-   * 
-   * @param channelId - The ID of the channel containing the post to update.
-   * @param postId - The ID of the post to update.
-   * @param newPost - The new post data to update the existing post.
+   * Replaces the reactions of a message or of a thread reply.
+   * @param type - whether the conversation is a channel or a direct message
+   * @param id - the channel or dm id
+   * @param postId - the message to change
+   * @param emoticons - the new reaction list
+   * @param parentPostId - set when the message is a thread reply
    */
-  async updateChannelPost(channelId: string, postId: string, newPost: PostInterface) {
-    let currentChannel = this.channel[this.channel.findIndex(channel => channel.id === channelId)];
-    if (currentChannel) {
-      let post = currentChannel.posts?.find(post => post.id === postId);
-      if (post) {
-        post = this.storageHelper.generatePost(post, newPost);
-        await updateDoc(doc(this.firestore, "channel", channelId,), {
-          posts: currentChannel.posts
-        })
-      }
-    };
+  async updatePostEmoticons(type: ConversationType, id: string, postId: string, emoticons: EmoticonsInterface[], parentPostId?: string) {
+    await updateDoc(doc(this.firestore, this.postPath(type, id, postId, parentPostId)), { emoticons });
   }
 
 
   /**
-   * Updates a specific direct message (DM) post for a user in the Firestore "user" collection.
-   * 
-   * @param userId - The ID of the user whose DM post is to be updated.
-   * @param contact - The ID of the contact associated with the DM.
-   * @param postId - The ID of the post to be updated within the DM.
-   * @param newPost - The new post data to update the existing post.
-   */
-  async updateDmPost(userId: string, contact: string, postId: string, newPost: PostInterface) {
-    let sendUser = this.user[this.user.findIndex(user => user.id === userId)];
-    let newDm = sendUser.dm ? sendUser.dm[sendUser.dm.findIndex(dm => dm.contact === contact)] : null;
-    if (newDm) {
-      let post = newDm.posts.find(post => post.id === postId);
-      if (post) {
-        post = this.storageHelper.generatePost(post, newPost);
-        await updateDoc(doc(this.firestore, "user", userId), {
-          dm: sendUser.dm
-        })
-      }
-    }
-  }
-
-
-  /**
-   * Fügt mehrere Benutzer zu einem Channel hinzu.
-   * @param channelId - Die ID des Channels.
-   * @param newUserIds - Ein Array von Benutzer-IDs, die hinzugefügt werden sollen.
+   * Adds users to a channel.
+   * @param channelId - the channel
+   * @param newUserIds - the users to add
    */
   async addUsersToChannel(channelId: string, newUserIds: string[]): Promise<void> {
     try {
-      const channelDocRef = doc(this.firestore, "channel", channelId);
-      await updateDoc(channelDocRef, {
-        user: arrayUnion(...newUserIds)
-      });
+      await updateDoc(doc(this.firestore, "channel", channelId), { user: arrayUnion(...newUserIds) });
     } catch (error) {
       console.error(`Fehler beim Hinzufügen von Benutzern zum Channel "${channelId}":`, error);
       throw error;
@@ -394,14 +645,40 @@ export class FirebaseStorageService implements OnDestroy {
 
 
   /**
-   * Checks if a channel with the given name already exists, excluding the channel with the given ID.
-   * @param channelId - The ID of the channel to exclude from the search.
-   * @param newName - The name to check for existence.
-   * @returns A promise that resolves to true if a channel with the given name exists, false otherwise.
+   * Checks whether another channel already carries the given name.
+   * @param channelId - the channel to exclude from the check
+   * @param newName - the name to look for
    */
   async channelNameExists(channelId: string, newName: string): Promise<boolean> {
-    const channels = this.channel.filter(channel => channel.id !== channelId);
-    const channelNames = channels.map(channel => channel.name.toLowerCase());
-    return channelNames.includes(newName.toLowerCase());
+    return this.channel
+      .filter(channel => channel.id !== channelId)
+      .some(channel => channel.name.toLowerCase() === newName.toLowerCase());
+  }
+
+
+  // ------------------------------------------------------------- internals
+
+  /**
+   * Document path of a message, one level deeper when it is a thread reply.
+   * @param type - whether the conversation is a channel or a direct message
+   * @param id - the channel or dm id
+   * @param postId - the message
+   * @param parentPostId - set when the message is a thread reply
+   */
+  private postPath(type: ConversationType, id: string, postId: string, parentPostId?: string): string {
+    const base = `${this.conversationPath(type, id)}/posts`;
+    return parentPostId ? `${base}/${parentPostId}/thread/${postId}` : `${base}/${postId}`;
+  }
+
+
+  /**
+   * Fields that mark a document as visitor content: not part of the seed, and
+   * carrying an expiry the Firestore TTL policy acts on.
+   */
+  private visitorFields() {
+    return {
+      isSeed: false,
+      expiresAt: Timestamp.fromMillis(Date.now() + VISITOR_POST_LIFETIME_MS),
+    };
   }
 }

@@ -22,7 +22,7 @@ export class EmojiSelectorComponent {
   message: string = '';
   @Input() inputField?: InputfieldComponent;
   @Input() isInput: boolean = false;
-  @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
+  @Input() post: PostInterface = { text: '', author: '', timestamp: 0, id: '' };
   @Input() origin: string = '';
   @Input() isThread: boolean = false;
 
@@ -114,44 +114,23 @@ export class EmojiSelectorComponent {
 
 
   /**
-   * Updates the reaction of a post in the local storage.
-   * This function is called when a user adds or removes a reaction to a post.
-   * It uses the current user's channel and post ID to find the current post in the local storage.
-   * If the post is a thread, it updates the thread message with the new reaction.
-   * If the post is a regular post, it updates the post with the new reaction.
-   * @param event - The event containing the emoji to be added as a reaction.
+   * Persists the reactions of the post this selector belongs to.
+   *
+   * Reactions live on the post document itself, so this writes exactly one
+   * document - a thread reply sits one level deeper and needs the id of the
+   * post it belongs to.
+   * @param event - the event carrying the chosen emoji
    */
   postReaction(event: any) {
-    if (!this.storage.currentUser.currentChannel || !this.storage.currentUser.id) return;
-    let posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
-    let currentPost = posts?.find(post => post.id === this.storage.currentUser.postId);
-    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
-    let currentDm = curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel);
-    let dmPost = currentDm?.posts?.find(post => post.id === this.storage.currentUser.postId);
-    switch (true) {
-      case this.isThread && this.origin === 'channel':
-        let threadMsg = currentPost?.threadMsg?.find(thread => thread.id === this.post.id);
-        if (threadMsg) threadMsg.emoticons = this.post.emoticons;
-        this.storage.updateChannelPost(this.storage.currentUser.currentChannel, this.storage.currentUser.postId!, currentPost!);
-        break;
-      case this.isThread && this.origin === 'dm':
-        let dmThreadMsg = dmPost?.threadMsg?.find(thread => thread.id === this.post.id);
-        if (dmThreadMsg) dmThreadMsg.emoticons = this.post.emoticons;
-        this.storage.updateDmPost(this.storage.currentUser.id, currentDm?.contact!, this.storage.currentUser.postId!, dmPost!);
-        break;
-      case !this.isThread && this.origin === 'channel':
-        currentPost = posts?.find(post => post.id === this.post.id);
-        if (currentPost) currentPost.emoticons = this.post.emoticons;
-        this.storage.updateChannelPost(this.storage.currentUser.currentChannel, this.post.id, currentPost!);
-        break;
-      case !this.isThread && this.origin === 'dm':
-        dmPost = currentDm!.posts?.find(post => post.id === this.post.id);
-        if (dmPost) dmPost.emoticons = this.post.emoticons;
-        this.storage.updateDmPost(this.storage.currentUser.id, currentDm?.contact!, this.post.id, dmPost!);
-        break;
-    }
+    const type = this.storage.currentConversationType;
+    const conversationId = this.storage.currentUser.currentChannel;
+    if (!conversationId || !this.storage.currentUser.id || (type !== 'channel' && type !== 'dm')) return;
+
+    const parentPostId = this.isThread ? this.storage.currentUser.postId : undefined;
+    this.storage.updatePostEmoticons(type, conversationId, this.post.id, this.post.emoticons ?? [], parentPostId);
+
     if (event.emoji.post || event.emoji.isThread) {
-      this.post = { text: '', author: '', timestamp: 0, thread: false, id: '' };
+      this.post = { text: '', author: '', timestamp: 0, id: '' };
       this.origin = '';
       this.isThread = false;
     }

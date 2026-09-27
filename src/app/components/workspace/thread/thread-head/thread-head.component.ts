@@ -38,7 +38,7 @@ export class ThreadHeadComponent extends ChannelHeadComponent {
    */
   closeThread() {
     if (this.isLargeScreen) {
-      this.storage.currentUser.threadOpen = false
+      this.storage.hideThread();
     } else {
       this.viewService.setCurrentView('channel');
     }

@@ -16,6 +16,7 @@ import { SearchService } from '../../../../shared/services/search.service';
 import { OpenCloseDialogService } from '../../../../shared/services/open-close-dialog.service';
 import { Subscription } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
+import { MessageSanitizerService } from '../../../../shared/services/message-sanitizer.service';
 
 /**
  * SearchComponent handles the search functionality within the application,
@@ -36,11 +37,14 @@ export class SearchComponent {
   elementRef = inject(ElementRef);
   openCloseService = inject(OpenCloseDialogService);
   private viewService = inject(SetMobileViewService);
+  private messageSanitizer = inject(MessageSanitizerService);
   userInput: string = '';
   searchResults: SearchResult[] = [];
   selectedIndex: number = 0;
   dropDownIsOpen: boolean = false;
   dropdownElement: HTMLElement | undefined;
+  /** Counts searches so a late response can tell it has been superseded. */
+  private latestSearch = 0;
   placeholderText: string = 'Standard Placeholder';
 
   private searchSubject = new Subject<string>();
@@ -155,52 +159,46 @@ export class SearchComponent {
    * Searches for channels, users, channel posts, and threads if the input length is sufficient.
    */
   updateSearchResults(): void {
-    if (this.userInput.length >= 2) {
-      this.updateFoundedChannelsAndUsers();
-      this.updateFoundedThreads();
-    } else {
+    if (this.userInput.length < 2) {
       this.searchResults = [];
       this.selectedIndex = -1;
+      return;
     }
+    const input = this.userInput;
+    const search = ++this.latestSearch;
+    // Channels and users are already in memory, so show them straight away.
+    this.searchResults = [...this.search.findChannels(input), ...this.search.findUser(input)];
+    this.appendMessageResults(search, input);
   }
 
 
   /**
-   * Aggregates search results by finding matching channels, users, and channel posts.
+   * Adds the results that need a fetch - channel messages and thread replies.
+   * A response is dropped when the user has typed again since it was asked
+   * for, so a slow answer cannot push stale hits into a newer search.
+   * @param search - the number of the search this response belongs to
+   * @param input - the term that was searched for
    */
-  updateFoundedChannelsAndUsers(): void {
-    if (this.userInput) {
-      const channelMatches: SearchResultChannel[] = this.search.findChannels(this.userInput);
-      const userMatches: SearchResultUser[] = this.search.findUser(this.userInput);
-      const channelPostMatches: SearchResultChannelPost[] = this.search.findChannelsByPost(this.userInput);
-      this.searchResults = [...channelMatches, ...userMatches, ...channelPostMatches];
+  private async appendMessageResults(search: number, input: string): Promise<void> {
+    const [postMatches, index] = await Promise.all([
+      this.search.findChannelsByPost(input),
+      this.storage.loadSearchIndex(),
+    ]);
+    if (search !== this.latestSearch) return;
 
-      if (this.searchResults.length === 0) {
-        this.openCloseService.close('resultDropdown');
-        this.cd.detectChanges();
-      }
-    } else {
-      this.searchResults = [];
-      this.selectedIndex = -1;
-    }
-  }
+    const threadMatches: SearchResultThread[] = index.threads
+      .filter(({ thread }) => thread.text.toLowerCase().includes(input.toLowerCase()))
+      .map(({ thread, parentType, conversationId, parentPostId }) => ({
+        type: 'thread',
+        parentType,
+        parentId: conversationId,
+        parentPostId,
+        thread
+      }) as SearchResultThread);
 
-
-  /**
-   * Aggregates search results by finding matching threads.
-   */
-  updateFoundedThreads(): void {
-    const threads = this.storage.getAllThreads();
-    const threadMatches: SearchResultThread[] = threads.filter(({ thread }) =>
-      thread.text.toLowerCase().includes(this.userInput.toLowerCase())
-    ).map(({ thread, parent }) => ({
-      type: 'thread',
-      parentType: parent.type === 'channel' ? 'channel' : 'user',
-      parentId: parent.id || '',
-      thread
-    }) as SearchResultThread);
-
-    this.searchResults = [...this.searchResults, ...threadMatches];
+    this.searchResults = [...this.searchResults, ...postMatches, ...threadMatches];
+    if (this.searchResults.length === 0) this.openCloseService.close('resultDropdown');
+    this.cd.detectChanges();
   }
 
 
@@ -230,8 +228,7 @@ export class SearchComponent {
       const threadResult = result as SearchResultThread;
       if (threadResult.parentId) {
         this.navigation.setChannel(threadResult.parentId);
-        let postId = this.storage.findParentPostId(threadResult.parentId, threadResult.thread.id)
-        this.openThread(postId!);
+        this.openThread(threadResult.parentPostId);
         this.viewService.setCurrentView('thread');
       } else {
         console.error('Parent ID des Threads ist undefiniert.');
@@ -348,8 +345,7 @@ export class SearchComponent {
    * @param postId - The ID of the post to open or close the thread of.
    */
   openThread(postId: string): void {
-    this.storage.currentUser.postId = postId;
-    this.storage.currentUser.threadOpen = !this.storage.currentUser.threadOpen;
+    this.storage.showThread(postId);
   }
 
 
@@ -362,7 +358,8 @@ export class SearchComponent {
     if (!text) return ''; // Fallback für undefined
     if (!this.userInput) return text;
     const regex = new RegExp(`(${this.search.escapeRegExp(this.userInput)})`, 'gi');
-    const highlighted = text.replace(regex, '<span class="highlight" style="color: #797EF3; font-weight: 100;">$1</span>');
+    const safe = this.messageSanitizer.sanitize(text);
+    const highlighted = safe.replace(regex, '<span class="highlight">$1</span>');
     return this.sanitizer.bypassSecurityTrustHtml(highlighted);
   }
 }

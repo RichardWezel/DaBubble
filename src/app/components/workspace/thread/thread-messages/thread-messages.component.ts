@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ChannelMessagesComponent } from '../../channel/channel-messages/channel-messages.component';
 import { DateSeparatorComponent } from '../../../../shared/components/date-separator/date-separator.component';
 import { MessageComponent } from '../../../../shared/components/message/message.component';
+import { PostInterface } from '../../../../shared/interfaces/post.interface';
 
 @Component({
   selector: 'app-thread-messages',
@@ -19,47 +20,20 @@ export class ThreadMessagesComponent extends ChannelMessagesComponent {
 
 
   /**
-   * Retrieves the original post within a channel that started the thread.
-   * @returns {PostInterface} The original post that initiated the thread or a default empty post if not found.
+   * The post the open thread hangs off. Same lookup for channels and direct
+   * messages, since both keep their messages in the same stream.
+   * @returns {PostInterface} the parent post, or an empty placeholder
    */
-  getOriginalPostFromChannel() {
-    let posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
-    let post = posts?.find(post => post.id === this.storage.currentUser.postId);
-    return post ? post : { text: '', author: '', timestamp: 0, thread: false, id: '' };
+  getOriginalPost(): PostInterface {
+    return this.storage.getThreadParentPost() ?? { text: '', author: '', timestamp: 0, id: '' };
   }
 
 
   /**
-   * Retrieves all the thread messages associated with a specific original post in a channel.
-   * @returns {PostInterface[]} Array of thread messages or an empty array if none exist.
+   * Replies of the open thread, kept up to date by the storage service.
+   * @returns {PostInterface[]} the thread's replies
    */
-  getThreadOfPost() {
-    let posts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
-    let post = posts?.find(post => post.id === this.storage.currentUser.postId);
-    return post ? post.threadMsg : [];
-  }
-
-
-  /**
-   * Retrieves the original post within a direct message (DM) session that started the thread.
-   * @returns {PostInterface} The original post from a DM that initiated the thread or a default empty post if not found.
-   */
-  getOriginalPostFromDm() {
-    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
-    let posts = curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.posts;
-    let post = posts?.find(post => post.id === this.storage.currentUser.postId);
-    return post ? post : { text: '', author: '', timestamp: 0, thread: false, id: '' };
-  }
-
-
-  /**
-   * Retrieves all the thread messages associated with a specific original post in a direct message (DM) session.
-   * @returns {PostInterface[]} Array of thread messages or an empty array if none exist.
-   */
-  getThreadOfDm() {
-    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
-    let posts = curUser?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.posts;
-    let post = posts?.find(post => post.id === this.storage.currentUser.postId);
-    return post ? post.threadMsg : [];
+  getThreadPosts(): PostInterface[] {
+    return this.storage.threadPosts;
   }
 }

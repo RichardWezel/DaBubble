@@ -224,3 +224,9 @@ app-result-dropdown {
 
 
 }
+// Search term highlight. Was an inline style attribute before; those are
+// stripped by MessageSanitizerService, so the colour lives here now.
+.highlight {
+  color: #797EF3;
+  font-weight: 100;
+}

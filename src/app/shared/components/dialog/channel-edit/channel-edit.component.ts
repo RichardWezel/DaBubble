@@ -79,6 +79,16 @@ export class ChannelEditComponent {
   /**
    * Let appear the edit input to change the channel name.
    */
+  /**
+   * Whether the open channel may be renamed or re-described. Seeded demo
+   * channels are frozen by the security rules - only their member list moves -
+   * so offering the buttons would only produce a failed write.
+   */
+  canEditChannel(): boolean {
+    return !this.storage.isSeedChannel(this.storage.currentUser.currentChannel);
+  }
+
+
   editChannelName(): void {
     this.isEditingChannelName = true;
   }

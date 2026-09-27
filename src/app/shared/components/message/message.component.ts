@@ -1,6 +1,7 @@
 import { Component, ElementRef, inject, Input, OnChanges, OnInit, OnDestroy, SimpleChanges } from '@angular/core';
 import { PostInterface } from '../../interfaces/post.interface';
 import { AuthorService } from '../../services/author.service';
+import { MessageSanitizerService } from '../../services/message-sanitizer.service';
 import { UserInterface } from '../../interfaces/user.interface';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { NgStyle } from '@angular/common';
@@ -28,11 +29,12 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   sanitizer = inject(DomSanitizer);
   cloud = inject(CloudStorageService);
   private authorService: AuthorService = inject(AuthorService);
+  private messageSanitizer: MessageSanitizerService = inject(MessageSanitizerService);
   private viewService: SetMobileViewService = inject(SetMobileViewService);
 
   isLargeScreen: boolean = false;
 
-  @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
+  @Input() post: PostInterface = { text: '', author: '', timestamp: 0, id: '' };
   @Input() threadHead: boolean = false;
   @Input() origin: string = '';
   @Input() isThread: boolean = false;
@@ -115,9 +117,15 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    * @returns {string} The localized string representing the time of day of the last message in the thread.
    */
   lastThreadMsgTime(): string {
-    if (!this.post.threadMsg?.length) return '';
-    const date = new Date(this.post.threadMsg[this.post.threadMsg.length - 1].timestamp);
+    if (!this.post.lastThreadTimestamp) return '';
+    const date = new Date(this.post.lastThreadTimestamp);
     return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  }
+
+
+  /** Number of replies on this post. */
+  threadCount(): number {
+    return this.post.threadCount ?? 0;
   }
 
 
@@ -128,8 +136,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    * @param {string} postId - The ID of the post to open or close the thread of.
    */
   openThread(postId: string) {
-    this.storage.currentUser.postId = postId;
-    this.storage.currentUser.threadOpen = !this.storage.currentUser.threadOpen;
+    this.storage.toggleThread(postId);
     this.viewService.setCurrentView('thread');
   }
 
@@ -156,7 +163,20 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    * @returns {string} The trusted HTML string.
    */
   getText(text: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(text);
+    return this.sanitizer.bypassSecurityTrustHtml(this.messageSanitizer.sanitize(text));
+  }
+
+
+  /**
+   * Opens an attachment thumbnail in a new tab. The link lives in `data-href`
+   * because inline onclick handlers cannot survive sanitizing - see
+   * MessageSanitizerService.
+   * @param event - the click on the rendered message body
+   */
+  openAttachment(event: MouseEvent): void {
+    const thumbnail = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-href]');
+    const url = thumbnail?.dataset['href'];
+    if (url) window.open(url, '_blank', 'noopener,noreferrer');
   }
 
 
@@ -283,11 +303,8 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    * @param {String} postId 
    */
   handleClick(postId: string) {
-    this.openThread(postId)
-    if (!this.isLargeScreen) {
-      this.setView('thread');
-      this.storage.currentUser.threadOpen = true;
-    }
+    this.storage.showThread(postId);
+    if (!this.isLargeScreen) this.setView('thread');
   }
 
 

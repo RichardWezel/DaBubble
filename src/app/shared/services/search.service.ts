@@ -20,76 +20,16 @@ export class SearchService {
 
 
   /**
-   * Finds the ID of the direct message (DM) channel for a given user.
-   * Creates a new DM channel if one does not already exist.
-   * @param result - The UserInterface object representing the selected user.
-   * @returns A promise that resolves to the DM channel ID or undefined.
+   * Id of the conversation with the given user, created on first contact.
+   * @param result - the user to talk to
    */
   async findIdOfDM(result: UserInterface): Promise<string | undefined> {
-    const UserMatch = this.storage.user.find(user =>
+    const match = this.storage.user.find(user =>
       user.name.toLowerCase().includes(result.name.toLowerCase())
     );
-    if (UserMatch && this.findUserInDms(UserMatch)) {
-      return this.getDmContact(UserMatch?.id!);
-    } else if (UserMatch && !this.findUserInDms(UserMatch)) {
-      return await this.showNewDm(UserMatch);
-    } else {
-      return this.storage.currentUser.currentChannel;
-    }
-  }
-
-
-  /**
-  * Checks if a user is already in the current user's direct messages.
-  * @param UserMatch - The UserInterface object to check.
-  * @returns True if the user is in DMs, false otherwise.
-  */
-  findUserInDms(UserMatch: UserInterface): boolean {
-    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
-    return curUser!.dm.some(dm => dm.contact === UserMatch.id);
-  }
-
-
-  /**
-   * Retrieves the DM channel ID for a given user ID.
-   * @param IdOfUser - The ID of the user.
-   * @returns The DM channel ID or undefined if not found.
-   */
-  getDmContact(IdOfUser: string): string | undefined {
-    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
-    const dm = curUser?.dm.find(dm => dm.contact === IdOfUser);
-    return dm ? dm.id : undefined;
-  }
-
-
-  /**
-   * Creates a new direct message channel with the specified user.
-   * @param UserMatch - The UserInterface object representing the user to message.
-   * @returns A promise that resolves to the new DM channel ID or undefined.
-   */
-  async showNewDm(UserMatch: UserInterface): Promise<string | undefined> {
-    await this.createEmptyDms(UserMatch);
-    let curUser = this.storage.user.find(user => user.id === this.storage.currentUser.id);
-    let dmWithNewUser = curUser?.dm.find(dm => dm.contact === UserMatch.id);
-    if (dmWithNewUser) {
-      return dmWithNewUser!.id;
-    } else {
-      return this.storage.currentUser.currentChannel;
-    }
-  }
-
-
-  /**
-   * Creates empty DM channels between the current user and the specified user.
-   * @param match - The UserInterface object representing the user to message.
-   */
-  async createEmptyDms(match: UserInterface): Promise<void> {
-    let currentUserId = this.storage.currentUser.id;
-    let NewUserId = match.id;
-    if (currentUserId && NewUserId) {
-      await this.storage.createNewEmptyDm(currentUserId, NewUserId);
-      await this.storage.createNewEmptyDm(NewUserId, currentUserId);
-    }
+    const currentUserId = this.storage.currentUser.id;
+    if (!match?.id || !currentUserId) return this.storage.currentUser.currentChannel;
+    return await this.storage.ensureDm(currentUserId, match.id);
   }
 
 
@@ -123,29 +63,19 @@ export class SearchService {
 
 
   /**
-   * Searches for channel posts that include the user input in their text.
+   * Searches the messages of every channel the user is in. Backed by the
+   * storage service's search index, which is fetched once and reused - the
+   * messages are no longer all in memory, and Firestore cannot match
+   * substrings server-side.
    * @param userInput - The search term entered by the user.
-   * @returns An array of SearchResultChannelPost objects matching the search term.
+   * @returns The matching messages with the channel they belong to.
    */
-  findChannelsByPost(userInput: string): SearchResultChannelPost[] {
-    const channels: ChannelInterface[] = this.storage.CurrentUserChannel;
+  async findChannelsByPost(userInput: string): Promise<SearchResultChannelPost[]> {
     const inputLower = userInput.toLowerCase();
-    const matches: SearchResultChannelPost[] = [];
-
-    channels.forEach(channel => {
-      if (channel.posts) {
-        channel.posts.forEach(post => {
-          if (post.text.toLowerCase().includes(inputLower)) {
-            matches.push({
-              type: 'channel-post',
-              channel,
-              post
-            } as SearchResultChannelPost);
-          }
-        });
-      }
-    });
-    return matches;
+    const { channelPosts } = await this.storage.loadSearchIndex();
+    return channelPosts
+      .filter(({ post }) => post.text.toLowerCase().includes(inputLower))
+      .map(({ post, channel }) => ({ type: 'channel-post', channel, post } as SearchResultChannelPost));
   }
 
 

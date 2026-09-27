@@ -43,8 +43,11 @@ Thumbs.db
 
 # Firebase
 .firebase/
-*-debug.log
+*debug*.log
 .runtimeconfig.json
 /src/environments
+
+# Firebase emulators
+.emulator-data/
 
 .codegpt

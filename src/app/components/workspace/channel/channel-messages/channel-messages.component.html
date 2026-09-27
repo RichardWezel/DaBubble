@@ -4,7 +4,7 @@
     @if(findChannel() === 'channel') {
 
       <!-- Case there is no content in the channel -->
-      @if (getPostOfChannel().length === 0) {
+      @if (getPosts().length === 0) {
         <div class="empty">
           <div class="header">
             <div class="icon">
@@ -30,7 +30,7 @@
       }
 
       
-      @for (post of getPostOfChannel(); track $index) {
+      @for (post of getPosts(); track post.id) {
         @if (currentDate(post.timestamp) > compareTimestamp) {
           <app-date-separator [date]="trackByDate(post)"></app-date-separator>
         }
@@ -41,7 +41,7 @@
 
     @if(findChannel() === 'dm') {
 
-      @if(getPostOfDm().length === 0) {
+      @if(getPosts().length === 0) {
         <div class="empty">
           <div class="header">
             <img class="user-avatar"
@@ -65,7 +65,7 @@
         </div>
       }
       @else {
-        @for (post of getPostOfDm(); track trackByPostId) {
+        @for (post of getPosts(); track post.id) {
           @if (currentDate(post.timestamp) > compareTimestamp) {
             <app-date-separator [date]="trackByDate(post)"></app-date-separator>
           }

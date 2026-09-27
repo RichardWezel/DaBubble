@@ -28,7 +28,7 @@
             <div class="field">
                 <div class="field-head">
                     <label>Channel-Name</label>
-                    <button *ngIf="!isEditingChannelName" (click)="editChannelName()" class="edit-button">
+                    <button *ngIf="!isEditingChannelName && canEditChannel()" (click)="editChannelName()" class="edit-button">
                         <div class="edit-button-label">Bearbeiten</div>
                         <div class="mobile-icon">
                             <svg width="18.28px" height="18.25px" viewBox="0 0 19 19" fill="none"
@@ -85,7 +85,7 @@
 
                 <div class="field-head">
                     <label>Beschreibung</label>
-                    <button *ngIf="!isEditingDescription" (click)="editDescription()" class="edit-button">
+                    <button *ngIf="!isEditingDescription && canEditChannel()" (click)="editDescription()" class="edit-button">
                         <div class="edit-button-label">Bearbeiten</div>
                         <div class="mobile-icon">
                             <svg width="18.28px" height="18.25px" viewBox="0 0 19 19" fill="none"

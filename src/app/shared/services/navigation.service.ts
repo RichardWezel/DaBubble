@@ -43,6 +43,8 @@ export class NavigationService {
     this.storage.currentUser.currentChannel = channelId;
     this.storage.currentUser.threadOpen = false;
     sessionStorage.setItem('currentChannel', channelId);
+    this.storage.currentUser.postId = '';
+    this.storage.openCurrentConversation();
     this.channelChanged.emit(channelId);
   }
 
