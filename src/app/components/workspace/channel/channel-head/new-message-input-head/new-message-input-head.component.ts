@@ -283,105 +283,32 @@ export class NewMessageInputHeadComponent {
   showSubmittedDirectMessage(searchTerm: string) {
     const userOfSuggestion = this.storage.user.find(user => user.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
 
-    if (userOfSuggestion && this.findUserInDms(userOfSuggestion)) {
-      this.showExistingDm(userOfSuggestion)
-    } else if (userOfSuggestion && !this.findUserInDms(userOfSuggestion)) {
-      this.showNewDm(userOfSuggestion)
-    }
+    if (userOfSuggestion) this.openDmWith(userOfSuggestion);
   }
 
 
   /**
-   * Displays an existing direct message session if available.
-   * @param {UserInterface} userOfSuggestion - The user with whom the direct message session exists.
-   */
-  showExistingDm(userOfSuggestion: UserInterface) {
-    let dmsOfCurrentUser = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm;
-    let dmWithUserOfSuggestion = dmsOfCurrentUser?.find(dm => dm.contact === userOfSuggestion.id);
-    this.navigationService.setChannel(dmWithUserOfSuggestion!.id);
-  }
-
-
-  /**
-   * Creates and displays a new direct message session with the suggested user.
-   * @param {UserInterface} userOfSuggestion - The user to create a new direct message session with.
-   */
-  async showNewDm(userOfSuggestion: UserInterface) {
-    await this.createEmptyDms(userOfSuggestion);
-    let dmWithUserOfSuggestion = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm.find(dm => dm.contact === userOfSuggestion.id);
-    if (dmWithUserOfSuggestion) this.navigationService.setChannel(dmWithUserOfSuggestion!.id);
-  }
-
-
-  /**
-   * Displays an email as a direct message if applicable.
+   * Opens the conversation with the user whose email address matches what was
+   * typed.
    */
   showSubmittedEmail() {
     const userOfSuggestion = this.storage.user.find(user => user.email.startsWith(this.userInput.toLowerCase()));
-    if (userOfSuggestion && this.findUserInDms(userOfSuggestion)) {
-      this.showExistingDmEmail(userOfSuggestion)
-    } else if (userOfSuggestion && !this.findUserInDms(userOfSuggestion)) {
-      this.showNewDmEmail(userOfSuggestion)
-    }
+    if (userOfSuggestion) this.openDmWith(userOfSuggestion);
   }
 
 
   /**
-   * Displays an existing email direct message session if available.
-   * @param {UserInterface} userOfSuggestion - The user with whom the direct message session exists based on email.
+   * Opens the conversation with the given user, creating it if this is the
+   * first message. The conversation id is derived from both user ids, so
+   * there is nothing to look up and no difference between "existing" and
+   * "new" any more.
+   * @param {UserInterface} userOfSuggestion - the person to talk to
    */
-  showExistingDmEmail(userOfSuggestion: UserInterface) {
-    let dmsOfCurrentUser = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm;
-    let dmWithUserOfSuggestion = dmsOfCurrentUser?.find(dm => dm.contact === userOfSuggestion.id);
-    this.navigationService.setChannel(dmWithUserOfSuggestion!.id);
-  }
-
-
-  /**
-   * Creates and displays a new direct message session with the suggested user based on email.
-   * @param {UserInterface} userOfSuggestion - The user to create a new direct message session with based on email.
-   */
-  async showNewDmEmail(userOfSuggestion: UserInterface) {
-    await this.createEmptyDms(userOfSuggestion);
-    let dmWithUserOfSuggestion = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm.find(dm => dm.contact === userOfSuggestion.id);
-    if (dmWithUserOfSuggestion) this.navigationService.setChannel(dmWithUserOfSuggestion!.id);
-  }
-
-
-  /**
-   * Creates empty direct message entries for initiating contact between the current user and the suggested user.
-   * @param {UserInterface} userOfSuggestion - The user to initiate a direct message session with.
-   */
-  async createEmptyDms(userOfSuggestion: UserInterface) {
-    let currentUserId = this.storage.currentUser.id;
-    let suggestedUserId = userOfSuggestion.id;
-    if (currentUserId && suggestedUserId) {
-      await this.storage.createNewEmptyDm(currentUserId, suggestedUserId);
-      await this.storage.createNewEmptyDm(suggestedUserId, currentUserId);
-    }
-  }
-
-
-  /**
-   * Checks if there is an existing direct message session with the suggested user.
-   * @param {UserInterface} userOfSuggestion - The user to check for an existing direct message session.
-   * @returns {boolean} True if a direct message session exists, otherwise false.
-   */
-  findUserInDms(userOfSuggestion: UserInterface): boolean {
-    let match = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm.some(dm => dm.contact === userOfSuggestion.id);
-    if (match) return true;
-    else return false;
-  }
-
-
-  /**
-   * Searches for an existing direct message session within the current user's direct messages with a specified user.
-   * @param {UserInterface} foundUser - The user to search for within the current user's direct messages.
-   * @returns {Object} The direct message session if found, otherwise undefined.
-   */
-  findUserInCurrentUserDms(foundUser: UserInterface) {
-    let match = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm.find(user => user.id === foundUser.id);
-    return match
+  async openDmWith(userOfSuggestion: UserInterface) {
+    const currentUserId = this.storage.currentUser.id;
+    if (!currentUserId || !userOfSuggestion.id) return;
+    const dmId = await this.storage.ensureDm(currentUserId, userOfSuggestion.id);
+    this.navigationService.setChannel(dmId);
   }
 
 

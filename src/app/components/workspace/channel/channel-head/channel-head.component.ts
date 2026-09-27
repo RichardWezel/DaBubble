@@ -118,20 +118,23 @@ export class ChannelHeadComponent implements OnInit {
    * @returns {"channel" | "dm" | "newMessage" | ""}
    */
   findChannel(): "channel" | "dm" | "newMessage" | "" {
-    let foundChannel = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
-    let foundDM = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm
-      .find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel);
-    if (foundChannel) {
-      this.storage.currentUser.currentChannelName = '#' + foundChannel.name;
-      return 'channel';
-    } else if (foundDM) {
-      this.storage.currentUser.currentChannelName = this.storage.user.find(user => user.id === foundDM?.contact)?.name;
-      return 'dm';
-    } else if (sessionStorage.getItem('currentChannel') == "newMessage") {
-      return 'newMessage';
+    const type = this.storage.currentConversationType;
+    if (type === 'channel') {
+      const found = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel);
+      this.storage.currentUser.currentChannelName = '#' + found?.name;
+    } else if (type === 'dm') {
+      this.storage.currentUser.currentChannelName = this.storage.user.find(user => user.id === this.dmContact())?.name;
     }
-    else
-      return '';
+    return type;
+  }
+
+
+  /**
+   * The person on the other side of the open direct message.
+   * @returns {string} their user id, or an empty string outside a DM
+   */
+  dmContact(): string {
+    return this.storage.dmContact(this.storage.currentUser.currentChannel);
   }
 
 
@@ -174,11 +177,7 @@ export class ChannelHeadComponent implements OnInit {
    * @returns {string} URL or path to the user's avatar.
    */
   userAvatar() {
-    let foundUser = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm
-      .find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel)?.contact;
-    let avatar: string = this.storage.user.find(user => user.id === foundUser)!.avatar;
-    if (avatar) return avatar;
-    else return '';
+    return this.storage.user.find(user => user.id === this.dmContact())?.avatar || '';
   }
 
 
@@ -187,10 +186,9 @@ export class ChannelHeadComponent implements OnInit {
    * @returns {string} Name of the user, or the current user's name appended with ' (Du)' if the current user is involved.
    */
   userName() {
-    let foundUser = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm
-      .find((dm: { contact: string, id: string, posts: any[] }) => dm.id === this.storage.currentUser.currentChannel)?.contact;
-    if (foundUser === this.storage.currentUser.id) return this.storage.currentUser.name + ' (Du)';
-    else return this.storage.user.find(user => user.id === foundUser)?.name;
+    const contact = this.dmContact();
+    if (contact === this.storage.currentUser.id) return this.storage.currentUser.name + ' (Du)';
+    return this.storage.user.find(user => user.id === contact)?.name;
   }
 
 

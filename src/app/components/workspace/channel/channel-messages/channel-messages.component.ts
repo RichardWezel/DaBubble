@@ -13,9 +13,9 @@ import { CommonModule } from '@angular/common';
   styleUrl: './channel-messages.component.scss'
 })
 export class ChannelMessagesComponent extends ChannelHeadComponent {
-  @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
+  @Input() post: PostInterface = { text: '', author: '', timestamp: 0, id: '' };
   compareTimestamp: number = 0;
-  originalPost: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
+  originalPost: PostInterface = { text: '', author: '', timestamp: 0, id: '' };
 
 
   constructor() {
@@ -24,23 +24,12 @@ export class ChannelMessagesComponent extends ChannelHeadComponent {
 
 
   /**
-   * Retrieves the posts associated with the current channel from the storage.
-   * @returns {PostInterface[]} An array of posts from the current channel or an empty array if none are found.
+   * Messages of the conversation that is currently open. Channels and direct
+   * messages share the same stream, kept up to date by the storage service.
+   * @returns {PostInterface[]} the open conversation's messages
    */
-  getPostOfChannel() {
-    let getPosts = this.storage.channel.find(channel => channel.id === this.storage.currentUser.currentChannel)?.posts;
-    if (getPosts) return getPosts;
-    else return [];
-  }
-
-
-  /**
-   * Retrieves the posts associated with the current direct message session from the storage.
-   * @returns {PostInterface[]} An array of posts from the current direct message session or an empty array if none are found.
-   */
-  getPostOfDm() {
-    let getPosts = this.storage.user.find(user => user.id === this.storage.currentUser.id)?.dm.find(dm => dm.id === this.storage.currentUser.currentChannel)?.posts;
-    return getPosts ? getPosts : [];
+  getPosts(): PostInterface[] {
+    return this.storage.posts;
   }
 
 

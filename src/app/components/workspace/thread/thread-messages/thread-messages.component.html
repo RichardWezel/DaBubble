@@ -3,10 +3,10 @@
 
     @if(findChannel() === 'channel') {
       <div class="thread-start">
-        <app-message [threadHead]="true" [post]="getOriginalPostFromChannel()"></app-message>
+        <app-message [threadHead]="true" [post]="getOriginalPost()"></app-message>
       </div>
 
-      @for (post of getThreadOfPost(); track $index) {
+      @for (post of getThreadPosts(); track post.id) {
         @if (currentDate(post.timestamp) > compareTimestamp) {
           <app-date-separator [date]="trackByDate(post)"></app-date-separator>
         }
@@ -18,10 +18,10 @@
     @if(findChannel() === 'dm') {
 
       <div class="thread-start">
-        <app-message [threadHead]="true" [post]="getOriginalPostFromDm()"></app-message>
+        <app-message [threadHead]="true" [post]="getOriginalPost()"></app-message>
       </div>
 
-      @for (post of getThreadOfDm(); track $index) {
+      @for (post of getThreadPosts(); track post.id) {
         @if (currentDate(post.timestamp) > compareTimestamp) {
           <app-date-separator [date]="trackByDate(post)"></app-date-separator>
         }

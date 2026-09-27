@@ -191,16 +191,17 @@ export class SearchComponent {
   /**
    * Aggregates search results by finding matching threads.
    */
-  updateFoundedThreads(): void {
-    const threads = this.storage.getAllThreads();
-    const threadMatches: SearchResultThread[] = threads.filter(({ thread }) =>
-      thread.text.toLowerCase().includes(this.userInput.toLowerCase())
-    ).map(({ thread, parent }) => ({
-      type: 'thread',
-      parentType: parent.type === 'channel' ? 'channel' : 'user',
-      parentId: parent.id || '',
-      thread
-    }) as SearchResultThread);
+  async updateFoundedThreads(): Promise<void> {
+    const threads = await this.storage.getAllThreads();
+    const threadMatches: SearchResultThread[] = threads
+      .filter(({ thread }) => thread.text.toLowerCase().includes(this.userInput.toLowerCase()))
+      .map(({ thread, parentType, conversationId, parentPostId }) => ({
+        type: 'thread',
+        parentType,
+        parentId: conversationId,
+        parentPostId,
+        thread
+      }) as SearchResultThread);
 
     this.searchResults = [...this.searchResults, ...threadMatches];
   }
@@ -232,8 +233,7 @@ export class SearchComponent {
       const threadResult = result as SearchResultThread;
       if (threadResult.parentId) {
         this.navigation.setChannel(threadResult.parentId);
-        let postId = this.storage.findParentPostId(threadResult.parentId, threadResult.thread.id)
-        this.openThread(postId!);
+        this.openThread(threadResult.parentPostId);
         this.viewService.setCurrentView('thread');
       } else {
         console.error('Parent ID des Threads ist undefiniert.');
@@ -350,8 +350,7 @@ export class SearchComponent {
    * @param postId - The ID of the post to open or close the thread of.
    */
   openThread(postId: string): void {
-    this.storage.currentUser.postId = postId;
-    this.storage.currentUser.threadOpen = !this.storage.currentUser.threadOpen;
+    this.storage.showThread(postId);
   }
 
 

@@ -40,7 +40,7 @@ export class InputfieldComponent implements OnChanges, AfterViewInit, OnDestroy 
   @ViewChild('messageContentThread') messageContentThread!: ElementRef;
 
   @Input() thread: boolean = false;
-  @Input() post: PostInterface = { text: '', author: '', timestamp: 0, thread: false, id: '' };
+  @Input() post: PostInterface = { text: '', author: '', timestamp: 0, id: '' };
   @Input() edit: boolean = false;
   @Output() editChange = new EventEmitter<boolean>();
 

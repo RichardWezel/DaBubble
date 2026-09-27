@@ -5,6 +5,7 @@ import { NavigationService } from '../../../../shared/services/navigation.servic
 import { CloudStorageService } from '../../../../shared/services/cloud-storage.service';
 import { SetMobileViewService, CurrentView } from '../../../../shared/services/set-mobile-view.service';
 import { Subscription } from 'rxjs';
+import { DmInterface } from '../../../../shared/interfaces/dm.interface';
 
 @Component({
   selector: 'app-dm-section',
@@ -45,35 +46,45 @@ export class DmSectionComponent {
 
 
   /**
-   * Retrieves the index of the current user within the user list.
-   * @returns {string} Index of the current user.
+   * The current user's direct message conversations.
+   * @returns {DmInterface[]} conversations the current user takes part in
    */
-  currentUserIndex() {
-    return this.storage.user.find(user => user.id === this.storage.currentUser.id);
+  dmList(): DmInterface[] {
+    return this.storage.dms;
   }
 
 
   /**
-   * Returns the display name for a direct message contact.
-   * @param {object} dm - The direct message object containing contact details.
-   * @returns {string} Display name of the contact.
+   * The person on the other side of a conversation.
+   * @param {DmInterface} dm - the conversation
+   * @returns {string} the contact's user id
    */
-  dmIndex(dm: { contact: string, id: string, posts: any[] }) {
-    let name = this.storage.user[this.storage.user.findIndex(user => user.id === dm.contact)]?.name;
-    if (dm.contact === this.storage.currentUser.id) return name + ' (Du)';
-    else return name;
+  contactOf(dm: DmInterface): string {
+    return this.storage.dmContact(dm.id);
   }
 
 
   /**
-   * Retrieves and returns the avatar for a direct message contact.
-   * @param {object} dm - The direct message object containing contact details.
-   * @returns {string} Avatar URL or path for the contact.
+   * Display name of a conversation's contact.
+   * @param {DmInterface} dm - the conversation
+   * @returns {string} the contact's name, marked with "(Du)" for the self-conversation
    */
-  getDmAvatar(dm: { contact: string, id: string, posts: any[] }) {
-    let avatar: string = this.storage.user[this.storage.user.findIndex(user => user.id === dm.contact)]?.avatar;
-    avatar = avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + avatar : this.cloud.openImage(avatar);
-    return avatar;
+  dmIndex(dm: DmInterface) {
+    const contact = this.contactOf(dm);
+    const name = this.storage.user.find(user => user.id === contact)?.name;
+    if (contact === this.storage.currentUser.id) return name + ' (Du)';
+    return name;
+  }
+
+
+  /**
+   * Avatar of a conversation's contact.
+   * @param {DmInterface} dm - the conversation
+   * @returns {string} url or asset path of the avatar
+   */
+  getDmAvatar(dm: DmInterface) {
+    const avatar = this.storage.user.find(user => user.id === this.contactOf(dm))?.avatar ?? '';
+    return avatar.startsWith('profile-') ? 'assets/img/profile-pictures/' + avatar : this.cloud.openImage(avatar);
   }
 
 
@@ -131,9 +142,7 @@ export class DmSectionComponent {
    * @param {object} dm - The direct message object containing contact details.
    * @returns {boolean} True if the contact exists, false otherwise.
    */
-  findContact(dm: { contact: string, id: string, posts: any[] }): boolean {
-    let contact = this.storage.user.find(user => user.id === dm.contact);
-    if (contact) return true;
-    else return false;
+  findContact(dm: DmInterface): boolean {
+    return this.storage.user.some(user => user.id === this.contactOf(dm));
   }
 }

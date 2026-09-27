@@ -41,8 +41,11 @@ export interface SearchResultChannelPost extends BaseSearchResult {
  */
 export interface SearchResultThread extends BaseSearchResult {
   type: 'thread';
-  parentType: 'channel' | 'user';
+  parentType: 'channel' | 'dm';
+  /** Id of the channel or direct message the thread lives in. */
   parentId: string;
+  /** Id of the post the thread hangs off - taken from the document path. */
+  parentPostId: string;
   thread: PostInterface;
 }
 

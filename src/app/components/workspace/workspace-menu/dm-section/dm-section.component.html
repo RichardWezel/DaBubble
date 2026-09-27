@@ -22,14 +22,14 @@
 
 <div class="ws-member-container">
     @if(isListVisible && storage.currentUser) {
-        @for(dm of currentUserIndex()?.dm; track $index) {
+        @for(dm of dmList(); track dm.id) {
             @if (findContact(dm)) {
                 <div class="ws-member">
                     <div class="ws-member-content" (click)="handleClick(dm.id || '')"
                         [ngClass]="{'active': dm.id == storage.currentUser.currentChannel}">
                         <div class="member-profile-icon">
                             <img [src]="getDmAvatar(dm)" alt="">
-                            <div [class.online]="storage.isUserOnline(dm.contact)" class="status-dot"></div>
+                            <div [class.online]="storage.isUserOnline(contactOf(dm))" class="status-dot"></div>
                         </div>
                         <div class="member-name">
                             <div>{{ dmIndex(dm) }}</div>

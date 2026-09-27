@@ -257,13 +257,16 @@ export class FirebaseAuthService {
     this.storage.doneLoading = false;
     const userDocRef = doc(this.storage.firestore, "user", this.storage.authUid);
     const docSnapshot = await getDoc(userDocRef);
-    if (docSnapshot.exists()) {
-      let userData = this.extractUserData(docSnapshot);
-      this.storage.currentUser = userData;
-      this.finalizeCurrentUser();
-    } else {
+    if (!docSnapshot.exists()) {
       console.error("User nicht gefunden");
+      return;
     }
+    // The channels and direct messages have to be there before the current
+    // conversation can be resolved - its id alone does not say which it is.
+    await Promise.all([this.storage.channelsReady, this.storage.subscribeToDms(docSnapshot.id)]);
+    this.storage.currentUser = this.extractUserData(docSnapshot);
+    this.storage.openCurrentConversation();
+    this.finalizeCurrentUser();
   }
 
 
