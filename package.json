@@ -17,7 +17,8 @@
     "deploy:indexes": "firebase deploy --only firestore:indexes",
     "upload": "tools/upload.sh",
     "upload:check": "tools/upload.sh --dry-run",
-    "ftp:ls": "tools/upload.sh --list"
+    "ftp:ls": "tools/upload.sh --list",
+    "fix-perms": "tools/upload.sh --fix-perms"
   },
   "private": true,
   "dependencies": {

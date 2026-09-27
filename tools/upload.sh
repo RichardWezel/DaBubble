@@ -5,6 +5,7 @@
 #   ./tools/upload.sh              upload
 #   ./tools/upload.sh --dry-run    show what would change, transfer nothing
 #   ./tools/upload.sh --list       list the remote directory, to find the right path
+#   ./tools/upload.sh --fix-perms  only repair the permissions on the server
 #
 # Credentials come from deploy.config.sh (gitignored). Copy
 # deploy.config.sh.example and fill it in.
@@ -37,11 +38,44 @@ normalise_permissions() {
   chmod -R u+rwX,go+rX "$DIST"
 }
 
+# Repairs the modes of what is already on the server.
+#
+# mirror only chmods files it actually transfers, so a file that was uploaded
+# with the wrong mode and has not changed since keeps it - and stays
+# unreadable for Apache. This walks the remote tree and sets 755 on
+# directories, 644 on files, regardless of what was transferred.
+fix_remote_permissions() {
+  local base="${FTP_DIR:-/}"
+  echo "Repairing permissions under ${FTP_HOST}${base}"
+
+  local listing
+  listing="$(lftp -c "$connect cd '$base'; find;" 2>/dev/null | redact)"
+
+  local commands=""
+  while IFS= read -r entry; do
+    [ -z "$entry" ] && continue
+    entry="${entry#./}"
+    [ -z "$entry" ] && continue
+    if [ "${entry%/}" != "$entry" ]; then
+      commands+="chmod 755 \"${entry%/}\";"
+    else
+      commands+="chmod 644 \"$entry\";"
+    fi
+  done <<< "$listing"
+
+  # The directory the subdomain points at needs to be traversable too.
+  commands+="chmod 755 .;"
+
+  lftp -c "$connect cd '$base'; $commands" 2>&1 | redact
+  echo "Permissions repaired."
+}
+
 MODE="upload"
 for argument in "$@"; do
   case "$argument" in
     --dry-run) MODE="dry-run" ;;
     --list) MODE="list" ;;
+    --fix-perms) MODE="fix-perms" ;;
     *) echo "Unknown option: $argument" >&2; exit 2 ;;
   esac
 done
@@ -61,6 +95,9 @@ redact() {
 }
 
 case "$MODE" in
+  fix-perms)
+    fix_remote_permissions
+    ;;
   list)
     # Handy when you do not yet know which directory the subdomain points at.
     echo "Remote root:"
@@ -84,6 +121,9 @@ case "$MODE" in
     # --delete removes what is no longer in the build; Angular hashes its
     # filenames, so without it every old bundle would pile up forever.
     lftp -c "$connect mirror --reverse --delete --parallel=4 --verbose '$DIST' '${FTP_DIR:-/}';" 2>&1 | redact
+    # Unconditional: mirror skips unchanged files, and an unchanged file that
+    # went up with the wrong mode would stay unreadable.
+    fix_remote_permissions
     echo "Done."
     ;;
 esac
