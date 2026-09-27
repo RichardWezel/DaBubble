@@ -98,6 +98,13 @@ body {
   position: relative;
 }
 
+// Anchors the absolutely positioned .ux-button to its submit button.
+// Without this it stretches over the nearest positioned ancestor (e.g. the whole .card on mobile)
+// and swallows every tap on the other buttons.
+.btn-container {
+  position: relative;
+}
+
 .ux-button {
   position: absolute;
   top: 0;
