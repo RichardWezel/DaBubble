@@ -28,6 +28,15 @@ for required in FTP_HOST FTP_USER FTP_PASS; do
   [ -n "${!required:-}" ] || { echo "$required is not set in deploy.config.sh" >&2; exit 1; }
 done
 
+# lftp mirrors local file modes onto the server. Files copied out of
+# src/assets inherit this machine's restrictive permissions (0600), and a
+# 0600 file on the webspace is unreadable for Apache, which answers 403 -
+# the page then loads but every image is missing. Widening read access on the
+# build output before every transfer keeps that from happening again.
+normalise_permissions() {
+  chmod -R u+rwX,go+rX "$DIST"
+}
+
 MODE="upload"
 for argument in "$@"; do
   case "$argument" in
@@ -64,11 +73,13 @@ case "$MODE" in
     ;;
   dry-run)
     [ -d "$DIST" ] || { echo "$DIST does not exist. Run: npm run build" >&2; exit 1; }
+    normalise_permissions
     echo "Dry run - nothing is transferred."
     lftp -c "$connect mirror --reverse --delete --dry-run --verbose '$DIST' '${FTP_DIR:-/}';" 2>&1 | redact
     ;;
   upload)
     [ -d "$DIST" ] || { echo "$DIST does not exist. Run: npm run build" >&2; exit 1; }
+    normalise_permissions
     echo "Uploading $DIST -> ${FTP_HOST}${FTP_DIR:-/}"
     # --delete removes what is no longer in the build; Angular hashes its
     # filenames, so without it every old bundle would pile up forever.
