@@ -11,7 +11,11 @@
     "emulators": "FIREBASE_CLI_EXPERIMENTS=webframeworks PATH=\"$(brew --prefix openjdk)/bin:$PATH\" firebase emulators:start --only auth,firestore,storage",
     "test:rules": "node tools/check-storage-rules.mjs && node tools/check-firestore-rules.mjs",
     "seed": "node seed/seed.mjs",
-    "seed:clear": "node seed/clear.mjs"
+    "seed:clear": "node seed/clear.mjs",
+    "inspect": "node seed/inspect.mjs",
+    "deploy:rules": "firebase deploy --only firestore:rules,storage",
+    "deploy:indexes": "firebase deploy --only firestore:indexes",
+    "deploy:app": "ng deploy"
   },
   "private": true,
   "dependencies": {

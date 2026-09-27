@@ -134,7 +134,7 @@ GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json \
 The key comes from the Firebase console under Project settings -> Service
 accounts -> Generate new private key. Keep the file out of the repository.
 
-This wipes and rewrites the live data, so it belongs in stage 6 and nowhere
-else. Note that it does not clear Cloud Storage: the storage rules deny
-deletes on purpose, so old attachments under `appendix/` have to go via the
-Firebase console or the Admin SDK.
+This wipes and rewrites the live data - Firestore *and* the uploads under
+`appendix/` and `profilePic/`. See [deploy.md](deploy.md) for the full
+procedure, and run `npm run inspect` against production first to see what a
+reset would cost.

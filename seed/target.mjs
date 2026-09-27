@@ -13,8 +13,12 @@
 import { readFileSync } from 'node:fs';
 import { initializeApp, applicationDefault } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import { getStorage } from 'firebase-admin/storage';
 
 const PROJECT_ID = JSON.parse(readFileSync('.firebaserc', 'utf8')).projects.default;
+
+/** Matches storageBucket in src/environments/environment.development.ts. */
+export const STORAGE_BUCKET = `${PROJECT_ID}.firebasestorage.app`;
 
 export function connect(argv) {
   const production = argv.includes('--target=production');
@@ -38,19 +42,27 @@ export function connect(argv) {
       );
       process.exit(1);
     }
-    initializeApp({ credential: applicationDefault(), projectId: PROJECT_ID });
+    initializeApp({ credential: applicationDefault(), projectId: PROJECT_ID, storageBucket: STORAGE_BUCKET });
     console.log(`Target: PRODUCTION (${PROJECT_ID})\n`);
   } else {
     const port = JSON.parse(readFileSync('firebase.json', 'utf8')).emulators.firestore.port;
     // The Admin SDK talks to the emulator when this is set, and needs no
     // credentials in that case.
+    const storagePort = JSON.parse(readFileSync('firebase.json', 'utf8')).emulators.storage.port;
     process.env['FIRESTORE_EMULATOR_HOST'] = `127.0.0.1:${port}`;
-    initializeApp({ projectId: PROJECT_ID });
-    console.log(`Target: EMULATOR (127.0.0.1:${port})\n`);
+    process.env['STORAGE_EMULATOR_HOST'] = `http://127.0.0.1:${storagePort}`;
+    initializeApp({ projectId: PROJECT_ID, storageBucket: STORAGE_BUCKET });
+    console.log(`Target: EMULATOR (firestore 127.0.0.1:${port}, storage 127.0.0.1:${storagePort})\n`);
   }
 
   return getFirestore();
 }
+
+/** The Cloud Storage bucket of the connected target. */
+export function bucket() {
+  return getStorage().bucket();
+}
+
 
 /** A direct message lives under one deterministic id shared by both sides. */
 export function dmId(a, b) {
