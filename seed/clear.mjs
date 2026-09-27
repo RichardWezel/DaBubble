@@ -10,7 +10,7 @@
  * so nothing in Storage belongs to the demo - everything there was uploaded
  * by a visitor and goes with the user documents it belonged to.
  */
-import { bucket, connect } from './target.mjs';
+import { bucket, connect, verifyAccess } from './target.mjs';
 
 /** Deletes every document of a collection, subcollections included. */
 async function deleteCollection(firestore, name) {
@@ -47,6 +47,7 @@ export async function clearAll(firestore) {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const firestore = connect(process.argv);
+  await verifyAccess(firestore);
   console.log('Clearing...');
   const total = await clearAll(firestore);
   console.log(`\nDone. ${total} top-level document(s) removed.`);

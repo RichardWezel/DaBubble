@@ -10,12 +10,13 @@
  *   GOOGLE_APPLICATION_CREDENTIALS=... SEED_ALLOW_PRODUCTION=yes npm run inspect -- --target=production
  */
 import { readFileSync } from 'node:fs';
-import { bucket, connect } from './target.mjs';
+import { bucket, connect, verifyAccess } from './target.mjs';
 
 const IDS = JSON.parse(readFileSync('src/config/seed-ids.json', 'utf8'));
 const KNOWN_SEED_USERS = new Set(Object.values(IDS.users));
 
 const firestore = connect(process.argv);
+await verifyAccess(firestore);
 
 /** Counts documents in a collection and splits them by their isSeed flag. */
 async function summarise(name) {

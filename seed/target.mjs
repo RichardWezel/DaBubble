@@ -10,7 +10,9 @@
  * `--target=production` flag and SEED_ALLOW_PRODUCTION=yes in the
  * environment, so it cannot happen by a stray keystroke.
  */
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import { initializeApp, applicationDefault } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
@@ -32,16 +34,7 @@ export function connect(argv) {
   }
 
   if (production) {
-    if (!process.env['GOOGLE_APPLICATION_CREDENTIALS']) {
-      console.error(
-        'Seeding production needs admin credentials.\n' +
-        'Create a service account key in the Firebase console\n' +
-        '(Project settings -> Service accounts -> Generate new private key)\n' +
-        'and point GOOGLE_APPLICATION_CREDENTIALS at the downloaded file.\n' +
-        'Keep that file out of the repository.'
-      );
-      process.exit(1);
-    }
+    requireAdminCredentials();
     initializeApp({ credential: applicationDefault(), projectId: PROJECT_ID, storageBucket: STORAGE_BUCKET });
     console.log(`Target: PRODUCTION (${PROJECT_ID})\n`);
   } else {
@@ -57,6 +50,50 @@ export function connect(argv) {
 
   return getFirestore();
 }
+
+/**
+ * The Admin SDK needs credentials of its own - a `firebase login` is not
+ * enough. Two ways to provide them, and this accepts either.
+ */
+function requireAdminCredentials() {
+  const keyFile = process.env['GOOGLE_APPLICATION_CREDENTIALS'];
+  if (keyFile) {
+    if (!existsSync(keyFile)) {
+      console.error(`GOOGLE_APPLICATION_CREDENTIALS points at ${keyFile}, which does not exist.`);
+      process.exit(1);
+    }
+    return;
+  }
+  // gcloud writes its application default credentials here.
+  if (existsSync(join(homedir(), '.config/gcloud/application_default_credentials.json'))) return;
+
+  console.error(
+    'Seeding production needs admin credentials. A `firebase login` is not enough.\n\n' +
+    'Either download a service account key:\n' +
+    `  https://console.firebase.google.com/project/${PROJECT_ID}/settings/serviceaccounts/adminsdk\n` +
+    '  -> Generate new private key, then:\n' +
+    '  export GOOGLE_APPLICATION_CREDENTIALS=/absolute/path/to/key.json\n\n' +
+    'or, if you would rather not have a key file lying around:\n' +
+    '  brew install --cask google-cloud-sdk\n' +
+    '  gcloud auth application-default login\n'
+  );
+  process.exit(1);
+}
+
+
+/**
+ * Reads one document to confirm the credentials actually work, before any
+ * destructive step gets a chance to run half way.
+ */
+export async function verifyAccess(firestore) {
+  try {
+    await firestore.collection('user').limit(1).get();
+  } catch (error) {
+    console.error(`\nCould not read the target database: ${error?.message ?? error}`);
+    process.exit(1);
+  }
+}
+
 
 /** The Cloud Storage bucket of the connected target. */
 export function bucket() {

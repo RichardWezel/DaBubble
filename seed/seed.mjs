@@ -20,7 +20,7 @@
  * creating isSeed documents, which is the point of the flag.
  */
 import { Timestamp } from 'firebase-admin/firestore';
-import { connect, dmId } from './target.mjs';
+import { connect, dmId, verifyAccess } from './target.mjs';
 import { clearAll } from './clear.mjs';
 import { users, channels, dms, at, SEED_IDS } from './seed-data.mjs';
 
@@ -128,6 +128,7 @@ async function verifyLoadBearingIds(firestore) {
 }
 
 const firestore = connect(process.argv);
+await verifyAccess(firestore);
 console.log('Clearing existing data...');
 await clearAll(firestore);
 console.log('\nSeeding...');
