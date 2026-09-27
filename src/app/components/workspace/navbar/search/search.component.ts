@@ -16,6 +16,7 @@ import { SearchService } from '../../../../shared/services/search.service';
 import { OpenCloseDialogService } from '../../../../shared/services/open-close-dialog.service';
 import { Subscription } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
+import { MessageSanitizerService } from '../../../../shared/services/message-sanitizer.service';
 
 /**
  * SearchComponent handles the search functionality within the application,
@@ -36,6 +37,7 @@ export class SearchComponent {
   elementRef = inject(ElementRef);
   openCloseService = inject(OpenCloseDialogService);
   private viewService = inject(SetMobileViewService);
+  private messageSanitizer = inject(MessageSanitizerService);
   userInput: string = '';
   searchResults: SearchResult[] = [];
   selectedIndex: number = 0;
@@ -362,7 +364,8 @@ export class SearchComponent {
     if (!text) return ''; // Fallback für undefined
     if (!this.userInput) return text;
     const regex = new RegExp(`(${this.search.escapeRegExp(this.userInput)})`, 'gi');
-    const highlighted = text.replace(regex, '<span class="highlight" style="color: #797EF3; font-weight: 100;">$1</span>');
+    const safe = this.messageSanitizer.sanitize(text);
+    const highlighted = safe.replace(regex, '<span class="highlight">$1</span>');
     return this.sanitizer.bypassSecurityTrustHtml(highlighted);
   }
 }

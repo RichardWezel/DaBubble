@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, inject, Input, OnChanges, OnDestroy, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, inject, Input, OnChanges, OnDestroy, Output, ViewChild, forwardRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { PostInterface } from '../../interfaces/post.interface';
@@ -20,7 +20,7 @@ import { ChannelInterface } from '../../interfaces/channel.interface';
 @Component({
   selector: 'app-inputfield',
   standalone: true,
-  imports: [FormsModule, PickerModule, EmojiSelectorComponent, TextFormatterDirective, UploadComponent, NgIf],
+  imports: [FormsModule, PickerModule, EmojiSelectorComponent, forwardRef(() => TextFormatterDirective), UploadComponent, NgIf],
   templateUrl: './inputfield.component.html',
   styleUrl: './inputfield.component.scss'
 })
@@ -33,7 +33,7 @@ export class InputfieldComponent implements OnChanges, AfterViewInit, OnDestroy 
   inputEvent = inject(InputEventsService);
   helper = inject(InputfieldHelperService);
 
-  @ViewChild(TextFormatterDirective) formatter!: TextFormatterDirective;
+  @ViewChild(forwardRef(() => TextFormatterDirective)) formatter!: TextFormatterDirective;
   @ViewChild('tagSearchInput') tagSearchInput!: ElementRef;
   @ViewChild('tagSearchInputThread') tagSearchInputThread!: ElementRef;
   @ViewChild('messageContent') messageContent!: ElementRef;

@@ -1,6 +1,7 @@
 import { Component, ElementRef, inject, Input, OnChanges, OnInit, OnDestroy, SimpleChanges } from '@angular/core';
 import { PostInterface } from '../../interfaces/post.interface';
 import { AuthorService } from '../../services/author.service';
+import { MessageSanitizerService } from '../../services/message-sanitizer.service';
 import { UserInterface } from '../../interfaces/user.interface';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { NgStyle } from '@angular/common';
@@ -28,6 +29,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   sanitizer = inject(DomSanitizer);
   cloud = inject(CloudStorageService);
   private authorService: AuthorService = inject(AuthorService);
+  private messageSanitizer: MessageSanitizerService = inject(MessageSanitizerService);
   private viewService: SetMobileViewService = inject(SetMobileViewService);
 
   isLargeScreen: boolean = false;
@@ -156,7 +158,20 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    * @returns {string} The trusted HTML string.
    */
   getText(text: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(text);
+    return this.sanitizer.bypassSecurityTrustHtml(this.messageSanitizer.sanitize(text));
+  }
+
+
+  /**
+   * Opens an attachment thumbnail in a new tab. The link lives in `data-href`
+   * because inline onclick handlers cannot survive sanitizing - see
+   * MessageSanitizerService.
+   * @param event - the click on the rendered message body
+   */
+  openAttachment(event: MouseEvent): void {
+    const thumbnail = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-href]');
+    const url = thumbnail?.dataset['href'];
+    if (url) window.open(url, '_blank', 'noopener,noreferrer');
   }
 
 

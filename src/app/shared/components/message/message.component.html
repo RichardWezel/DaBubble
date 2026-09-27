@@ -76,7 +76,8 @@
 
     }
     @else {
-      <div class="message" [class.self]="isAuthorCurrentUser" [innerHTML]="getText(post.text)"></div>
+      <div class="message" [class.self]="isAuthorCurrentUser" [innerHTML]="getText(post.text)"
+        (click)="openAttachment($event)"></div>
     }
 
     @if (post.emoticons && post.emoticons.length > 0 && !threadHead) {
