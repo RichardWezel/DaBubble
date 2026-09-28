@@ -1,9 +1,10 @@
-<main class="searchbar" tabindex="0" aria-haspopup="listbox" aria-owns="search-results"
+<main class="searchbar" tabindex="0" aria-haspopup="listbox" [attr.aria-owns]="resultsId"
   [attr.aria-expanded]="searchResults.length > 0">
   <section class="input">
-    <input #inputfieldSearch id="searchbar" type="search" [placeholder]="placeholderText" [(ngModel)]="userInput"
+    <input #inputfieldSearch [id]="inputId" type="search" [placeholder]="placeholderText" [(ngModel)]="userInput"
       (input)="onInput()" (keydown)="handleKeyboardEvent($event)" aria-autocomplete="list"
-      aria-controls="search-results" [attr.aria-activedescendant]="selectedIndex >= 0 ? 'result-' + selectedIndex : ''">
+      [attr.aria-controls]="resultsId"
+      [attr.aria-activedescendant]="selectedIndex >= 0 ? optionId(selectedIndex) : null">
     <div class="search">
       <svg width="35" height="36" viewBox="0 0 35 36" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -12,9 +13,9 @@
       </svg>
     </div>
   </section>
-  <section class="result-container" *ngIf="userInput.length >= 1" id="search-results" role="listbox">
+  <section class="result-container" *ngIf="userInput.length >= 1" [id]="resultsId" role="listbox">
     <ul>
-      <li *ngFor="let result of searchResults; let i = index" [id]="'result-' + i"
+      <li *ngFor="let result of searchResults; let i = index" [id]="optionId(i)"
         [class.selected]="i === selectedIndex" (click)="setChannel(result)" role="option" tabindex="-1">
 
         <ng-container *ngIf="result.type === 'channel'">
@@ -48,6 +49,6 @@
       </li>
     </ul>
     <app-result-dropdown *ngIf="dropDownIsOpen && userInput.length >= 1" [userInput]="userInput"
-      #resultDropdown></app-result-dropdown>
+      (escaped)="focusInput()" #resultDropdown></app-result-dropdown>
   </section>
 </main>

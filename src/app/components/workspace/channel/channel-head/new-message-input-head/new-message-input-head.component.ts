@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { FirebaseStorageService } from '../../../../../shared/services/firebase-storage.service';
 import { FormsModule } from '@angular/forms';
 import { ChannelInterface } from '../../../../../shared/interfaces/channel.interface';
@@ -16,6 +16,15 @@ import { NgIf } from '@angular/common';
 
 })
 export class NewMessageInputHeadComponent {
+  @ViewChild('inputField') inputField?: ElementRef<HTMLInputElement>;
+
+
+  /** Puts the cursor back into the recipient field. */
+  focusInput(): void {
+    this.inputField?.nativeElement.focus();
+  }
+
+
 
   protected storage = inject(FirebaseStorageService);
   navigationService: NavigationService = inject(NavigationService);

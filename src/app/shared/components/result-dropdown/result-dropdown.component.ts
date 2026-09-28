@@ -1,4 +1,4 @@
-import { Component, Input, inject, OnChanges, SimpleChanges, HostListener, ElementRef, ViewChild } from '@angular/core';
+import { Component, Input, inject, OnChanges, SimpleChanges, HostListener, ElementRef, ViewChild, Output, EventEmitter } from '@angular/core';
 import { NgFor, NgIf, } from '@angular/common';
 import { ChannelInterface } from '../../interfaces/channel.interface';
 import { UserInterface } from '../../interfaces/user.interface';
@@ -25,6 +25,14 @@ export class ResultDropdownComponent implements OnChanges {
   elementRef = inject(ElementRef);
 
   @Input() userInput: string = "";
+
+  /**
+   * Raised when Escape closes the dropdown, so the host can put the cursor
+   * back into its own input. The dropdown is used by the search bar and by
+   * the "new message" header, and it has no business knowing which field
+   * either of them owns.
+   */
+  @Output() escaped = new EventEmitter<void>();
 
   searchResults: SearchResult[] = [];
   public isLargeScreen: boolean = window.innerWidth >= 1300;
@@ -88,14 +96,13 @@ export class ResultDropdownComponent implements OnChanges {
 
 
   /**
-   * Handles the Escape key event.
-   * Resets the search results to an empty array and closes the dropdown by calling `close` on the `openCloseService`.
-   * Additionally, it focuses the search input field by calling `focus` on the element with id 'searchbar'.
+   * Handles the Escape key event: clears the results, closes the dropdown
+   * and asks the host to take focus back.
    */
   private handleEscape(): void {
     this.searchResults = [];
     this.openCloseService.close("resultDropdown");
-    (document.getElementById('searchbar') as HTMLInputElement)?.focus();
+    this.escaped.emit();
   }
 
 

@@ -1,5 +1,5 @@
 import { NgFor, NgIf, NgSwitch, NgSwitchCase, CommonModule } from '@angular/common';
-import { Component, inject, ViewChildren, QueryList, ElementRef, HostListener } from '@angular/core';
+import { Component, inject, ViewChild, ViewChildren, QueryList, ElementRef, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { ChannelInterface } from '../../../../shared/interfaces/channel.interface';
@@ -51,6 +51,34 @@ export class SearchComponent {
   private subscriptions: Subscription = new Subscription();
 
   @ViewChildren('resultItem') resultItems!: QueryList<ElementRef>;
+  @ViewChild('inputfieldSearch') searchInput?: ElementRef<HTMLInputElement>;
+
+  /**
+   * The search bar is rendered twice - once in the navbar, once in the
+   * workspace menu head - so every id it emits has to be unique per instance.
+   * Sharing them made aria-controls on the second bar point at the first
+   * bar's result list, and made a global getElementById('searchbar') always
+   * focus the wrong one.
+   */
+  private static instances = 0;
+  private readonly instanceId = `search-${SearchComponent.instances++}`;
+  readonly inputId = `${this.instanceId}-input`;
+  readonly resultsId = `${this.instanceId}-results`;
+
+
+  /**
+   * Id of one result row, used by aria-activedescendant.
+   * @param index - position in the result list
+   */
+  optionId(index: number): string {
+    return `${this.instanceId}-result-${index}`;
+  }
+
+
+  /** Puts the cursor back into this instance's search field. */
+  focusInput(): void {
+    this.searchInput?.nativeElement.focus();
+  }
 
 
   /**
@@ -308,7 +336,9 @@ export class SearchComponent {
    * Scrolls the view to the currently selected search result.
    */
   scrollToSelected(): void {
-    const listItems = document.querySelectorAll('.result-container ul li');
+    // Scoped to this instance: a document-wide query also picks up the other
+    // search bar's rows, and then scrolls the wrong list.
+    const listItems = this.elementRef.nativeElement.querySelectorAll('.result-container ul li');
     if (this.selectedIndex >= 0 && this.selectedIndex < listItems.length) {
       const selectedItem = listItems[this.selectedIndex] as HTMLElement;
       selectedItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
