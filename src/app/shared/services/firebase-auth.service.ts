@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Auth, getAuth, GoogleAuthProvider, signInWithPopup, signOut, verifyBeforeUpdateEmail } from '@angular/fire/auth';
+import { Auth, getAuth, GoogleAuthProvider, signInWithPopup, signOut, verifyBeforeUpdateEmail, browserPopupRedirectResolver } from '@angular/fire/auth';
 import { FirebaseStorageService } from './firebase-storage.service';
 import { doc, Firestore, getDoc, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
@@ -61,7 +61,10 @@ export class FirebaseAuthService {
   async googleLogin() {
     const provider = new GoogleAuthProvider();
     try {
-      const result = signInWithPopup(this.auth, provider);
+      // The resolver is passed here rather than being wired into Auth at
+      // startup, so its iframe and gapi script load when someone actually
+      // chooses Google - see app.config.ts.
+      const result = signInWithPopup(this.auth, provider, browserPopupRedirectResolver);
       const user = (await result).user;
       const userDocRef = doc(this.storage.firestore, 'user', user.uid);
       const docSnapshot = await getDoc(userDocRef);

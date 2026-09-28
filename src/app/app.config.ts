@@ -3,7 +3,10 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { getApp, initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { connectAuthEmulator, getAuth, provideAuth } from '@angular/fire/auth';
+import {
+  browserLocalPersistence, connectAuthEmulator, indexedDBLocalPersistence,
+  initializeAuth, provideAuth
+} from '@angular/fire/auth';
 import { connectFirestoreEmulator, initializeFirestore, provideFirestore } from '@angular/fire/firestore';
 import { environment } from '../environments/environment.development';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -16,7 +19,15 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => {
-      const auth = getAuth();
+      // initializeAuth, not getAuth: getAuth brings the popup/redirect
+      // resolver along, and that loads apis.google.com/js/api.js plus a
+      // cross-origin iframe on <project>.firebaseapp.com on every page load -
+      // including for the visitors who only ever press the guest button.
+      // GoogleAuthProvider needs the resolver, so googleLogin passes it at
+      // the call, where it is actually wanted.
+      const auth = initializeAuth(getApp(), {
+        persistence: [indexedDBLocalPersistence, browserLocalPersistence],
+      });
       if (USE_EMULATOR) {
         connectAuthEmulator(auth, `http://${EMULATOR_HOST}:${EMULATOR_PORTS.auth}`, { disableWarnings: true });
       }
