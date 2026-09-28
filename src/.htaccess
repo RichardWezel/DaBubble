@@ -12,3 +12,30 @@ RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^.*$ - [NC,L]
 
 RewriteRule ^(.*) /index.html [NC,L]
+
+
+# Caching. Without these headers nothing is cached at all, so every visit
+# re-downloads the whole app - Lighthouse counted 24 MB of it.
+<IfModule mod_headers.c>
+
+  # Angular puts an eight-character hash in the name of everything it
+  # bundles. Those URLs can never change content, so they can be cached
+  # forever: a new build produces new names.
+  <FilesMatch "-[A-Z0-9]{8}\.(js|css|woff2|ttf)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Images and icons keep their names across builds, so they get a day -
+  # long enough to help a returning visitor, short enough that replacing a
+  # logo is not a week-long wait.
+  <FilesMatch "\.(png|jpe?g|gif|svg|webp|ico)$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+
+  # index.html is what points at the hashed files. If it were cached, a
+  # visitor would keep loading the previous release.
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+
+</IfModule>

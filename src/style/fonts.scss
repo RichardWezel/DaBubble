@@ -174,13 +174,15 @@
   /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
-/* noto-color-emoji-regular - emoji */
-@font-face {
-  font-display: swap;
-  /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-  font-family: 'Noto Color Emoji';
-  src: url('./../assets/fonts/NotoColorEmoji.ttf') format('truetype'),
-    url('./../assets/fonts/noto-color-emoji-v32-emoji-regular.woff2') format('woff2');
-
-  /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-}
+/* No @font-face for emoji on purpose.
+ *
+ * This used to ship Noto Color Emoji itself, and listed the 24 MB ttf before
+ * the 3.6 MB woff2 - so every visitor downloaded 24 MB. Dropping the ttf and
+ * keeping only the woff2 made the emoji stop rendering altogether: the woff2
+ * of this font is a bitmap (CBDT) build that browsers do not draw.
+ *
+ * So it is not loaded at all. "Noto Color Emoji" stays in the font stack
+ * below, which means a system that has it installed (Android, most Linux)
+ * uses its own copy, and everything else falls through to Apple Color Emoji
+ * or Segoe UI Emoji. Emoji render everywhere, and nothing is downloaded.
+ */
