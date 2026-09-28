@@ -75,6 +75,9 @@ export class FirebaseStorageService implements OnDestroy {
   private userSubject: BehaviorSubject<UserInterface[]> = new BehaviorSubject<UserInterface[]>([]);
   public users$: Observable<UserInterface[]> = this.userSubject.asObservable();
 
+  /** Whether the workspace listeners have been started; they start after sign-in. */
+  private subscriptionsStarted = false;
+
   /** Cached search index; null until the first search, dropped on every write. */
   private searchIndex: Promise<SearchIndex> | null = null;
 
@@ -89,13 +92,31 @@ export class FirebaseStorageService implements OnDestroy {
   unsubThread: () => void = () => { };
 
   /**
-   * Subscribes to the collections that are needed globally. Posts and thread
-   * replies are subscribed to on demand, see openConversation/openThread.
+   * Nothing is subscribed here on purpose - see startWorkspaceSubscriptions.
+   * Only the promise is prepared, so callers can await it either way.
    */
   constructor() {
     this.channelsReady = new Promise<void>((resolve) => { this.markChannelsReady = resolve; });
-    this.unsubChannels = this.getChannelCollection();
-    this.unsubUsers = this.getUserCollection();
+  }
+
+
+  /**
+   * Starts the listeners the workspace runs on, and resolves once the first
+   * snapshots have arrived.
+   *
+   * These used to start in the constructor, which meant opening the login
+   * screen downloaded every user and every channel and held two live streams
+   * open - for a page that reads none of it. Nobody is looking at a channel
+   * list before they have signed in.
+   * @param userId - the signed-in user, whose conversations are loaded too
+   */
+  startWorkspaceSubscriptions(userId: string): Promise<void> {
+    if (!this.subscriptionsStarted) {
+      this.subscriptionsStarted = true;
+      this.unsubChannels = this.getChannelCollection();
+      this.unsubUsers = this.getUserCollection();
+    }
+    return Promise.all([this.channelsReady, this.subscribeToDms(userId)]).then(() => undefined);
   }
 
 

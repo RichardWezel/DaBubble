@@ -303,7 +303,7 @@ export class FirebaseAuthService {
    */
   private async loadWorkspaceData(userId: string): Promise<void> {
     try {
-      await Promise.all([this.storage.channelsReady, this.storage.subscribeToDms(userId)]);
+      await this.storage.startWorkspaceSubscriptions(userId);
       if (!this.storage.currentUser.currentChannel) {
         this.storage.currentUser.currentChannel = this.storage.determineCurrentChannel(this.storage.currentUser);
       }
