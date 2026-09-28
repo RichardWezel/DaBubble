@@ -2,7 +2,10 @@ $primaryColor: #444DF2;
 $secondaryColor: #797EF3;
 $thirdColor: #535AF1;
 $backgroundColor: #ECEEFE;
-$errorColor: #ED1E79;
+// Darkened from #ED1E79, which reached only 4.15:1 on white and 3.6:1 on the
+// card background - short of the 4.5:1 normal text needs. Error messages are
+// the last text that should be hard to read. Same hue, 5.36:1 and 4.66:1.
+$errorColor: #CC1A68;
 $successColor: #92C83E;
 $textWhite: #FFFFFF;
 $textBlack: #000000;

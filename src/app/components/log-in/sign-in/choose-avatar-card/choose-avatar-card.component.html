@@ -12,7 +12,7 @@
         </div>
         <form (ngSubmit)="setNewUser()" #avatarForm="ngForm">
             <div class="chosen-picture-container">
-                <img src="{{ currentProfilePicture }}">
+                <img src="{{ currentProfilePicture }}" alt="Gewähltes Profilbild">
                 @if (uploadFile && uploadFile.size > 512000) {
                 <div class="overlay">Bild zu groß Max 500 kB</div>
                 }
@@ -23,7 +23,7 @@
             <p class="instruction left mobile">Choose your avatar...</p>
             <div class="profile-picture-container">
                 @for (picture of pictures; track picture) {
-                <img (click)="chosePicture(picture)" src="{{ picture }}">
+                <img (click)="chosePicture(picture)" src="{{ picture }}" alt="Profilbild auswählen">
                 }
             </div>
             <div class="own-picture-container desktop">

@@ -20,7 +20,7 @@
             </div>
             <div *ngIf="mode === 'edit'" class="edit-avatar" (click)="openFileExplorer(fileInput)">
                 <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*">
-                <img [src]="currentProfilePicture">
+                <img [src]="currentProfilePicture" alt="Profilbild">
                 @if (uploadFile && uploadFile.size > 512000) {
                     <div class="overlay">Bild zu groß Max 500 kB</div>
                 }

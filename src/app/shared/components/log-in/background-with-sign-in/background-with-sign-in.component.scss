@@ -43,7 +43,8 @@
 button {
     background-color: unset;
     padding: unset;
-    color: $secondaryColor;
+    // See background.component.scss - secondary is too light for text here.
+    color: $primaryColor;
     font-weight: 400;
 
     &:hover {

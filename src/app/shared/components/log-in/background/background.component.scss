@@ -19,7 +19,9 @@
 button {
     background-color: unset;
     padding: unset;
-    color: $secondaryColor;
+    // primary, not secondary: secondary only reaches 2.99:1 on this
+    // background, short of the 4.5:1 that normal text needs.
+    color: $primaryColor;
     font-weight: 400;
 
     &:hover {
