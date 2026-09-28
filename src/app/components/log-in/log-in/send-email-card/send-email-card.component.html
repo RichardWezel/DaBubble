@@ -37,7 +37,7 @@
                     <button type="submit" [disabled]="sendMailForm.invalid" class="mainButton buttonPrimary"
                         (click)="sendMail()">E-Mail senden</button>
                     @if (sendMailForm.invalid) {
-                    <button type="button" class="ux-button" (click)="checkInputFields()"></button>
+                    <button type="button" class="ux-button" aria-hidden="true" tabindex="-1" (click)="checkInputFields()"></button>
                     }
                 </div>
             </div>

@@ -75,6 +75,24 @@ export class SearchComponent {
   }
 
 
+  /**
+   * Whether the result list is on screen. The aria references have to follow
+   * it: pointing aria-controls at an element that is not rendered is an
+   * invalid value, not a harmless one.
+   */
+  get resultsVisible(): boolean {
+    return this.userInput.length >= 1;
+  }
+
+
+  /** Id of the highlighted result, or null when nothing is highlighted. */
+  get activeOptionId(): string | null {
+    if (!this.resultsVisible) return null;
+    if (this.selectedIndex < 0 || this.selectedIndex >= this.searchResults.length) return null;
+    return this.optionId(this.selectedIndex);
+  }
+
+
   /** Puts the cursor back into this instance's search field. */
   focusInput(): void {
     this.searchInput?.nativeElement.focus();

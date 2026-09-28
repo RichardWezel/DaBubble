@@ -42,7 +42,7 @@
                         {{ isLoading ? 'Wird geladen...' : 'Weiter' }}
                     </button>
                     @if (!avatarSelected || uploadFile && uploadFile.size > 512000) {
-                        <button type="button" class="ux-button" (click)="checkInputFields()"></button>
+                        <button type="button" class="ux-button" aria-hidden="true" tabindex="-1" (click)="checkInputFields()"></button>
                         }
                 </div>
             </div>

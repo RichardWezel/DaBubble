@@ -144,7 +144,7 @@
                         [disabled]="profileForm.invalid || ( uploadFile && uploadFile.size > 2000000) || (profileForm.pristine && !uploadFile ) || (originalEmail == email && originalName == name && !uploadFile)"
                         type="submit" class="save-btn">Speichern</button>
                     @if (profileForm.invalid || ( uploadFile && uploadFile.size > 2000000) || (profileForm.pristine && !uploadFile ) || (originalEmail == email && originalName == name && !uploadFile)) {
-                        <button type="button" class="ux-button" (click)="checkInputFields()"></button>
+                        <button type="button" class="ux-button" aria-hidden="true" tabindex="-1" (click)="checkInputFields()"></button>
                     }
                 </div>
                 <div class="error-text-input error-text">{{ auth.errorMessage }}</div>

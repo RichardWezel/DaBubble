@@ -75,7 +75,7 @@
                         {{ busy === 'email' ? 'Anmelden...' : 'Anmelden' }}
                     </button>
                     @if (loginForm.invalid) {
-                        <button type="button" class="ux-button" (click)="checkInputFields()"></button>
+                        <button type="button" class="ux-button" aria-hidden="true" tabindex="-1" (click)="checkInputFields()"></button>
                     }
                 </div>
                 <button type="button" class="mainButton buttonSecondary" [disabled]="!!busy"

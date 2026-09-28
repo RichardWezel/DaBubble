@@ -1,10 +1,10 @@
-<main class="searchbar" tabindex="0" aria-haspopup="listbox" [attr.aria-owns]="resultsId"
+<main class="searchbar" tabindex="0" aria-haspopup="listbox" [attr.aria-owns]="resultsVisible ? resultsId : null"
   [attr.aria-expanded]="searchResults.length > 0">
   <section class="input">
     <input #inputfieldSearch [id]="inputId" type="search" [placeholder]="placeholderText" [(ngModel)]="userInput"
       (input)="onInput()" (keydown)="handleKeyboardEvent($event)" aria-autocomplete="list"
-      [attr.aria-controls]="resultsId"
-      [attr.aria-activedescendant]="selectedIndex >= 0 ? optionId(selectedIndex) : null">
+      [attr.aria-controls]="resultsVisible ? resultsId : null"
+      [attr.aria-activedescendant]="activeOptionId">
     <div class="search">
       <svg width="35" height="36" viewBox="0 0 35 36" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path

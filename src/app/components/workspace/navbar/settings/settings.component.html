@@ -1,6 +1,6 @@
 <main class="user-dropdown-menu" [class.active]="open">
     
-    <button *ngIf="!isLargeScreen" class="close" (click)="toggleDropdown()"></button>
+    <button *ngIf="!isLargeScreen" class="close" aria-label="Menü schließen" (click)="toggleDropdown()"></button>
     
     <button class="profile" (click)="openUserProfile()">
         <div *ngIf="!isLargeScreen" class="icon-profile">
