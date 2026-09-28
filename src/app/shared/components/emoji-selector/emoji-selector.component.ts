@@ -5,12 +5,13 @@ import { InputfieldComponent } from '../inputfield/inputfield.component';
 import { FirebaseStorageService } from '../../services/firebase-storage.service';
 import { EmoticonsInterface } from '../../interfaces/emoticons.interface';
 import { PostInterface } from '../../interfaces/post.interface';
+import { EmojiAccessibilityDirective } from '../../directive/emoji-accessibility.directive';
 
 
 @Component({
   selector: 'app-emoji-selector',
   standalone: true,
-  imports: [FormsModule, PickerModule],
+  imports: [FormsModule, PickerModule, EmojiAccessibilityDirective],
   templateUrl: './emoji-selector.component.html',
   styleUrl: './emoji-selector.component.scss'
 })
