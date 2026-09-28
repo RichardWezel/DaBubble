@@ -42,8 +42,13 @@ export class FirebaseAuthService {
   async guestLogin() {
     sessionStorage.setItem("authUid", GUEST_USER_ID);
     this.storage.authUid = GUEST_USER_ID;
+    // Navigate first. Nothing here needs the network: the guest's id is
+    // known, and the workspace has a loader for everything that follows.
+    // Waiting for Firestore before navigating leaves the login screen
+    // sitting there for as long as the first read takes.
+    this.storage.doneLoading = false;
+    this.router.navigate(['/workspace']);
     await this.getCurrentUser();
-    this.router.navigate(['/workspace'], { reload: true } as any);
   }
 
 

@@ -148,8 +148,11 @@ export class LogInCardComponent {
       return; // Stops further execution
     }
     this.savingAuthUid(user);
-    await this.authService.getCurrentUser();
+    // Same as the guest login: the workspace's loader covers the wait, the
+    // login screen cannot.
+    this.storage.doneLoading = false;
     this.navigateToWorkspace();
+    await this.authService.getCurrentUser();
   }
 
 
