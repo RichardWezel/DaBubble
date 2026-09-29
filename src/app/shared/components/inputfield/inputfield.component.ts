@@ -411,7 +411,12 @@ export class InputfieldComponent implements OnChanges, AfterViewInit, OnDestroy 
   toggleAppendix() {
     this.showUpload = !this.showUpload;
     this.resetAll(false, true, true);
-    this.setFocus();
+    // Same as the emoji picker: the keyboard would cover the upload card.
+    if (this.showUpload && matchMedia('(hover: none)').matches) {
+      (document.activeElement as HTMLElement | null)?.blur();
+    } else {
+      this.setFocus();
+    }
   }
 
 

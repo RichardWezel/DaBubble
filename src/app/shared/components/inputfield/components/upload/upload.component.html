@@ -1,10 +1,12 @@
 <div class="upload" [class.active]="inputfield.showUpload" (click)="upload.click()"
   (drop)="$event.stopPropagation(); $event.preventDefault(); handleDrop($event)" (dragover)="handleDragOver($event)"
   (dragleave)="handleDragLeave($event)">
-  <label [class.d-none]="(getUploadedFiles(upload) || []).length > 0" for="fileUpload">Datei durch Klicken Wählen oder
-    durch Ziehen und Ablegen</label>
-  <input class="d-none" id="fileUpload" type="file" multiple accept="image/*, document/pdf" #upload
-    (click)="$event.stopPropagation()">
+  <label [class.d-none]="(getUploadedFiles(upload) || []).length > 0" for="fileUpload">
+    <span class="pointer-text">Datei durch Klicken wählen oder durch Ziehen und Ablegen</span>
+    <span class="touch-text">Tippen, um Bilder oder PDFs auszuwählen</span>
+  </label>
+  <input class="d-none" id="fileUpload" type="file" multiple accept="image/*, application/pdf" #upload
+    (click)="$event.stopPropagation()" (change)="onFilesChosen()">
   @if((getUploadedFiles(upload) || []).length > 0) {
     <div class="upload-container">
       @for (file of getUploadedFiles(upload); track $index) {
@@ -27,7 +29,7 @@
     </div>
   }
   <div class="upload-buttons">
-    <button [disabled]="!getUploadedFiles(upload) || getUploadedFiles(upload).length == 0"
+    <button [disabled]="!canUpload(upload)"
       (click)="$event.stopPropagation(); uploadFiles()" type="button" class="mainButton buttonPrimary">Upload</button>
     <button class="mainButton buttonSecondary" (click)="$event.stopPropagation(); cancelUpload()">Abbrechen</button>
   </div>

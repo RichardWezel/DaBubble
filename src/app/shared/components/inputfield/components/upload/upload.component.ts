@@ -22,6 +22,26 @@ export class UploadComponent implements OnChanges, OnInit {
     return file.size >= MAX_ATTACHMENT_BYTES;
   }
 
+
+  /**
+   * Only with files, and none of them too large - the upload skips those
+   * without a word, so the user has to remove them first.
+   */
+  canUpload(input: HTMLInputElement): boolean {
+    const files = this.getUploadedFiles(input);
+    return files.length > 0 && !files.some(file => this.isTooLarge(file));
+  }
+
+
+  /**
+   * Deliberately empty. The template reads the chosen files straight off the
+   * input, but Angular only re-renders after an event it listens to. Without
+   * this listener the list stayed empty after the file dialog closed until
+   * the next click or mouse move - on a phone there is none, so choosing a
+   * photo seemed to do nothing.
+   */
+  onFilesChosen(): void { }
+
   @ViewChild('upload') uploadElement!: ElementRef<HTMLInputElement>;
 
   private subscription!: Subscription;
