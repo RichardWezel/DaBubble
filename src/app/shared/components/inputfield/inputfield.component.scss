@@ -198,80 +198,59 @@
   }
 }
 
-.tag-search {
+// Suggestions for the @name / #channel being typed. Sits right above the
+// field, so on a phone it stays in the part the keyboard leaves visible.
+.mention-list {
   position: absolute;
-  height: 40px;
-  bottom: 56px;
-  left: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: $backgroundColor;
-  transition: all 125ms ease-in-out;
-  transform-origin: bottom right;
-  transform: scale(0);
-  z-index: 2;
-  border-radius: 8px;
+  bottom: calc(100% + 6px);
+  left: 0;
+  z-index: 3;
+  min-width: 220px;
+  max-width: 100%;
+  max-height: 232px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 6px;
+  background-color: $textWhite;
   border: 1px solid $dividerColor;
+  border-radius: 16px;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.12);
 
-  &.active {
-    transform: scale(1);
-  }
-
-  .tag-search-input {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    border: none;
-    resize: none;
-    outline: none;
-    cursor: text;
-    flex-grow: 0;
-    border-radius: 8px;
-    padding-left: 12px;
-    padding-right: 12px;
-
-    ::placeholder {
-      color: $textGrey;
-    }
-  }
-
-  .tag-search-results {
-    position: absolute;
-    bottom: 40px;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  .mention {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-end;
-    z-index: 2;
-    border-radius: 8px;
-    gap: 4px;
-    padding: 4px 0;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 6px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
-    .suggestion-container {
-      display: flex;
-      flex-direction: column-reverse;
-      gap: 4px;
+    &.active,
+    &:hover {
+      background-color: $backgroundColor;
+      color: $thirdColor;
     }
 
-    .suggestion {
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      background-color: $textWhite;
-      border-radius: 8px;
-      border: 1px solid $dividerColor;
-      padding: 4px 12px;
-      width: fit-content;
+    &.empty {
+      color: $textGrey;
+      cursor: default;
 
       &:hover {
-        background-color: $backgroundColor;
+        background-color: unset;
+        color: $textGrey;
       }
     }
+  }
+
+  .mention-avatar {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
   }
 }
 
@@ -284,8 +263,4 @@
   padding: 2px 4px;
   margin: 0 4px;
   font-size: 14x;
-}
-
-.op {
-  opacity: 0.25;
 }

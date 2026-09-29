@@ -42,6 +42,16 @@ body {
   scrollbar-width: none;
 }
 
+// iOS Safari zooms the page into any field under 16px when it gets focus,
+// and a field without its own size gets the browser's 13.33px - the @ search
+// in the message input did exactly that. :where() keeps this at zero
+// specificity, so a size a component sets on purpose still wins.
+@media (hover: none) and (pointer: coarse) {
+  :where(input, textarea, select) {
+    font-size: 16px;
+  }
+}
+
 .mainButton {
   cursor: pointer;
   border: none;
