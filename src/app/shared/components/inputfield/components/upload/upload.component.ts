@@ -3,6 +3,7 @@ import { InputfieldComponent } from '../../inputfield.component';
 import { htmlTemplatesImage, htmlTemplatesPdf, htmlTemplatesOther } from './templates/htmlTemplates';
 import { Subscription } from 'rxjs';
 import { NavigationService } from '../../../../services/navigation.service';
+import { MAX_ATTACHMENT_BYTES } from '../../../../services/cloud-storage.service';
 
 @Component({
   selector: 'app-upload',
@@ -14,6 +15,12 @@ import { NavigationService } from '../../../../services/navigation.service';
 export class UploadComponent implements OnChanges, OnInit {
   inputfield: InputfieldComponent = inject(InputfieldComponent);
   navigationService = inject(NavigationService);
+
+
+  /** True if the file is over the attachment limit the storage rules enforce. */
+  isTooLarge(file: File): boolean {
+    return file.size >= MAX_ATTACHMENT_BYTES;
+  }
 
   @ViewChild('upload') uploadElement!: ElementRef<HTMLInputElement>;
 

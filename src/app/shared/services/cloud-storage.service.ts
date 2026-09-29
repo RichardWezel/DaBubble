@@ -3,6 +3,13 @@ import { ref, Storage, uploadBytesResumable, getDownloadURL, StorageReference } 
 import { FirebaseStorageService } from './firebase-storage.service';
 import { UserInterface } from '../interfaces/user.interface';
 
+/**
+ * Largest message attachment, in bytes. storage.rules allows appendix/ files
+ * strictly under 5 MB (5 * 1024 * 1024), so this has to stay in step with it.
+ */
+export const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -41,7 +48,7 @@ export class CloudStorageService {
     for (let i = 0; i < files.length; i++) {
       const file = files.item(i);
       if (!file) continue;
-      if (file.size > 0.5 * 1024 * 1024) {
+      if (file.size >= MAX_ATTACHMENT_BYTES) {
         console.error('Dateigröße überschritten');
         continue;
       }
