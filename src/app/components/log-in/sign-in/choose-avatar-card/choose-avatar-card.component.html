@@ -13,8 +13,8 @@
         <form (ngSubmit)="setNewUser()" #avatarForm="ngForm">
             <div class="chosen-picture-container">
                 <img src="{{ currentProfilePicture }}" alt="Gewähltes Profilbild">
-                @if (uploadFile && uploadFile.size > 512000) {
-                <div class="overlay">Bild zu groß Max 500 kB</div>
+                @if (pictureTooLarge()) {
+                <div class="overlay">Bild zu groß, max. 2 MB</div>
                 }
             </div>
 
@@ -35,13 +35,13 @@
             </div>
             <div class="button-container">
                 <p *ngIf="errorMessage" class="error-message error-text-input">{{ errorMessage }}</p>
-                <p *ngIf="inputFieldCheck && (!avatarSelected || (uploadFile && uploadFile.size > 512000))" class="error-message error-text-input">Bitte wähle einen Avatar aus.</p>
+                <p *ngIf="inputFieldCheck && (!avatarSelected || pictureTooLarge())" class="error-message error-text-input">Bitte wähle einen Avatar aus.</p>
                 <div class="btn-container">
                     <button #submitButton type="submit" class="mainButton buttonPrimary"
-                        [disabled]="!avatarSelected || successMessage || (uploadFile && uploadFile.size > 512000) || isLoading">
+                        [disabled]="!avatarSelected || successMessage || pictureTooLarge() || isLoading">
                         {{ isLoading ? 'Wird geladen...' : 'Weiter' }}
                     </button>
-                    @if (!avatarSelected || uploadFile && uploadFile.size > 512000) {
+                    @if (!avatarSelected || pictureTooLarge()) {
                         <button type="button" class="ux-button" aria-hidden="true" tabindex="-1" (click)="checkInputFields()"></button>
                         }
                 </div>

@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { FirebaseStorageService } from '../../../../shared/services/firebase-storage.service';
 import { Auth, createUserWithEmailAndPassword, getAuth, sendEmailVerification, User, UserCredential } from '@angular/fire/auth';
 import { NavigationService } from '../../../../shared/services/navigation.service';
-import { CloudStorageService } from '../../../../shared/services/cloud-storage.service';
+import { CloudStorageService, MAX_PROFILE_PICTURE_BYTES } from '../../../../shared/services/cloud-storage.service';
 import { ConfirmationModalComponent } from "../../../../shared/components/confirmation-modal/confirmation-modal.component";
 import { DEFAULT_CHANNEL_ID } from '../../../../../config/seed-ids';
 
@@ -35,6 +35,13 @@ export class ChooseAvatarCardComponent {
   successMessage: string = ''; // Erfolgsmeldung
   showDialog: boolean = false; // Dialog-Steuerung
   uploadFile: File | null = null;
+
+
+  /** True if the chosen picture is over the limit the storage rules enforce. */
+  pictureTooLarge(): boolean {
+    return !!this.uploadFile && this.uploadFile.size >= MAX_PROFILE_PICTURE_BYTES;
+  }
+
   inputFieldCheck: boolean = false;
 
 

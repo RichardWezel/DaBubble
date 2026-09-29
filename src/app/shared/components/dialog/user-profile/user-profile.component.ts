@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { OpenUserProfileService } from '../../../services/open-user-profile.service';
 import { UserInterface } from '../../../interfaces/user.interface';
 import { Subscription } from 'rxjs';
-import { CloudStorageService } from '../../../services/cloud-storage.service';
+import { CloudStorageService, MAX_PROFILE_PICTURE_BYTES } from '../../../services/cloud-storage.service';
 import { OpenCloseDialogService } from '../../../services/open-close-dialog.service';
 import { FirebaseAuthService } from '../../../services/firebase-auth.service';
 import { FirebaseStorageService } from '../../../services/firebase-storage.service';
@@ -37,6 +37,13 @@ export class UserProfileComponent implements OnInit, OnDestroy, OnChanges {
   avatar: string = '';
   currentProfilePicture: string = '';
   uploadFile: File | null = null;
+
+
+  /** True if the chosen picture is over the limit the storage rules enforce. */
+  pictureTooLarge(): boolean {
+    return !!this.uploadFile && this.uploadFile.size >= MAX_PROFILE_PICTURE_BYTES;
+  }
+
   avatarChanged: boolean = false;
   inputFieldCheck: boolean = false;
   originalName: string | undefined = '';

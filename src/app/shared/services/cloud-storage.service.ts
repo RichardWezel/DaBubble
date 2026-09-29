@@ -9,6 +9,9 @@ import { UserInterface } from '../interfaces/user.interface';
  */
 export const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
 
+/** Largest profile picture, in bytes - storage.rules allows profilePic/ under 2 MB. */
+export const MAX_PROFILE_PICTURE_BYTES = 2 * 1024 * 1024;
+
 
 @Injectable({
   providedIn: 'root'

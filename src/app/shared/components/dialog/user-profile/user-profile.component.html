@@ -21,8 +21,8 @@
             <div *ngIf="mode === 'edit'" class="edit-avatar" (click)="openFileExplorer(fileInput)">
                 <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*">
                 <img [src]="currentProfilePicture" alt="Profilbild">
-                @if (uploadFile && uploadFile.size > 512000) {
-                    <div class="overlay">Bild zu groß Max 500 kB</div>
+                @if (pictureTooLarge()) {
+                    <div class="overlay">Bild zu groß, max. 2 MB</div>
                 }
             </div>
         </section>
@@ -141,9 +141,9 @@
                 <button type="button" class="cancel-btn" (click)="mode = 'show'">Abbrechen</button>
                 <div class="btn-container">
                     <button
-                        [disabled]="profileForm.invalid || ( uploadFile && uploadFile.size > 2000000) || (profileForm.pristine && !uploadFile ) || (originalEmail == email && originalName == name && !uploadFile)"
+                        [disabled]="profileForm.invalid || pictureTooLarge() || (profileForm.pristine && !uploadFile ) || (originalEmail == email && originalName == name && !uploadFile)"
                         type="submit" class="save-btn">Speichern</button>
-                    @if (profileForm.invalid || ( uploadFile && uploadFile.size > 2000000) || (profileForm.pristine && !uploadFile ) || (originalEmail == email && originalName == name && !uploadFile)) {
+                    @if (profileForm.invalid || pictureTooLarge() || (profileForm.pristine && !uploadFile ) || (originalEmail == email && originalName == name && !uploadFile)) {
                         <button type="button" class="ux-button" aria-hidden="true" tabindex="-1" (click)="checkInputFields()"></button>
                     }
                 </div>
