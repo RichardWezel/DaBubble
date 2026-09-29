@@ -9,11 +9,33 @@ main {
     transition: background-color 100ms ease-in-out;
     z-index: 1;
 
+    // On a phone the old 45px padding, 30px gap and big avatar left the text
+    // about half the screen width.
+    @media (max-width: $breakpointMobile) {
+        padding: 10px 16px;
+        gap: 12px;
+    }
+
     &.edit {
         background-color: $backgroundColor;
     }
 
-    &:hover {
+    // Only real pointers hover. On a touchscreen a tap leaves :hover stuck
+    // on the message, so the bar sat over the name until the next tap
+    // elsewhere - there it opens on a long press instead (.actions-open).
+    @media (hover: hover) {
+        &:hover {
+            background-color: $backgroundColor;
+
+            .reaction-bar {
+                opacity: 1;
+                visibility: visible;
+                transform: translateX(-3px);
+            }
+        }
+    }
+
+    &.actions-open {
         background-color: $backgroundColor;
 
         .reaction-bar {
@@ -23,8 +45,25 @@ main {
         }
     }
 
+    // Without this iOS answers the long press with its own text selection
+    // and copy callout.
+    @media (hover: none) {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
     &.self {
         flex-direction: row-reverse;
+
+        .reaction-bar {
+            right: unset;
+            left: 40.06px;
+
+            @media (max-width: $breakpointMobile) {
+                left: 12px;
+            }
+        }
     }
 
     .reaction-bar {
@@ -42,6 +81,12 @@ main {
         background-color: #fff;
         transition: opacity 100ms ease-out, visibility 100ms ease-out, transform 100ms ease-out;
         z-index: 1;
+
+        @media (max-width: $breakpointMobile) {
+            right: 12px;
+            padding: 2px 10px;
+            gap: 2px;
+        }
 
         .reaction-bar-icon {
             width: 40px;
@@ -151,6 +196,7 @@ main {
 
 
     .avatar {
+        flex-shrink: 0;
         height: 70px;
         width: 70px;
         border-radius: 50%;
@@ -158,6 +204,11 @@ main {
         @media (max-width: $breakpoint1) {
             height: 50px;
             width: 50px;
+        }
+
+        @media (max-width: $breakpointMobile) {
+            height: 40px;
+            width: 40px;
         }
 
 
@@ -171,8 +222,13 @@ main {
     .message-section {
         display: flex;
         flex: 1;
+        min-width: 0;
         flex-direction: column;
         gap: 8px;
+
+        @media (max-width: $breakpointMobile) {
+            gap: 6px;
+        }
 
         &.self {
             align-items: flex-end;
@@ -180,8 +236,13 @@ main {
 
         .author-section {
             display: flex;
-            align-items: center;
-            gap: 20px;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 4px 20px;
+
+            @media (max-width: $breakpointMobile) {
+                column-gap: 10px;
+            }
 
             &.self {
                 flex-direction: row-reverse;
@@ -192,6 +253,11 @@ main {
                 font-weight: 700;
                 line-height: 24.55px;
                 text-align: left;
+
+                @media (max-width: $breakpointMobile) {
+                    font-size: 16px;
+                    line-height: 22px;
+                }
             }
         }
 
@@ -303,16 +369,29 @@ main {
             line-height: 24.55px;
             text-align: left;
             width: fit-content;
+            max-width: 100%;
+            overflow-wrap: anywhere;
 
             @media (max-width: $breakpoint1) {
                 font-size: 17px;
                 line-height: 23.19px;
             }
 
+            @media (max-width: $breakpointMobile) {
+                padding: 10px 14px;
+                border-radius: 0px 20px 20px 20px;
+                font-size: 16px;
+                line-height: 22px;
+            }
+
             &.self {
                 border-radius: 30px 0px 30px 30px;
                 background-color: $secondaryColor;
                 color: $textWhite;
+
+                @media (max-width: $breakpointMobile) {
+                    border-radius: 20px 0px 20px 20px;
+                }
             }
 
 
@@ -356,6 +435,7 @@ main {
     }
 
     .post-time {
+        white-space: nowrap;
         font-size: 14px;
         font-weight: 400;
         line-height: 19.1px;
@@ -371,6 +451,11 @@ main {
     gap: 20px;
     padding: 16px 40px 0;
     align-items: center;
+
+    @media (max-width: $breakpointMobile) {
+        gap: 12px;
+        padding: 12px 16px 0;
+    }
 
     .threadAnswers {
         color: $dividerColor;
@@ -405,6 +490,22 @@ main {
     &.active {
         transform: translate(-50%, -50%) scale(1);
     }
+
+    // Centred on the message it ran off the top of a phone screen, so on a
+    // phone it opens centred on the screen instead, over a dimmed backdrop
+    // that closes it on a tap.
+    @media (max-width: $breakpointMobile) {
+        position: fixed;
+        top: 0;
+        left: 0;
+        border-radius: 0;
+        background-color: rgba($textBlack, 0.3);
+        transform: scale(0);
+
+        &.active {
+            transform: none;
+        }
+    }
 }
 
 .emoticons-container {
@@ -414,6 +515,10 @@ main {
     justify-content: flex-start;
     align-items: center;
     gap: 16px;
+
+    @media (max-width: $breakpointMobile) {
+        gap: 8px;
+    }
 
     .emoticon {
         position: relative;

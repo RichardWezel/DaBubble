@@ -252,7 +252,14 @@ export class InputfieldComponent implements OnChanges, AfterViewInit, OnDestroy 
   toggleEmojiSelector() {
     this.showEmojiSelector = !this.showEmojiSelector;
     this.resetAll(true, true, false);
-    this.setFocus();
+    // On a touchscreen the keyboard would take half the screen and push the
+    // top of the picker out of view, so opening the picker closes it instead.
+    // Picking an emoji focuses the field again (addEmoji).
+    if (this.showEmojiSelector && matchMedia('(hover: none)').matches) {
+      (document.activeElement as HTMLElement | null)?.blur();
+    } else {
+      this.setFocus();
+    }
   }
 
 

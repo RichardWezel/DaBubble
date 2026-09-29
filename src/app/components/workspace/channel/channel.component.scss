@@ -10,8 +10,11 @@
   border-radius: 32px;
   background-color: $textWhite;
 
+  // One pane: head and input take their real height instead of the fixed
+  // 96px / 168px reserved above, so the messages get everything in between.
   @media (max-width: $breakpoint1){
     border-radius: unset;
+    padding: 0;
   }
 
   .main-channel {
@@ -22,6 +25,11 @@
     color: #000;
     padding-top: 10px;
     padding-bottom: 10px;
+
+    @media (max-width: $breakpoint1){
+      min-height: 0;
+      padding: 0;
+    }
   }
 
   .channel-head {
@@ -29,6 +37,11 @@
     top: 0;
     left: 0;
     width: 100%;
+
+    @media (max-width: $breakpoint1){
+      position: relative;
+      z-index: 2;
+    }
   }
 
   .channel-input {
@@ -39,7 +52,12 @@
     padding: 0 40px 24px;
 
     @media (max-width: $breakpoint1){
-      padding: 0 16px 24px;
+      position: static;
+      padding: 8px 16px 16px;
+    }
+
+    @media (max-width: $breakpointMobile){
+      padding: 8px 12px 12px;
     }
   }
 

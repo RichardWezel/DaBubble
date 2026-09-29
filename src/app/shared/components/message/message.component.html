@@ -1,11 +1,10 @@
-<main [id]="post.id" [class.self]="isAuthorCurrentUser" [class.edit]="postEdit">
+<main [id]="post.id" [class.self]="isAuthorCurrentUser" [class.edit]="postEdit" [class.actions-open]="actionsOpen"
+  (touchstart)="startLongPress()" (touchmove)="cancelLongPress()" (touchend)="cancelLongPress()"
+  (touchcancel)="cancelLongPress()" (contextmenu)="onContextMenu($event)">
   @if (!threadHead) {
 
     @if (!postEdit) {
-      <section class="reaction-bar" [ngStyle]="{
-          'right': isAuthorCurrentUser ? 'unset' : '40.06px',
-          'left': isAuthorCurrentUser ? '40.06px' : 'unset'
-        }">
+      <section class="reaction-bar" (click)="closeActionsAfter($event)">
 
         <div class="reaction-bar-icon" (click)="emojiSelector.addEmojiToReaction(getLastEmoji())">
           <p class="emoji">{{getLastEmoji().emoji.native}}</p>
@@ -129,6 +128,10 @@
   </div>
 }
 
+<!-- Created on demand: one idle picker per message was thousands of hidden
+     emoji elements in a busy channel. -->
 <div class="smileys-container" [class.active]="showEmojiSelector" (click)="outsideClick($event)">
-  <app-emoji-selector [origin]="origin" [isThread]="isThread" [post]="post" [isInput]="false"></app-emoji-selector>
+  @if (showEmojiSelector) {
+    <app-emoji-selector [origin]="origin" [isThread]="isThread" [post]="post" [isInput]="false"></app-emoji-selector>
+  }
 </div>

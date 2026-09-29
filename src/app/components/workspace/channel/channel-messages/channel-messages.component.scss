@@ -7,12 +7,25 @@ main {
     display: flex;
     flex-direction: column-reverse;
     min-height: 100%;
+
+    // Mandatory snapping yanks the list back while scrolling with a finger
+    // and whenever the keyboard resizes the view.
+    @media (max-width: $breakpoint1) {
+        scroll-snap-type: none;
+        height: 100%;
+        min-height: 0;
+        padding: 16px 0;
+    }
 }
 
 .channel-message {
     display: flex;
     flex-direction: column;
     gap: 20px;
+
+    @media (max-width: $breakpointMobile) {
+        gap: 12px;
+    }
 }
 
 app-message {
@@ -27,6 +40,11 @@ app-message {
     align-items: flex-start;
     gap: 32px;
     padding: 40px;
+
+    @media (max-width: $breakpointMobile) {
+        gap: 20px;
+        padding: 24px 16px;
+    }
 
     .header {
         display: flex;
@@ -44,6 +62,11 @@ app-message {
                 height: 32px;
                 width: 32px;
             }
+        }
+
+        @media (max-width: $breakpointMobile) {
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         img {

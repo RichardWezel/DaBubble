@@ -11,6 +11,15 @@
   border: 1px solid $dividerColor;
   border-radius: 20px;
 
+  // Grows with the text instead of a fixed 144px, which took a fifth of a
+  // phone screen and most of what is left once the keyboard is open.
+  @media (max-width: $breakpointMobile) {
+    height: auto;
+    padding: 10px 12px 4px;
+    gap: 4px;
+    border-radius: 16px;
+  }
+
   &:focus-within {
     .inputfield-buttons {
       .inputfield-send {
@@ -66,12 +75,26 @@
     resize: none;
     outline: none;
 
+    @media (max-width: $breakpointMobile) {
+      height: auto;
+      min-height: 24px;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
     .placeholder {
       color: $textGrey;
       position: absolute;
       top: 0;
       left: 0;
       z-index: 0;
+
+      @media (max-width: $breakpointMobile) {
+        right: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
       &.disabled {
         display: none;
@@ -89,7 +112,10 @@
       cursor: text;
       flex-grow: 0;
 
-
+      @media (max-width: $breakpointMobile) {
+        min-height: 24px;
+        line-height: 24px;
+      }
 
       .tagMessage {
         color: $secondaryColor;
@@ -113,6 +139,10 @@
       display: flex;
       align-items: center;
       gap: 16px;
+
+      @media (max-width: $breakpointMobile) {
+        gap: 4px;
+      }
 
       .divider {
         width: 1px;

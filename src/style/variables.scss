@@ -14,3 +14,7 @@ $dividerColor: #ADB0D9;
 $lightGrey: #E6E6E6;
 
 $breakpoint1: 1300px;
+
+// Phones. $breakpoint1 switches to the one-pane layout, this one tightens
+// the spacing inside that pane so the text gets the width instead.
+$breakpointMobile: 600px;

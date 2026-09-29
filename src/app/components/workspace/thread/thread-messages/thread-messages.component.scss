@@ -6,19 +6,31 @@ main {
   padding: 24px 0;
   display: flex;
   flex-direction: column-reverse;
+
+  @media (max-width: $breakpoint1) {
+    scroll-snap-type: none;
+    height: 100%;
+    padding: 16px 0;
+  }
 }
 
 .thread-message {
   display: flex;
   flex-direction: column;
   gap: 20px;
+
+  @media (max-width: $breakpointMobile) {
+    gap: 12px;
+  }
 }
 
 app-message {
   scroll-snap-align: end;
 
-  &:hover{
-    cursor: pointer;
-    background-color: $backgroundColor;
+  @media (hover: hover) {
+    &:hover{
+      cursor: pointer;
+      background-color: $backgroundColor;
+    }
   }
 }

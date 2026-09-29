@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, Input, OnChanges, OnInit, OnDestroy, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, Input, OnChanges, OnInit, OnDestroy, SimpleChanges } from '@angular/core';
 import { PostInterface } from '../../interfaces/post.interface';
 import { AuthorService } from '../../services/author.service';
 import { MessageSanitizerService } from '../../services/message-sanitizer.service';
@@ -43,6 +43,10 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   reactSelf: boolean = false;
   postEdit: boolean = false;
   isSpecialMenuOpen: boolean = false;
+  /** Reaction bar opened by a long press - touchscreens have no hover. */
+  actionsOpen: boolean = false;
+  private longPressTimer?: ReturnType<typeof setTimeout>;
+  private static readonly LONG_PRESS_MS = 450;
 
   isAuthorCurrentUser: boolean = false;
 
@@ -82,6 +86,65 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
    */
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.cancelLongPress();
+  }
+
+
+  /**
+   * Starts the long-press timer on a touch. Holding the finger still for
+   * LONG_PRESS_MS opens the reaction bar; moving it (scrolling) or lifting
+   * it earlier cancels.
+   */
+  startLongPress(): void {
+    if (this.threadHead || this.postEdit) return;
+    this.cancelLongPress();
+    this.longPressTimer = setTimeout(() => {
+      this.actionsOpen = true;
+      navigator.vibrate?.(10);
+    }, MessageComponent.LONG_PRESS_MS);
+  }
+
+
+  /** Stops a pending long press, e.g. because the finger moved or lifted. */
+  cancelLongPress(): void {
+    clearTimeout(this.longPressTimer);
+    this.longPressTimer = undefined;
+  }
+
+
+  /**
+   * Android fires contextmenu on a long press. Suppress the browser menu
+   * there, since the long press already opens the reaction bar.
+   * @param event - the contextmenu event on the message
+   */
+  onContextMenu(event: Event): void {
+    if (matchMedia('(hover: none)').matches) event.preventDefault();
+  }
+
+
+  /**
+   * Closes the long-press bar once an action in it was chosen. The "more"
+   * button stays open, since it only reveals a submenu.
+   * @param event - the click inside the reaction bar
+   */
+  closeActionsAfter(event: Event): void {
+    if ((event.target as HTMLElement).closest('.more')) return;
+    this.actionsOpen = false;
+  }
+
+
+  /**
+   * Closes the long-press bar when the user touches anywhere outside this
+   * message, the way a tap elsewhere ends a hover with a mouse.
+   * @param event - any touch or click on the page
+   */
+  @HostListener('document:touchstart', ['$event'])
+  @HostListener('document:click', ['$event'])
+  closeActionsOutside(event: Event): void {
+    if (!this.actionsOpen) return;
+    if (this.elementRef.nativeElement.contains(event.target as Node)) return;
+    this.actionsOpen = false;
+    this.isSpecialMenuOpen = false;
   }
 
 
@@ -266,6 +329,7 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
   editPost() {
     this.postEdit = true;
     this.isSpecialMenuOpen = false;
+    this.actionsOpen = false;
   }
 
 
@@ -289,6 +353,10 @@ export class MessageComponent implements OnInit, OnChanges, OnDestroy {
     event.stopPropagation();
     const path = event.path || (event.composedPath && event.composedPath());
     if (!path.includes(this.elementRef.nativeElement.querySelector('app-emoji-selector'))) {
+      this.showEmojiSelector = false;
+    }
+    // A reaction was picked - done, like the picker in the input field.
+    if ((event.target as HTMLElement).closest?.('.emoji-mart-emoji')) {
       this.showEmojiSelector = false;
     }
     if (!path.includes(this.elementRef.nativeElement.querySelector('special-container'))) {

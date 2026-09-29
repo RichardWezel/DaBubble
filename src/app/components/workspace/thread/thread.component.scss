@@ -9,8 +9,11 @@
   border-radius: 32px;
   background-color: $textWhite;
 
+  // Same as the channel: in the one-pane layout head and input take their
+  // real height, the messages get the rest.
   @media (max-width: $breakpoint1){
     border-radius: unset;
+    padding: 0;
   }
 
   .main-thread {
@@ -18,6 +21,10 @@
     flex-direction: column;
     flex: 1;
     height: 100%;
+
+    @media (max-width: $breakpoint1){
+      min-height: 0;
+    }
   }
 
   .thread-head {
@@ -25,6 +32,11 @@
     top: 0;
     left: 0;
     width: 100%;
+
+    @media (max-width: $breakpoint1){
+      position: relative;
+      z-index: 2;
+    }
   }
 
   .thread-input {
@@ -33,5 +45,14 @@
     left: 0;
     width: 100%;
     padding: 0 32px 24px;
+
+    @media (max-width: $breakpoint1){
+      position: static;
+      padding: 8px 16px 16px;
+    }
+
+    @media (max-width: $breakpointMobile){
+      padding: 8px 12px 12px;
+    }
   }
 }
