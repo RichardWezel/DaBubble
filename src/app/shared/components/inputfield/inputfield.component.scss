@@ -260,7 +260,12 @@
   background-color: $backgroundColor;
   border: 1px solid $thirdColor;
   border-radius: 4px;
-  padding: 2px 4px;
+  padding: 1px 4px;
   margin: 0 4px;
-  font-size: 14x;
+  // Kept inside the 24px line: the field scrolls on a phone, and a scrolling
+  // box clips whatever pokes out of its lines. (Was "14x", which the browser
+  // dropped, so the tag rendered at 16px and too tall.)
+  display: inline-block;
+  font-size: 14px;
+  line-height: 18px;
 }
