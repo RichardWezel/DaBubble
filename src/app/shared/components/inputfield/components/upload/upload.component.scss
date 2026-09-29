@@ -244,3 +244,14 @@
 .d-none {
   display: none !important;
 }
+
+// Hidden from sight, not with display: none - iOS Safari does not reliably
+// open the file dialog for an input that is not rendered at all.
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+}

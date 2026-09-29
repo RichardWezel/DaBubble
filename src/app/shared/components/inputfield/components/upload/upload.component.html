@@ -1,11 +1,15 @@
 <div class="upload" [class.active]="inputfield.showUpload" (click)="upload.click()"
   (drop)="$event.stopPropagation(); $event.preventDefault(); handleDrop($event)" (dragover)="handleDragOver($event)"
   (dragleave)="handleDragLeave($event)">
-  <label [class.d-none]="(getUploadedFiles(upload) || []).length > 0" for="fileUpload">
+  <!-- No for="fileUpload" on purpose: the tap already reaches the .upload
+       click handler above, and the label opened the file dialog a second
+       time. iOS Safari then lost the chosen photo - no change event at all.
+       The id is not unique either once the thread has an input too. -->
+  <label [class.d-none]="(getUploadedFiles(upload) || []).length > 0">
     <span class="pointer-text">Datei durch Klicken wählen oder durch Ziehen und Ablegen</span>
     <span class="touch-text">Tippen, um Bilder oder PDFs auszuwählen</span>
   </label>
-  <input class="d-none" id="fileUpload" type="file" multiple accept="image/*, application/pdf" #upload
+  <input class="file-input" id="fileUpload" type="file" multiple accept="image/*, application/pdf" #upload
     (click)="$event.stopPropagation()" (change)="onFilesChosen()">
   @if((getUploadedFiles(upload) || []).length > 0) {
     <div class="upload-container">
